@@ -2,13 +2,28 @@
 
 import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Box, Layers, Lightbulb } from "lucide-react";
-import { SeedingModelViewer } from "./seeding-model-viewer";
+import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Layers, Lightbulb, TrendingUp } from "lucide-react";
 
-// Crop icon component for animated plants - seedling design
-function CropIcon({ seedSize }: { seedSize: "6mm" | "14mm" }) {
+// Crop icon component for animated plants - shows emoji or seedling
+function CropIcon({ seedSize, emoji }: { seedSize: "6mm" | "14mm"; emoji?: string }) {
   const scale = seedSize === "6mm" ? 0.9 : 1.1;
+  const fontSize = seedSize === "6mm" ? 14 : 18;
 
+  // If emoji provided and not seedling, show emoji
+  if (emoji && emoji !== "🌱") {
+    return (
+      <text
+        fontSize={fontSize}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        style={{ userSelect: "none" }}
+      >
+        {emoji}
+      </text>
+    );
+  }
+
+  // Default seedling SVG
   return (
     <g transform={`scale(${scale}) translate(-12, -20)`}>
       {/* Left leaf */}
@@ -72,12 +87,236 @@ import {
   PRICES,
   ROW_CONSTRAINTS,
   WHEEL_CONSTRAINTS,
-  CROP_PRESETS,
   validateRowConfig,
   generateRowSpacings,
   getWheelConfig,
   calculateOptimalWheelSpacing,
 } from "@/lib/configurator-data";
+
+// Calculate robot speed based on seeding mode and plant spacing
+function calculateRobotSpeed(
+  seedingMode: "single" | "group" | "line",
+  plantSpacingCm: number
+): number {
+  // Line seeding always runs at max speed
+  if (seedingMode === "line") return 950;
+
+  // Single/Group seeding - speed depends on plant spacing
+  if (plantSpacingCm <= 10) return 600;
+  if (plantSpacingCm >= 18) return 950;
+
+  // Linear interpolation between 10-18cm
+  // 600 m/h at 10cm, 950 m/h at 18cm
+  return Math.round(600 + ((plantSpacingCm - 10) / 8) * 350);
+}
+
+// Daily Capacity Graph Component - Large version for main view
+function CapacityGraphLarge({
+  seedingMode,
+  plantSpacing,
+  workingWidth,
+}: {
+  seedingMode: "single" | "group" | "line";
+  plantSpacing: number;
+  workingWidth: number;
+}) {
+  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+  const speed = calculateRobotSpeed(seedingMode, plantSpacing);
+  const workingWidthM = workingWidth / 1000;
+
+  // Generate data points for 12-24 hours
+  const dataPoints: { hours: number; capacity: number }[] = [];
+  for (let hours = 12; hours <= 24; hours++) {
+    const capacity = (speed * workingWidthM * hours) / 10000;
+    dataPoints.push({ hours, capacity });
+  }
+
+  // Fixed Y-axis maximum at 10 hectares
+  const maxCapacity = 10;
+
+  // SVG dimensions - match aspect ratio of 2D animation (900x580)
+  const width = 900;
+  const height = 480;
+  const padding = { top: 40, right: 40, bottom: 60, left: 70 };
+  const graphWidth = width - padding.left - padding.right;
+  const graphHeight = height - padding.top - padding.bottom;
+
+  // Scale functions
+  const xScale = (hours: number) =>
+    padding.left + ((hours - 12) / 12) * graphWidth;
+  const yScale = (capacity: number) =>
+    height - padding.bottom - (capacity / maxCapacity) * graphHeight;
+
+  // Create path for the line
+  const linePath = dataPoints
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${xScale(p.hours)} ${yScale(p.capacity)}`)
+    .join(" ");
+
+  // Create path for the filled area
+  const areaPath = `${linePath} L ${xScale(24)} ${height - padding.bottom} L ${xScale(12)} ${height - padding.bottom} Z`;
+
+  // Y-axis labels (fixed at 0, 2, 4, 6, 8, 10)
+  const yLabels = [0, 2, 4, 6, 8, 10];
+
+  // X-axis labels (12-24 in increments of 2)
+  const xLabels = [12, 14, 16, 18, 20, 22, 24];
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div className="bg-stone-50 rounded-xl p-4 md:p-6 flex-1 flex items-center justify-center">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full max-h-[400px]">
+          {/* Grid lines - horizontal */}
+          {yLabels.map((y) => (
+            <line
+              key={y}
+              x1={padding.left}
+              y1={yScale(y)}
+              x2={width - padding.right}
+              y2={yScale(y)}
+              stroke="#e7e5e4"
+              strokeWidth="1"
+            />
+          ))}
+
+          {/* Grid lines - vertical */}
+          {xLabels.map((h) => (
+            <line
+              key={h}
+              x1={xScale(h)}
+              y1={padding.top}
+              x2={xScale(h)}
+              y2={height - padding.bottom}
+              stroke="#e7e5e4"
+              strokeWidth="1"
+              strokeDasharray={h === 18 ? "0" : "4,4"}
+              opacity={h === 18 ? 0.5 : 0.5}
+            />
+          ))}
+
+          {/* Filled area under line */}
+          <path d={areaPath} fill="#0d9488" fillOpacity="0.15" />
+
+          {/* Line */}
+          <path
+            d={linePath}
+            fill="none"
+            stroke="#0d9488"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Data points with hover effect */}
+          {dataPoints.map((p, idx) => {
+            const isHovered = hoveredPoint === idx;
+            return (
+              <g key={p.hours}>
+                {/* Invisible larger hit area for hover */}
+                <circle
+                  cx={xScale(p.hours)}
+                  cy={yScale(p.capacity)}
+                  r="25"
+                  fill="transparent"
+                  className="cursor-pointer"
+                  onMouseEnter={() => setHoveredPoint(idx)}
+                  onMouseLeave={() => setHoveredPoint(null)}
+                />
+                {/* Visible point */}
+                <circle
+                  cx={xScale(p.hours)}
+                  cy={yScale(p.capacity)}
+                  r={isHovered ? 12 : 8}
+                  fill={isHovered ? "#059669" : "#0d9488"}
+                  stroke="white"
+                  strokeWidth={isHovered ? 4 : 3}
+                  className="transition-all duration-150"
+                  style={{ pointerEvents: "none" }}
+                />
+                {/* Tooltip on hover */}
+                {isHovered && (
+                  <g>
+                    <rect
+                      x={xScale(p.hours) - 70}
+                      y={yScale(p.capacity) - 65}
+                      width="140"
+                      height="50"
+                      rx="8"
+                      fill="#1c1917"
+                      fillOpacity="0.95"
+                    />
+                    <text
+                      x={xScale(p.hours)}
+                      y={yScale(p.capacity) - 42}
+                      textAnchor="middle"
+                      className="text-[16px] fill-white font-medium"
+                    >
+                      {p.capacity.toFixed(2)} ha/day
+                    </text>
+                    <text
+                      x={xScale(p.hours)}
+                      y={yScale(p.capacity) - 22}
+                      textAnchor="middle"
+                      className="text-[14px] fill-stone-400"
+                    >
+                      at {p.hours}h/day
+                    </text>
+                  </g>
+                )}
+              </g>
+            );
+          })}
+
+          {/* Y-axis labels */}
+          {yLabels.map((y) => (
+            <text
+              key={y}
+              x={padding.left - 15}
+              y={yScale(y) + 6}
+              textAnchor="end"
+              className="text-[18px] fill-stone-500"
+            >
+              {y}
+            </text>
+          ))}
+
+          {/* X-axis labels */}
+          {xLabels.map((h) => (
+            <text
+              key={h}
+              x={xScale(h)}
+              y={height - padding.bottom + 30}
+              textAnchor="middle"
+              className="text-[18px] fill-stone-500"
+            >
+              {h}h
+            </text>
+          ))}
+
+          {/* Y-axis title */}
+          <text
+            x={22}
+            y={height / 2}
+            textAnchor="middle"
+            transform={`rotate(-90, 22, ${height / 2})`}
+            className="text-[18px] fill-stone-500 font-medium"
+          >
+            Hectares per day
+          </text>
+
+          {/* X-axis title */}
+          <text
+            x={width / 2}
+            y={height - 12}
+            textAnchor="middle"
+            className="text-[18px] fill-stone-500 font-medium"
+          >
+            Running hours per day
+          </text>
+        </svg>
+      </div>
+    </div>
+  );
+}
 
 interface StepRowConfigProps {
   config: ConfiguratorState;
@@ -137,6 +376,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [editingSpacing, setEditingSpacing] = useState<number | null>(null);
   const [hoveredWheel, setHoveredWheel] = useState<"front" | "frontLeft" | "frontRight" | "backLeft" | "backRight" | null>(null);
   const [hoveredEdgeAdd, setHoveredEdgeAdd] = useState<"left" | "right" | null>(null);
+  const [hoveredSeedUnit, setHoveredSeedUnit] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
   const dragStartX = useRef<number>(0);
   const dragStartSpacings = useRef<number[]>([]);
@@ -148,14 +388,46 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [isDiamondPattern, setIsDiamondPattern] = useState(false);
   const [plantSpacing, setPlantSpacing] = useState(18); // cm between plants in row
   const [seedingMode, setSeedingMode] = useState<"single" | "group" | "line">("single");
+  const [seedsPerGroup, setSeedsPerGroup] = useState(3); // seeds per group (2-15)
   const [viewMode, setViewMode] = useState<"2d" | "3d">("2d");
+
+  // Crop type selection with recommended configurations
+  const cropTypes = [
+    { id: "sprout", emoji: "🌱", name: "Sprout", seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 450, plantSpacing: 15 },
+    { id: "onion", emoji: "🧅", name: "Onion", seedSize: "14mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 12 },
+    { id: "sugarbeet", emoji: "🥬", name: "Sugar Beet", seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 500, plantSpacing: 18 },
+    { id: "lettuce", emoji: "🥗", name: "Lettuce", seedSize: "14mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 30 },
+    { id: "corn", emoji: "🌽", name: "Corn", seedSize: "14mm" as SeedSize, rows: 4, rowDistance: 750, plantSpacing: 20 },
+    { id: "greenbean", emoji: "🫛", name: "Green Bean", seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 10 },
+  ];
+  const [selectedCrop, setSelectedCrop] = useState(cropTypes[0]);
+
+  const applyCropConfig = (crop: typeof cropTypes[0]) => {
+    setSelectedCrop(crop);
+    const newRowSpacings = generateRowSpacings(crop.rows, crop.rowDistance);
+    // Calculate optimal wheel spacing for this crop config
+    const optimal = calculateOptimalWheelSpacing(
+      crop.rows,
+      crop.rowDistance,
+      newRowSpacings,
+      config.frontWheel
+    );
+    updateConfig({
+      seedSize: crop.seedSize,
+      activeRows: crop.rows,
+      rowDistance: crop.rowDistance,
+      rowSpacings: newRowSpacings,
+      wheelSpacing: optimal.spacing,
+    });
+    setPlantSpacing(crop.plantSpacing);
+  };
 
   // SVG layout - field encompasses entire robot
   const svgWidth = 900;
-  const svgHeight = 580;
-  const margin = { left: 30, right: 30 };
-  const rowAreaTop = 25; // Start near top
-  const rowAreaBottom = svgHeight - 40; // End near bottom
+  const svgHeight = 540;
+  const margin = { left: 0, right: 0 };
+  const rowAreaTop = 0; // Start at top
+  const rowAreaBottom = svgHeight; // End at bottom
 
   // Fixed scale
   const pxPerMm = 0.22;
@@ -308,53 +580,20 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     const halfGap = Math.max(minRowDistance, Math.round(existingGap / 2 / 10) * 10);
     newSpacings.splice(gapIndex, 1, halfGap, halfGap);
 
-    let newCount = config.activeRows + 1;
-
-    if (is3Wheel) {
-      // In 3-wheel mode, always add 2 rows to maintain even count
-      // Calculate mirror index in the NEW spacings array (after first splice)
-      const mirrorIdx = newSpacings.length - gapIndex - 2;
-
-      if (mirrorIdx >= 0 && mirrorIdx !== gapIndex && mirrorIdx !== gapIndex + 1 && mirrorIdx < newSpacings.length) {
-        const mirrorGap = newSpacings[mirrorIdx];
-        const halfMirror = Math.max(minRowDistance, Math.round(mirrorGap / 2 / 10) * 10);
-        newSpacings.splice(mirrorIdx, 1, halfMirror, halfMirror);
-        newCount++;
-      } else {
-        // Middle gap case: add row on the other side of the existing new row
-        // This ensures we always add 2 rows
-        if (gapIndex + 2 < newSpacings.length) {
-          const nextGap = newSpacings[gapIndex + 2];
-          const halfNext = Math.max(minRowDistance, Math.round(nextGap / 2 / 10) * 10);
-          newSpacings.splice(gapIndex + 2, 1, halfNext, halfNext);
-          newCount++;
-        } else if (gapIndex > 0) {
-          const prevGap = newSpacings[gapIndex - 1];
-          const halfPrev = Math.max(minRowDistance, Math.round(prevGap / 2 / 10) * 10);
-          newSpacings.splice(gapIndex - 1, 1, halfPrev, halfPrev);
-          newCount++;
-        }
-      }
-
-      // Safety check: ensure even count in 3-wheel mode
-      if (newCount % 2 !== 0) {
-        return; // Don't proceed if we'd end up with odd rows
-      }
-    }
+    const newCount = config.activeRows + 1;
 
     setHoveredGap(null); // Clear hover state before update
     updateConfig({
       activeRows: Math.min(newCount, ROW_CONSTRAINTS.maxActiveRows),
       rowSpacings: newSpacings.slice(0, Math.min(newCount, ROW_CONSTRAINTS.maxActiveRows) - 1),
     });
-  }, [config.activeRows, is3Wheel, minRowDistance, rowSpan, rowSpacings, updateConfig]);
+  }, [config.activeRows, minRowDistance, rowSpan, rowSpacings, updateConfig]);
 
   const handleAddRowEdge = useCallback((side: "left" | "right") => {
     if (config.activeRows >= ROW_CONSTRAINTS.maxActiveRows) return;
 
-    // Check if adding would exceed max span (add 1 or 2 row distances depending on mode)
-    const addedSpan = is3Wheel ? config.rowDistance * 2 : config.rowDistance;
-    if (rowSpan + addedSpan + config.rowDistance > maxWorkingWidth) return;
+    // Check if adding would exceed max span
+    if (rowSpan + config.rowDistance + config.rowDistance > maxWorkingWidth) return;
 
     const newSpacings = [...rowSpacings];
     if (side === "left") {
@@ -363,22 +602,13 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       newSpacings.push(config.rowDistance);
     }
 
-    let newCount = config.activeRows + 1;
-
-    if (is3Wheel) {
-      if (side === "left") {
-        newSpacings.push(config.rowDistance);
-      } else {
-        newSpacings.unshift(config.rowDistance);
-      }
-      newCount++;
-    }
+    const newCount = config.activeRows + 1;
 
     updateConfig({
       activeRows: Math.min(newCount, ROW_CONSTRAINTS.maxActiveRows),
       rowSpacings: newSpacings.slice(0, Math.min(newCount, ROW_CONSTRAINTS.maxActiveRows) - 1),
     });
-  }, [config.activeRows, config.rowDistance, is3Wheel, rowSpan, rowSpacings, updateConfig]);
+  }, [config.activeRows, config.rowDistance, rowSpan, rowSpacings, updateConfig]);
 
   const handleRemoveRow = useCallback((rowIndex: number) => {
     if (config.activeRows <= 0) return;
@@ -483,6 +713,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const handleDragEnd = useCallback(() => {
     setDraggingWheelSide(null);
     setDraggingRowIdx(null);
+    setHoveredSeedUnit(null);
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -492,15 +723,6 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       handleRowDragMove(e.clientX);
     }
   }, [draggingWheelSide, draggingRowIdx, handleWheelDragMove, handleRowDragMove]);
-
-  const applyPreset = (preset: typeof CROP_PRESETS[0]) => {
-    updateConfig({
-      seedSize: preset.seedSize,
-      activeRows: preset.activeRows,
-      rowDistance: preset.rowDistance,
-      rowSpacings: generateRowSpacings(preset.activeRows, preset.rowDistance),
-    });
-  };
 
   // Handler to set individual spacing value directly
   const handleSetSpacing = useCallback((spacingIdx: number, valueCm: number) => {
@@ -543,59 +765,65 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const wheelHeight = 42;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 md:gap-6 py-4 md:py-6 pb-24">
+    <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 md:gap-6 py-4 md:py-6 pb-32">
       {/* Left: Visualization - Takes 4 columns */}
       <div className="lg:col-span-4 flex flex-col">
-        {/* View Mode Toggle */}
-        <div className="flex items-center justify-end gap-2 mb-2 md:mb-3">
-          <span className="text-xs text-stone-500 mr-1">View</span>
-          <div className="flex items-center bg-stone-100 rounded-lg p-0.5">
-            <button
-              onClick={() => setViewMode("2d")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                viewMode === "2d"
-                  ? "bg-white text-stone-900 shadow-sm"
-                  : "text-stone-500 hover:text-stone-700"
-              }`}
-            >
-              <Layers className="h-3.5 w-3.5" />
-              2D
-            </button>
-            <button
-              onClick={() => setViewMode("3d")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                viewMode === "3d"
-                  ? "bg-white text-stone-900 shadow-sm"
-                  : "text-stone-500 hover:text-stone-700"
-              }`}
-            >
-              <Box className="h-3.5 w-3.5" />
-              3D
-            </button>
+        {/* Header: View toggle aligned right */}
+        <div className="flex items-center justify-end mb-2 md:mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-stone-500 mr-1 hidden md:inline">View</span>
+            <div className="flex items-center bg-stone-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setViewMode("2d")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  viewMode === "2d"
+                    ? "bg-white text-stone-900 shadow-sm"
+                    : "text-stone-500 hover:text-stone-700"
+                }`}
+              >
+                <Layers className="h-3.5 w-3.5" />
+                2D
+              </button>
+              <button
+                onClick={() => setViewMode("3d")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  viewMode === "3d"
+                    ? "bg-white text-stone-900 shadow-sm"
+                    : "text-stone-500 hover:text-stone-700"
+                }`}
+              >
+                <TrendingUp className="h-3.5 w-3.5" />
+                Graph
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* 3D Model Viewer */}
-        {viewMode === "3d" && (
+        {/* View container with fixed height */}
+        <div className="h-[420px] md:h-[480px] relative">
+          {/* Daily Capacity Graph */}
+          {viewMode === "3d" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="h-full"
+            >
+              <CapacityGraphLarge
+                seedingMode={seedingMode}
+                plantSpacing={plantSpacing}
+                workingWidth={workingWidth}
+              />
+            </motion.div>
+          )}
+
+          {/* 2D SVG Animation */}
+          {viewMode === "2d" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-          >
-            <SeedingModelViewer isPlaying={isAnimating} />
-          </motion.div>
-        )}
-
-        {/* 2D SVG Animation */}
-        {viewMode === "2d" && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          {/* SVG Canvas */}
-          <div
-            className="py-2"
+            className="w-full h-full"
             onMouseMove={handleMouseMove}
             onMouseUp={handleDragEnd}
             onMouseLeave={handleDragEnd}
@@ -603,11 +831,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             <svg
               ref={svgRef}
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              className="w-full h-auto"
+              className="w-full h-full"
             >
-              {/* Background */}
-              <rect x="0" y="0" width={svgWidth} height={svgHeight} fill="white" />
-
               {/* Row area - subtle tinted background */}
               <rect
                 x={margin.left}
@@ -654,10 +879,15 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               </defs>
 
               {/* Animated soil texture - using CSS animation for smooth scrolling */}
+              {/* Speed-based animation: faster robot = faster animation */}
+              {(() => {
+                const robotSpeed = calculateRobotSpeed(seedingMode, plantSpacing);
+                const soilDuration = 800 / robotSpeed; // ~0.84s at 950m/h, ~1.33s at 600m/h
+                return (
               <g clipPath="url(#rowAreaClip)" style={{ pointerEvents: "none" }}>
                 <g
                   style={{
-                    animation: isAnimating ? "soilScroll 0.8s linear infinite" : "none",
+                    animation: isAnimating ? `soilScroll ${soilDuration.toFixed(2)}s linear infinite` : "none",
                   }}
                 >
                   {/* Render soil dots directly - two sets for seamless loop */}
@@ -691,6 +921,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   `}
                 </style>
               </g>
+                );
+              })()}
 
               {/* Animated crops and row lines (moving down) - using CSS animation */}
               {config.activeRows > 0 && (
@@ -711,7 +943,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     const cropsEndY = rowAreaBottom;
                     const visibleHeight = cropsEndY - cropsStartY;
                     const numRows = Math.ceil(visibleHeight / cropSpacingPx) + 3;
-                    const animDuration = cropSpacingPx / 50;
+                    // Speed-based animation duration: faster robot = faster animation
+                    const robotSpeed = calculateRobotSpeed(seedingMode, plantSpacing);
+                    const animDuration = cropSpacingPx / (robotSpeed / 20);
 
                     // Line seeding mode
                     if (seedingMode === "line") {
@@ -755,7 +989,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                                   transform={`translate(${x}, ${baseY + diamondOffset})`}
                                   opacity={0.85}
                                 >
-                                  <CropIcon seedSize={config.seedSize} />
+                                  <CropIcon seedSize={config.seedSize} emoji={selectedCrop.emoji} />
                                 </g>
                               );
                             });
@@ -766,6 +1000,48 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   })()}
                 </g>
               )}
+
+              {/* Legend - rendered early so tooltips appear on top */}
+              <g transform={`translate(${margin.left + 10}, ${rowAreaTop + 10})`}>
+                <rect x="-5" y="-5" width="95" height="75" rx="4" fill="white" fillOpacity="0.9" stroke="#e7e5e4" strokeWidth="1" />
+                {/* Active row */}
+                <line x1="0" y1="8" x2="20" y2="8" stroke={colors.activeRow} strokeWidth="2" />
+                <text x="28" y="12" className="text-[10px] fill-stone-600">Active row</text>
+                {/* Passive row */}
+                <line x1="0" y1="28" x2="20" y2="28" stroke={colors.passiveRow} strokeWidth="1.5" strokeDasharray="4,3" />
+                <text x="28" y="32" className="text-[10px] fill-stone-600">Passive row</text>
+                {/* Crop or Seed line depending on mode */}
+                {seedingMode === "line" ? (
+                  <>
+                    <line x1="0" y1="48" x2="20" y2="48" stroke="#22c55e" strokeWidth="3" opacity="0.7" />
+                    <text x="28" y="52" className="text-[10px] fill-stone-600">Seed line</text>
+                  </>
+                ) : (
+                  <>
+                    <g transform="translate(10, 48)">
+                      <CropIcon seedSize={config.seedSize} emoji={selectedCrop.emoji} />
+                    </g>
+                    <text x="28" y="52" className="text-[10px] fill-stone-600">Crop</text>
+                  </>
+                )}
+              </g>
+
+              {/* Pause button - rendered early so tooltips appear on top */}
+              <g
+                transform={`translate(${svgWidth - margin.right - 45}, ${rowAreaTop + 25})`}
+                className="cursor-pointer"
+                onClick={() => setIsAnimating(!isAnimating)}
+              >
+                <rect x="-18" y="-18" width="36" height="36" rx="18" fill="white" fillOpacity="0.95" stroke="#d6d3d1" strokeWidth="1.5" />
+                {isAnimating ? (
+                  <>
+                    <rect x="-6" y="-8" width="4" height="16" rx="1" fill="#78716c" />
+                    <rect x="2" y="-8" width="4" height="16" rx="1" fill="#78716c" />
+                  </>
+                ) : (
+                  <polygon points="-4,-8 -4,8 8,0" fill="#78716c" />
+                )}
+              </g>
 
               {/* Spacing labels - subtle, between rows */}
               {rowSpacings.map((spacing, idx) => {
@@ -778,6 +1054,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
                 if (gapPx < 40) return null;
 
+                const spacingY = rowAreaTop + 145;
+
                 return (
                   <g
                     key={`spacing-label-${idx}`}
@@ -785,7 +1063,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onMouseLeave={() => !isEditing && setHoveredSpacing(null)}
                   >
                     {isEditing ? (
-                      <foreignObject x={midX - 32} y={rowAreaTop - 28} width={64} height={24}>
+                      <foreignObject x={midX - 36} y={spacingY - 8} width={72} height={24}>
                         <input
                           type="number"
                           value={editingValue}
@@ -799,28 +1077,36 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                             }
                           }}
                           autoFocus
-                          className="w-full h-full text-center text-[14px] font-medium text-stone-700 bg-white border border-stone-300 rounded outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          style={{ fontSize: "14px" }}
+                          className="w-full h-full text-center text-[12px] font-medium text-stone-700 bg-white border border-stone-300 rounded outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          style={{ fontSize: "12px" }}
                         />
                       </foreignObject>
                     ) : (
-                      <text
-                        x={midX}
-                        y={rowAreaTop - 10}
-                        textAnchor="middle"
-                        className={`text-[14px] cursor-pointer transition-colors ${isHovered ? "fill-stone-600 font-semibold" : "fill-stone-500 font-medium"}`}
-                        onClick={() => handleStartEditSpacing(idx)}
-                      >
-                        {spacing / 10}
-                      </text>
+                      <g className="cursor-pointer" onClick={() => handleStartEditSpacing(idx)}>
+                        {/* Left tick */}
+                        <line x1={leftX} y1={spacingY - 7} x2={leftX} y2={spacingY + 7} stroke={isHovered ? "#57534e" : "#78716c"} strokeWidth="1.5" />
+                        {/* Horizontal line */}
+                        <line x1={leftX} y1={spacingY} x2={rightX} y2={spacingY} stroke={isHovered ? "#57534e" : "#78716c"} strokeWidth="1.5" />
+                        {/* Right tick */}
+                        <line x1={rightX} y1={spacingY - 7} x2={rightX} y2={spacingY + 7} stroke={isHovered ? "#57534e" : "#78716c"} strokeWidth="1.5" />
+                        {/* Label */}
+                        <text
+                          x={midX}
+                          y={spacingY - 12}
+                          textAnchor="middle"
+                          className={`text-[12px] font-medium transition-colors ${isHovered ? "fill-stone-700" : "fill-stone-600"}`}
+                        >
+                          {spacing / 10} cm
+                        </text>
+                      </g>
                     )}
 
                     {!isEditing && (
                       <rect
-                        x={midX - 30}
-                        y={rowAreaTop - 30}
-                        width={60}
-                        height={28}
+                        x={leftX}
+                        y={spacingY - 10}
+                        width={rightX - leftX}
+                        height={35}
                         fill="transparent"
                         className="cursor-pointer"
                         onClick={() => handleStartEditSpacing(idx)}
@@ -842,15 +1128,25 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     strokeWidth={4}
                     strokeLinecap="round"
                   />
-                  {/* Seeding units on each row */}
-                  {rowPositionsMm.map((rowMm, idx) => (
-                    <g
-                      key={`seeding-unit-${idx}`}
-                      transform={`translate(${mmToX(rowMm)}, ${(rowAreaTop + rowAreaBottom) / 2 - 35})`}
-                    >
-                      <SeedingUnit seedSize={config.seedSize} />
-                    </g>
-                  ))}
+                  {/* Seeding units on each row - draggable */}
+                  {rowPositionsMm.map((rowMm, idx) => {
+                    const canDrag = config.activeRows > 1;
+                    const isDragging = draggingRowIdx === idx;
+                    const isHovered = hoveredSeedUnit === idx || hoveredRow === idx;
+                    return (
+                      <g
+                        key={`seeding-unit-${idx}`}
+                        transform={`translate(${mmToX(rowMm)}, ${(rowAreaTop + rowAreaBottom) / 2 - 35})`}
+                        className={canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}
+                        onMouseEnter={() => { setHoveredSeedUnit(idx); setHoveredRow(idx); }}
+                        onMouseLeave={() => { if (!isDragging) { setHoveredSeedUnit(null); setHoveredRow(null); } }}
+                        onMouseDown={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); } : undefined}
+                        style={{ opacity: isHovered || isDragging ? 1 : 0.95 }}
+                      >
+                        <SeedingUnit seedSize={config.seedSize} />
+                      </g>
+                    );
+                  })}
                 </g>
               )}
 
@@ -891,7 +1187,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         width="40"
                         height={canRemove ? "65" : "40"}
                         fill="transparent"
-                        className={canDrag ? "cursor-ew-resize" : "cursor-default"}
+                        className={canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}
                       />
 
                       {/* Remove button - positioned above badge */}
@@ -903,9 +1199,6 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         >
                           <circle r="12" fill="white" stroke="#e7e5e4" strokeWidth="1" />
                           <line x1="-4" y1="0" x2="4" y2="0" stroke={colors.removeBtn} strokeWidth="2.5" strokeLinecap="round" />
-                          {/* Tooltip */}
-                          <rect x="18" y="-10" width="55" height="20" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                          <text x="45" y="4" textAnchor="middle" className="text-[9px] fill-white">Remove</text>
                         </g>
                       )}
 
@@ -913,7 +1206,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       <circle
                         r={14}
                         fill={isHovered || isDragging ? colors.activeRowHover : colors.activeRow}
-                        className={canDrag ? "cursor-ew-resize" : "cursor-default"}
+                        className={canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}
                         onMouseDown={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); } : undefined}
                       />
                       <text
@@ -924,19 +1217,16 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       >
                         {idx + 1}
                       </text>
-                      {/* Tooltip on hover */}
-                      {isHovered && !isDragging && (
-                        <g style={{ pointerEvents: "none" }}>
-                          <rect x="20" y="-12" width="85" height="24" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                          <text x="62" y="4" textAnchor="middle" className="text-[10px] fill-white">Drag to move</text>
-                        </g>
-                      )}
                     </g>
                   </g>
                 );
               })}
 
-              {/* CSS animation for passive row dash offset */}
+              {/* CSS animation for passive row dash offset - speed based */}
+              {(() => {
+                const robotSpeed = calculateRobotSpeed(seedingMode, plantSpacing);
+                const passiveDuration = 247 / robotSpeed; // ~0.26s at 950m/h, ~0.41s at 600m/h
+                return (
               <style>
                 {`
                   @keyframes dashScroll {
@@ -944,10 +1234,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     to { stroke-dashoffset: -13px; }
                   }
                   .passive-row-animated {
-                    animation: dashScroll 0.26s linear infinite;
+                    animation: dashScroll ${passiveDuration.toFixed(3)}s linear infinite;
                   }
                 `}
               </style>
+                );
+              })()}
 
               {/* Inner Passive Rows - animated with CSS */}
               {rowSpacings.map((spacing, idx) => {
@@ -1055,9 +1347,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 const rightX = mmToX(rowPositionsMm[idx + 1]);
                 const midX = (leftX + rightX) / 2;
                 const gapWidth = rightX - leftX;
-                const isHoveredGap = hoveredGap === idx;
+                const isHoveredGap = hoveredGap === idx && draggingRowIdx === null;
+                const isDragging = draggingRowIdx !== null;
 
-                // Only hide if gap is really tiny
+                // Only hide if gap is really tiny or currently dragging
                 if (gapWidth < 15 || !canAddMoreRows) return null;
 
                 // Scale button size based on gap width
@@ -1067,10 +1360,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 return (
                   <g
                     key={`add-zone-${idx}`}
-                    className="cursor-pointer"
-                    onMouseEnter={() => setHoveredGap(idx)}
+                    className={isDragging ? "pointer-events-none" : "cursor-pointer"}
+                    onMouseEnter={() => !isDragging && setHoveredGap(idx)}
                     onMouseLeave={() => setHoveredGap(null)}
-                    onClick={() => handleAddRowAt(idx)}
+                    onClick={() => !isDragging && handleAddRowAt(idx)}
                   >
                     {/* Invisible hover area */}
                     <rect
@@ -1098,7 +1391,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         >+</text>
                         {/* Tooltip */}
                         <rect x="-50" y={buttonRadius + 6} width="100" height="20" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                        <text y={buttonRadius + 20} textAnchor="middle" className="text-[9px] fill-white">Click to insert row{is3Wheel ? "s" : ""}</text>
+                        <text y={buttonRadius + 20} textAnchor="middle" className="text-[9px] fill-white">Click to insert row</text>
                       </g>
                     )}
                   </g>
@@ -1106,7 +1399,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               })}
 
               {/* Direction indicator - on top of animation */}
-              <g transform={`translate(${svgCenterX}, ${rowAreaTop + 100})`}>
+              <g transform={`translate(${svgCenterX}, ${rowAreaTop + 35})`}>
                 <polygon points="0,-6 5,3 -5,3" fill="#78716c" />
                 <text y="-12" textAnchor="middle" className="text-[9px] fill-stone-500 font-medium tracking-widest uppercase">Front</text>
               </g>
@@ -1120,7 +1413,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 >
                   <rect
                     x={mmToX(frontWheelMm) - wheelWidth/2}
-                    y={rowAreaTop + 110}
+                    y={rowAreaTop + 50}
                     width={wheelWidth}
                     height={wheelHeight}
                     rx={5}
@@ -1128,13 +1421,13 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   />
                   {/* Tooltip on hover */}
                   {hoveredWheel === "front" && (
-                    <g transform={`translate(${mmToX(frontWheelMm)}, ${rowAreaTop + 110 + wheelHeight})`}>
-                      <rect x="-55" y="4" width="110" height="34" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                      <text y="20" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
-                      <line x1={-wheelWidth/2 + 2} y1="30" x2={wheelWidth/2 - 2} y2="30" stroke="white" strokeWidth="1" />
-                      <line x1={-wheelWidth/2 + 2} y1="27" x2={-wheelWidth/2 + 2} y2="33" stroke="white" strokeWidth="1" />
-                      <line x1={wheelWidth/2 - 2} y1="27" x2={wheelWidth/2 - 2} y2="33" stroke="white" strokeWidth="1" />
-                      <text y="31" x="30" className="text-[8px] fill-stone-300">17 cm</text>
+                    <g transform={`translate(${mmToX(frontWheelMm)}, ${rowAreaTop + 50 + wheelHeight})`}>
+                      <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
+                      <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
+                      <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
+                      <line x1={-wheelWidth/2 + 2} y1="36" x2={wheelWidth/2 - 2} y2="36" stroke="white" strokeWidth="1" />
+                      <line x1={-wheelWidth/2 + 2} y1="33" x2={-wheelWidth/2 + 2} y2="39" stroke="white" strokeWidth="1" />
+                      <line x1={wheelWidth/2 - 2} y1="33" x2={wheelWidth/2 - 2} y2="39" stroke="white" strokeWidth="1" />
                     </g>
                   )}
                 </g>
@@ -1145,16 +1438,16 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onMouseLeave={() => setHoveredWheel(null)}
                     className="cursor-default"
                   >
-                    <rect x={mmToX(leftWheelMm) - wheelWidth/2} y={rowAreaTop + 110} width={wheelWidth} height={wheelHeight} rx={5} fill={hoveredWheel === "frontLeft" ? colors.wheelDrag : colors.wheel} />
+                    <rect x={mmToX(leftWheelMm) - wheelWidth/2} y={rowAreaTop + 50} width={wheelWidth} height={wheelHeight} rx={5} fill={hoveredWheel === "frontLeft" ? colors.wheelDrag : colors.wheel} />
                     {/* Tooltip on hover */}
                     {hoveredWheel === "frontLeft" && (
-                      <g transform={`translate(${mmToX(leftWheelMm)}, ${rowAreaTop + 110 + wheelHeight})`}>
-                        <rect x="-55" y="4" width="110" height="34" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                        <text y="20" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
-                        <line x1={-wheelWidth/2 + 2} y1="30" x2={wheelWidth/2 - 2} y2="30" stroke="white" strokeWidth="1" />
-                        <line x1={-wheelWidth/2 + 2} y1="27" x2={-wheelWidth/2 + 2} y2="33" stroke="white" strokeWidth="1" />
-                        <line x1={wheelWidth/2 - 2} y1="27" x2={wheelWidth/2 - 2} y2="33" stroke="white" strokeWidth="1" />
-                        <text y="31" x="30" className="text-[8px] fill-stone-300">17 cm</text>
+                      <g transform={`translate(${mmToX(leftWheelMm)}, ${rowAreaTop + 50 + wheelHeight})`}>
+                        <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
+                        <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
+                        <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
+                        <line x1={-wheelWidth/2 + 2} y1="36" x2={wheelWidth/2 - 2} y2="36" stroke="white" strokeWidth="1" />
+                        <line x1={-wheelWidth/2 + 2} y1="33" x2={-wheelWidth/2 + 2} y2="39" stroke="white" strokeWidth="1" />
+                        <line x1={wheelWidth/2 - 2} y1="33" x2={wheelWidth/2 - 2} y2="39" stroke="white" strokeWidth="1" />
                       </g>
                     )}
                   </g>
@@ -1163,16 +1456,16 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onMouseLeave={() => setHoveredWheel(null)}
                     className="cursor-default"
                   >
-                    <rect x={mmToX(rightWheelMm) - wheelWidth/2} y={rowAreaTop + 110} width={wheelWidth} height={wheelHeight} rx={5} fill={hoveredWheel === "frontRight" ? colors.wheelDrag : colors.wheel} />
+                    <rect x={mmToX(rightWheelMm) - wheelWidth/2} y={rowAreaTop + 50} width={wheelWidth} height={wheelHeight} rx={5} fill={hoveredWheel === "frontRight" ? colors.wheelDrag : colors.wheel} />
                     {/* Tooltip on hover */}
                     {hoveredWheel === "frontRight" && (
-                      <g transform={`translate(${mmToX(rightWheelMm)}, ${rowAreaTop + 110 + wheelHeight})`}>
-                        <rect x="-55" y="4" width="110" height="34" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                        <text y="20" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
-                        <line x1={-wheelWidth/2 + 2} y1="30" x2={wheelWidth/2 - 2} y2="30" stroke="white" strokeWidth="1" />
-                        <line x1={-wheelWidth/2 + 2} y1="27" x2={-wheelWidth/2 + 2} y2="33" stroke="white" strokeWidth="1" />
-                        <line x1={wheelWidth/2 - 2} y1="27" x2={wheelWidth/2 - 2} y2="33" stroke="white" strokeWidth="1" />
-                        <text y="31" x="30" className="text-[8px] fill-stone-300">17 cm</text>
+                      <g transform={`translate(${mmToX(rightWheelMm)}, ${rowAreaTop + 50 + wheelHeight})`}>
+                        <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
+                        <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
+                        <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
+                        <line x1={-wheelWidth/2 + 2} y1="36" x2={wheelWidth/2 - 2} y2="36" stroke="white" strokeWidth="1" />
+                        <line x1={-wheelWidth/2 + 2} y1="33" x2={-wheelWidth/2 + 2} y2="39" stroke="white" strokeWidth="1" />
+                        <line x1={wheelWidth/2 - 2} y1="33" x2={wheelWidth/2 - 2} y2="39" stroke="white" strokeWidth="1" />
                       </g>
                     )}
                   </g>
@@ -1194,20 +1487,6 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   rx={5}
                   fill={draggingWheelSide === "left" || hoveredWheel === "backLeft" ? colors.wheelDrag : colors.wheel}
                 />
-                {/* Tooltip on hover */}
-                {hoveredWheel === "backLeft" && !draggingWheelSide && (
-                  <g transform={`translate(${mmToX(leftWheelMm)}, ${rowAreaBottom - wheelHeight - 110})`}>
-                    {/* Tooltip background */}
-                    <rect x="-55" y="-38" width="110" height="34" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                    {/* "Wheel" label */}
-                    <text y="-22" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
-                    {/* Width bracket with dimension */}
-                    <line x1={-wheelWidth/2 + 2} y1="-10" x2={wheelWidth/2 - 2} y2="-10" stroke="white" strokeWidth="1" />
-                    <line x1={-wheelWidth/2 + 2} y1="-13" x2={-wheelWidth/2 + 2} y2="-7" stroke="white" strokeWidth="1" />
-                    <line x1={wheelWidth/2 - 2} y1="-13" x2={wheelWidth/2 - 2} y2="-7" stroke="white" strokeWidth="1" />
-                    <text y="-10" x="30" className="text-[8px] fill-stone-300">17 cm</text>
-                  </g>
-                )}
               </g>
               <g
                 className="cursor-ew-resize"
@@ -1223,232 +1502,241 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   rx={5}
                   fill={draggingWheelSide === "right" || hoveredWheel === "backRight" ? colors.wheelDrag : colors.wheel}
                 />
-                {/* Tooltip on hover */}
-                {hoveredWheel === "backRight" && !draggingWheelSide && (
-                  <g transform={`translate(${mmToX(rightWheelMm)}, ${rowAreaBottom - wheelHeight - 110})`}>
-                    {/* Tooltip background */}
-                    <rect x="-55" y="-38" width="110" height="34" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                    {/* "Wheel" label */}
-                    <text y="-22" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
-                    {/* Width bracket with dimension */}
-                    <line x1={-wheelWidth/2 + 2} y1="-10" x2={wheelWidth/2 - 2} y2="-10" stroke="white" strokeWidth="1" />
-                    <line x1={-wheelWidth/2 + 2} y1="-13" x2={-wheelWidth/2 + 2} y2="-7" stroke="white" strokeWidth="1" />
-                    <line x1={wheelWidth/2 - 2} y1="-13" x2={wheelWidth/2 - 2} y2="-7" stroke="white" strokeWidth="1" />
-                    <text y="-10" x="30" className="text-[8px] fill-stone-300">17 cm</text>
-                  </g>
-                )}
               </g>
 
               {/* Wheel spacing dimension - positioned below back wheels */}
               <g>
                 {/* Dimension line below back wheels */}
-                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 55} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 55} stroke="#a8a29e" strokeWidth="1" />
+                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 55} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 55} stroke="#78716c" strokeWidth="1.5" />
                 {/* Left tick */}
-                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 61} x2={mmToX(leftWheelMm)} y2={rowAreaBottom - 49} stroke="#a8a29e" strokeWidth="1" />
+                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 62} x2={mmToX(leftWheelMm)} y2={rowAreaBottom - 48} stroke="#78716c" strokeWidth="1.5" />
                 {/* Right tick */}
-                <line x1={mmToX(rightWheelMm)} y1={rowAreaBottom - 61} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 49} stroke="#a8a29e" strokeWidth="1" />
+                <line x1={mmToX(rightWheelMm)} y1={rowAreaBottom - 62} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 48} stroke="#78716c" strokeWidth="1.5" />
                 {/* Label */}
-                <text x={svgCenterX} y={rowAreaBottom - 40} textAnchor="middle" className="text-[10px] fill-stone-500">
+                <text x={svgCenterX} y={rowAreaBottom - 38} textAnchor="middle" className="text-[12px] font-medium fill-stone-600">
                   {config.wheelSpacing / 10} cm
                 </text>
               </g>
 
-              {/* Legend */}
-              <g transform={`translate(${margin.left + 10}, ${rowAreaTop + 10})`}>
-                <rect x="-5" y="-5" width="95" height="75" rx="4" fill="white" fillOpacity="0.9" stroke="#e7e5e4" strokeWidth="1" />
-                {/* Active row */}
-                <line x1="0" y1="8" x2="20" y2="8" stroke={colors.activeRow} strokeWidth="2" />
-                <text x="28" y="12" className="text-[10px] fill-stone-600">Active row</text>
-                {/* Passive row */}
-                <line x1="0" y1="28" x2="20" y2="28" stroke={colors.passiveRow} strokeWidth="1.5" strokeDasharray="4,3" />
-                <text x="28" y="32" className="text-[10px] fill-stone-600">Passive row</text>
-                {/* Crop or Seed line depending on mode */}
-                {seedingMode === "line" ? (
-                  <>
-                    <line x1="0" y1="48" x2="20" y2="48" stroke="#22c55e" strokeWidth="3" opacity="0.7" />
-                    <text x="28" y="52" className="text-[10px] fill-stone-600">Seed line</text>
-                  </>
-                ) : (
-                  <>
-                    <g transform="translate(10, 48)">
-                      <CropIcon seedSize={config.seedSize} />
-                    </g>
-                    <text x="28" y="52" className="text-[10px] fill-stone-600">Crop</text>
-                  </>
-                )}
-              </g>
+              {/* ========== TOOLTIP LAYER - renders on top of everything ========== */}
 
-              {/* Pause button inside field */}
-              <g
-                transform={`translate(${svgWidth - margin.right - 45}, ${rowAreaTop + 25})`}
-                className="cursor-pointer"
-                onClick={() => setIsAnimating(!isAnimating)}
-              >
-                <rect x="-18" y="-18" width="36" height="36" rx="18" fill="white" fillOpacity="0.95" stroke="#d6d3d1" strokeWidth="1.5" />
-                {isAnimating ? (
-                  <>
-                    <rect x="-6" y="-8" width="4" height="16" rx="1" fill="#78716c" />
-                    <rect x="2" y="-8" width="4" height="16" rx="1" fill="#78716c" />
-                  </>
-                ) : (
-                  <polygon points="-4,-8 -4,8 8,0" fill="#78716c" />
-                )}
-              </g>
+
+              {/* Back wheel tooltips */}
+              {hoveredWheel === "backLeft" && !draggingWheelSide && (
+                <g transform={`translate(${mmToX(leftWheelMm)}, ${rowAreaBottom - wheelHeight - 110})`}>
+                  <rect x="-40" y="-42" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
+                  <text y="-28" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
+                  <text y="-16" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
+                  <line x1={-wheelWidth/2 + 2} y1="-8" x2={wheelWidth/2 - 2} y2="-8" stroke="white" strokeWidth="1" />
+                  <line x1={-wheelWidth/2 + 2} y1="-11" x2={-wheelWidth/2 + 2} y2="-5" stroke="white" strokeWidth="1" />
+                  <line x1={wheelWidth/2 - 2} y1="-11" x2={wheelWidth/2 - 2} y2="-5" stroke="white" strokeWidth="1" />
+                </g>
+              )}
+              {hoveredWheel === "backRight" && !draggingWheelSide && (
+                <g transform={`translate(${mmToX(rightWheelMm)}, ${rowAreaBottom - wheelHeight - 110})`}>
+                  <rect x="-40" y="-42" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
+                  <text y="-28" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
+                  <text y="-16" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
+                  <line x1={-wheelWidth/2 + 2} y1="-8" x2={wheelWidth/2 - 2} y2="-8" stroke="white" strokeWidth="1" />
+                  <line x1={-wheelWidth/2 + 2} y1="-11" x2={-wheelWidth/2 + 2} y2="-5" stroke="white" strokeWidth="1" />
+                  <line x1={wheelWidth/2 - 2} y1="-11" x2={wheelWidth/2 - 2} y2="-5" stroke="white" strokeWidth="1" />
+                </g>
+              )}
+
             </svg>
-          </div>
+          </motion.div>
+          )}
 
-          {/* Seeding mode control */}
-          <div className="flex items-center justify-center gap-3 mt-4">
-            <span className="text-xs text-stone-500">Seeding Mode</span>
-            <div className="flex items-center bg-stone-100 rounded-lg p-0.5">
-              <button
-                onClick={() => setSeedingMode("single")}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                  seedingMode === "single"
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-700"
-                }`}
-              >
-                Single
-              </button>
-              <button
-                onClick={() => setSeedingMode("group")}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                  seedingMode === "group"
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-700"
-                }`}
-              >
-                Group
-              </button>
-              <button
-                onClick={() => setSeedingMode("line")}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                  seedingMode === "line"
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-700"
-                }`}
-              >
-                Line
-              </button>
-            </div>
-            <div className="relative group">
-              <Info className="h-4 w-4 text-stone-400 cursor-help" />
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                <span className="font-medium">Single:</span> Precision single seeding<br/>
-                <span className="font-medium">Group:</span> Precision group seeding<br/>
-                <span className="font-medium">Line:</span> Continuous line seeding (no spacing)
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+          {/* Info box - positioned inside bottom right corner */}
+          {(() => {
+            const speed = calculateRobotSpeed(seedingMode, plantSpacing);
+            const workingWidthM = workingWidth / 1000;
+            const capacityAt20h = (speed * workingWidthM * 20) / 10000;
+            return (
+              <div className="absolute bottom-4 right-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs text-stone-600 shadow-sm border border-stone-100">
+                {speed} m/h · {capacityAt20h.toFixed(2)} ha/day
               </div>
-            </div>
-          </div>
-
-          {/* Seeding pattern control */}
-          <div className={`flex items-center justify-center gap-3 mt-3 relative group/pattern ${seedingMode === "line" ? "opacity-40" : ""}`}>
-            <span className="text-xs text-stone-500">Seeding Pattern</span>
-            <div className={`flex items-center bg-stone-100 rounded-lg p-0.5 ${seedingMode === "line" ? "pointer-events-none" : ""}`}>
-              <button
-                onClick={() => setIsDiamondPattern(false)}
-                disabled={seedingMode === "line"}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  !isDiamondPattern
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-700"
-                } ${seedingMode === "line" ? "cursor-not-allowed" : ""}`}
-              >
-                <Grid3X3 className="h-3 w-3" />
-                Grid
-              </button>
-              <button
-                onClick={() => setIsDiamondPattern(true)}
-                disabled={seedingMode === "line"}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  isDiamondPattern
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-700"
-                } ${seedingMode === "line" ? "cursor-not-allowed" : ""}`}
-              >
-                <Diamond className="h-3 w-3" />
-                Diamond
-              </button>
-            </div>
-            <div className="relative group">
-              <Info className="h-4 w-4 text-stone-400 cursor-help" />
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                FarmDroid +Seed can seed in both a perfect grid or diamond formation for optimal plant spacing.
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
-              </div>
-            </div>
-            {/* Disabled tooltip for line seeding */}
-            {seedingMode === "line" && (
-              <div className="absolute inset-0 cursor-not-allowed" title="Not available for line seeding">
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-stone-700 text-white text-xs rounded opacity-0 group-hover/pattern:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
-                  Not available for line seeding
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-700" />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Plant spacing control */}
-          <div className={`flex items-center justify-center gap-3 mt-3 relative group/spacing ${seedingMode === "line" ? "opacity-40" : ""}`}>
-            <span className="text-xs text-stone-500">Plant Spacing</span>
-            <div className={`flex items-center gap-2 ${seedingMode === "line" ? "pointer-events-none" : ""}`}>
-              <button
-                onClick={() => setPlantSpacing(Math.max(10, plantSpacing - 2))}
-                disabled={plantSpacing <= 10 || seedingMode === "line"}
-                className="h-6 w-6 rounded-full border border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-500 transition-all flex items-center justify-center"
-              >
-                <Minus className="h-3 w-3" />
-              </button>
-              <span className="text-sm font-medium text-stone-700 w-12 text-center">{plantSpacing} cm</span>
-              <button
-                onClick={() => setPlantSpacing(Math.min(40, plantSpacing + 2))}
-                disabled={plantSpacing >= 40 || seedingMode === "line"}
-                className="h-6 w-6 rounded-full border border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-500 transition-all flex items-center justify-center"
-              >
-                <Plus className="h-3 w-3" />
-              </button>
-            </div>
-            <div className="relative group">
-              <Info className="h-4 w-4 text-stone-400 cursor-help" />
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                Distance between plants along each row. Minimum 10 cm spacing for precision seeding.
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
-              </div>
-            </div>
-            {/* Disabled tooltip for line seeding */}
-            {seedingMode === "line" && (
-              <div className="absolute inset-0 cursor-not-allowed" title="Not available for line seeding">
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-stone-700 text-white text-xs rounded opacity-0 group-hover/spacing:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
-                  Not available for line seeding
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-700" />
-                </div>
-              </div>
-            )}
-          </div>
-
-        </motion.div>
-        )}
-
-        {/* Stats row */}
-        <div className="flex justify-center gap-6 md:gap-12 pt-4 md:pt-6 mt-2">
-          <div className="text-center">
-            <p className="text-xl md:text-2xl font-semibold text-teal-600">{config.activeRows}</p>
-            <p className="text-xs md:text-sm text-stone-500 mt-1">Active</p>
-          </div>
-          <div className="text-center border-l border-stone-200 pl-6 md:pl-12">
-            <p className="text-xl md:text-2xl font-semibold text-stone-400">{totalPassiveRows}</p>
-            <p className="text-xs md:text-sm text-stone-500 mt-1">Passive</p>
-          </div>
-          <div className="text-center border-l border-stone-200 pl-6 md:pl-12">
-            <p className="text-xl md:text-2xl font-semibold text-stone-700">
-              {(workingWidth / 10).toFixed(0)}
-              <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">cm</span>
-            </p>
-            <p className="text-xs md:text-sm text-stone-500 mt-1">Width</p>
-          </div>
+            );
+          })()}
         </div>
+
+        {/* Plants per hectare - centered below animation/graph */}
+        <div className="flex justify-center mt-3 text-sm text-stone-500 h-6">
+          {seedingMode !== "line" ? (() => {
+            const rowSpacingM = config.rowDistance / 1000;
+            const plantSpacingM = plantSpacing / 100;
+            const pointsPerHa = Math.round(10000 / (rowSpacingM * plantSpacingM));
+            const seedsPerHa = seedingMode === "group" ? pointsPerHa * seedsPerGroup : pointsPerHa;
+            return (
+              <>
+                {selectedCrop.emoji} <span className="font-medium text-stone-700 mx-1">{seedsPerHa.toLocaleString()}</span> seeds per hectare
+              </>
+            );
+          })() : (
+            <span className="text-stone-400">Line seeding - continuous row</span>
+          )}
+        </div>
+
+          {/* Seeding Controls - Clean aligned layout */}
+          <div className="mt-4 space-y-2 max-w-sm mx-auto">
+            {/* 1. Seeding Mode */}
+            <div className="flex items-center">
+              <div className="flex items-center gap-1.5 w-28">
+                <span className="text-xs text-stone-500">Mode</span>
+                <div className="relative group">
+                  <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-56 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    <span className="font-medium">Single:</span> Precision single seeding<br/>
+                    <span className="font-medium">Group:</span> Precision group seeding<br/>
+                    <span className="font-medium">Line:</span> Continuous line seeding
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 flex justify-end">
+                <div className="flex items-center bg-stone-100 rounded-lg p-0.5 w-[168px]">
+                  <button
+                    onClick={() => setSeedingMode("single")}
+                    className={`flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
+                      seedingMode === "single"
+                        ? "bg-white text-stone-900 shadow-sm"
+                        : "text-stone-500 hover:text-stone-700"
+                    }`}
+                  >
+                    Single
+                  </button>
+                  <button
+                    onClick={() => setSeedingMode("group")}
+                    className={`flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
+                      seedingMode === "group"
+                        ? "bg-white text-stone-900 shadow-sm"
+                        : "text-stone-500 hover:text-stone-700"
+                    }`}
+                  >
+                    Group
+                  </button>
+                  <button
+                    onClick={() => setSeedingMode("line")}
+                    className={`flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
+                      seedingMode === "line"
+                        ? "bg-white text-stone-900 shadow-sm"
+                        : "text-stone-500 hover:text-stone-700"
+                    }`}
+                  >
+                    Line
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Seeds per Group */}
+            <div className={`flex items-center ${seedingMode !== "group" ? "opacity-40 pointer-events-none" : ""}`}>
+              <div className="flex items-center gap-1.5 w-28">
+                <span className="text-xs text-stone-500">Seeds/Group</span>
+                <div className="relative group">
+                  <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Number of seeds per group when using group seeding mode.
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 flex justify-end">
+                <div className="flex items-center justify-between w-[168px] bg-stone-100 rounded-lg px-1.5 py-0.5">
+                  <button
+                    onClick={() => setSeedsPerGroup(Math.max(2, seedsPerGroup - 1))}
+                    disabled={seedsPerGroup <= 2 || seedingMode !== "group"}
+                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </button>
+                  <span className="text-sm font-semibold text-stone-900">{seedsPerGroup}</span>
+                  <button
+                    onClick={() => setSeedsPerGroup(Math.min(15, seedsPerGroup + 1))}
+                    disabled={seedsPerGroup >= 15 || seedingMode !== "group"}
+                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Plant Spacing */}
+            <div className={`flex items-center ${seedingMode === "line" ? "opacity-40 pointer-events-none" : ""}`}>
+              <div className="flex items-center gap-1.5 w-28">
+                <span className="text-xs text-stone-500">Spacing</span>
+                <div className="relative group">
+                  <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Distance between plants along each row. Min 10cm.
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 flex justify-end">
+                <div className="flex items-center justify-between w-[168px] bg-stone-100 rounded-lg px-1.5 py-0.5">
+                  <button
+                    onClick={() => setPlantSpacing(Math.max(10, plantSpacing - 1))}
+                    disabled={plantSpacing <= 10 || seedingMode === "line"}
+                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </button>
+                  <span className="text-sm font-semibold text-stone-900">{plantSpacing} cm</span>
+                  <button
+                    onClick={() => setPlantSpacing(Math.min(40, plantSpacing + 1))}
+                    disabled={plantSpacing >= 40 || seedingMode === "line"}
+                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Seeding Pattern */}
+            <div className={`flex items-center ${seedingMode === "line" ? "opacity-40 pointer-events-none" : ""}`}>
+              <div className="flex items-center gap-1.5 w-28">
+                <span className="text-xs text-stone-500">Pattern</span>
+                <div className="relative group">
+                  <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Grid or diamond formation for optimal plant spacing.
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 flex justify-end">
+                <div className="flex items-center bg-stone-100 rounded-lg p-0.5 w-[168px]">
+                  <button
+                    onClick={() => setIsDiamondPattern(false)}
+                    disabled={seedingMode === "line"}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
+                      !isDiamondPattern
+                        ? "bg-white text-stone-900 shadow-sm"
+                        : "text-stone-500 hover:text-stone-700"
+                    }`}
+                  >
+                    <Grid3X3 className="h-3 w-3" />
+                    Grid
+                  </button>
+                  <button
+                    onClick={() => setIsDiamondPattern(true)}
+                    disabled={seedingMode === "line"}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
+                      isDiamondPattern
+                        ? "bg-white text-stone-900 shadow-sm"
+                        : "text-stone-500 hover:text-stone-700"
+                    }`}
+                  >
+                    <Diamond className="h-3 w-3" />
+                    Diamond
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
         {/* Validation error */}
         {!validation.valid && (
@@ -1471,7 +1759,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       <div className="lg:col-span-2 space-y-3 md:space-y-4 lg:pl-2">
         {/* Title */}
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight">Row Config</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight">Seeding Configuration</h1>
           <p className="text-xs md:text-sm text-stone-500 mt-1">Configure rows and spacing</p>
         </div>
 
@@ -1519,12 +1807,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <span className="text-sm text-teal-700">{config.activeRows} active rows</span>
               <span className="text-sm font-semibold text-teal-700">{formatPrice(config.activeRows * rowPrice, config.currency)}</span>
             </div>
-            {totalPassiveRows > 0 && (
-              <div className="flex justify-between items-center mt-0.5">
-                <span className="text-xs text-teal-600">{totalPassiveRows} passive</span>
-                <span className="text-xs text-teal-500">included</span>
-              </div>
-            )}
+            <div className="flex justify-between items-center mt-0.5">
+              <span className="text-xs text-teal-600">{totalPassiveRows} passive rows</span>
+              <span className="text-xs text-teal-500">{totalPassiveRows > 0 ? "included" : "–"}</span>
+            </div>
           </div>
         )}
 
@@ -1532,25 +1818,32 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
         <div className="pt-3 border-t border-stone-100 space-y-3">
           {/* Active Rows */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-stone-600 font-medium">Rows</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-stone-600 font-medium">Rows</span>
+              {is3Wheel && (
+                <div className="relative group">
+                  <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                    3-wheel: rows adjust in pairs
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-between w-[120px] bg-stone-100 rounded-lg px-1.5 py-0.5">
               <button
                 onClick={() => {
-                  // If 3-wheel mode with odd rows, decrease by 1 to get to even
-                  // Otherwise decrease by 2 for 3-wheel or 1 for 4-wheel
                   const decrement = is3Wheel && config.activeRows % 2 !== 0 ? 1 : (is3Wheel ? 2 : 1);
                   handleSetRowCount(config.activeRows - decrement);
                 }}
                 disabled={config.activeRows <= 0}
-                className="h-8 w-8 rounded-full border-2 border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center"
+                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-3 w-3" />
               </button>
-              <span className="text-base font-semibold text-stone-900 w-8 text-center">{config.activeRows}</span>
+              <span className="text-sm font-semibold text-stone-900">{config.activeRows}</span>
               <button
                 onClick={() => {
-                  // If 3-wheel mode with odd rows, increase by 1 to get to even
-                  // Otherwise increase by 2 for 3-wheel or 1 for 4-wheel
                   if (config.activeRows === 0) {
                     handleSetRowCount(is3Wheel ? 2 : 1);
                   } else {
@@ -1559,17 +1852,23 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   }
                 }}
                 disabled={!canAddMoreRows}
-                className="h-8 w-8 rounded-full border-2 border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center"
+                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" />
               </button>
             </div>
           </div>
 
           {/* Row Spacing */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-stone-600 font-medium">Spacing</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-stone-600 font-medium">Spacing</span>
+              <span className={`text-[10px] text-amber-500 flex items-center gap-0.5 transition-opacity ${hasCustomSpacings ? "opacity-100" : "opacity-0"}`}>
+                <AlertCircle className="h-2.5 w-2.5" />
+                resets custom
+              </span>
+            </div>
+            <div className="flex items-center justify-between w-[120px] bg-stone-100 rounded-lg px-1.5 py-0.5">
               <button
                 onClick={() => {
                   const decreased = config.rowDistance - 10;
@@ -1580,11 +1879,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   });
                 }}
                 disabled={config.rowDistance <= minRowDistance}
-                className="h-8 w-8 rounded-full border-2 border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center"
+                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-3 w-3" />
               </button>
-              <span className="text-base font-semibold text-stone-900 w-14 text-center">{config.rowDistance / 10}cm</span>
+              <span className="text-sm font-semibold text-stone-900">{config.rowDistance / 10}cm</span>
               <button
                 onClick={() => {
                   const isAtHalfCm = config.rowDistance % 10 !== 0;
@@ -1597,31 +1896,31 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   });
                 }}
                 disabled={config.rowDistance >= 800}
-                className="h-8 w-8 rounded-full border-2 border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center"
+                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" />
               </button>
             </div>
           </div>
 
           {/* Wheel Spacing */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-stone-600 font-medium">Wheels</span>
-            <div className="flex items-center gap-2">
+            <span className="text-sm text-stone-600 font-medium">Wheel Spacing</span>
+            <div className="flex items-center justify-between w-[120px] bg-stone-100 rounded-lg px-1.5 py-0.5">
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.max(WHEEL_CONSTRAINTS.minWheelSpacing, config.wheelSpacing - 100) })}
                 disabled={config.wheelSpacing <= WHEEL_CONSTRAINTS.minWheelSpacing}
-                className="h-8 w-8 rounded-full border-2 border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center"
+                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-3 w-3" />
               </button>
-              <span className="text-base font-semibold text-stone-900 w-14 text-center">{config.wheelSpacing / 10}cm</span>
+              <span className="text-sm font-semibold text-stone-900">{config.wheelSpacing / 10}cm</span>
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.min(WHEEL_CONSTRAINTS.maxWheelSpacing, config.wheelSpacing + 100) })}
                 disabled={config.wheelSpacing >= WHEEL_CONSTRAINTS.maxWheelSpacing}
-                className="h-8 w-8 rounded-full border-2 border-stone-300 hover:border-stone-400 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center"
+                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" />
               </button>
             </div>
           </div>
@@ -1658,36 +1957,65 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             );
           })()}
 
-          {/* Notes */}
-          {(is3Wheel || hasCustomSpacings) && (
-            <div className="pt-1 space-y-0.5">
-              {is3Wheel && (
-                <p className="text-xs text-stone-400">3-wheel: rows adjust in pairs</p>
-              )}
-              {hasCustomSpacings && (
-                <p className="text-xs text-amber-500 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  Spacing change resets custom
-                </p>
-              )}
-            </div>
-          )}
+          {/* Working Width */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-stone-600 font-medium">Working Width</span>
+            <span className="text-base font-semibold text-stone-900">{(workingWidth / 10).toFixed(0)}cm</span>
+          </div>
+
         </div>
 
-        {/* Quick Presets */}
+        {/* Crop Selection */}
         <div className="pt-3 border-t border-stone-100">
-          <p className="text-xs font-medium text-stone-500 mb-2">Presets</p>
-          <div className="flex flex-wrap gap-1.5">
-            {CROP_PRESETS.map((preset) => (
+          <p className="text-xs font-medium text-stone-500 mb-2">Crop Type</p>
+          <div className={`flex flex-wrap gap-1.5 ${seedingMode === "line" ? "opacity-40 pointer-events-none" : ""}`}>
+            {cropTypes.map((crop) => (
               <button
-                key={preset.name}
-                onClick={() => applyPreset(preset)}
-                className="px-2 py-1 rounded-full bg-stone-100 hover:bg-stone-200 text-[10px] text-stone-600 transition-colors flex items-center gap-1"
+                key={crop.id}
+                onClick={() => setSelectedCrop(crop)}
+                disabled={seedingMode === "line"}
+                className={`w-9 h-9 rounded-lg text-lg transition-all flex items-center justify-center ${
+                  selectedCrop.id === crop.id
+                    ? "bg-teal-50 border-2 border-teal-300 scale-105"
+                    : "bg-stone-100 hover:bg-stone-200 border-2 border-transparent"
+                }`}
+                title={crop.name}
               >
-                <span>{preset.icon}</span>
-                <span>{preset.name}</span>
+                {crop.emoji}
               </button>
             ))}
+          </div>
+
+          {/* Selected crop info & apply button */}
+          <div className="mt-3 p-2.5 rounded-lg bg-stone-50 border border-stone-100">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-stone-700">{selectedCrop.emoji} {selectedCrop.name}</span>
+            </div>
+            <div className="text-xs text-stone-500 space-y-0.5 mb-2.5">
+              <div className="flex justify-between">
+                <span>Rows</span>
+                <span className="text-stone-700">{selectedCrop.rows}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Row spacing</span>
+                <span className="text-stone-700">{selectedCrop.rowDistance / 10}cm</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Plant spacing</span>
+                <span className="text-stone-700">{selectedCrop.plantSpacing}cm</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Seed size</span>
+                <span className="text-stone-700">{selectedCrop.seedSize}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => applyCropConfig(selectedCrop)}
+              disabled={seedingMode === "line"}
+              className="w-full py-1.5 px-3 rounded-md bg-teal-600 hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium transition-colors"
+            >
+              Apply {selectedCrop.name} Config
+            </button>
           </div>
         </div>
       </div>
