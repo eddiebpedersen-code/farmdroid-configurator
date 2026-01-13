@@ -481,7 +481,7 @@ export function formatPrice(value: number, currency: Currency = "EUR"): string {
 
 /**
  * Calculate optimal wheel spacing based on row configuration
- * Goal: Position wheels as close to the middle between rows as possible
+ * Goal: Position wheel CENTERS as close to the middle between rows as possible
  * Returns the recommended wheel spacing and a score (0 = perfect, higher = worse)
  */
 export function calculateOptimalWheelSpacing(
@@ -490,8 +490,7 @@ export function calculateOptimalWheelSpacing(
   rowSpacings: number[],
   frontWheel: FrontWheel
 ): { spacing: number; score: number; recommendation: string } {
-  const { minWheelSpacing, maxWheelSpacing, wheelSpacingIncrement, wheelWidth } = WHEEL_CONSTRAINTS;
-  const halfWheelWidth = wheelWidth / 2;
+  const { minWheelSpacing, maxWheelSpacing, wheelSpacingIncrement } = WHEEL_CONSTRAINTS;
 
   // Calculate total row span
   const rowSpan = rowSpacings.length > 0
@@ -512,7 +511,7 @@ export function calculateOptimalWheelSpacing(
     }
   }
 
-  // Calculate gap midpoints (where we ideally want the wheel edges)
+  // Calculate gap midpoints (where we ideally want the wheel CENTERS)
   const gapMidpoints: number[] = [];
   for (let i = 0; i < rowPositions.length - 1; i++) {
     gapMidpoints.push((rowPositions[i] + rowPositions[i + 1]) / 2);
@@ -533,17 +532,13 @@ export function calculateOptimalWheelSpacing(
     const leftWheelCenter = -spacing / 2;
     const rightWheelCenter = spacing / 2;
 
-    // Inner edges of wheels (where crops can't be)
-    const leftWheelInner = leftWheelCenter + halfWheelWidth;
-    const rightWheelInner = rightWheelCenter - halfWheelWidth;
-
-    // Calculate how far each wheel inner edge is from the nearest gap midpoint
+    // Calculate how far each wheel CENTER is from the nearest gap midpoint
     let leftScore = Infinity;
     let rightScore = Infinity;
 
     for (const midpoint of gapMidpoints) {
-      const leftDist = Math.abs(leftWheelInner - midpoint);
-      const rightDist = Math.abs(rightWheelInner - midpoint);
+      const leftDist = Math.abs(leftWheelCenter - midpoint);
+      const rightDist = Math.abs(rightWheelCenter - midpoint);
       leftScore = Math.min(leftScore, leftDist);
       rightScore = Math.min(rightScore, rightDist);
     }
@@ -586,8 +581,7 @@ export function getWheelSpacingOptions(
   rowSpacings: number[],
   frontWheel: FrontWheel
 ): Array<{ spacing: number; score: number; isOptimal: boolean }> {
-  const { minWheelSpacing, maxWheelSpacing, wheelSpacingIncrement, wheelWidth } = WHEEL_CONSTRAINTS;
-  const halfWheelWidth = wheelWidth / 2;
+  const { minWheelSpacing, maxWheelSpacing, wheelSpacingIncrement } = WHEEL_CONSTRAINTS;
 
   // Calculate total row span
   const rowSpan = rowSpacings.length > 0
@@ -623,15 +617,16 @@ export function getWheelSpacingOptions(
   let bestSpacing = minWheelSpacing;
 
   for (let spacing = minWheelSpacing; spacing <= maxWheelSpacing; spacing += wheelSpacingIncrement) {
-    const leftWheelInner = -spacing / 2 + halfWheelWidth;
-    const rightWheelInner = spacing / 2 - halfWheelWidth;
+    // Use wheel CENTER positions, not inner edges
+    const leftWheelCenter = -spacing / 2;
+    const rightWheelCenter = spacing / 2;
 
     let leftScore = Infinity;
     let rightScore = Infinity;
 
     for (const midpoint of gapMidpoints) {
-      leftScore = Math.min(leftScore, Math.abs(leftWheelInner - midpoint));
-      rightScore = Math.min(rightScore, Math.abs(rightWheelInner - midpoint));
+      leftScore = Math.min(leftScore, Math.abs(leftWheelCenter - midpoint));
+      rightScore = Math.min(rightScore, Math.abs(rightWheelCenter - midpoint));
     }
 
     const totalScore = Math.round(leftScore + rightScore);
