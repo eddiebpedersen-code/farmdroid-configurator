@@ -480,6 +480,181 @@ export function formatPrice(value: number, currency: Currency = "EUR"): string {
 }
 
 /**
+ * Calculate optimal wheel spacing based on row configuration
+ * Goal: Position wheels as close to the middle between rows as possible
+ * Returns the recommended wheel spacing and a score (0 = perfect, higher = worse)
+ */
+export function calculateOptimalWheelSpacing(
+  activeRows: number,
+  rowDistance: number,
+  rowSpacings: number[],
+  frontWheel: FrontWheel
+): { spacing: number; score: number; recommendation: string } {
+  const { minWheelSpacing, maxWheelSpacing, wheelSpacingIncrement, wheelWidth } = WHEEL_CONSTRAINTS;
+  const halfWheelWidth = wheelWidth / 2;
+
+  // Calculate total row span
+  const rowSpan = rowSpacings.length > 0
+    ? rowSpacings.reduce((sum, s) => sum + s, 0)
+    : (activeRows - 1) * rowDistance;
+
+  // Generate all row positions (centered around 0)
+  const rowPositions: number[] = [];
+  if (activeRows > 0) {
+    let currentPos = -rowSpan / 2;
+    for (let i = 0; i < activeRows; i++) {
+      rowPositions.push(currentPos);
+      if (i < rowSpacings.length) {
+        currentPos += rowSpacings[i];
+      } else if (i < activeRows - 1) {
+        currentPos += rowDistance;
+      }
+    }
+  }
+
+  // Calculate gap midpoints (where we ideally want the wheel edges)
+  const gapMidpoints: number[] = [];
+  for (let i = 0; i < rowPositions.length - 1; i++) {
+    gapMidpoints.push((rowPositions[i] + rowPositions[i + 1]) / 2);
+  }
+
+  // Add virtual gaps outside the outermost rows (for field config)
+  if (rowPositions.length > 0) {
+    gapMidpoints.unshift(rowPositions[0] - rowDistance / 2);
+    gapMidpoints.push(rowPositions[rowPositions.length - 1] + rowDistance / 2);
+  }
+
+  let bestSpacing = minWheelSpacing;
+  let bestScore = Infinity;
+
+  // Test each possible wheel spacing
+  for (let spacing = minWheelSpacing; spacing <= maxWheelSpacing; spacing += wheelSpacingIncrement) {
+    // Wheel centers are at -spacing/2 and +spacing/2 (symmetric around center)
+    const leftWheelCenter = -spacing / 2;
+    const rightWheelCenter = spacing / 2;
+
+    // Inner edges of wheels (where crops can't be)
+    const leftWheelInner = leftWheelCenter + halfWheelWidth;
+    const rightWheelInner = rightWheelCenter - halfWheelWidth;
+
+    // Calculate how far each wheel inner edge is from the nearest gap midpoint
+    let leftScore = Infinity;
+    let rightScore = Infinity;
+
+    for (const midpoint of gapMidpoints) {
+      const leftDist = Math.abs(leftWheelInner - midpoint);
+      const rightDist = Math.abs(rightWheelInner - midpoint);
+      leftScore = Math.min(leftScore, leftDist);
+      rightScore = Math.min(rightScore, rightDist);
+    }
+
+    // Combined score (lower is better)
+    const totalScore = leftScore + rightScore;
+
+    // Prefer wider spacing when scores are equal (use <= for wider preference)
+    if (totalScore < bestScore || (totalScore === bestScore && spacing > bestSpacing)) {
+      bestScore = totalScore;
+      bestSpacing = spacing;
+    }
+  }
+
+  // Generate recommendation text
+  let recommendation = "";
+  if (bestScore < 20) {
+    recommendation = "Excellent - wheels perfectly centered between rows";
+  } else if (bestScore < 50) {
+    recommendation = "Good - wheels well positioned between rows";
+  } else if (bestScore < 100) {
+    recommendation = "Acceptable - minor offset from row centers";
+  } else {
+    recommendation = "Consider adjusting row spacing for better wheel alignment";
+  }
+
+  return {
+    spacing: bestSpacing,
+    score: Math.round(bestScore),
+    recommendation
+  };
+}
+
+/**
+ * Get all wheel spacing options with their alignment scores
+ */
+export function getWheelSpacingOptions(
+  activeRows: number,
+  rowDistance: number,
+  rowSpacings: number[],
+  frontWheel: FrontWheel
+): Array<{ spacing: number; score: number; isOptimal: boolean }> {
+  const { minWheelSpacing, maxWheelSpacing, wheelSpacingIncrement, wheelWidth } = WHEEL_CONSTRAINTS;
+  const halfWheelWidth = wheelWidth / 2;
+
+  // Calculate total row span
+  const rowSpan = rowSpacings.length > 0
+    ? rowSpacings.reduce((sum, s) => sum + s, 0)
+    : (activeRows - 1) * rowDistance;
+
+  // Generate all row positions (centered around 0)
+  const rowPositions: number[] = [];
+  if (activeRows > 0) {
+    let currentPos = -rowSpan / 2;
+    for (let i = 0; i < activeRows; i++) {
+      rowPositions.push(currentPos);
+      if (i < rowSpacings.length) {
+        currentPos += rowSpacings[i];
+      } else if (i < activeRows - 1) {
+        currentPos += rowDistance;
+      }
+    }
+  }
+
+  // Calculate gap midpoints
+  const gapMidpoints: number[] = [];
+  for (let i = 0; i < rowPositions.length - 1; i++) {
+    gapMidpoints.push((rowPositions[i] + rowPositions[i + 1]) / 2);
+  }
+  if (rowPositions.length > 0) {
+    gapMidpoints.unshift(rowPositions[0] - rowDistance / 2);
+    gapMidpoints.push(rowPositions[rowPositions.length - 1] + rowDistance / 2);
+  }
+
+  const options: Array<{ spacing: number; score: number; isOptimal: boolean }> = [];
+  let bestScore = Infinity;
+  let bestSpacing = minWheelSpacing;
+
+  for (let spacing = minWheelSpacing; spacing <= maxWheelSpacing; spacing += wheelSpacingIncrement) {
+    const leftWheelInner = -spacing / 2 + halfWheelWidth;
+    const rightWheelInner = spacing / 2 - halfWheelWidth;
+
+    let leftScore = Infinity;
+    let rightScore = Infinity;
+
+    for (const midpoint of gapMidpoints) {
+      leftScore = Math.min(leftScore, Math.abs(leftWheelInner - midpoint));
+      rightScore = Math.min(rightScore, Math.abs(rightWheelInner - midpoint));
+    }
+
+    const totalScore = Math.round(leftScore + rightScore);
+    options.push({ spacing, score: totalScore, isOptimal: false });
+
+    if (totalScore < bestScore || (totalScore === bestScore && spacing > bestSpacing)) {
+      bestScore = totalScore;
+      bestSpacing = spacing;
+    }
+  }
+
+  // Mark the optimal one
+  for (const opt of options) {
+    if (opt.spacing === bestSpacing) {
+      opt.isOptimal = true;
+      break;
+    }
+  }
+
+  return options;
+}
+
+/**
  * Generate configuration summary text
  */
 export function generateConfigSummary(config: ConfiguratorState): string[] {

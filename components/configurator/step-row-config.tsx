@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Box, Layers } from "lucide-react";
+import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Box, Layers, Lightbulb } from "lucide-react";
 import { SeedingModelViewer } from "./seeding-model-viewer";
 
 // Crop icon component for animated plants - seedling design
@@ -76,6 +76,7 @@ import {
   validateRowConfig,
   generateRowSpacings,
   getWheelConfig,
+  calculateOptimalWheelSpacing,
 } from "@/lib/configurator-data";
 
 interface StepRowConfigProps {
@@ -1624,6 +1625,38 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               </button>
             </div>
           </div>
+
+          {/* Optimal Wheel Spacing Suggestion */}
+          {(() => {
+            const optimal = calculateOptimalWheelSpacing(
+              config.activeRows,
+              config.rowDistance,
+              rowSpacings,
+              config.frontWheel
+            );
+            const isOptimal = config.wheelSpacing === optimal.spacing;
+
+            if (isOptimal) {
+              return (
+                <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-teal-50 border border-teal-200">
+                  <Check className="h-3.5 w-3.5 text-teal-600 flex-shrink-0" />
+                  <span className="text-xs text-teal-700">Optimal wheel spacing for this row config</span>
+                </div>
+              );
+            }
+
+            return (
+              <button
+                onClick={() => updateConfig({ wheelSpacing: optimal.spacing })}
+                className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors w-full text-left"
+              >
+                <Lightbulb className="h-3.5 w-3.5 text-amber-600 flex-shrink-0" />
+                <span className="text-xs text-amber-700">
+                  Suggested: <strong>{optimal.spacing / 10}cm</strong> — wheels centered between rows
+                </span>
+              </button>
+            );
+          })()}
 
           {/* Notes */}
           {(is3Wheel || hasCustomSpacings) && (
