@@ -77,8 +77,8 @@ export interface CropPreset {
 export const STEPS: StepInfo[] = [
   { id: 1, title: "Base Robot", subtitle: "FD20 Robot V2.6" },
   { id: 2, title: "Wheel Configuration", subtitle: "Select wheel configuration" },
-  { id: 3, title: "Seeding Configuration", subtitle: "Configure your seeding setup" },
-  { id: 4, title: "Weeding Configuration", subtitle: "Add spray capability" },
+  { id: 3, title: "+Seed Configuration", subtitle: "Configure your seeding setup" },
+  { id: 4, title: "+Weed Configuration", subtitle: "Configure your weeding setup" },
   { id: 5, title: "Power Source", subtitle: "Choose your power configuration" },
   { id: 6, title: "Accessories", subtitle: "Additional equipment" },
   { id: 7, title: "Summary", subtitle: "Review your configuration" },

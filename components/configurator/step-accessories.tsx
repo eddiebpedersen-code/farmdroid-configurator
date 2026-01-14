@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Package, Truck, Link2, Wrench, Check, Star } from "lucide-react";
+import { Package, Truck, Link2, Check, Star } from "lucide-react";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -16,10 +16,10 @@ interface StepAccessoriesProps {
 }
 
 interface Accessory {
-  id: keyof Pick<ConfiguratorState, "starterKit" | "roadTransport" | "fieldBracket" | "combiTool">;
+  id: keyof Pick<ConfiguratorState, "starterKit" | "roadTransport" | "fieldBracket">;
   name: string;
   description: string;
-  price: number | "perRow";
+  price: number;
   icon: typeof Package;
   recommended?: boolean;
 }
@@ -47,13 +47,6 @@ const accessories: Accessory[] = [
     price: PRICES.accessories.fieldBracket,
     icon: Link2,
   },
-  {
-    id: "combiTool",
-    name: "Combi Tool",
-    description: "Multi-purpose tool attachment for each active row",
-    price: "perRow",
-    icon: Wrench,
-  },
 ];
 
 export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) {
@@ -61,17 +54,10 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
     updateConfig({ [id]: !config[id] });
   };
 
-  const getAccessoryPrice = (accessory: Accessory): number => {
-    if (accessory.price === "perRow") {
-      return config.activeRows * PRICES.accessories.combiToolPerRow;
-    }
-    return accessory.price;
-  };
-
   const selectedCount = accessories.filter((a) => config[a.id]).length;
   const totalAccessoriesPrice = accessories
     .filter((a) => config[a.id])
-    .reduce((sum, a) => sum + getAccessoryPrice(a), 0);
+    .reduce((sum, a) => sum + a.price, 0);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
@@ -157,7 +143,6 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
         <div className="space-y-2 md:space-y-3">
           {accessories.map((accessory) => {
             const isSelected = config[accessory.id];
-            const price = getAccessoryPrice(accessory);
 
             return (
               <button
@@ -186,14 +171,9 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       )}
                     </div>
                     <p className="text-xs md:text-sm text-stone-500 mt-0.5">{accessory.description}</p>
-                    {accessory.price === "perRow" && (
-                      <p className="text-xs text-stone-400 mt-1">
-                        {formatPrice(PRICES.accessories.combiToolPerRow, config.currency)} × {config.activeRows} rows
-                      </p>
-                    )}
                   </div>
                   <span className="text-sm md:text-base font-medium text-stone-900 flex-shrink-0">
-                    +{formatPrice(price, config.currency)}
+                    +{formatPrice(accessory.price, config.currency)}
                   </span>
                 </div>
               </button>

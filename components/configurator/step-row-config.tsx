@@ -1759,7 +1759,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       <div className="lg:col-span-2 space-y-3 md:space-y-4 lg:pl-2">
         {/* Title */}
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight">Seeding Configuration</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight">+Seed Configuration</h1>
           <p className="text-xs md:text-sm text-stone-500 mt-1">Configure rows and spacing</p>
         </div>
 
