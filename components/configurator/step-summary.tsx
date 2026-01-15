@@ -16,6 +16,8 @@ import {
   Send,
   Loader2,
   Truck,
+  Shield,
+  Star,
 } from "lucide-react";
 import {
   ConfiguratorState,
@@ -345,6 +347,11 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
       label: "Accessories",
       value: priceBreakdown.accessories,
     },
+    config.warrantyExtension && {
+      icon: Shield,
+      label: "+2 Year Warranty Extension",
+      value: priceBreakdown.warrantyExtension,
+    },
   ].filter(Boolean) as { icon: typeof Cpu; label: string; value: number; included?: boolean }[];
 
   return (
@@ -539,6 +546,36 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
               <span>Estimated delivery: 12 weeks from order</span>
             </div>
           </div>
+
+          {/* Annual Service Plan */}
+          {config.servicePlan !== "none" && (
+            <div className="pt-3 mt-3 border-t border-stone-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-teal-600" />
+                  <span className="text-sm text-stone-700">
+                    Care {config.servicePlan === "standard" ? "Standard" : "Premium"}
+                  </span>
+                </div>
+                <div className="text-right">
+                  {config.servicePlan === "premium" ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-stone-400 line-through">
+                        {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                      </span>
+                      <span className="text-sm font-semibold text-teal-600">
+                        {formatPrice(0, config.currency)} first year
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-sm font-semibold text-stone-900">
+                      {formatPrice(PRICES.servicePlan.standard, config.currency)}/year
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Action buttons */}
           <div className="pt-4 space-y-3">

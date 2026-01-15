@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Layers, Lightbulb, TrendingUp } from "lucide-react";
 
@@ -374,6 +374,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [hoveredGap, setHoveredGap] = useState<number | null>(null);
   const [hoveredSpacing, setHoveredSpacing] = useState<number | null>(null);
   const [editingSpacing, setEditingSpacing] = useState<number | null>(null);
+  const [editingRowDistance, setEditingRowDistance] = useState(false);
   const [hoveredWheel, setHoveredWheel] = useState<"front" | "frontLeft" | "frontRight" | "backLeft" | "backRight" | null>(null);
   const [hoveredEdgeAdd, setHoveredEdgeAdd] = useState<"left" | "right" | null>(null);
   const [hoveredSeedUnit, setHoveredSeedUnit] = useState<number | null>(null);
@@ -388,7 +389,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [isDiamondPattern, setIsDiamondPattern] = useState(false);
   const [plantSpacing, setPlantSpacing] = useState(18); // cm between plants in row
   const [seedingMode, setSeedingMode] = useState<"single" | "group" | "line">("single");
-  const [seedsPerGroup, setSeedsPerGroup] = useState(3); // seeds per group (2-15)
+  const [seedsPerGroup, setSeedsPerGroup] = useState(1); // seeds per group (1 for single, 2-15 for group)
   const [viewMode, setViewMode] = useState<"2d" | "3d">("2d");
 
   // Crop type selection with recommended configurations
@@ -401,6 +402,21 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     { id: "greenbean", emoji: "🫛", name: "Green Bean", seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 10 },
   ];
   const [selectedCrop, setSelectedCrop] = useState(cropTypes[0]);
+
+  // Optimize wheel spacing when first entering this step
+  useEffect(() => {
+    const optimal = calculateOptimalWheelSpacing(
+      config.activeRows,
+      config.rowDistance,
+      rowSpacings,
+      config.frontWheel
+    );
+    if (config.wheelSpacing !== optimal.spacing) {
+      updateConfig({ wheelSpacing: optimal.spacing });
+    }
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const applyCropConfig = (crop: typeof cropTypes[0]) => {
     setSelectedCrop(crop);
@@ -463,13 +479,13 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const wheelWidthMm = 170; // 17cm wheel width
   const wheelProximityWarningMm = 50; // 5cm
 
-  const isRowTooCloseToWheel = (rowMm: number): boolean => {
-    // Back wheel edges (both sides)
-    const leftWheelLeftEdge = leftWheelMm - wheelWidthMm / 2;
-    const leftWheelRightEdge = leftWheelMm + wheelWidthMm / 2;
-    const rightWheelLeftEdge = rightWheelMm - wheelWidthMm / 2;
-    const rightWheelRightEdge = rightWheelMm + wheelWidthMm / 2;
+  // Back wheel edges
+  const leftWheelLeftEdge = leftWheelMm - wheelWidthMm / 2;
+  const leftWheelRightEdge = leftWheelMm + wheelWidthMm / 2;
+  const rightWheelLeftEdge = rightWheelMm - wheelWidthMm / 2;
+  const rightWheelRightEdge = rightWheelMm + wheelWidthMm / 2;
 
+  const isRowTooCloseToBackWheel = (rowMm: number): boolean => {
     // Check if row is ON TOP of left back wheel (between edges) or too close to either edge
     if (rowMm >= leftWheelLeftEdge - wheelProximityWarningMm &&
         rowMm <= leftWheelRightEdge + wheelProximityWarningMm) {
@@ -482,21 +498,30 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       return true;
     }
 
-    // Check front wheel in 3-wheel config
-    if (frontWheelMm !== null) {
-      const frontWheelLeftEdge = frontWheelMm - wheelWidthMm / 2;
-      const frontWheelRightEdge = frontWheelMm + wheelWidthMm / 2;
-      if (rowMm >= frontWheelLeftEdge - wheelProximityWarningMm &&
-          rowMm <= frontWheelRightEdge + wheelProximityWarningMm) {
-        return true;
-      }
-    }
-
     return false;
   };
 
-  // Check if any row has wheel proximity warning
-  const hasWheelProximityWarning = rowPositionsMm.some(isRowTooCloseToWheel);
+  const isRowTooCloseToFrontWheel = (rowMm: number): boolean => {
+    // Only applies to 3-wheel config
+    if (frontWheelMm === null) return false;
+
+    const frontWheelLeftEdge = frontWheelMm - wheelWidthMm / 2;
+    const frontWheelRightEdge = frontWheelMm + wheelWidthMm / 2;
+    if (rowMm >= frontWheelLeftEdge - wheelProximityWarningMm &&
+        rowMm <= frontWheelRightEdge + wheelProximityWarningMm) {
+      return true;
+    }
+    return false;
+  };
+
+  // Combined check for SVG visualization
+  const isRowTooCloseToWheel = (rowMm: number): boolean => {
+    return isRowTooCloseToBackWheel(rowMm) || isRowTooCloseToFrontWheel(rowMm);
+  };
+
+  // Separate warning flags
+  const hasBackWheelProximityWarning = rowPositionsMm.some(isRowTooCloseToBackWheel);
+  const hasFrontWheelProximityWarning = is3Wheel && rowPositionsMm.some(isRowTooCloseToFrontWheel);
 
   // Check if user has custom (non-uniform) spacings
   const hasCustomSpacings = rowSpacings.length > 0 && !rowSpacings.every(s => s === rowSpacings[0]);
@@ -749,6 +774,26 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     setEditingSpacing(null);
     setEditingValue("");
   }, [editingSpacing, editingValue, handleSetSpacing]);
+
+  // Start editing the base row distance
+  const handleStartEditRowDistance = useCallback(() => {
+    setEditingRowDistance(true);
+    setEditingValue(String(config.rowDistance / 10));
+  }, [config.rowDistance]);
+
+  // Finish editing the base row distance
+  const handleFinishEditRowDistance = useCallback(() => {
+    const parsed = parseFloat(editingValue);
+    if (!isNaN(parsed) && parsed > 0) {
+      const newDistanceMm = Math.max(minRowDistance, Math.min(800, parsed * 10));
+      updateConfig({
+        rowDistance: newDistanceMm,
+        rowSpacings: generateRowSpacings(config.activeRows, newDistanceMm)
+      });
+    }
+    setEditingRowDistance(false);
+    setEditingValue("");
+  }, [editingValue, minRowDistance, config.activeRows, updateConfig]);
 
   const colors = {
     wheel: "#1c1917",
@@ -1062,8 +1107,32 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onMouseEnter={() => !isEditing && setHoveredSpacing(idx)}
                     onMouseLeave={() => !isEditing && setHoveredSpacing(null)}
                   >
+                    {/* Hitbox - visible on hover */}
+                    {!isEditing && (
+                      <rect
+                        x={leftX - 10}
+                        y={spacingY - 30}
+                        width={rightX - leftX + 20}
+                        height={55}
+                        fill={isHovered ? "rgba(13, 148, 136, 0.08)" : "transparent"}
+                        rx="4"
+                        className="cursor-pointer"
+                        onClick={() => handleStartEditSpacing(idx)}
+                      />
+                    )}
+
+                    {/* Dimension lines - always visible */}
+                    <g className={isEditing ? "" : "cursor-pointer"} onClick={() => !isEditing && handleStartEditSpacing(idx)}>
+                      {/* Left tick */}
+                      <line x1={leftX} y1={spacingY - 7} x2={leftX} y2={spacingY + 7} stroke={isHovered || isEditing ? "#57534e" : "#78716c"} strokeWidth="1.5" />
+                      {/* Horizontal line */}
+                      <line x1={leftX} y1={spacingY} x2={rightX} y2={spacingY} stroke={isHovered || isEditing ? "#57534e" : "#78716c"} strokeWidth="1.5" />
+                      {/* Right tick */}
+                      <line x1={rightX} y1={spacingY - 7} x2={rightX} y2={spacingY + 7} stroke={isHovered || isEditing ? "#57534e" : "#78716c"} strokeWidth="1.5" />
+                    </g>
+
                     {isEditing ? (
-                      <foreignObject x={midX - 36} y={spacingY - 8} width={72} height={24}>
+                      <foreignObject x={midX - 32} y={spacingY - 30} width={64} height={22}>
                         <input
                           type="number"
                           value={editingValue}
@@ -1077,40 +1146,20 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                             }
                           }}
                           autoFocus
-                          className="w-full h-full text-center text-[12px] font-medium text-stone-700 bg-white border border-stone-300 rounded outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          style={{ fontSize: "12px" }}
+                          className="w-full h-full text-center text-[11px] font-medium text-stone-700 bg-white border border-teal-400 rounded outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          style={{ fontSize: "11px", padding: "2px" }}
                         />
                       </foreignObject>
                     ) : (
-                      <g className="cursor-pointer" onClick={() => handleStartEditSpacing(idx)}>
-                        {/* Left tick */}
-                        <line x1={leftX} y1={spacingY - 7} x2={leftX} y2={spacingY + 7} stroke={isHovered ? "#57534e" : "#78716c"} strokeWidth="1.5" />
-                        {/* Horizontal line */}
-                        <line x1={leftX} y1={spacingY} x2={rightX} y2={spacingY} stroke={isHovered ? "#57534e" : "#78716c"} strokeWidth="1.5" />
-                        {/* Right tick */}
-                        <line x1={rightX} y1={spacingY - 7} x2={rightX} y2={spacingY + 7} stroke={isHovered ? "#57534e" : "#78716c"} strokeWidth="1.5" />
-                        {/* Label */}
-                        <text
-                          x={midX}
-                          y={spacingY - 12}
-                          textAnchor="middle"
-                          className={`text-[12px] font-medium transition-colors ${isHovered ? "fill-stone-700" : "fill-stone-600"}`}
-                        >
-                          {spacing / 10} cm
-                        </text>
-                      </g>
-                    )}
-
-                    {!isEditing && (
-                      <rect
-                        x={leftX}
-                        y={spacingY - 10}
-                        width={rightX - leftX}
-                        height={35}
-                        fill="transparent"
-                        className="cursor-pointer"
+                      <text
+                        x={midX}
+                        y={spacingY - 12}
+                        textAnchor="middle"
+                        className={`text-[12px] font-medium transition-colors cursor-pointer ${isHovered ? "fill-stone-700" : "fill-stone-600"}`}
                         onClick={() => handleStartEditSpacing(idx)}
-                      />
+                      >
+                        {spacing / 10} cm
+                      </text>
                     )}
                   </g>
                 );
@@ -1365,12 +1414,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onMouseLeave={() => setHoveredGap(null)}
                     onClick={() => !isDragging && handleAddRowAt(idx)}
                   >
-                    {/* Invisible hover area */}
+                    {/* Invisible hover area - starts below spacing labels to avoid overlap */}
                     <rect
                       x={leftX + 5}
-                      y={rowAreaTop + 10}
+                      y={rowAreaTop + 180}
                       width={Math.max(10, gapWidth - 10)}
-                      height={rowAreaBottom - rowAreaTop - 20}
+                      height={rowAreaBottom - rowAreaTop - 200}
                       fill={isHoveredGap ? "rgba(13, 148, 136, 0.05)" : "transparent"}
                       rx="4"
                     />
@@ -1596,7 +1645,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <div className="flex-1 flex justify-end">
                 <div className="flex items-center bg-stone-100 rounded-lg p-0.5 w-[168px]">
                   <button
-                    onClick={() => setSeedingMode("single")}
+                    onClick={() => {
+                      setSeedingMode("single");
+                      setSeedsPerGroup(1);
+                    }}
                     className={`flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
                       seedingMode === "single"
                         ? "bg-white text-stone-900 shadow-sm"
@@ -1606,7 +1658,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     Single
                   </button>
                   <button
-                    onClick={() => setSeedingMode("group")}
+                    onClick={() => {
+                      setSeedingMode("group");
+                      setSeedsPerGroup(3);
+                    }}
                     className={`flex-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
                       seedingMode === "group"
                         ? "bg-white text-stone-900 shadow-sm"
@@ -1669,21 +1724,35 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 <div className="relative group">
                   <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    Distance between plants along each row. Min 10cm.
+                    Distance between plants along each row. Min 3cm.
                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
                   </div>
                 </div>
+                {/* Precision seeding warning icon */}
+                {plantSpacing < 10 && seedingMode !== "line" && (
+                  <div className="relative group/warn">
+                    <AlertCircle className="h-4 w-4 text-red-500 cursor-help animate-pulse" />
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-52 p-2 bg-red-600 text-white text-xs rounded-lg opacity-0 group-hover/warn:opacity-100 transition-opacity pointer-events-none z-10 font-medium">
+                      Precision seeding only possible at 10cm or above
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-red-600" />
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex-1 flex justify-end">
-                <div className="flex items-center justify-between w-[168px] bg-stone-100 rounded-lg px-1.5 py-0.5">
+                <div className={`flex items-center justify-between w-[168px] rounded-lg px-1.5 py-0.5 ${
+                  plantSpacing < 10 && seedingMode !== "line" ? "bg-red-50 ring-1 ring-red-200" : "bg-stone-100"
+                }`}>
                   <button
-                    onClick={() => setPlantSpacing(Math.max(10, plantSpacing - 1))}
-                    disabled={plantSpacing <= 10 || seedingMode === "line"}
+                    onClick={() => setPlantSpacing(Math.max(3, plantSpacing - 1))}
+                    disabled={plantSpacing <= 3 || seedingMode === "line"}
                     className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
-                  <span className="text-sm font-semibold text-stone-900">{plantSpacing} cm</span>
+                  <span className={`text-sm font-semibold ${
+                    plantSpacing < 10 && seedingMode !== "line" ? "text-red-600" : "text-stone-900"
+                  }`}>{plantSpacing} cm</span>
                   <button
                     onClick={() => setPlantSpacing(Math.min(40, plantSpacing + 1))}
                     disabled={plantSpacing >= 40 || seedingMode === "line"}
@@ -1746,13 +1815,6 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           </motion.div>
         )}
 
-        {/* Wheel proximity warning */}
-        {hasWheelProximityWarning && validation.valid && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 py-2 px-3 rounded flex items-center gap-2 text-xs text-amber-600 bg-amber-50">
-            <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
-            Row within 5cm of wheel edge
-          </motion.div>
-        )}
       </div>
 
       {/* Right: Configuration - Takes 2 columns (narrower) */}
@@ -1863,12 +1925,26 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <span className="text-sm text-stone-600 font-medium">Spacing</span>
-              <span className={`text-[10px] text-amber-500 flex items-center gap-0.5 transition-opacity ${hasCustomSpacings ? "opacity-100" : "opacity-0"}`}>
-                <AlertCircle className="h-2.5 w-2.5" />
-                resets custom
-              </span>
+              {/* Front wheel proximity warning (3-wheel only) */}
+              {hasFrontWheelProximityWarning && (
+                <div className="relative group/warn">
+                  <AlertCircle className="h-4 w-4 text-red-500 cursor-help animate-pulse" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-red-600 text-white text-xs rounded-lg opacity-0 group-hover/warn:opacity-100 transition-opacity pointer-events-none z-10 font-medium">
+                    Front wheel within 5cm of row
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-red-600" />
+                  </div>
+                </div>
+              )}
+              {!hasFrontWheelProximityWarning && (
+                <span className={`text-[10px] text-amber-500 flex items-center gap-0.5 transition-opacity ${hasCustomSpacings ? "opacity-100" : "opacity-0"}`}>
+                  <AlertCircle className="h-2.5 w-2.5" />
+                  resets custom
+                </span>
+              )}
             </div>
-            <div className="flex items-center justify-between w-[120px] bg-stone-100 rounded-lg px-1.5 py-0.5">
+            <div className={`flex items-center justify-between w-[120px] rounded-lg px-1.5 py-0.5 ${
+              hasFrontWheelProximityWarning ? "bg-red-50 ring-1 ring-red-200" : "bg-stone-100"
+            }`}>
               <button
                 onClick={() => {
                   const decreased = config.rowDistance - 10;
@@ -1883,7 +1959,30 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               >
                 <Minus className="h-3 w-3" />
               </button>
-              <span className="text-sm font-semibold text-stone-900">{config.rowDistance / 10}cm</span>
+              {editingRowDistance ? (
+                <input
+                  type="number"
+                  value={editingValue}
+                  onChange={(e) => setEditingValue(e.target.value)}
+                  onBlur={handleFinishEditRowDistance}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleFinishEditRowDistance();
+                    if (e.key === "Escape") {
+                      setEditingRowDistance(false);
+                      setEditingValue("");
+                    }
+                  }}
+                  autoFocus
+                  className="w-12 h-6 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              ) : (
+                <span
+                  onClick={handleStartEditRowDistance}
+                  className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-teal-100 ${hasFrontWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}
+                >
+                  {config.rowDistance / 10}cm
+                </span>
+              )}
               <button
                 onClick={() => {
                   const isAtHalfCm = config.rowDistance % 10 !== 0;
@@ -1905,8 +2004,22 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
           {/* Wheel Spacing */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-stone-600 font-medium">Wheel Spacing</span>
-            <div className="flex items-center justify-between w-[120px] bg-stone-100 rounded-lg px-1.5 py-0.5">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-stone-600 font-medium">Wheel Spacing</span>
+              {/* Wheel proximity warning icon */}
+              {hasBackWheelProximityWarning && (
+                <div className="relative group/warn">
+                  <AlertCircle className="h-4 w-4 text-red-500 cursor-help animate-pulse" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-red-600 text-white text-xs rounded-lg opacity-0 group-hover/warn:opacity-100 transition-opacity pointer-events-none z-10 font-medium">
+                    Back wheels within 5cm of row
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-red-600" />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className={`flex items-center justify-between w-[120px] rounded-lg px-1.5 py-0.5 ${
+              hasBackWheelProximityWarning ? "bg-red-50 ring-1 ring-red-200" : "bg-stone-100"
+            }`}>
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.max(WHEEL_CONSTRAINTS.minWheelSpacing, config.wheelSpacing - 100) })}
                 disabled={config.wheelSpacing <= WHEEL_CONSTRAINTS.minWheelSpacing}
@@ -1914,7 +2027,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               >
                 <Minus className="h-3 w-3" />
               </button>
-              <span className="text-sm font-semibold text-stone-900">{config.wheelSpacing / 10}cm</span>
+              <span className={`text-sm font-semibold ${hasBackWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}>{config.wheelSpacing / 10}cm</span>
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.min(WHEEL_CONSTRAINTS.maxWheelSpacing, config.wheelSpacing + 100) })}
                 disabled={config.wheelSpacing >= WHEEL_CONSTRAINTS.maxWheelSpacing}

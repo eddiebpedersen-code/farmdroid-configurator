@@ -10,6 +10,7 @@ import {
   calculatePrice,
   formatPrice,
   Currency,
+  PRICES,
 } from "@/lib/configurator-data";
 
 // Step Components
@@ -19,6 +20,7 @@ import { StepFrontWheel } from "@/components/configurator/step-front-wheel";
 import { StepRowConfig } from "@/components/configurator/step-row-config";
 import { StepSpraySystem } from "@/components/configurator/step-spray-system";
 import { StepAccessories } from "@/components/configurator/step-accessories";
+import { StepServicePlan } from "@/components/configurator/step-service-plan";
 import { StepSummary } from "@/components/configurator/step-summary";
 
 // Animation variants
@@ -42,7 +44,7 @@ export default function ConfiguratorPage() {
   const [direction, setDirection] = useState(0);
   const [config, setConfig] = useState<ConfiguratorState>(DEFAULT_CONFIG);
 
-  const priceBreakdown = calculatePrice(config);
+  const priceBreakdown = calculatePrice(config, currentStep);
 
   const updateConfig = useCallback((updates: Partial<ConfiguratorState>) => {
     setConfig((prev) => ({ ...prev, ...updates }));
@@ -94,6 +96,8 @@ export default function ConfiguratorPage() {
       case 6:
         return <StepAccessories {...commonProps} />;
       case 7:
+        return <StepServicePlan {...commonProps} />;
+      case 8:
         return <StepSummary {...commonProps} onReset={resetConfig} />;
       default:
         return null;
@@ -156,14 +160,42 @@ export default function ConfiguratorPage() {
               </div>
 
               {/* Price */}
-              <motion.p
-                key={`${priceBreakdown.total}-${config.currency}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-lg md:text-2xl font-semibold text-stone-900 tracking-tight"
-              >
-                {formatPrice(priceBreakdown.total, config.currency)}
-              </motion.p>
+              <div className="text-right min-w-[180px] md:min-w-[240px]">
+                <motion.p
+                  key={`${priceBreakdown.total}-${config.currency}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-lg md:text-2xl font-semibold text-stone-900 tracking-tight"
+                >
+                  {formatPrice(priceBreakdown.total, config.currency)}
+                </motion.p>
+                <motion.div
+                  key={`service-${config.servicePlan}-${config.currency}-${currentStep}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center justify-end gap-1.5 mt-0.5"
+                >
+                  {currentStep >= 7 && config.servicePlan === "premium" ? (
+                    <>
+                      <span className="text-xs text-stone-500">Care Premium:</span>
+                      <span className="text-xs text-stone-400 line-through">
+                        {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                      </span>
+                      <span className="text-xs font-semibold text-teal-600">
+                        {formatPrice(0, config.currency)} first year
+                      </span>
+                    </>
+                  ) : currentStep >= 7 && config.servicePlan === "standard" ? (
+                    <span className="text-xs text-stone-500">
+                      Care Standard: {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
+                    </span>
+                  ) : (
+                    <span className="text-xs text-stone-400">
+                      — {config.currency === "EUR" ? "€" : "kr."}/yr
+                    </span>
+                  )}
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>

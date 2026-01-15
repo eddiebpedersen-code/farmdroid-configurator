@@ -10,6 +10,7 @@ export type SeedSize = "6mm" | "14mm";
 export type Currency = "EUR" | "DKK";
 export type WheelConfig = "3-wheel" | "4-wheel";
 export type RowPlacementMode = "bed" | "field" | "custom"; // bed = inside wheels only, field = inside + outside, custom = manual
+export type ServicePlan = "none" | "standard" | "premium";
 
 export interface ConfiguratorState {
   // Currency selection
@@ -43,6 +44,10 @@ export interface ConfiguratorState {
   fieldBracket: boolean;
   powerBank: boolean;
   combiTool: boolean;
+
+  // Step 7: Service & Warranty
+  servicePlan: ServicePlan;
+  warrantyExtension: boolean;
 }
 
 export interface StepInfo {
@@ -59,6 +64,8 @@ export interface PriceBreakdown {
   passiveRows: number;
   spraySystem: number;
   accessories: number;
+  servicePlan: number;
+  warrantyExtension: number;
   total: number;
 }
 
@@ -81,7 +88,8 @@ export const STEPS: StepInfo[] = [
   { id: 4, title: "+Weed Configuration", subtitle: "Configure your weeding setup" },
   { id: 5, title: "Power Source", subtitle: "Choose your power configuration" },
   { id: 6, title: "Accessories", subtitle: "Additional equipment" },
-  { id: 7, title: "Summary", subtitle: "Review your configuration" },
+  { id: 7, title: "Service & Warranty", subtitle: "Support and protection plans" },
+  { id: 8, title: "Summary", subtitle: "Review your configuration" },
 ];
 
 // Pricing constants
@@ -118,6 +126,14 @@ export const PRICES = {
     powerBank: 5000,
     combiToolPerRow: 400,
   },
+
+  servicePlan: {
+    none: 0,
+    standard: 595, // per year
+    premium: 995, // per year (included 1st year for new robots)
+  },
+
+  warrantyExtension: 2000, // 2-year extension
 };
 
 // Wheel configuration constraints
@@ -172,6 +188,8 @@ export const DEFAULT_CONFIG: ConfiguratorState = {
   fieldBracket: false,
   powerBank: false,
   combiTool: false,
+  servicePlan: "premium",
+  warrantyExtension: false,
 };
 
 // ============================================================================
@@ -422,32 +440,62 @@ export function validateRowConfig(
 
 /**
  * Calculate total price and breakdown
+ * @param config - The configurator state
+ * @param currentStep - Optional current step (1-8). When provided, only includes pricing for steps the user has reached.
  */
-export function calculatePrice(config: ConfiguratorState): PriceBreakdown {
+export function calculatePrice(config: ConfiguratorState, currentStep?: number): PriceBreakdown {
   const baseRobot = PRICES.baseRobot;
-  const powerSource = PRICES.powerSource[config.powerSource];
-  const frontWheel = PRICES.frontWheel[config.frontWheel];
 
+  // Step 2: Front wheel configuration
+  const frontWheel = currentStep === undefined || currentStep >= 2
+    ? PRICES.frontWheel[config.frontWheel]
+    : 0;
+
+  // Step 3: Row/Seed configuration
   const activeRowPrice = PRICES.activeRow[config.seedSize];
-  const activeRows = config.activeRows * activeRowPrice;
+  const activeRows = currentStep === undefined || currentStep >= 3
+    ? config.activeRows * activeRowPrice
+    : 0;
 
   const passiveRowCount = calculatePassiveRows(config.activeRows, config.rowDistance);
-  const passiveRows = passiveRowCount * PRICES.passiveRow;
+  const passiveRows = currentStep === undefined || currentStep >= 3
+    ? passiveRowCount * PRICES.passiveRow
+    : 0;
 
+  // Step 4: Spray/Weed system
   let spraySystem = 0;
-  if (config.spraySystem) {
+  if (config.spraySystem && (currentStep === undefined || currentStep >= 4)) {
     spraySystem = PRICES.spraySystem.base + (config.activeRows * PRICES.spraySystem.perRow);
   }
 
+  // Step 5: Power source
+  const powerSource = currentStep === undefined || currentStep >= 5
+    ? PRICES.powerSource[config.powerSource]
+    : 0;
+
+  // Step 6: Accessories
   let accessories = 0;
-  if (config.starterKit) accessories += PRICES.accessories.starterKit;
-  if (config.roadTransport) accessories += PRICES.accessories.roadTransport;
-  if (config.fieldBracket) accessories += PRICES.accessories.fieldBracket;
-  if (config.powerBank) accessories += PRICES.accessories.powerBank;
-  if (config.combiTool) accessories += config.activeRows * PRICES.accessories.combiToolPerRow;
+  if (currentStep === undefined || currentStep >= 6) {
+    if (config.starterKit) accessories += PRICES.accessories.starterKit;
+    if (config.roadTransport) accessories += PRICES.accessories.roadTransport;
+    if (config.fieldBracket) accessories += PRICES.accessories.fieldBracket;
+    if (config.powerBank) accessories += PRICES.accessories.powerBank;
+    if (config.combiTool) accessories += config.activeRows * PRICES.accessories.combiToolPerRow;
+  }
+
+  // Step 7: Service & Warranty
+  let servicePlan = 0;
+  let warrantyExtension = 0;
+  if (currentStep === undefined || currentStep >= 7) {
+    servicePlan = PRICES.servicePlan[config.servicePlan];
+    if (config.warrantyExtension) {
+      warrantyExtension = PRICES.warrantyExtension;
+    }
+  }
 
   // Passive rows are included with active row pricing, not charged separately
-  const total = baseRobot + powerSource + frontWheel + activeRows + spraySystem + accessories;
+  // Service plan is an annual subscription and not included in one-time total
+  const total = baseRobot + powerSource + frontWheel + activeRows + spraySystem + accessories + warrantyExtension;
 
   return {
     baseRobot,
@@ -457,6 +505,8 @@ export function calculatePrice(config: ConfiguratorState): PriceBreakdown {
     passiveRows,
     spraySystem,
     accessories,
+    servicePlan,
+    warrantyExtension,
     total,
   };
 }
