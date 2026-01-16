@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Layers, Lightbulb, TrendingUp } from "lucide-react";
 
@@ -37,9 +38,12 @@ function CropIcon({ seedSize, emoji }: { seedSize: "6mm" | "14mm"; emoji?: strin
 }
 
 // Seeding unit component - white hopper box with FARMDROID branding
+// Real dimensions: 6mm hopper = 21cm wide, 14mm hopper = 24cm wide
+// Using same scale as row visualization: pxPerMm = 0.22
+// 21cm = 210mm * 0.22 = 46.2px, 24cm = 240mm * 0.22 = 52.8px
 function SeedingUnit({ seedSize }: { seedSize: "6mm" | "14mm" }) {
-  const width = seedSize === "6mm" ? 24 : 28;
-  const height = seedSize === "6mm" ? 70 : 80;
+  const width = seedSize === "6mm" ? 46 : 53;  // 21cm and 24cm at 0.22 px/mm scale
+  const height = seedSize === "6mm" ? 90 : 100;
 
   return (
     <g>
@@ -79,6 +83,164 @@ function SeedingUnit({ seedSize }: { seedSize: "6mm" | "14mm" }) {
     </g>
   );
 }
+
+// Tractor wheel component - top-down view with chevron tread pattern
+// Shows rotating tread pattern when animating
+function TractorWheel({
+  width,
+  height,
+  isAnimating,
+  robotSpeed,
+  isHovered,
+  isDragging
+}: {
+  width: number;
+  height: number;
+  isAnimating: boolean;
+  robotSpeed: number;
+  isHovered?: boolean;
+  isDragging?: boolean;
+}) {
+  const baseColor = isDragging || isHovered ? "#a8a29e" : "#57534e";
+  const darkColor = isDragging || isHovered ? "#78716c" : "#44403c";
+  const treadColor = isDragging || isHovered ? "#d6d3d1" : "#a8a29e";
+
+  // Animation duration based on robot speed (faster speed = faster rotation)
+  const animDuration = 400 / robotSpeed; // ~0.42s at 950m/h, ~0.67s at 600m/h
+
+  // Tread pattern spacing
+  const treadSpacing = 10;
+  const treadCount = Math.ceil(height / treadSpacing) + 4; // Extra for seamless loop
+
+  return (
+    <g>
+      {/* Wheel base/sidewall */}
+      <rect
+        x={0}
+        y={0}
+        width={width}
+        height={height}
+        rx={4}
+        fill={baseColor}
+      />
+
+      {/* Inner tread area with clip */}
+      <defs>
+        <clipPath id={`tread-clip-${width}-${height}`}>
+          <rect x={3} y={2} width={width - 6} height={height - 4} rx={2} />
+        </clipPath>
+      </defs>
+
+      {/* Tread surface */}
+      <rect
+        x={3}
+        y={2}
+        width={width - 6}
+        height={height - 4}
+        rx={2}
+        fill={darkColor}
+      />
+
+      {/* Animated tread pattern - chevron/herringbone lugs */}
+      <g clipPath={`url(#tread-clip-${width}-${height})`}>
+        <g
+          style={{
+            animation: isAnimating ? `wheelTread ${animDuration.toFixed(3)}s linear infinite` : "none",
+          }}
+        >
+          {Array.from({ length: treadCount }).map((_, i) => {
+            const y = i * treadSpacing - treadSpacing * 2;
+            const centerX = width / 2;
+            return (
+              <g key={i}>
+                {/* Left chevron lug */}
+                <path
+                  d={`M${centerX - 1} ${y} L${4} ${y + 4} L${4} ${y + 6} L${centerX - 1} ${y + 2} Z`}
+                  fill={treadColor}
+                />
+                {/* Right chevron lug */}
+                <path
+                  d={`M${centerX + 1} ${y} L${width - 4} ${y + 4} L${width - 4} ${y + 6} L${centerX + 1} ${y + 2} Z`}
+                  fill={treadColor}
+                />
+              </g>
+            );
+          })}
+        </g>
+      </g>
+
+      {/* Side grooves for 3D effect */}
+      <line x1={2} y1={4} x2={2} y2={height - 4} stroke={darkColor} strokeWidth={1} />
+      <line x1={width - 2} y1={4} x2={width - 2} y2={height - 4} stroke={darkColor} strokeWidth={1} />
+    </g>
+  );
+}
+
+// Wheel track component - shows tire marks in soil
+function WheelTrack({
+  x,
+  y,
+  width,
+  trackLength,
+  isAnimating,
+  robotSpeed,
+  id,
+}: {
+  x: number;
+  y: number;
+  width: number;
+  trackLength: number;
+  isAnimating: boolean;
+  robotSpeed: number;
+  id: string;
+}) {
+  const treadSpacing = 10;
+
+  // Calculate global offset to align patterns across all tracks
+  // Start pattern from a fixed global position (0) so all tracks align
+  const globalOffset = y % treadSpacing;
+  const startY = y - globalOffset - treadSpacing * 2;
+  const trackCount = Math.ceil((trackLength + globalOffset + treadSpacing * 4) / treadSpacing);
+
+  return (
+    <g>
+      <defs>
+        <clipPath id={`track-clip-${id}`}>
+          <rect x={x} y={y} width={width} height={trackLength} />
+        </clipPath>
+      </defs>
+
+      {/* Track marks in soil */}
+      <g clipPath={`url(#track-clip-${id})`}>
+        <g
+          style={{
+            animation: isAnimating ? `soilScroll ${(800 / robotSpeed).toFixed(3)}s linear infinite` : "none",
+          }}
+        >
+          {Array.from({ length: trackCount }).map((_, i) => {
+            const trackY = startY + i * treadSpacing;
+            const centerX = x + width / 2;
+            return (
+              <g key={i} opacity={0.4}>
+                {/* Left track impression */}
+                <path
+                  d={`M${centerX - 1} ${trackY} L${x + 3} ${trackY + 4} L${x + 3} ${trackY + 6} L${centerX - 1} ${trackY + 2} Z`}
+                  fill="#57534e"
+                />
+                {/* Right track impression */}
+                <path
+                  d={`M${centerX + 1} ${trackY} L${x + width - 3} ${trackY + 4} L${x + width - 3} ${trackY + 6} L${centerX + 1} ${trackY + 2} Z`}
+                  fill="#57534e"
+                />
+              </g>
+            );
+          })}
+        </g>
+      </g>
+    </g>
+  );
+}
+
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -325,6 +487,9 @@ interface StepRowConfigProps {
 }
 
 export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
+  const t = useTranslations("rowConfig");
+  const tCrops = useTranslations("crops");
+
   const rowSpacings = config.rowSpacings?.length === config.activeRows - 1
     ? config.rowSpacings
     : generateRowSpacings(config.activeRows, config.rowDistance);
@@ -376,6 +541,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [editingSpacing, setEditingSpacing] = useState<number | null>(null);
   const [editingRowDistance, setEditingRowDistance] = useState(false);
   const [hoveredWheel, setHoveredWheel] = useState<"front" | "frontLeft" | "frontRight" | "backLeft" | "backRight" | null>(null);
+  const [hoveredWheelEdge, setHoveredWheelEdge] = useState<{
+    wheel: "backLeft" | "backRight" | "front" | "frontLeft" | "frontRight";
+    edge: "left" | "right";
+  } | null>(null);
   const [hoveredEdgeAdd, setHoveredEdgeAdd] = useState<"left" | "right" | null>(null);
   const [hoveredSeedUnit, setHoveredSeedUnit] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
@@ -394,12 +563,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
   // Crop type selection with recommended configurations
   const cropTypes = [
-    { id: "sprout", emoji: "🌱", name: "Sprout", seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 450, plantSpacing: 15 },
-    { id: "onion", emoji: "🧅", name: "Onion", seedSize: "14mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 12 },
-    { id: "sugarbeet", emoji: "🥬", name: "Sugar Beet", seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 500, plantSpacing: 18 },
-    { id: "lettuce", emoji: "🥗", name: "Lettuce", seedSize: "14mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 30 },
-    { id: "corn", emoji: "🌽", name: "Corn", seedSize: "14mm" as SeedSize, rows: 4, rowDistance: 750, plantSpacing: 20 },
-    { id: "greenbean", emoji: "🫛", name: "Green Bean", seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 10 },
+    { id: "sprout", emoji: "🌱", nameKey: "sprout" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 450, plantSpacing: 15 },
+    { id: "onion", emoji: "🧅", nameKey: "onion" as const, seedSize: "14mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 12 },
+    { id: "sugarbeet", emoji: "🥬", nameKey: "sugarBeet" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 500, plantSpacing: 18 },
+    { id: "lettuce", emoji: "🥗", nameKey: "lettuce" as const, seedSize: "14mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 30 },
+    { id: "corn", emoji: "🌽", nameKey: "corn" as const, seedSize: "14mm" as SeedSize, rows: 4, rowDistance: 750, plantSpacing: 20 },
+    { id: "greenbean", emoji: "🫛", nameKey: "greenBean" as const, seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 10 },
   ];
   const [selectedCrop, setSelectedCrop] = useState(cropTypes[0]);
 
@@ -439,10 +608,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   };
 
   // SVG layout - field encompasses entire robot
-  const svgWidth = 900;
-  const svgHeight = 540;
+  const svgWidth = 990;  // 10% larger viewBox = 10% zoom out
+  const svgHeight = 594;
   const margin = { left: 0, right: 0 };
-  const rowAreaTop = 0; // Start at top
+  const rowAreaTop = 80; // Start 80px from top to give space for front wheel
   const rowAreaBottom = svgHeight; // End at bottom
 
   // Fixed scale
@@ -519,12 +688,43 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     return isRowTooCloseToBackWheel(rowMm) || isRowTooCloseToFrontWheel(rowMm);
   };
 
+  // Helper to find distance from a wheel edge to the nearest row in a specific direction
+  const getDistanceToNearestRow = (wheelEdgeMm: number, direction: "left" | "right"): { distance: number; rowMm: number } | null => {
+    if (rowPositionsMm.length === 0) return null;
+
+    // Filter rows based on direction
+    // "left" means rows to the left of the edge (rowMm < wheelEdgeMm)
+    // "right" means rows to the right of the edge (rowMm > wheelEdgeMm)
+    const rowsInDirection = rowPositionsMm.filter(rowMm =>
+      direction === "left" ? rowMm < wheelEdgeMm : rowMm > wheelEdgeMm
+    );
+
+    if (rowsInDirection.length === 0) return null;
+
+    let nearestRow = rowsInDirection[0];
+    let minDistance = Math.abs(wheelEdgeMm - nearestRow);
+
+    for (const rowMm of rowsInDirection) {
+      const distance = Math.abs(wheelEdgeMm - rowMm);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestRow = rowMm;
+      }
+    }
+
+    return { distance: minDistance, rowMm: nearestRow };
+  };
+
   // Separate warning flags
   const hasBackWheelProximityWarning = rowPositionsMm.some(isRowTooCloseToBackWheel);
   const hasFrontWheelProximityWarning = is3Wheel && rowPositionsMm.some(isRowTooCloseToFrontWheel);
 
   // Check if user has custom (non-uniform) spacings
   const hasCustomSpacings = rowSpacings.length > 0 && !rowSpacings.every(s => s === rowSpacings[0]);
+
+  // Helper function to get mirror spacing index for symmetric configuration
+  // With n spacings: spacing[i] mirrors spacing[n-1-i]
+  const getMirrorSpacingIndex = (idx: number, totalSpacings: number) => totalSpacings - 1 - idx;
 
   // Row drag handlers - dragging pushes rows in the drag direction
   const handleRowDragStart = useCallback((idx: number, clientX: number) => {
@@ -542,52 +742,53 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     const deltaMm = deltaPx / (pxPerMm * svgScale);
 
     const newSpacings = [...dragStartSpacings.current];
+    const totalSpacings = newSpacings.length;
     const isFirstRow = draggingRowIdx === 0;
     const isLastRow = draggingRowIdx === config.activeRows - 1;
 
+    // Helper to update a spacing and its mirror
+    const updateSpacingWithMirror = (spacingIdx: number, newValue: number) => {
+      const clampedValue = Math.max(minRowDistance, newValue);
+      newSpacings[spacingIdx] = clampedValue;
+      const mirrorIdx = getMirrorSpacingIndex(spacingIdx, totalSpacings);
+      if (mirrorIdx !== spacingIdx) {
+        newSpacings[mirrorIdx] = clampedValue;
+      }
+    };
+
     if (isFirstRow) {
       // First row: only has spacing to its right
-      // Dragging left pushes nothing (row at edge), dragging right closes gap to row 2
       const origSpacing = dragStartSpacings.current[0];
       const newSpacing = Math.round((origSpacing - deltaMm) / 10) * 10;
-      newSpacings[0] = Math.max(minRowDistance, newSpacing);
+      updateSpacingWithMirror(0, newSpacing);
     } else if (isLastRow) {
       // Last row: only has spacing to its left
-      // Dragging right pushes nothing (row at edge), dragging left closes gap to previous row
       const lastSpacingIdx = config.activeRows - 2;
       const origSpacing = dragStartSpacings.current[lastSpacingIdx];
       const newSpacing = Math.round((origSpacing + deltaMm) / 10) * 10;
-      newSpacings[lastSpacingIdx] = Math.max(minRowDistance, newSpacing);
+      updateSpacingWithMirror(lastSpacingIdx, newSpacing);
     } else {
       // Middle rows: outer rows move WITH the dragged row, inner gap changes
-      // Left side: change spacing to the RIGHT (toward center), outer left rows move together
-      // Right side: change spacing to the LEFT (toward center), outer right rows move together
       const centerIndex = (config.activeRows - 1) / 2;
       const isOnLeftSide = draggingRowIdx <= Math.floor(centerIndex);
 
       if (isOnLeftSide) {
-        // Left side row: adjust the spacing to its RIGHT (between this row and inner rows)
-        // Outer rows (to the left) move together with this row
-        const spacingIdx = draggingRowIdx; // spacing between this row and the next (inner) row
+        // Left side row: adjust the spacing to its RIGHT
+        const spacingIdx = draggingRowIdx;
         const origSpacing = dragStartSpacings.current[spacingIdx];
-        // Drag RIGHT → decrease spacing (move toward center)
-        // Drag LEFT → increase spacing (move away from center)
         const newSpacing = Math.round((origSpacing - deltaMm) / 10) * 10;
-        newSpacings[spacingIdx] = Math.max(minRowDistance, newSpacing);
+        updateSpacingWithMirror(spacingIdx, newSpacing);
       } else {
-        // Right side row: adjust the spacing to its LEFT (between inner rows and this row)
-        // Outer rows (to the right) move together with this row
-        const spacingIdx = draggingRowIdx - 1; // spacing between previous (inner) row and this row
+        // Right side row: adjust the spacing to its LEFT
+        const spacingIdx = draggingRowIdx - 1;
         const origSpacing = dragStartSpacings.current[spacingIdx];
-        // Drag RIGHT → increase spacing (move away from center)
-        // Drag LEFT → decrease spacing (move toward center)
         const newSpacing = Math.round((origSpacing + deltaMm) / 10) * 10;
-        newSpacings[spacingIdx] = Math.max(minRowDistance, newSpacing);
+        updateSpacingWithMirror(spacingIdx, newSpacing);
       }
     }
 
     updateConfig({ rowSpacings: newSpacings });
-  }, [config.activeRows, draggingRowIdx, minRowDistance, updateConfig]);
+  }, [config.activeRows, draggingRowIdx, minRowDistance, updateConfig, getMirrorSpacingIndex]);
 
   // Max working width is 360cm (3600mm)
   const maxWorkingWidth = 3600;
@@ -596,38 +797,63 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const canAddMoreRows = (rowSpan + config.rowDistance + config.rowDistance) <= maxWorkingWidth && config.activeRows < ROW_CONSTRAINTS.maxActiveRows;
 
   const handleAddRowAt = useCallback((gapIndex: number) => {
-    if (config.activeRows >= ROW_CONSTRAINTS.maxActiveRows) return;
-    // Check if new working width would exceed max (adding a row adds at least minRowDistance to span)
-    if (rowSpan + minRowDistance + config.rowDistance > maxWorkingWidth) return;
+    // Always add rows in pairs for symmetry
+    if (config.activeRows + 2 > ROW_CONSTRAINTS.maxActiveRows) return;
+    // Check if new working width would exceed max (adding 2 rows adds at least 2*minRowDistance to span)
+    if (rowSpan + minRowDistance * 2 > maxWorkingWidth) return;
+
+    const totalSpacings = rowSpacings.length;
+    const mirrorGapIndex = getMirrorSpacingIndex(gapIndex, totalSpacings);
 
     const newSpacings = [...rowSpacings];
+
+    // Split the clicked gap
     const existingGap = newSpacings[gapIndex];
     const halfGap = Math.max(minRowDistance, Math.round(existingGap / 2 / 10) * 10);
-    newSpacings.splice(gapIndex, 1, halfGap, halfGap);
 
-    const newCount = config.activeRows + 1;
+    if (mirrorGapIndex === gapIndex) {
+      // Center gap - just split it once (adds 1 row, but we need pairs)
+      // For center gap, we split it and that's it - only adds 1 row
+      // Actually, to maintain symmetry with even rows, we should still add 2
+      // Split center gap into 3 parts: halfGap, halfGap, halfGap (adds 2 spacings = 2 rows)
+      const thirdGap = Math.max(minRowDistance, Math.round(existingGap / 3 / 10) * 10);
+      newSpacings.splice(gapIndex, 1, thirdGap, thirdGap, thirdGap);
+    } else {
+      // Different gaps - split both, process higher index first to preserve lower index
+      const highIdx = Math.max(gapIndex, mirrorGapIndex);
+      const lowIdx = Math.min(gapIndex, mirrorGapIndex);
+
+      const highGap = newSpacings[highIdx];
+      const highHalfGap = Math.max(minRowDistance, Math.round(highGap / 2 / 10) * 10);
+      newSpacings.splice(highIdx, 1, highHalfGap, highHalfGap);
+
+      const lowGap = newSpacings[lowIdx];
+      const lowHalfGap = Math.max(minRowDistance, Math.round(lowGap / 2 / 10) * 10);
+      newSpacings.splice(lowIdx, 1, lowHalfGap, lowHalfGap);
+    }
+
+    const newCount = config.activeRows + 2;
 
     setHoveredGap(null); // Clear hover state before update
     updateConfig({
       activeRows: Math.min(newCount, ROW_CONSTRAINTS.maxActiveRows),
       rowSpacings: newSpacings.slice(0, Math.min(newCount, ROW_CONSTRAINTS.maxActiveRows) - 1),
     });
-  }, [config.activeRows, minRowDistance, rowSpan, rowSpacings, updateConfig]);
+  }, [config.activeRows, minRowDistance, rowSpan, rowSpacings, updateConfig, getMirrorSpacingIndex]);
 
   const handleAddRowEdge = useCallback((side: "left" | "right") => {
-    if (config.activeRows >= ROW_CONSTRAINTS.maxActiveRows) return;
+    // Always add rows in pairs (one on each side) for symmetry
+    if (config.activeRows + 2 > ROW_CONSTRAINTS.maxActiveRows) return;
 
-    // Check if adding would exceed max span
-    if (rowSpan + config.rowDistance + config.rowDistance > maxWorkingWidth) return;
+    // Check if adding 2 rows would exceed max span
+    if (rowSpan + config.rowDistance * 2 > maxWorkingWidth) return;
 
     const newSpacings = [...rowSpacings];
-    if (side === "left") {
-      newSpacings.unshift(config.rowDistance);
-    } else {
-      newSpacings.push(config.rowDistance);
-    }
+    // Add one spacing to left AND one to right for symmetric pairs
+    newSpacings.unshift(config.rowDistance);
+    newSpacings.push(config.rowDistance);
 
-    const newCount = config.activeRows + 1;
+    const newCount = config.activeRows + 2;
 
     updateConfig({
       activeRows: Math.min(newCount, ROW_CONSTRAINTS.maxActiveRows),
@@ -636,9 +862,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   }, [config.activeRows, config.rowDistance, rowSpan, rowSpacings, updateConfig]);
 
   const handleRemoveRow = useCallback((rowIndex: number) => {
-    if (config.activeRows <= 0) return;
-    // 3-wheel mode: can only go down to 0 (remove 2 at a time)
-    // 4-wheel mode: can go down to 0 (remove 1 at a time)
+    // Always remove rows in pairs for symmetry
+    if (config.activeRows < 2) return;
 
     // Helper to remove a row at given index from spacings array
     const removeRowFromSpacings = (spacings: number[], idx: number, totalRows: number): number[] => {
@@ -654,46 +879,33 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       return newSpacings;
     };
 
-    if (is3Wheel) {
-      // 3-wheel: remove 2 rows at a time (need at least 2 to remove)
-      if (config.activeRows < 2) return;
+    // Calculate the mirror index (symmetric from other end)
+    const mirrorIdx = config.activeRows - 1 - rowIndex;
 
-      // Calculate the mirror index (symmetric from other end)
-      const mirrorIdx = config.activeRows - 1 - rowIndex;
+    // Remove both rows - remove higher index first to preserve lower index
+    let newSpacings = [...rowSpacings];
+    const highIdx = Math.max(rowIndex, mirrorIdx);
+    const lowIdx = Math.min(rowIndex, mirrorIdx);
 
-      // Remove both rows - remove higher index first to preserve lower index
-      let newSpacings = [...rowSpacings];
-      const highIdx = Math.max(rowIndex, mirrorIdx);
-      const lowIdx = Math.min(rowIndex, mirrorIdx);
-
-      if (highIdx === lowIdx) {
-        // Same row (shouldn't happen with even counts, but safety check)
-        newSpacings = removeRowFromSpacings(newSpacings, highIdx, config.activeRows);
-        updateConfig({
-          activeRows: Math.max(0, config.activeRows - 1),
-          rowSpacings: newSpacings,
-        });
-      } else {
-        // Remove high index first, then low index
-        newSpacings = removeRowFromSpacings(newSpacings, highIdx, config.activeRows);
-        newSpacings = removeRowFromSpacings(newSpacings, lowIdx, config.activeRows - 1);
-
-        updateConfig({
-          activeRows: Math.max(0, config.activeRows - 2),
-          rowSpacings: newSpacings,
-        });
-      }
+    if (highIdx === lowIdx) {
+      // Same row (center row with odd count - shouldn't happen with symmetric config)
+      // Just remove this one row
+      newSpacings = removeRowFromSpacings(newSpacings, highIdx, config.activeRows);
+      updateConfig({
+        activeRows: Math.max(0, config.activeRows - 1),
+        rowSpacings: newSpacings,
+      });
     } else {
-      // 4-wheel mode: remove single row
-      const newSpacings = removeRowFromSpacings(rowSpacings, rowIndex, config.activeRows);
-      const newCount = config.activeRows - 1;
+      // Remove high index first, then low index
+      newSpacings = removeRowFromSpacings(newSpacings, highIdx, config.activeRows);
+      newSpacings = removeRowFromSpacings(newSpacings, lowIdx, config.activeRows - 1);
 
       updateConfig({
-        activeRows: Math.max(0, newCount),
+        activeRows: Math.max(0, config.activeRows - 2),
         rowSpacings: newSpacings,
       });
     }
-  }, [config.activeRows, is3Wheel, rowSpacings, updateConfig]);
+  }, [config.activeRows, rowSpacings, updateConfig]);
 
   const handleSetRowCount = useCallback((count: number) => {
     if (count < 0 || count > ROW_CONSTRAINTS.maxActiveRows) return;
@@ -749,13 +961,21 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     }
   }, [draggingWheelSide, draggingRowIdx, handleWheelDragMove, handleRowDragMove]);
 
-  // Handler to set individual spacing value directly
+  // Handler to set individual spacing value directly (with mirroring for symmetry)
   const handleSetSpacing = useCallback((spacingIdx: number, valueCm: number) => {
     const valueMm = valueCm * 10;
+    const clampedValue = Math.max(minRowDistance, Math.min(800, valueMm));
     const newSpacings = [...rowSpacings];
-    newSpacings[spacingIdx] = Math.max(minRowDistance, Math.min(800, valueMm));
+    newSpacings[spacingIdx] = clampedValue;
+
+    // Also update mirror spacing for symmetry
+    const mirrorIdx = getMirrorSpacingIndex(spacingIdx, rowSpacings.length);
+    if (mirrorIdx !== spacingIdx) {
+      newSpacings[mirrorIdx] = clampedValue;
+    }
+
     updateConfig({ rowSpacings: newSpacings });
-  }, [minRowDistance, rowSpacings, updateConfig]);
+  }, [minRowDistance, rowSpacings, updateConfig, getMirrorSpacingIndex]);
 
   // Start editing a spacing value
   const handleStartEditSpacing = useCallback((idx: number) => {
@@ -807,7 +1027,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   };
 
   const wheelWidth = 26;
-  const wheelHeight = 42;
+  const wheelHeight = 84;  // Doubled from 42
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 md:gap-6 py-4 md:py-6 pb-32">
@@ -962,6 +1182,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     @keyframes soilScroll {
                       from { transform: translateY(0); }
                       to { transform: translateY(40px); }
+                    }
+                    @keyframes wheelTread {
+                      from { transform: translateY(0); }
+                      to { transform: translateY(-10px); }
                     }
                   `}
                 </style>
@@ -1164,6 +1388,81 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   </g>
                 );
               })}
+
+              {/* Wheel tracks in soil - rendered before seeding units so hoppers appear solid */}
+              {(() => {
+                const robotSpeed = calculateRobotSpeed(seedingMode, plantSpacing);
+                const frontWheelY = 105;
+                const backWheelY = rowAreaBottom - wheelHeight - 60;
+
+                // Front wheel tracks - from bottom of front wheels to bottom of SVG
+                const frontTrackStartY = frontWheelY + wheelHeight;
+                const frontTrackLength = rowAreaBottom - frontTrackStartY + 20;
+
+                // Back wheel tracks - from bottom of back wheels to bottom of SVG
+                const backTrackStartY = backWheelY + wheelHeight;
+                const backTrackLength = rowAreaBottom - backTrackStartY + 20;
+
+                return (
+                  <g>
+                    {/* Front wheel tracks */}
+                    {is3Wheel && frontWheelMm !== null ? (
+                      /* 3-wheel mode - single front wheel track in center */
+                      <WheelTrack
+                        x={mmToX(frontWheelMm) - wheelWidth/2}
+                        y={frontTrackStartY}
+                        width={wheelWidth}
+                        trackLength={frontTrackLength}
+                        isAnimating={isAnimating}
+                        robotSpeed={robotSpeed}
+                        id="front-center"
+                      />
+                    ) : (
+                      /* 4-wheel mode - left and right front wheel tracks */
+                      <>
+                        <WheelTrack
+                          x={mmToX(leftWheelMm) - wheelWidth/2}
+                          y={frontTrackStartY}
+                          width={wheelWidth}
+                          trackLength={frontTrackLength}
+                          isAnimating={isAnimating}
+                          robotSpeed={robotSpeed}
+                          id="front-left"
+                        />
+                        <WheelTrack
+                          x={mmToX(rightWheelMm) - wheelWidth/2}
+                          y={frontTrackStartY}
+                          width={wheelWidth}
+                          trackLength={frontTrackLength}
+                          isAnimating={isAnimating}
+                          robotSpeed={robotSpeed}
+                          id="front-right"
+                        />
+                      </>
+                    )}
+
+                    {/* Back wheel tracks - always show for left and right back wheels */}
+                    <WheelTrack
+                      x={mmToX(leftWheelMm) - wheelWidth/2}
+                      y={backTrackStartY}
+                      width={wheelWidth}
+                      trackLength={backTrackLength}
+                      isAnimating={isAnimating}
+                      robotSpeed={robotSpeed}
+                      id="back-left"
+                    />
+                    <WheelTrack
+                      x={mmToX(rightWheelMm) - wheelWidth/2}
+                      y={backTrackStartY}
+                      width={wheelWidth}
+                      trackLength={backTrackLength}
+                      isAnimating={isAnimating}
+                      robotSpeed={robotSpeed}
+                      id="back-right"
+                    />
+                  </g>
+                );
+              })()}
 
               {/* Toolbeam - 3.5m wide horizontal bar */}
               {config.activeRows > 0 && (
@@ -1414,11 +1713,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onMouseLeave={() => setHoveredGap(null)}
                     onClick={() => !isDragging && handleAddRowAt(idx)}
                   >
-                    {/* Invisible hover area - starts below spacing labels to avoid overlap */}
+                    {/* Invisible hover area - narrower to avoid accidental clicks when dragging rows */}
                     <rect
-                      x={leftX + 5}
+                      x={leftX + gapWidth * 0.25}
                       y={rowAreaTop + 180}
-                      width={Math.max(10, gapWidth - 10)}
+                      width={Math.max(10, gapWidth * 0.5)}
                       height={rowAreaBottom - rowAreaTop - 200}
                       fill={isHoveredGap ? "rgba(13, 148, 136, 0.05)" : "transparent"}
                       rx="4"
@@ -1448,49 +1747,54 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               })}
 
               {/* Direction indicator - on top of animation */}
-              <g transform={`translate(${svgCenterX}, ${rowAreaTop + 35})`}>
-                <polygon points="0,-6 5,3 -5,3" fill="#78716c" />
-                <text y="-12" textAnchor="middle" className="text-[9px] fill-stone-500 font-medium tracking-widest uppercase">Front</text>
+              <g transform={`translate(${svgCenterX}, 55)`}>
+                <polygon points="0,-18 5,-9 -5,-9" fill="#78716c" />
+                <text y="6" textAnchor="middle" className="text-[9px] fill-stone-500 font-medium tracking-widest uppercase">Front</text>
               </g>
 
               {/* Front Wheel(s) - on top of animation */}
-              {is3Wheel && frontWheelMm !== null ? (
-                <g
-                  onMouseEnter={() => setHoveredWheel("front")}
-                  onMouseLeave={() => setHoveredWheel(null)}
-                  className="cursor-default"
-                >
-                  <rect
-                    x={mmToX(frontWheelMm) - wheelWidth/2}
-                    y={rowAreaTop + 50}
-                    width={wheelWidth}
-                    height={wheelHeight}
-                    rx={5}
-                    fill={hoveredWheel === "front" ? colors.wheelDrag : colors.wheel}
-                  />
-                  {/* Tooltip on hover */}
-                  {hoveredWheel === "front" && (
-                    <g transform={`translate(${mmToX(frontWheelMm)}, ${rowAreaTop + 50 + wheelHeight})`}>
-                      <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
-                      <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
-                      <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
-                      <line x1={-wheelWidth/2 + 2} y1="36" x2={wheelWidth/2 - 2} y2="36" stroke="white" strokeWidth="1" />
-                      <line x1={-wheelWidth/2 + 2} y1="33" x2={-wheelWidth/2 + 2} y2="39" stroke="white" strokeWidth="1" />
-                      <line x1={wheelWidth/2 - 2} y1="33" x2={wheelWidth/2 - 2} y2="39" stroke="white" strokeWidth="1" />
+              {(() => {
+                const robotSpeed = calculateRobotSpeed(seedingMode, plantSpacing);
+                const edgeZoneWidth = 8;
+                return is3Wheel && frontWheelMm !== null ? (
+                  <g
+                    onMouseEnter={() => setHoveredWheel("front")}
+                    onMouseLeave={() => { setHoveredWheel(null); setHoveredWheelEdge(null); }}
+                    className="cursor-default"
+                  >
+                    <g transform={`translate(${mmToX(frontWheelMm) - wheelWidth/2}, 105)`}>
+                      <TractorWheel
+                        width={wheelWidth}
+                        height={wheelHeight}
+                        isAnimating={isAnimating}
+                        robotSpeed={robotSpeed}
+                        isHovered={hoveredWheel === "front"}
+                      />
+                      {/* Edge hover zones for distance indicator */}
+                      <rect
+                        x={0}
+                        y={0}
+                        width={edgeZoneWidth}
+                        height={wheelHeight}
+                        fill="transparent"
+                        className="cursor-help"
+                        onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "front", edge: "left" }); }}
+                        onMouseLeave={() => setHoveredWheelEdge(null)}
+                      />
+                      <rect
+                        x={wheelWidth - edgeZoneWidth}
+                        y={0}
+                        width={edgeZoneWidth}
+                        height={wheelHeight}
+                        fill="transparent"
+                        className="cursor-help"
+                        onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "front", edge: "right" }); }}
+                        onMouseLeave={() => setHoveredWheelEdge(null)}
+                      />
                     </g>
-                  )}
-                </g>
-              ) : (
-                <>
-                  <g
-                    onMouseEnter={() => setHoveredWheel("frontLeft")}
-                    onMouseLeave={() => setHoveredWheel(null)}
-                    className="cursor-default"
-                  >
-                    <rect x={mmToX(leftWheelMm) - wheelWidth/2} y={rowAreaTop + 50} width={wheelWidth} height={wheelHeight} rx={5} fill={hoveredWheel === "frontLeft" ? colors.wheelDrag : colors.wheel} />
                     {/* Tooltip on hover */}
-                    {hoveredWheel === "frontLeft" && (
-                      <g transform={`translate(${mmToX(leftWheelMm)}, ${rowAreaTop + 50 + wheelHeight})`}>
+                    {hoveredWheel === "front" && !hoveredWheelEdge && (
+                      <g transform={`translate(${mmToX(frontWheelMm)}, ${105 + wheelHeight})`}>
                         <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
                         <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
                         <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
@@ -1500,69 +1804,277 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       </g>
                     )}
                   </g>
-                  <g
-                    onMouseEnter={() => setHoveredWheel("frontRight")}
-                    onMouseLeave={() => setHoveredWheel(null)}
-                    className="cursor-default"
-                  >
-                    <rect x={mmToX(rightWheelMm) - wheelWidth/2} y={rowAreaTop + 50} width={wheelWidth} height={wheelHeight} rx={5} fill={hoveredWheel === "frontRight" ? colors.wheelDrag : colors.wheel} />
-                    {/* Tooltip on hover */}
-                    {hoveredWheel === "frontRight" && (
-                      <g transform={`translate(${mmToX(rightWheelMm)}, ${rowAreaTop + 50 + wheelHeight})`}>
-                        <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
-                        <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
-                        <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
-                        <line x1={-wheelWidth/2 + 2} y1="36" x2={wheelWidth/2 - 2} y2="36" stroke="white" strokeWidth="1" />
-                        <line x1={-wheelWidth/2 + 2} y1="33" x2={-wheelWidth/2 + 2} y2="39" stroke="white" strokeWidth="1" />
-                        <line x1={wheelWidth/2 - 2} y1="33" x2={wheelWidth/2 - 2} y2="39" stroke="white" strokeWidth="1" />
+                ) : (
+                  <>
+                    <g
+                      onMouseEnter={() => setHoveredWheel("frontLeft")}
+                      onMouseLeave={() => { setHoveredWheel(null); setHoveredWheelEdge(null); }}
+                      className="cursor-default"
+                    >
+                      <g transform={`translate(${mmToX(leftWheelMm) - wheelWidth/2}, 105)`}>
+                        <TractorWheel
+                          width={wheelWidth}
+                          height={wheelHeight}
+                          isAnimating={isAnimating}
+                          robotSpeed={robotSpeed}
+                          isHovered={hoveredWheel === "frontLeft"}
+                        />
+                        {/* Edge hover zones for distance indicator */}
+                        <rect
+                          x={0}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "frontLeft", edge: "left" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
+                        <rect
+                          x={wheelWidth - edgeZoneWidth}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "frontLeft", edge: "right" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
                       </g>
-                    )}
-                  </g>
-                </>
-              )}
+                      {/* Tooltip on hover */}
+                      {hoveredWheel === "frontLeft" && !hoveredWheelEdge && (
+                        <g transform={`translate(${mmToX(leftWheelMm)}, ${105 + wheelHeight})`}>
+                          <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
+                          <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
+                          <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
+                          <line x1={-wheelWidth/2 + 2} y1="36" x2={wheelWidth/2 - 2} y2="36" stroke="white" strokeWidth="1" />
+                          <line x1={-wheelWidth/2 + 2} y1="33" x2={-wheelWidth/2 + 2} y2="39" stroke="white" strokeWidth="1" />
+                          <line x1={wheelWidth/2 - 2} y1="33" x2={wheelWidth/2 - 2} y2="39" stroke="white" strokeWidth="1" />
+                        </g>
+                      )}
+                    </g>
+                    <g
+                      onMouseEnter={() => setHoveredWheel("frontRight")}
+                      onMouseLeave={() => { setHoveredWheel(null); setHoveredWheelEdge(null); }}
+                      className="cursor-default"
+                    >
+                      <g transform={`translate(${mmToX(rightWheelMm) - wheelWidth/2}, 105)`}>
+                        <TractorWheel
+                          width={wheelWidth}
+                          height={wheelHeight}
+                          isAnimating={isAnimating}
+                          robotSpeed={robotSpeed}
+                          isHovered={hoveredWheel === "frontRight"}
+                        />
+                        {/* Edge hover zones for distance indicator */}
+                        <rect
+                          x={0}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "frontRight", edge: "left" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
+                        <rect
+                          x={wheelWidth - edgeZoneWidth}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "frontRight", edge: "right" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
+                      </g>
+                      {/* Tooltip on hover */}
+                      {hoveredWheel === "frontRight" && !hoveredWheelEdge && (
+                        <g transform={`translate(${mmToX(rightWheelMm)}, ${105 + wheelHeight})`}>
+                          <rect x="-40" y="4" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
+                          <text y="18" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
+                          <text y="28" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
+                          <line x1={-wheelWidth/2 + 2} y1="36" x2={wheelWidth/2 - 2} y2="36" stroke="white" strokeWidth="1" />
+                          <line x1={-wheelWidth/2 + 2} y1="33" x2={-wheelWidth/2 + 2} y2="39" stroke="white" strokeWidth="1" />
+                          <line x1={wheelWidth/2 - 2} y1="33" x2={wheelWidth/2 - 2} y2="39" stroke="white" strokeWidth="1" />
+                        </g>
+                      )}
+                    </g>
+                  </>
+                );
+              })()}
+
+              {/* Extended hover zones for wheel edge to row distance - rendered BEFORE wheels so wheels stay on top */}
+              {(() => {
+                const backWheelY = rowAreaBottom - wheelHeight - 60;
+                const frontWheelY = 105;
+
+                // Calculate extended zones from wheel edges to nearest rows
+                const zones: Array<{
+                  wheel: "backLeft" | "backRight" | "front" | "frontLeft" | "frontRight";
+                  edge: "left" | "right";
+                  x: number;
+                  width: number;
+                  y: number;
+                }> = [];
+
+                // Helper to calculate zone for a wheel edge
+                const addZone = (
+                  wheel: "backLeft" | "backRight" | "front" | "frontLeft" | "frontRight",
+                  edge: "left" | "right",
+                  wheelMm: number,
+                  wheelY: number
+                ) => {
+                  const edgeMm = edge === "left"
+                    ? wheelMm - wheelWidthMm / 2
+                    : wheelMm + wheelWidthMm / 2;
+
+                  const nearest = getDistanceToNearestRow(edgeMm, edge);
+                  if (!nearest || nearest.distance < 10) return; // Skip if no rows or too close
+
+                  // Use visual wheel edge (pixels) for the zone
+                  const wheelCenterX = mmToX(wheelMm);
+                  const visualEdgeX = edge === "left"
+                    ? wheelCenterX - wheelWidth / 2
+                    : wheelCenterX + wheelWidth / 2;
+                  const rowX = mmToX(nearest.rowMm);
+                  const x = Math.min(visualEdgeX, rowX);
+                  const width = Math.abs(visualEdgeX - rowX);
+
+                  zones.push({ wheel, edge, x, width, y: wheelY });
+                };
+
+                // Add zones for back wheels
+                addZone("backLeft", "left", leftWheelMm, backWheelY);
+                addZone("backLeft", "right", leftWheelMm, backWheelY);
+                addZone("backRight", "left", rightWheelMm, backWheelY);
+                addZone("backRight", "right", rightWheelMm, backWheelY);
+
+                // Add zones for front wheels
+                if (frontWheelMm !== null) {
+                  // 3-wheel mode
+                  addZone("front", "left", frontWheelMm, frontWheelY);
+                  addZone("front", "right", frontWheelMm, frontWheelY);
+                } else {
+                  // 4-wheel mode
+                  addZone("frontLeft", "left", leftWheelMm, frontWheelY);
+                  addZone("frontLeft", "right", leftWheelMm, frontWheelY);
+                  addZone("frontRight", "left", rightWheelMm, frontWheelY);
+                  addZone("frontRight", "right", rightWheelMm, frontWheelY);
+                }
+
+                return zones.map((zone, i) => (
+                  <rect
+                    key={`zone-${i}`}
+                    x={zone.x}
+                    y={zone.y}
+                    width={zone.width}
+                    height={wheelHeight}
+                    fill="transparent"
+                    className="cursor-help"
+                    onMouseEnter={() => setHoveredWheelEdge({ wheel: zone.wheel, edge: zone.edge })}
+                    onMouseLeave={() => setHoveredWheelEdge(null)}
+                  />
+                ));
+              })()}
 
               {/* Back Wheels - Draggable, on top of animation */}
-              <g
-                className="cursor-ew-resize"
-                onMouseDown={(e) => { e.preventDefault(); handleWheelDragStart("left", e.clientX); }}
-                onMouseEnter={() => !draggingWheelSide && setHoveredWheel("backLeft")}
-                onMouseLeave={() => setHoveredWheel(null)}
-              >
-                <rect
-                  x={mmToX(leftWheelMm) - wheelWidth/2}
-                  y={rowAreaBottom - wheelHeight - 110}
-                  width={wheelWidth}
-                  height={wheelHeight}
-                  rx={5}
-                  fill={draggingWheelSide === "left" || hoveredWheel === "backLeft" ? colors.wheelDrag : colors.wheel}
-                />
-              </g>
-              <g
-                className="cursor-ew-resize"
-                onMouseDown={(e) => { e.preventDefault(); handleWheelDragStart("right", e.clientX); }}
-                onMouseEnter={() => !draggingWheelSide && setHoveredWheel("backRight")}
-                onMouseLeave={() => setHoveredWheel(null)}
-              >
-                <rect
-                  x={mmToX(rightWheelMm) - wheelWidth/2}
-                  y={rowAreaBottom - wheelHeight - 110}
-                  width={wheelWidth}
-                  height={wheelHeight}
-                  rx={5}
-                  fill={draggingWheelSide === "right" || hoveredWheel === "backRight" ? colors.wheelDrag : colors.wheel}
-                />
-              </g>
+              {(() => {
+                const robotSpeed = calculateRobotSpeed(seedingMode, plantSpacing);
+                const backWheelY = rowAreaBottom - wheelHeight - 60;
+                const edgeZoneWidth = 8; // Width of edge hover zones
+                return (
+                  <>
+                    <g
+                      className="cursor-ew-resize"
+                      onMouseDown={(e) => { e.preventDefault(); handleWheelDragStart("left", e.clientX); }}
+                      onMouseEnter={() => !draggingWheelSide && setHoveredWheel("backLeft")}
+                      onMouseLeave={() => { setHoveredWheel(null); setHoveredWheelEdge(null); }}
+                    >
+                      <g transform={`translate(${mmToX(leftWheelMm) - wheelWidth/2}, ${backWheelY})`}>
+                        <TractorWheel
+                          width={wheelWidth}
+                          height={wheelHeight}
+                          isAnimating={isAnimating}
+                          robotSpeed={robotSpeed}
+                          isHovered={hoveredWheel === "backLeft"}
+                          isDragging={draggingWheelSide === "left"}
+                        />
+                        {/* Edge hover zones for distance indicator */}
+                        <rect
+                          x={0}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "backLeft", edge: "left" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
+                        <rect
+                          x={wheelWidth - edgeZoneWidth}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "backLeft", edge: "right" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
+                      </g>
+                    </g>
+                    <g
+                      className="cursor-ew-resize"
+                      onMouseDown={(e) => { e.preventDefault(); handleWheelDragStart("right", e.clientX); }}
+                      onMouseEnter={() => !draggingWheelSide && setHoveredWheel("backRight")}
+                      onMouseLeave={() => { setHoveredWheel(null); setHoveredWheelEdge(null); }}
+                    >
+                      <g transform={`translate(${mmToX(rightWheelMm) - wheelWidth/2}, ${backWheelY})`}>
+                        <TractorWheel
+                          width={wheelWidth}
+                          height={wheelHeight}
+                          isAnimating={isAnimating}
+                          robotSpeed={robotSpeed}
+                          isHovered={hoveredWheel === "backRight"}
+                          isDragging={draggingWheelSide === "right"}
+                        />
+                        {/* Edge hover zones for distance indicator */}
+                        <rect
+                          x={0}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "backRight", edge: "left" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
+                        <rect
+                          x={wheelWidth - edgeZoneWidth}
+                          y={0}
+                          width={edgeZoneWidth}
+                          height={wheelHeight}
+                          fill="transparent"
+                          className="cursor-help"
+                          onMouseEnter={(e) => { e.stopPropagation(); setHoveredWheelEdge({ wheel: "backRight", edge: "right" }); }}
+                          onMouseLeave={() => setHoveredWheelEdge(null)}
+                        />
+                      </g>
+                    </g>
+                  </>
+                );
+              })()}
 
               {/* Wheel spacing dimension - positioned below back wheels */}
               <g>
                 {/* Dimension line below back wheels */}
-                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 55} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 55} stroke="#78716c" strokeWidth="1.5" />
+                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 32} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 32} stroke="#78716c" strokeWidth="1.5" />
                 {/* Left tick */}
-                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 62} x2={mmToX(leftWheelMm)} y2={rowAreaBottom - 48} stroke="#78716c" strokeWidth="1.5" />
+                <line x1={mmToX(leftWheelMm)} y1={rowAreaBottom - 39} x2={mmToX(leftWheelMm)} y2={rowAreaBottom - 25} stroke="#78716c" strokeWidth="1.5" />
                 {/* Right tick */}
-                <line x1={mmToX(rightWheelMm)} y1={rowAreaBottom - 62} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 48} stroke="#78716c" strokeWidth="1.5" />
+                <line x1={mmToX(rightWheelMm)} y1={rowAreaBottom - 39} x2={mmToX(rightWheelMm)} y2={rowAreaBottom - 25} stroke="#78716c" strokeWidth="1.5" />
                 {/* Label */}
-                <text x={svgCenterX} y={rowAreaBottom - 38} textAnchor="middle" className="text-[12px] font-medium fill-stone-600">
+                <text x={svgCenterX} y={rowAreaBottom - 15} textAnchor="middle" className="text-[12px] font-medium fill-stone-600">
                   {config.wheelSpacing / 10} cm
                 </text>
               </g>
@@ -1572,7 +2084,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
               {/* Back wheel tooltips */}
               {hoveredWheel === "backLeft" && !draggingWheelSide && (
-                <g transform={`translate(${mmToX(leftWheelMm)}, ${rowAreaBottom - wheelHeight - 110})`}>
+                <g transform={`translate(${mmToX(leftWheelMm)}, ${rowAreaBottom - wheelHeight - 60})`}>
                   <rect x="-40" y="-42" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
                   <text y="-28" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
                   <text y="-16" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
@@ -1582,7 +2094,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </g>
               )}
               {hoveredWheel === "backRight" && !draggingWheelSide && (
-                <g transform={`translate(${mmToX(rightWheelMm)}, ${rowAreaBottom - wheelHeight - 110})`}>
+                <g transform={`translate(${mmToX(rightWheelMm)}, ${rowAreaBottom - wheelHeight - 60})`}>
                   <rect x="-40" y="-42" width="80" height="38" rx="4" fill="#1c1917" fillOpacity="0.95" />
                   <text y="-28" textAnchor="middle" className="text-[10px] fill-white font-medium">Wheel</text>
                   <text y="-16" textAnchor="middle" className="text-[8px] fill-stone-300">17 cm</text>
@@ -1591,6 +2103,101 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   <line x1={wheelWidth/2 - 2} y1="-11" x2={wheelWidth/2 - 2} y2="-5" stroke="white" strokeWidth="1" />
                 </g>
               )}
+
+              {/* Wheel edge to row distance indicator */}
+              {hoveredWheelEdge && (() => {
+                // Determine wheel center position in mm and Y position
+                let wheelMm: number;
+                let wheelY: number;
+
+                if (hoveredWheelEdge.wheel === "front") {
+                  if (frontWheelMm === null) return null;
+                  wheelMm = frontWheelMm;
+                  wheelY = 105;
+                } else if (hoveredWheelEdge.wheel === "frontLeft") {
+                  wheelMm = leftWheelMm;
+                  wheelY = 105;
+                } else if (hoveredWheelEdge.wheel === "frontRight") {
+                  wheelMm = rightWheelMm;
+                  wheelY = 105;
+                } else if (hoveredWheelEdge.wheel === "backLeft") {
+                  wheelMm = leftWheelMm;
+                  wheelY = rowAreaBottom - wheelHeight - 60;
+                } else {
+                  wheelMm = rightWheelMm;
+                  wheelY = rowAreaBottom - wheelHeight - 60;
+                }
+
+                // Calculate wheel edge position (mm for distance calc)
+                const edgeMm = hoveredWheelEdge.edge === "left"
+                  ? wheelMm - wheelWidthMm / 2
+                  : wheelMm + wheelWidthMm / 2;
+
+                // Find nearest row in the same direction as the edge
+                const nearest = getDistanceToNearestRow(edgeMm, hoveredWheelEdge.edge);
+                if (!nearest) return null;
+
+                // Calculate x positions - use visual wheel edge (pixels) for rendering
+                const wheelCenterX = mmToX(wheelMm);
+                const visualEdgeX = hoveredWheelEdge.edge === "left"
+                  ? wheelCenterX - wheelWidth / 2
+                  : wheelCenterX + wheelWidth / 2;
+                const rowX = mmToX(nearest.rowMm);
+                const x1 = Math.min(visualEdgeX, rowX);
+                const x2 = Math.max(visualEdgeX, rowX);
+                const rectWidth = x2 - x1;
+
+                // Distance in cm (based on actual mm calculation)
+                const distanceCm = Math.round(nearest.distance / 10);
+
+                // Y position matches the wheel position, height matches wheel height
+                const indicatorY = wheelY;
+                const indicatorHeight = wheelHeight;
+
+                const currentEdge = hoveredWheelEdge;
+
+                // Label always below the box with background pill
+                const labelX = (x1 + x2) / 2;
+                const labelY = indicatorY + indicatorHeight + 14;
+
+                return (
+                  <g
+                    onMouseEnter={() => setHoveredWheelEdge(currentEdge)}
+                    onMouseLeave={() => setHoveredWheelEdge(null)}
+                    className="cursor-help"
+                  >
+                    {/* Highlighted zone from wheel edge to row */}
+                    <rect
+                      x={x1}
+                      y={indicatorY}
+                      width={rectWidth}
+                      height={indicatorHeight}
+                      fill="rgba(244, 114, 114, 0.4)"
+                      stroke="rgba(244, 114, 114, 0.8)"
+                      strokeWidth="1"
+                    />
+                    {/* Distance label with background pill */}
+                    <rect
+                      x={labelX - 20}
+                      y={labelY - 10}
+                      width={40}
+                      height={14}
+                      rx={3}
+                      fill="rgba(244, 114, 114, 0.9)"
+                      style={{ pointerEvents: "none" }}
+                    />
+                    <text
+                      x={labelX}
+                      y={labelY}
+                      textAnchor="middle"
+                      className="text-[10px] font-medium fill-white"
+                      style={{ pointerEvents: "none" }}
+                    >
+                      {distanceCm} cm
+                    </text>
+                  </g>
+                );
+              })()}
 
             </svg>
           </motion.div>
@@ -1618,11 +2225,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             const seedsPerHa = seedingMode === "group" ? pointsPerHa * seedsPerGroup : pointsPerHa;
             return (
               <>
-                {selectedCrop.emoji} <span className="font-medium text-stone-700 mx-1">{seedsPerHa.toLocaleString()}</span> seeds per hectare
+                {selectedCrop.emoji} <span className="font-medium text-stone-700 mx-1">{seedsPerHa.toLocaleString()}</span> {t("seedsPerHectare")}
               </>
             );
           })() : (
-            <span className="text-stone-400">Line seeding - continuous row</span>
+            <span className="text-stone-400">{t("lineSeeding")}</span>
           )}
         </div>
 
@@ -1631,13 +2238,13 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             {/* 1. Seeding Mode */}
             <div className="flex items-center">
               <div className="flex items-center gap-1.5 w-28">
-                <span className="text-xs text-stone-500">Mode</span>
+                <span className="text-xs text-stone-500">{t("mode")}</span>
                 <div className="relative group">
                   <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-56 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    <span className="font-medium">Single:</span> Precision single seeding<br/>
-                    <span className="font-medium">Group:</span> Precision group seeding<br/>
-                    <span className="font-medium">Line:</span> Continuous line seeding
+                    <span className="font-medium">{t("single")}:</span> {t("singleDesc")}<br/>
+                    <span className="font-medium">{t("group")}:</span> {t("groupDesc")}<br/>
+                    <span className="font-medium">{t("line")}:</span> {t("lineDesc")}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
                   </div>
                 </div>
@@ -1655,7 +2262,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         : "text-stone-500 hover:text-stone-700"
                     }`}
                   >
-                    Single
+                    {t("single")}
                   </button>
                   <button
                     onClick={() => {
@@ -1668,7 +2275,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         : "text-stone-500 hover:text-stone-700"
                     }`}
                   >
-                    Group
+                    {t("group")}
                   </button>
                   <button
                     onClick={() => setSeedingMode("line")}
@@ -1678,7 +2285,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         : "text-stone-500 hover:text-stone-700"
                     }`}
                   >
-                    Line
+                    {t("line")}
                   </button>
                 </div>
               </div>
@@ -1687,11 +2294,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             {/* 2. Seeds per Group */}
             <div className={`flex items-center ${seedingMode !== "group" ? "opacity-40 pointer-events-none" : ""}`}>
               <div className="flex items-center gap-1.5 w-28">
-                <span className="text-xs text-stone-500">Seeds/Group</span>
+                <span className="text-xs text-stone-500">{t("seedsPerGroup")}</span>
                 <div className="relative group">
                   <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    Number of seeds per group when using group seeding mode.
+                    {t("seedsPerGroupTooltip")}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
                   </div>
                 </div>
@@ -1720,11 +2327,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             {/* 3. Plant Spacing */}
             <div className={`flex items-center ${seedingMode === "line" ? "opacity-40 pointer-events-none" : ""}`}>
               <div className="flex items-center gap-1.5 w-28">
-                <span className="text-xs text-stone-500">Spacing</span>
+                <span className="text-xs text-stone-500">{t("spacing")}</span>
                 <div className="relative group">
                   <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    Distance between plants along each row. Min 3cm.
+                    {t("spacingTooltip")}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
                   </div>
                 </div>
@@ -1733,7 +2340,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   <div className="relative group/warn">
                     <AlertCircle className="h-4 w-4 text-red-500 cursor-help animate-pulse" />
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-52 p-2 bg-red-600 text-white text-xs rounded-lg opacity-0 group-hover/warn:opacity-100 transition-opacity pointer-events-none z-10 font-medium">
-                      Precision seeding only possible at 10cm or above
+                      {t("precisionWarning")}
                       <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-red-600" />
                     </div>
                   </div>
@@ -1767,11 +2374,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             {/* 4. Seeding Pattern */}
             <div className={`flex items-center ${seedingMode === "line" ? "opacity-40 pointer-events-none" : ""}`}>
               <div className="flex items-center gap-1.5 w-28">
-                <span className="text-xs text-stone-500">Pattern</span>
+                <span className="text-xs text-stone-500">{t("pattern")}</span>
                 <div className="relative group">
                   <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    Grid or diamond formation for optimal plant spacing.
+                    {t("patternTooltip")}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
                   </div>
                 </div>
@@ -1788,7 +2395,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     }`}
                   >
                     <Grid3X3 className="h-3 w-3" />
-                    Grid
+                    {t("grid")}
                   </button>
                   <button
                     onClick={() => setIsDiamondPattern(true)}
@@ -1800,7 +2407,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     }`}
                   >
                     <Diamond className="h-3 w-3" />
-                    Diamond
+                    {t("diamond")}
                   </button>
                 </div>
               </div>
@@ -1821,8 +2428,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       <div className="lg:col-span-2 space-y-3 md:space-y-4 lg:pl-2">
         {/* Title */}
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight">+Seed Configuration</h1>
-          <p className="text-xs md:text-sm text-stone-500 mt-1">Configure rows and spacing</p>
+          <h1 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
+          <p className="text-xs md:text-sm text-stone-500 mt-1">{t("subtitle")}</p>
         </div>
 
         {/* Seeding System */}
@@ -1881,7 +2488,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           {/* Active Rows */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm text-stone-600 font-medium">Rows</span>
+              <span className="text-sm text-stone-600 font-medium">{t("rows")}</span>
               {is3Wheel && (
                 <div className="relative group">
                   <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
@@ -1924,7 +2531,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           {/* Row Spacing */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm text-stone-600 font-medium">Spacing</span>
+              <span className="text-sm text-stone-600 font-medium">{t("spacing")}</span>
               {/* Front wheel proximity warning (3-wheel only) */}
               {hasFrontWheelProximityWarning && (
                 <div className="relative group/warn">
@@ -2005,7 +2612,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           {/* Wheel Spacing */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm text-stone-600 font-medium">Wheel Spacing</span>
+              <span className="text-sm text-stone-600 font-medium">{t("wheelSpacing")}</span>
               {/* Wheel proximity warning icon */}
               {hasBackWheelProximityWarning && (
                 <div className="relative group/warn">
@@ -2052,7 +2659,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               return (
                 <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-teal-50 border border-teal-200">
                   <Check className="h-3.5 w-3.5 text-teal-600 flex-shrink-0" />
-                  <span className="text-xs text-teal-700">Optimal wheel spacing for this row config</span>
+                  <span className="text-xs text-teal-700">{t("optimalWheelSpacing")}</span>
                 </div>
               );
             }
@@ -2064,7 +2671,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               >
                 <Lightbulb className="h-3.5 w-3.5 text-amber-600 flex-shrink-0" />
                 <span className="text-xs text-amber-700">
-                  Suggested: <strong>{optimal.spacing / 10}cm</strong> — wheels centered between rows
+                  {t("suggestedSpacing", { spacing: optimal.spacing / 10 })}
                 </span>
               </button>
             );
@@ -2072,7 +2679,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
           {/* Working Width */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-stone-600 font-medium">Working Width</span>
+            <span className="text-sm text-stone-600 font-medium">{t("workingWidth")}</span>
             <span className="text-base font-semibold text-stone-900">{(workingWidth / 10).toFixed(0)}cm</span>
           </div>
 
@@ -2080,7 +2687,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
         {/* Crop Selection */}
         <div className="pt-3 border-t border-stone-100">
-          <p className="text-xs font-medium text-stone-500 mb-2">Crop Type</p>
+          <p className="text-xs font-medium text-stone-500 mb-2">{t("cropType")}</p>
           <div className={`flex flex-wrap gap-1.5 ${seedingMode === "line" ? "opacity-40 pointer-events-none" : ""}`}>
             {cropTypes.map((crop) => (
               <button
@@ -2092,7 +2699,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     ? "bg-teal-50 border-2 border-teal-300 scale-105"
                     : "bg-stone-100 hover:bg-stone-200 border-2 border-transparent"
                 }`}
-                title={crop.name}
+                title={tCrops(crop.nameKey)}
               >
                 {crop.emoji}
               </button>
@@ -2102,23 +2709,23 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           {/* Selected crop info & apply button */}
           <div className="mt-3 p-2.5 rounded-lg bg-stone-50 border border-stone-100">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-stone-700">{selectedCrop.emoji} {selectedCrop.name}</span>
+              <span className="text-sm font-medium text-stone-700">{selectedCrop.emoji} {tCrops(selectedCrop.nameKey)}</span>
             </div>
             <div className="text-xs text-stone-500 space-y-0.5 mb-2.5">
               <div className="flex justify-between">
-                <span>Rows</span>
+                <span>{t("rows")}</span>
                 <span className="text-stone-700">{selectedCrop.rows}</span>
               </div>
               <div className="flex justify-between">
-                <span>Row spacing</span>
+                <span>{t("rowSpacing")}</span>
                 <span className="text-stone-700">{selectedCrop.rowDistance / 10}cm</span>
               </div>
               <div className="flex justify-between">
-                <span>Plant spacing</span>
+                <span>{t("plantSpacing")}</span>
                 <span className="text-stone-700">{selectedCrop.plantSpacing}cm</span>
               </div>
               <div className="flex justify-between">
-                <span>Seed size</span>
+                <span>{t("seedSizeLabel")}</span>
                 <span className="text-stone-700">{selectedCrop.seedSize}</span>
               </div>
             </div>
@@ -2127,7 +2734,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               disabled={seedingMode === "line"}
               className="w-full py-1.5 px-3 rounded-md bg-teal-600 hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium transition-colors"
             >
-              Apply {selectedCrop.name} Config
+              {t("applyCropConfig", { crop: tCrops(selectedCrop.nameKey) })}
             </button>
           </div>
         </div>
