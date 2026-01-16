@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Battery, Zap } from "lucide-react";
+import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -18,6 +19,11 @@ interface StepPowerSourceProps {
 export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) {
   const hasGenerator = config.powerSource === "hybrid";
   const hasPowerBank = config.powerBank && !hasGenerator;
+  const t = useTranslations("powerSource");
+
+  const solarFeatureKeys = ["solarPanels", "battery", "zeroEmission"] as const;
+  const powerBankFeatureKeys = ["extraCapacity", "totalCapacity", "chargedExternally", "smartCharging"] as const;
+  const hybridFeatureKeys = ["solarPanels", "battery", "generatorBackup", "allWeather"] as const;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
@@ -116,13 +122,13 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
         {/* Title */}
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">Power Source</h1>
-          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">Choose your power configuration</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
+          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
         </div>
 
         {/* Pure Electric Section */}
         <div className="space-y-2 md:space-y-3">
-          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">Pure Electric</p>
+          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("pureElectric")}</p>
 
           {/* Solar Base */}
           <div className="p-3 md:p-4 rounded-lg border border-stone-900 bg-stone-50">
@@ -132,21 +138,21 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                   <Check className="h-3 w-3 text-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-stone-900 text-sm md:text-base">Solar</p>
-                  <p className="text-xs text-stone-500 mt-0.5">Standard: 12-24h daily operation</p>
+                  <p className="font-medium text-stone-900 text-sm md:text-base">{t("solar.name")}</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{t("solar.description")}</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {["1.6 kW solar panels", "5.7 kWh battery", "Zero emission"].map((feature) => (
+                    {solarFeatureKeys.map((key) => (
                       <span
-                        key={feature}
+                        key={key}
                         className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
                       >
-                        {feature}
+                        {t(`solar.features.${key}`)}
                       </span>
                     ))}
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900">Included</span>
+              <span className="text-sm font-medium text-stone-900">{t("solar.name") === "Solar" ? "Included" : t("solar.name")}</span>
             </div>
           </div>
 
@@ -177,16 +183,16 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-stone-900 text-sm md:text-base">+ Power Bank</p>
+                    <p className="font-medium text-stone-900 text-sm md:text-base">{t("powerBank.name")}</p>
                   </div>
-                  <p className="text-xs text-stone-500 mt-0.5">Extended: Adds ~10h daily operation</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{t("powerBank.description")}</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {["5.7 kWh extra capacity", "11.4 kWh total", "Charged externally", "Smart Solar Charging"].map((feature) => (
+                    {powerBankFeatureKeys.map((key) => (
                       <span
-                        key={feature}
+                        key={key}
                         className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
                       >
-                        {feature}
+                        {t(`powerBank.features.${key}`)}
                       </span>
                     ))}
                   </div>
@@ -201,7 +207,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
 
         {/* Hybrid Power Section */}
         <div className="space-y-2 md:space-y-3 pt-2">
-          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">Hybrid Power</p>
+          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("hybridPower")}</p>
 
           {/* Generator Add-on */}
           <button
@@ -229,16 +235,16 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-stone-900 text-sm md:text-base">Solar + Generator</p>
+                    <p className="font-medium text-stone-900 text-sm md:text-base">{t("hybrid.name")}</p>
                   </div>
-                  <p className="text-xs text-stone-500 mt-0.5">Maximum: 24h+ continuous operation</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{t("hybrid.description")}</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {["1.6 kW solar panels", "5.7 kWh battery", "Generator backup", "All-weather operation"].map((feature) => (
+                    {hybridFeatureKeys.map((key) => (
                       <span
-                        key={feature}
+                        key={key}
                         className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
                       >
-                        {feature}
+                        {t(`hybrid.features.${key}`)}
                       </span>
                     ))}
                   </div>
@@ -254,10 +260,10 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
         {/* Info text */}
         <p className="text-sm text-stone-500 pt-4 border-t border-stone-100">
           {hasGenerator
-            ? "Hybrid configuration adds generator backup for maximum uptime in all conditions."
+            ? t("info.hybrid")
             : hasPowerBank
-            ? "Extended electric operation with double battery capacity - stays fully emission-free."
-            : "Pure solar power provides clean, quiet operation ideal for most farming conditions."}
+            ? t("info.powerBank")
+            : t("info.solar")}
         </p>
       </div>
     </div>

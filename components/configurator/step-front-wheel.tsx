@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Info, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -20,43 +21,17 @@ interface StepFrontWheelProps {
 
 interface WheelOption {
   id: FrontWheel;
-  name: string;
-  subtitle: string;
+  nameKey: string;
+  subtitleKey: string;
   wheelCount: "3-wheel" | "4-wheel";
   price: number;
-  description: string;
+  descriptionKey: string;
 }
-
-const wheelOptions: WheelOption[] = [
-  {
-    id: "PFW",
-    name: "Passive Front Wheel",
-    subtitle: "Best for flat fields with wider row spacing (45–50 cm)",
-    wheelCount: "3-wheel",
-    price: 0,
-    description: "The standard wheel configuration provides stability and smooth guidance on flat terrain. Ideal for crops with even row counts and wider row spacing, such as sugar beets (45–50 cm).",
-  },
-  {
-    id: "AFW",
-    name: "Active Front Wheel",
-    subtitle: "Auto-tilting stability for slopes above 8%",
-    wheelCount: "3-wheel",
-    price: PRICES.frontWheel.AFW,
-    description: "For hilly terrains, the Active Front Wheel adds an actuator that automatically tilts the front wheel to maintain stability. Recommended for slopes above 8% and side inclines over 5%, and for crops with even row numbers and wider spacing (around 45–50 cm).",
-  },
-  {
-    id: "DFW",
-    name: "Dual Front Wheel",
-    subtitle: "Narrow row spacing down to 22.5 cm & bed systems",
-    wheelCount: "4-wheel",
-    price: PRICES.frontWheel.DFW,
-    description: "Equipped with two front wheels instead of one, this setup enhances balance and precision, particularly for crops with narrow row spacing down to 22.5 cm. Perfect for flat fields and bed systems, works well with both even and uneven row counts.",
-  },
-];
 
 // Info tooltip for individual options
 function InfoTooltip({ description }: { description: string }) {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("wheelConfig");
 
   return (
     <div className="relative">
@@ -69,7 +44,7 @@ function InfoTooltip({ description }: { description: string }) {
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
         className="p-1 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
-        aria-label="More information"
+        aria-label={t("moreInfo")}
       >
         <Info className="h-4 w-4" />
       </button>
@@ -148,6 +123,8 @@ function RobotIllustration({ wheelConfig }: { wheelConfig: FrontWheel }) {
 }
 
 function WheelInfoPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const t = useTranslations("wheelConfig");
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -169,7 +146,7 @@ function WheelInfoPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 overflow-y-auto"
           >
             <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-stone-900">Wheel Configurations</h2>
+              <h2 className="text-lg font-semibold text-stone-900">{t("infoPanel.title")}</h2>
               <button
                 onClick={onClose}
                 className="p-2 -mr-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
@@ -181,22 +158,18 @@ function WheelInfoPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             <div className="px-6 py-6 space-y-6">
               {/* Intro */}
               <div className="text-sm text-stone-600 leading-relaxed">
-                <p>
-                  Every field is different, and so is every FarmDroid. The FD20 can be tailored to your specific conditions with adjustable wheel distances, row numbers, and a choice of three front wheel configurations.
-                </p>
-                <p className="mt-3">
-                  Your ideal setup depends on several parameters, including crop type, row spacing, soil conditions, and the slope of your field. The FD20's dual back wheels can be adjusted between <strong>160–230 cm</strong> in 10 cm increments.
-                </p>
+                <p>{t("infoPanel.intro")}</p>
+                <p className="mt-3">{t("infoPanel.adjustmentRange")}</p>
               </div>
 
               {/* Passive Front Wheel */}
               <div className="border-t border-stone-100 pt-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="h-2 w-2 rounded-full bg-stone-400" />
-                  <h3 className="font-semibold text-stone-900">1. Passive Front Wheel</h3>
+                  <h3 className="font-semibold text-stone-900">{t("infoPanel.passiveFrontWheel")}</h3>
                 </div>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  The standard wheel configuration provides stability and smooth guidance on flat terrain. Ideal for crops with even row counts and wider row spacing, such as sugar beets (45–50 cm).
+                  {t("options.pfw.description")}
                 </p>
               </div>
 
@@ -204,10 +177,10 @@ function WheelInfoPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <div className="border-t border-stone-100 pt-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <h3 className="font-semibold text-stone-900">2. Dual Front Wheel</h3>
+                  <h3 className="font-semibold text-stone-900">{t("infoPanel.dualFrontWheel")}</h3>
                 </div>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  Equipped with two front wheels instead of one, this setup enhances balance and precision, particularly for crops with narrow row spacing down to 22.5 cm. Perfect for flat fields and bed systems, the Dual Front Wheel configuration works well with both even and uneven row counts. It can be selected for new robots or retrofitted to existing ones.
+                  {t("options.dfw.description")}
                 </p>
               </div>
 
@@ -215,17 +188,17 @@ function WheelInfoPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <div className="border-t border-stone-100 pt-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="h-2 w-2 rounded-full bg-amber-500" />
-                  <h3 className="font-semibold text-stone-900">3. Active Front Wheel</h3>
+                  <h3 className="font-semibold text-stone-900">{t("infoPanel.activeFrontWheel")}</h3>
                 </div>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  For hilly terrains, the Active Front Wheel configuration adds an actuator that automatically tilts the front wheel to maintain stability. This intelligent tilting system distributes weight evenly across the back wheels, improving traction and minimizing front-end impact. Recommended for slopes above 8% and side inclines over 5%, and for crops with even row numbers and wider spacing (around 45–50 cm).
+                  {t("options.afw.description")}
                 </p>
               </div>
 
               {/* Footer note */}
               <div className="border-t border-stone-100 pt-6">
                 <p className="text-sm text-stone-500 italic">
-                  With these configuration options, you can fine-tune your FarmDroid to match your terrain, crops, and working style. Our robot specialists are always ready to help you design the setup that fits your farm best.
+                  {t("infoPanel.footer")}
                 </p>
               </div>
             </div>
@@ -237,13 +210,44 @@ function WheelInfoPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
 }
 
 const pfwImages = [
-  { src: "/farmdroid-pfw-side.png", label: "Side View" },
-  { src: "/farmdroid-pfw.png", label: "Front View" },
+  { src: "/farmdroid-pfw-side.png", labelKey: "views.sideView" },
+  { src: "/farmdroid-pfw.png", labelKey: "views.frontView" },
 ];
 
 export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
   const [showInfo, setShowInfo] = useState(false);
   const [pfwViewIndex, setPfwViewIndex] = useState(0);
+  const t = useTranslations("wheelConfig");
+  const tCommon = useTranslations("common");
+  const tBaseRobot = useTranslations("baseRobot");
+
+  const wheelOptions: WheelOption[] = [
+    {
+      id: "PFW",
+      nameKey: "options.pfw.name",
+      subtitleKey: "options.pfw.subtitle",
+      wheelCount: "3-wheel",
+      price: 0,
+      descriptionKey: "options.pfw.description",
+    },
+    {
+      id: "AFW",
+      nameKey: "options.afw.name",
+      subtitleKey: "options.afw.subtitle",
+      wheelCount: "3-wheel",
+      price: PRICES.frontWheel.AFW,
+      descriptionKey: "options.afw.description",
+    },
+    {
+      id: "DFW",
+      nameKey: "options.dfw.name",
+      subtitleKey: "options.dfw.subtitle",
+      wheelCount: "4-wheel",
+      price: PRICES.frontWheel.DFW,
+      descriptionKey: "options.dfw.description",
+    },
+  ];
+
   const selectedOption = wheelOptions.find(o => o.id === config.frontWheel);
 
   return (
@@ -269,7 +273,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                   <div className="absolute bottom-[21%] left-1/2 -translate-x-1/2 w-[55%] h-5 bg-stone-900/40 rounded-[100%] blur-lg" />
                   <Image
                     src="/farmdroid-afw.png"
-                    alt="FarmDroid FD20 - Active Front Wheel"
+                    alt={`FarmDroid FD20 - ${t("options.afw.name")}`}
                     fill
                     priority
                     className="object-contain"
@@ -294,7 +298,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                       >
                         <Image
                           src={pfwImages[pfwViewIndex].src}
-                          alt={`FarmDroid FD20 - Passive Front Wheel - ${pfwImages[pfwViewIndex].label}`}
+                          alt={`FarmDroid FD20 - ${t("options.pfw.name")} - ${tBaseRobot(pfwImages[pfwViewIndex].labelKey)}`}
                           fill
                           priority
                           className="object-contain"
@@ -310,7 +314,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                         key={img.src}
                         onClick={() => setPfwViewIndex(index)}
                         className="group relative p-2"
-                        aria-label={`Switch to ${img.label}`}
+                        aria-label={tCommon("switchTo", { label: tBaseRobot(img.labelKey) })}
                       >
                         <div
                           className={`h-2 rounded-full transition-all duration-300 ${
@@ -321,7 +325,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                         />
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                           <div className="bg-stone-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                            {img.label}
+                            {tBaseRobot(img.labelKey)}
                           </div>
                         </div>
                       </button>
@@ -340,12 +344,12 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
         {/* Config type indicator */}
         <div className="flex justify-center gap-6 md:gap-8 pt-4 md:pt-6 border-t border-stone-100">
           <div className={`text-center ${config.frontWheel !== "DFW" ? "opacity-100" : "opacity-40"}`}>
-            <p className="text-base md:text-lg font-semibold text-stone-900">3-wheel</p>
-            <p className="text-xs text-stone-500">Open field</p>
+            <p className="text-base md:text-lg font-semibold text-stone-900">{t("configTypes.threeWheel")}</p>
+            <p className="text-xs text-stone-500">{t("configTypes.openField")}</p>
           </div>
           <div className={`text-center ${config.frontWheel === "DFW" ? "opacity-100" : "opacity-40"}`}>
-            <p className="text-base md:text-lg font-semibold text-stone-900">4-wheel</p>
-            <p className="text-xs text-stone-500">Bed config</p>
+            <p className="text-base md:text-lg font-semibold text-stone-900">{t("configTypes.fourWheel")}</p>
+            <p className="text-xs text-stone-500">{t("configTypes.bedConfig")}</p>
           </div>
         </div>
       </div>
@@ -355,16 +359,16 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
         {/* Title */}
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">Wheel Configuration</h1>
+            <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
             <button
               onClick={() => setShowInfo(true)}
               className="p-1.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
-              aria-label="Learn more about wheel configurations"
+              aria-label={t("learnMore")}
             >
               <Info className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">Choose between 3-wheel and 4-wheel setup</p>
+          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
         </div>
 
         {/* Info Panel */}
@@ -388,18 +392,18 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-stone-900 text-sm md:text-base">{option.name}</p>
-                      <InfoTooltip description={option.description} />
+                      <p className="font-medium text-stone-900 text-sm md:text-base">{t(option.nameKey)}</p>
+                      <InfoTooltip description={t(option.descriptionKey)} />
                       {isSelected && (
                         <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center">
                           <Check className="h-3 w-3 text-white" />
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-stone-500 mt-0.5">{option.subtitle}</p>
+                    <p className="text-xs text-stone-500 mt-0.5">{t(option.subtitleKey)}</p>
                   </div>
                   <span className="text-sm md:text-base font-medium text-stone-900 flex-shrink-0">
-                    {option.price === 0 ? "Included" : `+${formatPrice(option.price, config.currency)}`}
+                    {option.price === 0 ? tCommon("included") : `+${formatPrice(option.price, config.currency)}`}
                   </span>
                 </div>
               </button>
@@ -410,11 +414,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
         {/* Info based on selection */}
         <div className="pt-4 border-t border-stone-100">
           <p className="text-sm text-stone-500">
-            {config.frontWheel === "DFW"
-              ? "4-wheel configuration provides maximum stability. All wheels run outside the rows, ideal for bed cultivation."
-              : config.frontWheel === "AFW"
-              ? "Active front wheel provides better traction in soft soil conditions while maintaining open field capability."
-              : "Passive front wheel runs between rows, allowing for wider working width in open field cultivation."}
+            {t(`selectionInfo.${config.frontWheel.toLowerCase()}`)}
           </p>
         </div>
       </div>

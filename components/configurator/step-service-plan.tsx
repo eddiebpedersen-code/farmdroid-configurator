@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, X, Shield, Star, Headphones, Cpu, Cloud, Smartphone, Radio, Database, MapPin, RefreshCw, Zap } from "lucide-react";
+import { Check, X, Shield, Headphones, Cpu, Cloud, Smartphone, Radio, Database, MapPin, RefreshCw, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -16,26 +17,28 @@ interface StepServicePlanProps {
   priceBreakdown: PriceBreakdown;
 }
 
-interface Feature {
-  name: string;
+interface FeatureConfig {
+  translationKey: string;
   icon: typeof Check;
   standard: boolean;
   premium: boolean;
 }
 
-const features: Feature[] = [
-  { name: "Support centre (phone and email)", icon: Headphones, standard: true, premium: true },
-  { name: "AI assistant and Knowledge Base", icon: Cpu, standard: true, premium: true },
-  { name: "Software maintenance", icon: RefreshCw, standard: true, premium: true },
-  { name: "FarmDroid App", icon: Smartphone, standard: true, premium: true },
-  { name: "IoT connectivity (base station + robot)", icon: Radio, standard: true, premium: true },
-  { name: "Field data backup", icon: Database, standard: true, premium: true },
-  { name: "Base station survey", icon: MapPin, standard: true, premium: true },
-  { name: "Connection to Agrirouter", icon: Cloud, standard: false, premium: true },
-  { name: "Software upgrades", icon: Zap, standard: false, premium: true },
+const featureConfigs: FeatureConfig[] = [
+  { translationKey: "supportCentre", icon: Headphones, standard: true, premium: true },
+  { translationKey: "aiAssistant", icon: Cpu, standard: true, premium: true },
+  { translationKey: "softwareMaintenance", icon: RefreshCw, standard: true, premium: true },
+  { translationKey: "farmDroidApp", icon: Smartphone, standard: true, premium: true },
+  { translationKey: "iotConnectivity", icon: Radio, standard: true, premium: true },
+  { translationKey: "fieldDataBackup", icon: Database, standard: true, premium: true },
+  { translationKey: "baseStationSurvey", icon: MapPin, standard: true, premium: true },
+  { translationKey: "agrirouter", icon: Cloud, standard: false, premium: true },
+  { translationKey: "softwareUpgrades", icon: Zap, standard: false, premium: true },
 ];
 
 export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) {
+  const t = useTranslations("servicePlan");
+  const tCommon = useTranslations("common");
   const selectPlan = (plan: ServicePlan) => {
     updateConfig({ servicePlan: plan });
   };
@@ -53,7 +56,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
           {/* Header row */}
           <div className="grid grid-cols-3 border-b border-stone-200">
             <div className="p-4 bg-stone-50">
-              <span className="text-sm font-medium text-stone-500">Features</span>
+              <span className="text-sm font-medium text-stone-500">{t("features")}</span>
             </div>
             <div
               className={`p-4 text-center transition-colors ${
@@ -62,9 +65,9 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   : "bg-stone-50"
               }`}
             >
-              <div className="text-sm font-semibold text-stone-900">Care Standard</div>
+              <div className="text-sm font-semibold text-stone-900">{t("plans.standard.name")}</div>
               <div className="text-xs text-stone-500 mt-0.5">
-                {formatPrice(PRICES.servicePlan.standard, config.currency)}/year
+                {formatPrice(PRICES.servicePlan.standard, config.currency)}{t("perYear")}
               </div>
             </div>
             <div
@@ -74,26 +77,26 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   : "bg-stone-50"
               }`}
             >
-              <div className="text-sm font-semibold text-stone-900">Care Premium</div>
+              <div className="text-sm font-semibold text-stone-900">{t("plans.premium.name")}</div>
               <div className="text-xs text-stone-500 mt-0.5">
-                {formatPrice(PRICES.servicePlan.premium, config.currency)}/year
+                {formatPrice(PRICES.servicePlan.premium, config.currency)}{t("perYear")}
               </div>
             </div>
           </div>
 
           {/* Feature rows */}
-          {features.map((feature, index) => {
+          {featureConfigs.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <div
-                key={feature.name}
+                key={feature.translationKey}
                 className={`grid grid-cols-3 ${
-                  index < features.length - 1 ? "border-b border-stone-100" : ""
+                  index < featureConfigs.length - 1 ? "border-b border-stone-100" : ""
                 }`}
               >
                 <div className="p-3 flex items-center gap-2">
                   <Icon className="h-4 w-4 text-stone-400 flex-shrink-0" />
-                  <span className="text-sm text-stone-700">{feature.name}</span>
+                  <span className="text-sm text-stone-700">{t(`featuresList.${feature.translationKey}`)}</span>
                 </div>
                 <div
                   className={`p-3 flex items-center justify-center ${
@@ -124,14 +127,14 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
           {/* Billing note */}
           <div className="grid grid-cols-3 border-t border-stone-200 bg-stone-50">
             <div className="p-3">
-              <span className="text-xs text-stone-500 italic">Billed annually</span>
+              <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
             </div>
             <div className={`p-3 text-center ${config.servicePlan === "standard" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500" : ""}`}>
-              <span className="text-xs text-stone-500 italic">Billed annually</span>
+              <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
             </div>
             <div className={`p-3 text-center ${config.servicePlan === "premium" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500 rounded-br-xl" : ""}`}>
               <span className="text-xs text-teal-600 italic font-medium">
-                1st year included
+                {t("firstYearIncluded")}
               </span>
             </div>
           </div>
@@ -143,16 +146,16 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
         {/* Title */}
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-stone-900 tracking-tight">
-            Service & Warranty
+            {t("title")}
           </h1>
           <p className="text-xs md:text-sm text-stone-500 mt-1">
-            Choose your support and protection plan
+            {t("subtitle")}
           </p>
         </div>
 
         {/* Plan Selection */}
         <div className="space-y-2">
-          <span className="text-sm font-medium text-stone-700">Service Plan</span>
+          <span className="text-sm font-medium text-stone-700">{t("servicePlanLabel")}</span>
 
           {/* Premium Option */}
           <button
@@ -166,9 +169,9 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-stone-900">Care Premium</span>
+                  <span className="text-sm font-semibold text-stone-900">{t("plans.premium.name")}</span>
                   <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">
-                    RECOMMENDED
+                    {t("plans.premium.recommended")}
                   </span>
                   {config.servicePlan === "premium" && (
                     <div className="h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
@@ -177,7 +180,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   )}
                 </div>
                 <p className="text-xs text-stone-500 mt-1">
-                  Full support with software upgrades and Agrirouter
+                  {t("plans.premium.description")}
                 </p>
               </div>
               <div className="text-right ml-4">
@@ -185,7 +188,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                 </span>
                 <p className="text-sm font-semibold text-teal-600">
-                  {formatPrice(0, config.currency)} first year
+                  {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
                 </p>
               </div>
             </div>
@@ -203,7 +206,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-stone-900">Care Standard</span>
+                  <span className="text-sm font-semibold text-stone-900">{t("plans.standard.name")}</span>
                   {config.servicePlan === "standard" && (
                     <div className="h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
                       <Check className="h-3 w-3 text-white" />
@@ -211,7 +214,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   )}
                 </div>
                 <p className="text-xs text-stone-500 mt-1">
-                  Essential support and maintenance
+                  {t("plans.standard.description")}
                 </p>
               </div>
               <span className="text-sm font-semibold text-stone-900 ml-4">
@@ -230,7 +233,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm text-stone-600">No service plan</span>
+              <span className="text-sm text-stone-600">{t("plans.none")}</span>
               {config.servicePlan === "none" && (
                 <div className="h-5 w-5 rounded-full bg-stone-400 flex items-center justify-center">
                   <Check className="h-3 w-3 text-white" />
@@ -244,7 +247,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
         <div className="pt-4 border-t border-stone-100">
           <div className="flex items-center gap-2 mb-3">
             <Shield className="h-4 w-4 text-stone-600" />
-            <span className="text-sm font-medium text-stone-700">Warranty Extension</span>
+            <span className="text-sm font-medium text-stone-700">{t("warranty.title")}</span>
           </div>
 
           <button
@@ -259,7 +262,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-stone-900">
-                    +2 Year Warranty Extension
+                    {t("warranty.extension")}
                   </span>
                   {config.warrantyExtension && (
                     <div className="h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
@@ -268,7 +271,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   )}
                 </div>
                 <p className="text-xs text-stone-500 mt-1">
-                  Covers parts and replacement. Requires FD20 to be serviced annually.
+                  {t("warranty.description")}
                 </p>
               </div>
               <span className="text-sm font-semibold text-stone-900 ml-4">

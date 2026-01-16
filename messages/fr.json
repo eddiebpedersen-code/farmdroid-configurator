@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "title": "Configurateur FarmDroid",
+    "description": "Configurez votre robot FarmDroid FD20"
+  },
+  "navigation": {
+    "back": "Retour",
+    "next": "Suivant",
+    "continue": "Continuer",
+    "reset": "Réinitialiser",
+    "startOver": "Recommencer"
+  },
+  "steps": {
+    "baseRobot": {
+      "title": "Robot de Base",
+      "subtitle": "Robot FD20 V2.6"
+    },
+    "wheelConfig": {
+      "title": "Configuration des Roues",
+      "subtitle": "Sélectionner la configuration des roues"
+    },
+    "seedConfig": {
+      "title": "+Configuration Semis",
+      "subtitle": "Configurez votre système de semis"
+    },
+    "weedConfig": {
+      "title": "+Configuration Désherbage",
+      "subtitle": "Configurez votre système de désherbage"
+    },
+    "powerSource": {
+      "title": "Source d'Énergie",
+      "subtitle": "Choisissez votre configuration d'alimentation"
+    },
+    "accessories": {
+      "title": "Accessoires",
+      "subtitle": "Équipement supplémentaire"
+    },
+    "servicePlan": {
+      "title": "Service & Garantie",
+      "subtitle": "Plans de support et de protection"
+    },
+    "summary": {
+      "title": "Récapitulatif",
+      "subtitle": "Vérifiez votre configuration"
+    }
+  },
+  "baseRobot": {
+    "productTitle": "Robot FD20 V2.6",
+    "productDescription": "Le robot autonome de semis et de désherbage pour l'agriculture de précision",
+    "baseConfiguration": "Configuration de base",
+    "included": "Inclus :",
+    "delivery": {
+      "label": "Livraison estimée :",
+      "value": "4-8 semaines après commande"
+    },
+    "features": {
+      "solarPower": "Système solaire 1,6 kW",
+      "batteries": "Batteries lithium 5,7 kWh de capacité",
+      "gps": "Système de navigation GPS double",
+      "autonomous": "Fonctionnement autonome",
+      "remoteMonitoring": "Surveillance à distance via application",
+      "premiumSubscription": "Abonnement premium (1 an inclus)",
+      "warranty": "1 an de garantie"
+    },
+    "specs": {
+      "rows": "rangs",
+      "upTo": "Jusqu'à",
+      "runtime": "Autonomie",
+      "solarPeakPower": "Puissance solaire crête",
+      "lithiumBatteries": "Batteries lithium"
+    },
+    "views": {
+      "sideView": "Vue latérale",
+      "frontView": "Vue de face"
+    }
+  },
+  "wheelConfig": {
+    "title": "Configuration des Roues",
+    "subtitle": "Choisissez entre configuration 3 roues et 4 roues",
+    "learnMore": "En savoir plus sur les configurations de roues",
+    "moreInfo": "Plus d'informations",
+    "options": {
+      "pfw": {
+        "name": "Roue Avant Passive",
+        "subtitle": "Idéale pour terrains plats avec écartement large (45-50 cm)",
+        "description": "La configuration de roue standard offre stabilité et guidage régulier sur terrain plat. Idéale pour les cultures avec un nombre pair de rangs et un écartement plus large, comme les betteraves sucrières (45-50 cm)."
+      },
+      "afw": {
+        "name": "Roue Avant Active",
+        "subtitle": "Stabilité auto-inclinable pour pentes supérieures à 8%",
+        "description": "Pour les terrains vallonnés, la roue avant active ajoute un actionneur qui incline automatiquement la roue avant pour maintenir la stabilité. Recommandé pour les pentes supérieures à 8% et les inclinaisons latérales supérieures à 5%, et pour les cultures avec un nombre pair de rangs et un écartement plus large (environ 45-50 cm)."
+      },
+      "dfw": {
+        "name": "Double Roue Avant",
+        "subtitle": "Écartement étroit jusqu'à 22,5 cm et systèmes de planches",
+        "description": "Équipée de deux roues avant au lieu d'une, cette configuration améliore l'équilibre et la précision, particulièrement pour les cultures avec écartement étroit jusqu'à 22,5 cm. Parfait pour les terrains plats et les systèmes de planches, fonctionne bien avec un nombre pair ou impair de rangs."
+      }
+    },
+    "configTypes": {
+      "threeWheel": "3 roues",
+      "fourWheel": "4 roues",
+      "openField": "Plein champ",
+      "bedConfig": "Config. planches"
+    },
+    "infoPanel": {
+      "title": "Configurations des Roues",
+      "intro": "Chaque champ est différent, tout comme chaque FarmDroid. Le FD20 peut être adapté à vos conditions spécifiques avec des distances de roues réglables, des nombres de rangs et un choix de trois configurations de roue avant.",
+      "adjustmentRange": "Votre configuration idéale dépend de plusieurs paramètres, notamment le type de culture, l'écartement des rangs, les conditions du sol et la pente de votre champ. Les doubles roues arrière du FD20 peuvent être ajustées entre 160-230 cm par incréments de 10 cm.",
+      "passiveFrontWheel": "1. Roue Avant Passive",
+      "dualFrontWheel": "2. Double Roue Avant",
+      "activeFrontWheel": "3. Roue Avant Active",
+      "footer": "Avec ces options de configuration, vous pouvez ajuster finement votre FarmDroid pour correspondre à votre terrain, vos cultures et votre style de travail. Nos spécialistes robots sont toujours prêts à vous aider à concevoir la configuration qui convient le mieux à votre exploitation."
+    },
+    "selectionInfo": {
+      "dfw": "La configuration 4 roues offre une stabilité maximale. Toutes les roues roulent en dehors des rangs, idéal pour la culture sur planches.",
+      "afw": "La roue avant active offre une meilleure traction dans les sols mous tout en maintenant la capacité en plein champ.",
+      "pfw": "La roue avant passive roule entre les rangs, permettant une plus grande largeur de travail en culture plein champ."
+    }
+  },
+  "powerSource": {
+    "title": "Source d'Énergie",
+    "subtitle": "Choisissez votre configuration d'alimentation",
+    "pureElectric": "100% Électrique",
+    "hybridPower": "Énergie Hybride",
+    "solar": {
+      "name": "Solaire",
+      "description": "Standard : 12-24h de fonctionnement quotidien",
+      "features": {
+        "solarPanels": "Panneaux solaires 1,6 kW",
+        "battery": "Batterie 5,7 kWh",
+        "zeroEmission": "Zéro émission"
+      }
+    },
+    "powerBank": {
+      "name": "+ Batterie Externe",
+      "description": "Étendu : Ajoute ~10h de fonctionnement quotidien",
+      "features": {
+        "extraCapacity": "5,7 kWh de capacité supplémentaire",
+        "totalCapacity": "11,4 kWh au total",
+        "chargedExternally": "Chargée en externe",
+        "smartCharging": "Charge Solaire Intelligente"
+      }
+    },
+    "hybrid": {
+      "name": "Solaire + Générateur",
+      "description": "Maximum : 24h+ de fonctionnement continu",
+      "features": {
+        "solarPanels": "Panneaux solaires 1,6 kW",
+        "battery": "Batterie 5,7 kWh",
+        "generatorBackup": "Générateur de secours",
+        "allWeather": "Fonctionnement tous temps"
+      }
+    },
+    "info": {
+      "hybrid": "La configuration hybride ajoute un générateur de secours pour une disponibilité maximale dans toutes les conditions.",
+      "powerBank": "Fonctionnement électrique étendu avec double capacité de batterie - reste totalement sans émission.",
+      "solar": "L'énergie solaire pure offre un fonctionnement propre et silencieux idéal pour la plupart des conditions agricoles."
+    }
+  },
+  "spraySystem": {
+    "title": "+Configuration Désherbage",
+    "subtitle": "Configurez votre système de désherbage",
+    "mechanicalWeeding": "Désherbage Mécanique",
+    "spraySystemSection": "+Système de Pulvérisation",
+    "standardWeedConfig": {
+      "name": "Config. +Désherbage Standard",
+      "description": "Inclus avec chaque FarmDroid",
+      "features": {
+        "weedingWires": "Fils de désherbage",
+        "knifeInrow": "Couteau intra-rang"
+      }
+    },
+    "combiTool": {
+      "name": "+ Outil Combi",
+      "description": "Outil multifonction pour désherbage amélioré",
+      "features": {
+        "fingerWeeding": "Désherbage à doigts",
+        "ridging": "Buttage",
+        "perActiveRow": "Par rang actif"
+      },
+      "pricePerRow": "{price} × {count} rangs"
+    },
+    "spray": {
+      "name": "Système +SPRAY",
+      "description": "Pulvérisation de précision avec guidage GPS",
+      "features": {
+        "tankCapacity": "Capacité de réservoir 110L",
+        "precisionNozzles": "Buses de précision par rang",
+        "gpsGuided": "Application guidée GPS",
+        "variableRate": "Contrôle de débit variable"
+      },
+      "baseSystem": "Système de base",
+      "rowNozzles": "{count} buses de rang"
+    },
+    "info": {
+      "both": "Configuration complète de désherbage avec outils mécaniques et pulvérisation de précision pour un contrôle maximal des mauvaises herbes.",
+      "sprayOnly": "Le système +SPRAY permet une application ciblée d'herbicides avec précision GPS, réduisant l'utilisation de produits chimiques jusqu'à 90%.",
+      "combiOnly": "Désherbage mécanique amélioré avec accessoires Outil Combi pour une meilleure gestion du sol et contrôle des mauvaises herbes.",
+      "standard": "Configuration de désherbage mécanique standard, parfaite pour les exigences de certification biologique."
+    }
+  },
+  "accessories": {
+    "title": "Accessoires",
+    "subtitle": "Équipement supplémentaire pour votre FarmDroid",
+    "items": {
+      "starterKit": {
+        "name": "Kit de Démarrage",
+        "description": "Pack d'entretien essentiel avec station de base V3 et outils de configuration de terrain"
+      },
+      "roadTransport": {
+        "name": "Plateforme de Transport Routier",
+        "description": "Plateforme de transport pour déplacer le FD20 entre les champs sur routes publiques"
+      },
+      "fieldBracket": {
+        "name": "Support de Terrain avec Chaîne",
+        "description": "Support de montage sécurisé pour le positionnement au champ"
+      },
+      "powerBank": {
+        "name": "Batterie Externe",
+        "description": "Capacité de batterie supplémentaire pour fonctionnement prolongé"
+      },
+      "combiTool": {
+        "name": "Outil Combi",
+        "description": "Accessoire outil multifonction"
+      }
+    },
+    "recommended": "Recommandé",
+    "selected": "Sélectionné",
+    "total": "Total",
+    "itemsLabel": "articles",
+    "emptyMessage": "Les accessoires sont optionnels. Vous pouvez les ajouter plus tard via notre service après-vente.",
+    "selectedMessage": "{count} article accessoire sélectionné pour {price}.",
+    "selectedMessagePlural": "{count} articles accessoires sélectionnés pour {price}."
+  },
+  "servicePlan": {
+    "title": "Service & Garantie",
+    "subtitle": "Choisissez votre plan de support et de protection",
+    "features": "Fonctionnalités",
+    "servicePlanLabel": "Plan de Service",
+    "billedAnnually": "Facturé annuellement",
+    "firstYearIncluded": "1ère année incluse",
+    "perYear": "/an",
+    "plans": {
+      "none": "Pas de plan de service",
+      "standard": {
+        "name": "Care Standard",
+        "description": "Support et maintenance essentiels"
+      },
+      "premium": {
+        "name": "Care Premium",
+        "description": "Support complet avec mises à jour logicielles et Agrirouter",
+        "recommended": "RECOMMANDÉ"
+      }
+    },
+    "featuresList": {
+      "supportCentre": "Centre de support (téléphone et email)",
+      "aiAssistant": "Assistant IA et Base de Connaissances",
+      "softwareMaintenance": "Maintenance logicielle",
+      "farmDroidApp": "Application FarmDroid",
+      "iotConnectivity": "Connectivité IoT (station de base + robot)",
+      "fieldDataBackup": "Sauvegarde des données terrain",
+      "baseStationSurvey": "Levé de station de base",
+      "agrirouter": "Connexion à Agrirouter",
+      "softwareUpgrades": "Mises à jour logicielles"
+    },
+    "warranty": {
+      "title": "Extension de Garantie",
+      "extension": "+2 Ans d'Extension de Garantie",
+      "description": "Couvre les pièces et le remplacement. Nécessite un entretien annuel du FD20."
+    }
+  },
+  "summary": {
+    "title": "Votre Configuration",
+    "subtitle": "Vérifiez et finalisez votre FarmDroid",
+    "total": "Total",
+    "delivery": "Livraison estimée : 12 semaines après commande",
+    "lineItems": {
+      "baseRobot": "Robot FD20 V2.6",
+      "hybridPower": "Système d'Alimentation Hybride",
+      "activeFrontWheel": "Roue Avant Active",
+      "dualFrontWheel": "Double Roue Avant",
+      "activeRows": "{count}× Rangs Actifs ({size})",
+      "passiveRows": "{count}× Rangs Passifs",
+      "spraySystem": "Système +SPRAY",
+      "accessories": "Accessoires",
+      "warrantyExtension": "+2 Ans d'Extension de Garantie"
+    },
+    "configLabels": {
+      "rows": "rangs",
+      "active": "Actifs",
+      "workingWidth": "Largeur de Travail",
+      "power": "Énergie",
+      "solar": "Solaire",
+      "hybrid": "Hybride"
+    },
+    "carePlan": "Care {plan}"
+  },
+  "forms": {
+    "name": "Nom",
+    "company": "Entreprise",
+    "email": "Email",
+    "dealName": "Nom de l'Affaire",
+    "contactName": "Nom du Contact",
+    "placeholders": {
+      "yourName": "Votre nom",
+      "companyName": "Nom de l'entreprise",
+      "email": "vous@exemple.fr",
+      "dealName": "ex. Ferme Dupont FD20",
+      "primaryContact": "Contact principal"
+    }
+  },
+  "modals": {
+    "emailQuote": {
+      "title": "Devis par Email",
+      "quotePreview": "Aperçu du Devis",
+      "sendQuote": "Envoyer le Devis",
+      "sending": "Envoi en cours...",
+      "sent": "Devis Envoyé !",
+      "checkInbox": "Vérifiez votre boîte de réception"
+    },
+    "createDeal": {
+      "title": "Créer une Affaire",
+      "dealValue": "Valeur de l'Affaire",
+      "createDeal": "Créer l'Affaire",
+      "creating": "Création en cours...",
+      "created": "Affaire Créée !",
+      "addedToPipeline": "Ajoutée à votre pipeline"
+    }
+  },
+  "common": {
+    "included": "Inclus",
+    "switchTo": "Passer à {label}",
+    "firstYear": "première année",
+    "freeFirstYear": "{price} première année"
+  },
+  "rowConfig": {
+    "title": "+Configuration Semis",
+    "subtitle": "Configurez votre système de semis",
+    "seedSize": "Taille des Graines",
+    "small": "Petite (6mm)",
+    "large": "Grande (14mm)",
+    "activeRows": "Rangs Actifs",
+    "rowSpacing": "Écartement des Rangs",
+    "wheelSpacing": "Écartement des Roues",
+    "workingWidth": "Largeur de Travail",
+    "passiveRows": "Rangs Passifs",
+    "rowPlacement": "Placement des Rangs",
+    "bedMode": "Planche",
+    "fieldMode": "Champ",
+    "customMode": "Personnalisé",
+    "dailyCapacity": "Capacité Journalière",
+    "hectaresPerDay": "ha/jour",
+    "hours": "heures"
+  },
+  "crops": {
+    "sugarBeet": "Betterave Sucrière",
+    "carrot": "Carotte",
+    "onion": "Oignon",
+    "cabbage": "Chou",
+    "parsnip": "Panais"
+  },
+  "validation": {
+    "minimumRowDistance": "Distance minimale entre rangs pour graines {seedSize} est {distance}mm",
+    "allRowSpacingsMinimum": "Tous les espacements de rangs doivent être d'au moins {distance}mm pour graines {seedSize}",
+    "maximumActiveRows": "Maximum {max} rangs actifs autorisés",
+    "workingWidthExceeds": "Largeur de travail ({width}mm) dépasse le maximum {max}mm",
+    "threeWheelEvenRows": "La configuration 3 roues nécessite un nombre pair de rangs (la roue avant doit être centrée)"
+  },
+  "recommendations": {
+    "excellent": "Excellent - roues parfaitement centrées entre les rangs",
+    "good": "Bon - roues bien positionnées entre les rangs",
+    "acceptable": "Acceptable - léger décalage par rapport aux centres des rangs",
+    "consider": "Envisagez d'ajuster l'écartement des rangs pour un meilleur alignement des roues"
+  },
+  "language": {
+    "select": "Langue",
+    "en": "English",
+    "da": "Dansk",
+    "de": "Deutsch",
+    "fr": "Francais",
+    "nl": "Nederlands"
+  }
+}

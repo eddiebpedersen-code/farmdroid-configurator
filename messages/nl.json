@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "title": "FarmDroid Configurator",
+    "description": "Configureer uw FarmDroid FD20 robot"
+  },
+  "navigation": {
+    "back": "Terug",
+    "next": "Volgende",
+    "continue": "Doorgaan",
+    "reset": "Reset",
+    "startOver": "Opnieuw beginnen"
+  },
+  "steps": {
+    "baseRobot": {
+      "title": "Basis Robot",
+      "subtitle": "FD20 Robot V2.6"
+    },
+    "wheelConfig": {
+      "title": "Wielconfiguratie",
+      "subtitle": "Selecteer wielconfiguratie"
+    },
+    "seedConfig": {
+      "title": "+Zaai-Configuratie",
+      "subtitle": "Configureer uw zaai-instellingen"
+    },
+    "weedConfig": {
+      "title": "+Wiedconfiguratie",
+      "subtitle": "Configureer uw wiedinstellingen"
+    },
+    "powerSource": {
+      "title": "Stroombron",
+      "subtitle": "Kies uw stroomconfiguratie"
+    },
+    "accessories": {
+      "title": "Accessoires",
+      "subtitle": "Extra uitrusting"
+    },
+    "servicePlan": {
+      "title": "Service & Garantie",
+      "subtitle": "Ondersteunings- en beschermingsplannen"
+    },
+    "summary": {
+      "title": "Samenvatting",
+      "subtitle": "Bekijk uw configuratie"
+    }
+  },
+  "baseRobot": {
+    "productTitle": "FD20 Robot V2.6",
+    "productDescription": "De autonome zaai- en wiedrobot voor precisielandbouw",
+    "baseConfiguration": "Basisconfiguratie",
+    "included": "Inbegrepen:",
+    "delivery": {
+      "label": "Geschatte levering:",
+      "value": "4-8 weken na bestelling"
+    },
+    "features": {
+      "solarPower": "1,6 kW zonne-energiesysteem",
+      "batteries": "Lithiumbatterijen 5,7 kWh capaciteit",
+      "gps": "Dubbel GPS-navigatiesysteem",
+      "autonomous": "Autonome werking",
+      "remoteMonitoring": "Bewaking op afstand via app",
+      "premiumSubscription": "Premium abonnement (1 jaar inbegrepen)",
+      "warranty": "1 jaar garantie"
+    },
+    "specs": {
+      "rows": "rijen",
+      "upTo": "Tot",
+      "runtime": "Looptijd",
+      "solarPeakPower": "Zonne-piekvermogen",
+      "lithiumBatteries": "Lithiumbatterijen"
+    },
+    "views": {
+      "sideView": "Zijaanzicht",
+      "frontView": "Vooraanzicht"
+    }
+  },
+  "wheelConfig": {
+    "title": "Wielconfiguratie",
+    "subtitle": "Kies tussen 3-wiels en 4-wiels opstelling",
+    "learnMore": "Meer informatie over wielconfiguraties",
+    "moreInfo": "Meer informatie",
+    "options": {
+      "pfw": {
+        "name": "Passief Voorwiel",
+        "subtitle": "Beste voor vlakke velden met bredere rijafstand (45-50 cm)",
+        "description": "De standaard wielconfiguratie biedt stabiliteit en soepele besturing op vlak terrein. Ideaal voor gewassen met even rijaantallen en bredere rijafstand, zoals suikerbieten (45-50 cm)."
+      },
+      "afw": {
+        "name": "Actief Voorwiel",
+        "subtitle": "Automatisch kantelende stabiliteit voor hellingen boven 8%",
+        "description": "Voor heuvelachtig terrein voegt het actieve voorwiel een actuator toe die het voorwiel automatisch kantelt om stabiliteit te behouden. Aanbevolen voor hellingen boven 8% en zijhellingen boven 5%, en voor gewassen met even rijaantallen en bredere afstand (ongeveer 45-50 cm)."
+      },
+      "dfw": {
+        "name": "Dubbel Voorwiel",
+        "subtitle": "Smalle rijafstand tot 22,5 cm en bedsystemen",
+        "description": "Uitgerust met twee voorwielen in plaats van één, verbetert deze opstelling de balans en precisie, vooral voor gewassen met smalle rijafstand tot 22,5 cm. Perfect voor vlakke velden en bedsystemen, werkt goed met zowel even als oneven rijaantallen."
+      }
+    },
+    "configTypes": {
+      "threeWheel": "3-wiels",
+      "fourWheel": "4-wiels",
+      "openField": "Open veld",
+      "bedConfig": "Bedconfiguratie"
+    },
+    "infoPanel": {
+      "title": "Wielconfiguraties",
+      "intro": "Elk veld is anders, en zo ook elke FarmDroid. De FD20 kan worden aangepast aan uw specifieke omstandigheden met verstelbare wielafstanden, rijaantallen en een keuze uit drie voorwielconfiguraties.",
+      "adjustmentRange": "Uw ideale opstelling hangt af van verschillende parameters, waaronder gewastype, rijafstand, bodemomstandigheden en de helling van uw veld. De dubbele achterwielen van de FD20 kunnen worden ingesteld tussen 160-230 cm in stappen van 10 cm.",
+      "passiveFrontWheel": "1. Passief Voorwiel",
+      "dualFrontWheel": "2. Dubbel Voorwiel",
+      "activeFrontWheel": "3. Actief Voorwiel",
+      "footer": "Met deze configuratieopties kunt u uw FarmDroid nauwkeurig afstemmen op uw terrein, gewassen en werkstijl. Onze robotspecialisten staan altijd klaar om u te helpen de opstelling te ontwerpen die het beste bij uw boerderij past."
+    },
+    "selectionInfo": {
+      "dfw": "4-wielsconfiguratie biedt maximale stabiliteit. Alle wielen rijden buiten de rijen, ideaal voor bedteelt.",
+      "afw": "Actief voorwiel biedt betere tractie in zachte bodemomstandigheden met behoud van open veld capaciteit.",
+      "pfw": "Passief voorwiel rijdt tussen de rijen, waardoor een grotere werkbreedte mogelijk is bij open veldteelt."
+    }
+  },
+  "powerSource": {
+    "title": "Stroombron",
+    "subtitle": "Kies uw stroomconfiguratie",
+    "pureElectric": "Volledig Elektrisch",
+    "hybridPower": "Hybride Stroom",
+    "solar": {
+      "name": "Zonne-energie",
+      "description": "Standaard: 12-24 uur dagelijkse werking",
+      "features": {
+        "solarPanels": "1,6 kW zonnepanelen",
+        "battery": "5,7 kWh batterij",
+        "zeroEmission": "Nul emissie"
+      }
+    },
+    "powerBank": {
+      "name": "+ Powerbank",
+      "description": "Uitgebreid: Voegt ~10 uur dagelijkse werking toe",
+      "features": {
+        "extraCapacity": "5,7 kWh extra capaciteit",
+        "totalCapacity": "11,4 kWh totaal",
+        "chargedExternally": "Extern opgeladen",
+        "smartCharging": "Slim Zonne-opladen"
+      }
+    },
+    "hybrid": {
+      "name": "Zonne-energie + Generator",
+      "description": "Maximum: 24+ uur continue werking",
+      "features": {
+        "solarPanels": "1,6 kW zonnepanelen",
+        "battery": "5,7 kWh batterij",
+        "generatorBackup": "Generator back-up",
+        "allWeather": "Werking bij alle weersomstandigheden"
+      }
+    },
+    "info": {
+      "hybrid": "Hybrideconfiguratie voegt generator back-up toe voor maximale uptime onder alle omstandigheden.",
+      "powerBank": "Uitgebreide elektrische werking met dubbele batterijcapaciteit - blijft volledig emissievrij.",
+      "solar": "Zuivere zonne-energie biedt schone, stille werking ideaal voor de meeste landbouwomstandigheden."
+    }
+  },
+  "spraySystem": {
+    "title": "+Wiedconfiguratie",
+    "subtitle": "Configureer uw wiedinstellingen",
+    "mechanicalWeeding": "Mechanisch Wieden",
+    "spraySystemSection": "+Spuitsysteem",
+    "standardWeedConfig": {
+      "name": "Standaard +Wied Configuratie",
+      "description": "Inbegrepen bij elke FarmDroid",
+      "features": {
+        "weedingWires": "Wieddraden",
+        "knifeInrow": "Mes voor in-rij"
+      }
+    },
+    "combiTool": {
+      "name": "+ Combi Gereedschap",
+      "description": "Multifunctioneel gereedschap voor verbeterd wieden",
+      "features": {
+        "fingerWeeding": "Vingerwieden",
+        "ridging": "Aanaarden",
+        "perActiveRow": "Per actieve rij"
+      },
+      "pricePerRow": "{price} × {count} rijen"
+    },
+    "spray": {
+      "name": "+SPRAY Systeem",
+      "description": "Precisiespuiten met GPS-geleiding",
+      "features": {
+        "tankCapacity": "110L tankinhoud",
+        "precisionNozzles": "Precisie spuitkoppen per rij",
+        "gpsGuided": "GPS-geleide toepassing",
+        "variableRate": "Variabele dosering"
+      },
+      "baseSystem": "Basissysteem",
+      "rowNozzles": "{count} rij spuitkoppen"
+    },
+    "info": {
+      "both": "Volledige wiedinstelling met mechanisch gereedschap en precisiespuiten voor maximale onkruidbestrijding.",
+      "sprayOnly": "Het +SPRAY systeem maakt gerichte herbicidetoepassing mogelijk met GPS-precisie, waardoor chemicaliëngebruik tot 90% vermindert.",
+      "combiOnly": "Verbeterd mechanisch wieden met Combi Gereedschap hulpstukken voor verbeterd bodembeheer en onkruidbestrijding.",
+      "standard": "Standaard mechanische wiedconfiguratie, perfect voor biologische certificeringseisen."
+    }
+  },
+  "accessories": {
+    "title": "Accessoires",
+    "subtitle": "Extra uitrusting voor uw FarmDroid",
+    "items": {
+      "starterKit": {
+        "name": "Startpakket",
+        "description": "Essentieel verzorgingspakket met basisstation V3 en veldinstallatietools"
+      },
+      "roadTransport": {
+        "name": "Wegtransportplatform",
+        "description": "Transportplatform voor het verplaatsen van FD20 tussen velden over openbare wegen"
+      },
+      "fieldBracket": {
+        "name": "Veldbeugel met Ketting",
+        "description": "Veilige montagebeugel voor veldpositionering"
+      },
+      "powerBank": {
+        "name": "Powerbank",
+        "description": "Extra batterijcapaciteit voor langere werking"
+      },
+      "combiTool": {
+        "name": "Combi Gereedschap",
+        "description": "Multifunctioneel gereedschap hulpstuk"
+      }
+    },
+    "recommended": "Aanbevolen",
+    "selected": "Geselecteerd",
+    "total": "Totaal",
+    "itemsLabel": "items",
+    "emptyMessage": "Accessoires zijn optioneel. U kunt ze later toevoegen via onze serviceafdeling.",
+    "selectedMessage": "{count} accessoire-item geselecteerd voor {price}.",
+    "selectedMessagePlural": "{count} accessoire-items geselecteerd voor {price}."
+  },
+  "servicePlan": {
+    "title": "Service & Garantie",
+    "subtitle": "Kies uw ondersteunings- en beschermingsplan",
+    "features": "Functies",
+    "servicePlanLabel": "Serviceplan",
+    "billedAnnually": "Jaarlijks gefactureerd",
+    "firstYearIncluded": "1e jaar inbegrepen",
+    "perYear": "/jaar",
+    "plans": {
+      "none": "Geen serviceplan",
+      "standard": {
+        "name": "Care Standard",
+        "description": "Essentiële ondersteuning en onderhoud"
+      },
+      "premium": {
+        "name": "Care Premium",
+        "description": "Volledige ondersteuning met software-upgrades en Agrirouter",
+        "recommended": "AANBEVOLEN"
+      }
+    },
+    "featuresList": {
+      "supportCentre": "Ondersteuningscentrum (telefoon en e-mail)",
+      "aiAssistant": "AI-assistent en Kennisbank",
+      "softwareMaintenance": "Softwareonderhoud",
+      "farmDroidApp": "FarmDroid App",
+      "iotConnectivity": "IoT-connectiviteit (basisstation + robot)",
+      "fieldDataBackup": "Veldgegevens back-up",
+      "baseStationSurvey": "Basisstationopmeting",
+      "agrirouter": "Verbinding met Agrirouter",
+      "softwareUpgrades": "Software-upgrades"
+    },
+    "warranty": {
+      "title": "Garantieverlenging",
+      "extension": "+2 Jaar Garantieverlenging",
+      "description": "Dekt onderdelen en vervanging. Vereist jaarlijks onderhoud van FD20."
+    }
+  },
+  "summary": {
+    "title": "Uw Configuratie",
+    "subtitle": "Bekijk en finaliseer uw FarmDroid",
+    "total": "Totaal",
+    "delivery": "Geschatte levering: 12 weken na bestelling",
+    "lineItems": {
+      "baseRobot": "FD20 Robot V2.6",
+      "hybridPower": "Hybride Stroomsysteem",
+      "activeFrontWheel": "Actief Voorwiel",
+      "dualFrontWheel": "Dubbel Voorwiel",
+      "activeRows": "{count}× Actieve Rijen ({size})",
+      "passiveRows": "{count}× Passieve Rijen",
+      "spraySystem": "+SPRAY Systeem",
+      "accessories": "Accessoires",
+      "warrantyExtension": "+2 Jaar Garantieverlenging"
+    },
+    "configLabels": {
+      "rows": "rijen",
+      "active": "Actieve",
+      "workingWidth": "Werkbreedte",
+      "power": "Stroom",
+      "solar": "Zonne-energie",
+      "hybrid": "Hybride"
+    },
+    "carePlan": "Care {plan}"
+  },
+  "forms": {
+    "name": "Naam",
+    "company": "Bedrijf",
+    "email": "E-mail",
+    "dealName": "Dealnaam",
+    "contactName": "Contactnaam",
+    "placeholders": {
+      "yourName": "Uw naam",
+      "companyName": "Bedrijfsnaam",
+      "email": "u@voorbeeld.nl",
+      "dealName": "bijv. Jansen Boerderij FD20",
+      "primaryContact": "Primaire contact"
+    }
+  },
+  "modals": {
+    "emailQuote": {
+      "title": "Offerte E-mailen",
+      "quotePreview": "Offertevoorbeeld",
+      "sendQuote": "Offerte Versturen",
+      "sending": "Versturen...",
+      "sent": "Offerte Verstuurd!",
+      "checkInbox": "Controleer uw inbox"
+    },
+    "createDeal": {
+      "title": "Deal Aanmaken",
+      "dealValue": "Dealwaarde",
+      "createDeal": "Deal Aanmaken",
+      "creating": "Aanmaken...",
+      "created": "Deal Aangemaakt!",
+      "addedToPipeline": "Toegevoegd aan uw pipeline"
+    }
+  },
+  "common": {
+    "included": "Inbegrepen",
+    "switchTo": "Overschakelen naar {label}",
+    "firstYear": "eerste jaar",
+    "freeFirstYear": "{price} eerste jaar"
+  },
+  "rowConfig": {
+    "title": "+Zaai-Configuratie",
+    "subtitle": "Configureer uw zaai-instellingen",
+    "seedSize": "Zaadgrootte",
+    "small": "Klein (6mm)",
+    "large": "Groot (14mm)",
+    "activeRows": "Actieve Rijen",
+    "rowSpacing": "Rijafstand",
+    "wheelSpacing": "Wielafstand",
+    "workingWidth": "Werkbreedte",
+    "passiveRows": "Passieve Rijen",
+    "rowPlacement": "Rijplaatsing",
+    "bedMode": "Bed",
+    "fieldMode": "Veld",
+    "customMode": "Aangepast",
+    "dailyCapacity": "Dagelijkse Capaciteit",
+    "hectaresPerDay": "ha/dag",
+    "hours": "uren"
+  },
+  "crops": {
+    "sugarBeet": "Suikerbiet",
+    "carrot": "Wortel",
+    "onion": "Ui",
+    "cabbage": "Kool",
+    "parsnip": "Pastinaak"
+  },
+  "validation": {
+    "minimumRowDistance": "Minimale rijafstand voor {seedSize} zaden is {distance}mm",
+    "allRowSpacingsMinimum": "Alle rijafstanden moeten minimaal {distance}mm zijn voor {seedSize} zaden",
+    "maximumActiveRows": "Maximaal {max} actieve rijen toegestaan",
+    "workingWidthExceeds": "Werkbreedte ({width}mm) overschrijdt maximum {max}mm",
+    "threeWheelEvenRows": "3-wielsconfiguratie vereist een even aantal rijen (voorwiel moet gecentreerd zijn)"
+  },
+  "recommendations": {
+    "excellent": "Uitstekend - wielen perfect gecentreerd tussen rijen",
+    "good": "Goed - wielen goed gepositioneerd tussen rijen",
+    "acceptable": "Acceptabel - kleine afwijking van rijcentra",
+    "consider": "Overweeg rijafstand aan te passen voor betere wieluitlijning"
+  },
+  "language": {
+    "select": "Taal",
+    "en": "English",
+    "da": "Dansk",
+    "de": "Deutsch",
+    "fr": "Francais",
+    "nl": "Nederlands"
+  }
+}

@@ -19,6 +19,7 @@ import {
   Shield,
   Star,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -47,6 +48,8 @@ function EmailQuoteModal({
   config: ConfiguratorState;
   priceBreakdown: PriceBreakdown;
 }) {
+  const tForms = useTranslations("forms");
+  const tModals = useTranslations("modals");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -80,7 +83,7 @@ function EmailQuoteModal({
       >
         <div className="p-6 border-b border-stone-100">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-stone-900">Email Quote</h3>
+            <h3 className="text-lg font-semibold text-stone-900">{tModals("emailQuote.title")}</h3>
             <button
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-stone-100 text-stone-400"
@@ -100,44 +103,44 @@ function EmailQuoteModal({
               <div className="h-16 w-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
                 <Check className="h-8 w-8 text-stone-900" />
               </div>
-              <h4 className="text-lg font-semibold text-stone-900">Quote Sent!</h4>
-              <p className="text-stone-500 mt-1">Check your inbox</p>
+              <h4 className="text-lg font-semibold text-stone-900">{tModals("emailQuote.sent")}</h4>
+              <p className="text-stone-500 mt-1">{tModals("emailQuote.checkInbox")}</p>
             </motion.div>
           ) : (
             <>
               <div>
-                <label className="text-sm font-medium text-stone-700">Name</label>
+                <label className="text-sm font-medium text-stone-700">{tForms("name")}</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="mt-1 w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                  placeholder="Your name"
+                  placeholder={tForms("placeholders.yourName")}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-stone-700">Company</label>
+                <label className="text-sm font-medium text-stone-700">{tForms("company")}</label>
                 <input
                   type="text"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   className="mt-1 w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                  placeholder="Company name"
+                  placeholder={tForms("placeholders.companyName")}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-stone-700">Email</label>
+                <label className="text-sm font-medium text-stone-700">{tForms("email")}</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="mt-1 w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                  placeholder="you@example.com"
+                  placeholder={tForms("placeholders.email")}
                 />
               </div>
 
               <div className="bg-stone-50 rounded-lg p-4 mt-4">
-                <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">Quote Preview</p>
+                <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">{tModals("emailQuote.quotePreview")}</p>
                 <p className="text-lg font-bold text-stone-900">{formatPrice(priceBreakdown.total, config.currency)}</p>
               </div>
             </>
@@ -154,12 +157,12 @@ function EmailQuoteModal({
               {sending ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Sending...
+                  {tModals("emailQuote.sending")}
                 </>
               ) : (
                 <>
                   <Send className="h-5 w-5" />
-                  Send Quote
+                  {tModals("emailQuote.sendQuote")}
                 </>
               )}
             </button>
@@ -182,6 +185,8 @@ function CreateDealModal({
   config: ConfiguratorState;
   priceBreakdown: PriceBreakdown;
 }) {
+  const tForms = useTranslations("forms");
+  const tModals = useTranslations("modals");
   const [dealName, setDealName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [contactName, setContactName] = useState("");
@@ -212,7 +217,7 @@ function CreateDealModal({
       >
         <div className="p-6 border-b border-stone-100">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-stone-900">Create Deal</h3>
+            <h3 className="text-lg font-semibold text-stone-900">{tModals("createDeal.title")}</h3>
             <button
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-stone-100 text-stone-400"
@@ -232,44 +237,44 @@ function CreateDealModal({
               <div className="h-16 w-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
                 <Check className="h-8 w-8 text-stone-900" />
               </div>
-              <h4 className="text-lg font-semibold text-stone-900">Deal Created!</h4>
-              <p className="text-stone-500 mt-1">Added to your pipeline</p>
+              <h4 className="text-lg font-semibold text-stone-900">{tModals("createDeal.created")}</h4>
+              <p className="text-stone-500 mt-1">{tModals("createDeal.addedToPipeline")}</p>
             </motion.div>
           ) : (
             <>
               <div>
-                <label className="text-sm font-medium text-stone-700">Deal Name</label>
+                <label className="text-sm font-medium text-stone-700">{tForms("dealName")}</label>
                 <input
                   type="text"
                   value={dealName}
                   onChange={(e) => setDealName(e.target.value)}
                   className="mt-1 w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                  placeholder="e.g., Mueller Farms FD20"
+                  placeholder={tForms("placeholders.dealName")}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-stone-700">Company</label>
+                <label className="text-sm font-medium text-stone-700">{tForms("company")}</label>
                 <input
                   type="text"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   className="mt-1 w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                  placeholder="Company name"
+                  placeholder={tForms("placeholders.companyName")}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-stone-700">Contact Name</label>
+                <label className="text-sm font-medium text-stone-700">{tForms("contactName")}</label>
                 <input
                   type="text"
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
                   className="mt-1 w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                  placeholder="Primary contact"
+                  placeholder={tForms("placeholders.primaryContact")}
                 />
               </div>
 
               <div className="bg-stone-50 rounded-lg p-4">
-                <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">Deal Value</p>
+                <p className="text-xs text-stone-500 uppercase tracking-wide mb-1">{tModals("createDeal.dealValue")}</p>
                 <p className="text-2xl font-bold text-stone-900">{formatPrice(priceBreakdown.total, config.currency)}</p>
               </div>
             </>
@@ -286,12 +291,12 @@ function CreateDealModal({
               {creating ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Creating...
+                  {tModals("createDeal.creating")}
                 </>
               ) : (
                 <>
                   <Building2 className="h-5 w-5" />
-                  Create Deal
+                  {tModals("createDeal.createDeal")}
                 </>
               )}
             </button>
@@ -303,6 +308,9 @@ function CreateDealModal({
 }
 
 export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProps) {
+  const t = useTranslations("summary");
+  const tCommon = useTranslations("common");
+  const tModals = useTranslations("modals");
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showDealModal, setShowDealModal] = useState(false);
 
@@ -312,44 +320,44 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
   const lineItems = [
     {
       icon: Cpu,
-      label: "FD20 Robot V2.6",
+      label: t("lineItems.baseRobot"),
       value: priceBreakdown.baseRobot,
       included: true,
     },
     config.powerSource === "hybrid" && {
       icon: Zap,
-      label: "Hybrid Power System",
+      label: t("lineItems.hybridPower"),
       value: priceBreakdown.powerSource,
     },
     config.frontWheel !== "PFW" && {
       icon: Circle,
-      label: `${config.frontWheel === "AFW" ? "Active" : "Dual"} Front Wheel`,
+      label: config.frontWheel === "AFW" ? t("lineItems.activeFrontWheel") : t("lineItems.dualFrontWheel"),
       value: priceBreakdown.frontWheel,
     },
     config.activeRows > 0 && {
       icon: Rows3,
-      label: `${config.activeRows}× Active Rows (${config.seedSize})`,
+      label: t("lineItems.activeRows", { count: config.activeRows, size: config.seedSize }),
       value: config.activeRows * PRICES.activeRow[config.seedSize],
     },
     passiveRows > 0 && {
       icon: Rows3,
-      label: `${passiveRows}× Passive Rows`,
+      label: t("lineItems.passiveRows", { count: passiveRows }),
       value: 0,
       included: true,
     },
     config.spraySystem && {
       icon: Droplets,
-      label: "+SPRAY System",
+      label: t("lineItems.spraySystem"),
       value: priceBreakdown.spraySystem,
     },
     priceBreakdown.accessories > 0 && {
       icon: Package,
-      label: "Accessories",
+      label: t("lineItems.accessories"),
       value: priceBreakdown.accessories,
     },
     config.warrantyExtension && {
       icon: Shield,
-      label: "+2 Year Warranty Extension",
+      label: t("lineItems.warrantyExtension"),
       value: priceBreakdown.warrantyExtension,
     },
   ].filter(Boolean) as { icon: typeof Cpu; label: string; value: number; included?: boolean }[];
@@ -476,22 +484,22 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
             <div className="text-center">
               <p className="text-xl md:text-2xl font-semibold text-stone-900">
                 {config.activeRows}
-                <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">rows</span>
+                <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">{t("configLabels.rows")}</span>
               </p>
-              <p className="text-xs text-stone-500 mt-0.5">Active</p>
+              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.active")}</p>
             </div>
             <div className="text-center">
               <p className="text-xl md:text-2xl font-semibold text-stone-900">
                 {(workingWidth / 10).toFixed(0)}
                 <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">cm</span>
               </p>
-              <p className="text-xs text-stone-500 mt-0.5">Working Width</p>
+              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.workingWidth")}</p>
             </div>
             <div className="text-center">
               <p className="text-xl md:text-2xl font-semibold text-stone-900">
-                {config.powerSource === "hybrid" ? "Hybrid" : "Solar"}
+                {config.powerSource === "hybrid" ? t("configLabels.hybrid") : t("configLabels.solar")}
               </p>
-              <p className="text-xs text-stone-500 mt-0.5">Power</p>
+              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.power")}</p>
             </div>
           </div>
         </div>
@@ -500,8 +508,8 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
         <div className="lg:col-span-2 space-y-4 md:space-y-6">
           {/* Title */}
           <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">Your Configuration</h1>
-            <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">Review and finalize your FarmDroid</p>
+            <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
+            <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
           </div>
 
           {/* Price breakdown */}
@@ -521,7 +529,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
                     <span className="text-sm md:text-base text-stone-700 truncate">{item.label}</span>
                   </div>
                   <span className="font-medium text-stone-900 text-sm md:text-base flex-shrink-0">
-                    {item.included || item.value === 0 ? "Included" : `+${formatPrice(item.value, config.currency)}`}
+                    {item.included || item.value === 0 ? tCommon("included") : `+${formatPrice(item.value, config.currency)}`}
                   </span>
                 </motion.div>
               );
@@ -531,7 +539,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
           {/* Total */}
           <div className="pt-4 border-t border-stone-200">
             <div className="flex items-center justify-between">
-              <span className="text-base md:text-lg font-semibold text-stone-900">Total</span>
+              <span className="text-base md:text-lg font-semibold text-stone-900">{t("total")}</span>
               <motion.span
                 key={priceBreakdown.total}
                 initial={{ scale: 0.9 }}
@@ -543,7 +551,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
             </div>
             <div className="flex items-center gap-2 mt-2 text-xs md:text-sm text-stone-500">
               <Truck className="h-4 w-4 flex-shrink-0" />
-              <span>Estimated delivery: 12 weeks from order</span>
+              <span>{t("delivery")}</span>
             </div>
           </div>
 
@@ -554,7 +562,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4 text-teal-600" />
                   <span className="text-sm text-stone-700">
-                    Care {config.servicePlan === "standard" ? "Standard" : "Premium"}
+                    {t("carePlan", { plan: config.servicePlan === "standard" ? "Standard" : "Premium" })}
                   </span>
                 </div>
                 <div className="text-right">
@@ -564,7 +572,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
                         {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                       </span>
                       <span className="text-sm font-semibold text-teal-600">
-                        {formatPrice(0, config.currency)} first year
+                        {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
                       </span>
                     </div>
                   ) : (
@@ -584,7 +592,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
               className="w-full h-12 rounded-lg border border-stone-200 hover:border-stone-300 text-stone-700 font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <Mail className="h-5 w-5" />
-              Email Quote
+              {tModals("emailQuote.title")}
             </button>
 
             <button
@@ -592,7 +600,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
               className="w-full h-12 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <Building2 className="h-5 w-5" />
-              Create Deal
+              {tModals("createDeal.createDeal")}
             </button>
           </div>
         </div>

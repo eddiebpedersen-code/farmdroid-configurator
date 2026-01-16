@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "title": "FarmDroid Konfigurator",
+    "description": "Konfigurer din FarmDroid FD20 robot"
+  },
+  "navigation": {
+    "back": "Tilbage",
+    "next": "Næste",
+    "continue": "Fortsæt",
+    "reset": "Nulstil",
+    "startOver": "Start forfra"
+  },
+  "steps": {
+    "baseRobot": {
+      "title": "Basis Robot",
+      "subtitle": "FD20 Robot V2.6"
+    },
+    "wheelConfig": {
+      "title": "Hjulkonfiguration",
+      "subtitle": "Vælg hjulkonfiguration"
+    },
+    "seedConfig": {
+      "title": "+Såningskonfiguration",
+      "subtitle": "Konfigurer din såningsopsætning"
+    },
+    "weedConfig": {
+      "title": "+Lugekonfiguration",
+      "subtitle": "Konfigurer din lugeopsætning"
+    },
+    "powerSource": {
+      "title": "Strømkilde",
+      "subtitle": "Vælg din strømkonfiguration"
+    },
+    "accessories": {
+      "title": "Tilbehør",
+      "subtitle": "Ekstra udstyr"
+    },
+    "servicePlan": {
+      "title": "Service & Garanti",
+      "subtitle": "Support- og beskyttelsesplaner"
+    },
+    "summary": {
+      "title": "Oversigt",
+      "subtitle": "Gennemgå din konfiguration"
+    }
+  },
+  "baseRobot": {
+    "productTitle": "FD20 Robot V2.6",
+    "productDescription": "Den autonome så- og lugerobot til præcisionslandbrug",
+    "baseConfiguration": "Basiskonfiguration",
+    "included": "Inkluderet:",
+    "delivery": {
+      "label": "Forventet levering:",
+      "value": "4-8 uger fra bestilling"
+    },
+    "features": {
+      "solarPower": "1,6 kW solcelleanlæg",
+      "batteries": "Lithium-batterier 5,7 kWh kapacitet",
+      "gps": "Dobbelt GPS-navigationssystem",
+      "autonomous": "Autonom drift",
+      "remoteMonitoring": "Fjernovervågning via app",
+      "premiumSubscription": "Premium-abonnement (1 år inkluderet)",
+      "warranty": "1 års garanti"
+    },
+    "specs": {
+      "rows": "rækker",
+      "upTo": "Op til",
+      "runtime": "Driftstid",
+      "solarPeakPower": "Solar peak effekt",
+      "lithiumBatteries": "Lithium-batterier"
+    },
+    "views": {
+      "sideView": "Sidevisning",
+      "frontView": "Frontvisning"
+    }
+  },
+  "wheelConfig": {
+    "title": "Hjulkonfiguration",
+    "subtitle": "Vælg mellem 3-hjuls og 4-hjuls opsætning",
+    "learnMore": "Lær mere om hjulkonfigurationer",
+    "moreInfo": "Mere information",
+    "options": {
+      "pfw": {
+        "name": "Passivt Forhjul",
+        "subtitle": "Bedst til flade marker med bredere rækkeafstand (45-50 cm)",
+        "description": "Standard hjulkonfigurationen giver stabilitet og jævn styring på fladt terræn. Ideel til afgrøder med lige antal rækker og bredere rækkeafstand, såsom sukkerroer (45-50 cm)."
+      },
+      "afw": {
+        "name": "Aktivt Forhjul",
+        "subtitle": "Auto-vippende stabilitet for skråninger over 8%",
+        "description": "Til kuperet terræn tilføjer det aktive forhjul en aktuator, der automatisk vipper forhjulet for at opretholde stabiliteten. Anbefales til skråninger over 8% og sidehældninger over 5%, og til afgrøder med lige antal rækker og bredere afstand (omkring 45-50 cm)."
+      },
+      "dfw": {
+        "name": "Dobbelt Forhjul",
+        "subtitle": "Smal rækkeafstand ned til 22,5 cm og bedsystemer",
+        "description": "Udstyret med to forhjul i stedet for ét, forbedrer denne opsætning balance og præcision, særligt for afgrøder med smal rækkeafstand ned til 22,5 cm. Perfekt til flade marker og bedsystemer, fungerer godt med både lige og ulige antal rækker."
+      }
+    },
+    "configTypes": {
+      "threeWheel": "3-hjul",
+      "fourWheel": "4-hjul",
+      "openField": "Åben mark",
+      "bedConfig": "Bedkonfiguration"
+    },
+    "infoPanel": {
+      "title": "Hjulkonfigurationer",
+      "intro": "Hver mark er forskellig, og det samme gælder hver FarmDroid. FD20 kan tilpasses dine specifikke forhold med justerbare hjulafstande, rækkeantal og et valg mellem tre forhjulskonfigurationer.",
+      "adjustmentRange": "Din ideelle opsætning afhænger af flere parametre, herunder afgrødetype, rækkeafstand, jordforhold og markens hældning. FD20's dobbelte baghjul kan justeres mellem 160-230 cm i 10 cm trin.",
+      "passiveFrontWheel": "1. Passivt Forhjul",
+      "dualFrontWheel": "2. Dobbelt Forhjul",
+      "activeFrontWheel": "3. Aktivt Forhjul",
+      "footer": "Med disse konfigurationsmuligheder kan du finjustere din FarmDroid til at matche dit terræn, dine afgrøder og din arbejdsstil. Vores robotspecialister er altid klar til at hjælpe dig med at designe den opsætning, der passer bedst til din gård."
+    },
+    "selectionInfo": {
+      "dfw": "4-hjulskonfiguration giver maksimal stabilitet. Alle hjul kører uden for rækkerne, ideel til beddyrkning.",
+      "afw": "Aktivt forhjul giver bedre trækkraft i bløde jordforhold og opretholder åben mark-kapacitet.",
+      "pfw": "Passivt forhjul kører mellem rækkerne, hvilket muliggør bredere arbejdsbredde ved dyrkning på åben mark."
+    }
+  },
+  "powerSource": {
+    "title": "Strømkilde",
+    "subtitle": "Vælg din strømkonfiguration",
+    "pureElectric": "Ren Elektrisk",
+    "hybridPower": "Hybrid Kraft",
+    "solar": {
+      "name": "Solar",
+      "description": "Standard: 12-24 timers daglig drift",
+      "features": {
+        "solarPanels": "1,6 kW solpaneler",
+        "battery": "5,7 kWh batteri",
+        "zeroEmission": "Nul emission"
+      }
+    },
+    "powerBank": {
+      "name": "+ Power Bank",
+      "description": "Udvidet: Tilføjer ~10 timers daglig drift",
+      "features": {
+        "extraCapacity": "5,7 kWh ekstra kapacitet",
+        "totalCapacity": "11,4 kWh total",
+        "chargedExternally": "Oplades eksternt",
+        "smartCharging": "Smart Solar-opladning"
+      }
+    },
+    "hybrid": {
+      "name": "Solar + Generator",
+      "description": "Maksimum: 24+ timers kontinuerlig drift",
+      "features": {
+        "solarPanels": "1,6 kW solpaneler",
+        "battery": "5,7 kWh batteri",
+        "generatorBackup": "Generator-backup",
+        "allWeather": "Drift i al slags vejr"
+      }
+    },
+    "info": {
+      "hybrid": "Hybridkonfiguration tilføjer generator-backup for maksimal oppetid under alle forhold.",
+      "powerBank": "Udvidet elektrisk drift med dobbelt batterikapacitet - forbliver helt emissionsfri.",
+      "solar": "Ren solenergi giver ren, støjsvag drift ideel til de fleste landbrugsforhold."
+    }
+  },
+  "spraySystem": {
+    "title": "+Lugekonfiguration",
+    "subtitle": "Konfigurer din lugeopsætning",
+    "mechanicalWeeding": "Mekanisk Lugning",
+    "spraySystemSection": "+Sprøjtesystem",
+    "standardWeedConfig": {
+      "name": "Standard +Luge-konfiguration",
+      "description": "Inkluderet med hver FarmDroid",
+      "features": {
+        "weedingWires": "Lugetråde",
+        "knifeInrow": "Kniv til i-række"
+      }
+    },
+    "combiTool": {
+      "name": "+ Kombi-værktøj",
+      "description": "Multifunktionsværktøj til forbedret lugning",
+      "features": {
+        "fingerWeeding": "Fingerlugning",
+        "ridging": "Hypning",
+        "perActiveRow": "Per aktiv række"
+      },
+      "pricePerRow": "{price} × {count} rækker"
+    },
+    "spray": {
+      "name": "+SPRAY System",
+      "description": "Præcisionssprøjtning med GPS-styring",
+      "features": {
+        "tankCapacity": "110L tankkapacitet",
+        "precisionNozzles": "Præcisionsdyser per række",
+        "gpsGuided": "GPS-styret påføring",
+        "variableRate": "Variabel dosering"
+      },
+      "baseSystem": "Basissystem",
+      "rowNozzles": "{count} række-dyser"
+    },
+    "info": {
+      "both": "Komplet lugeopsætning med mekaniske værktøjer og præcisionssprøjtning for maksimal ukrudtskontrol.",
+      "sprayOnly": "+SPRAY-systemet muliggør målrettet herbicidpåføring med GPS-præcision, reducerer kemikalieforbrug med op til 90%.",
+      "combiOnly": "Forbedret mekanisk lugning med Kombi-værktøjstilbehør til forbedret jordbehandling og ukrudtskontrol.",
+      "standard": "Standard mekanisk lugekonfiguration, perfekt til økologisk certificering."
+    }
+  },
+  "accessories": {
+    "title": "Tilbehør",
+    "subtitle": "Ekstra udstyr til din FarmDroid",
+    "items": {
+      "starterKit": {
+        "name": "Startpakke",
+        "description": "Essentiel plejepakke med basestation V3 og markopsætningsværktøjer"
+      },
+      "roadTransport": {
+        "name": "Vejtransportplatform",
+        "description": "Transportplatform til flytning af FD20 mellem marker på offentlige veje"
+      },
+      "fieldBracket": {
+        "name": "Markbeslag med Kæde",
+        "description": "Sikker monteringsbeslag til markpositionering"
+      },
+      "powerBank": {
+        "name": "Power Bank",
+        "description": "Ekstra batterikapacitet til udvidet drift"
+      },
+      "combiTool": {
+        "name": "Kombi-værktøj",
+        "description": "Multifunktionsværktøjstilbehør"
+      }
+    },
+    "recommended": "Anbefalet",
+    "selected": "Valgt",
+    "total": "Total",
+    "itemsLabel": "varer",
+    "emptyMessage": "Tilbehør er valgfrit. Du kan tilføje dem senere via vores serviceafdeling.",
+    "selectedMessage": "{count} tilbehørsvare valgt til {price}.",
+    "selectedMessagePlural": "{count} tilbehørsvarer valgt til {price}."
+  },
+  "servicePlan": {
+    "title": "Service & Garanti",
+    "subtitle": "Vælg din support- og beskyttelsesplan",
+    "features": "Funktioner",
+    "servicePlanLabel": "Serviceplan",
+    "billedAnnually": "Faktureres årligt",
+    "firstYearIncluded": "1. år inkluderet",
+    "perYear": "/år",
+    "plans": {
+      "none": "Ingen serviceplan",
+      "standard": {
+        "name": "Care Standard",
+        "description": "Essentiel support og vedligeholdelse"
+      },
+      "premium": {
+        "name": "Care Premium",
+        "description": "Fuld support med softwareopgraderinger og Agrirouter",
+        "recommended": "ANBEFALET"
+      }
+    },
+    "featuresList": {
+      "supportCentre": "Supportcenter (telefon og email)",
+      "aiAssistant": "AI-assistent og Vidensbase",
+      "softwareMaintenance": "Softwarevedligeholdelse",
+      "farmDroidApp": "FarmDroid App",
+      "iotConnectivity": "IoT-forbindelse (basestation + robot)",
+      "fieldDataBackup": "Mark-databackup",
+      "baseStationSurvey": "Basestationsopmåling",
+      "agrirouter": "Forbindelse til Agrirouter",
+      "softwareUpgrades": "Softwareopgraderinger"
+    },
+    "warranty": {
+      "title": "Garantiforlængelse",
+      "extension": "+2 Års Garantiforlængelse",
+      "description": "Dækker dele og udskiftning. Kræver at FD20 serviceres årligt."
+    }
+  },
+  "summary": {
+    "title": "Din Konfiguration",
+    "subtitle": "Gennemgå og afslut din FarmDroid",
+    "total": "Total",
+    "delivery": "Forventet levering: 12 uger fra bestilling",
+    "lineItems": {
+      "baseRobot": "FD20 Robot V2.6",
+      "hybridPower": "Hybrid Strømsystem",
+      "activeFrontWheel": "Aktivt Forhjul",
+      "dualFrontWheel": "Dobbelt Forhjul",
+      "activeRows": "{count}× Aktive Rækker ({size})",
+      "passiveRows": "{count}× Passive Rækker",
+      "spraySystem": "+SPRAY System",
+      "accessories": "Tilbehør",
+      "warrantyExtension": "+2 Års Garantiforlængelse"
+    },
+    "configLabels": {
+      "rows": "rækker",
+      "active": "Aktive",
+      "workingWidth": "Arbejdsbredde",
+      "power": "Strøm",
+      "solar": "Solar",
+      "hybrid": "Hybrid"
+    },
+    "carePlan": "Care {plan}"
+  },
+  "forms": {
+    "name": "Navn",
+    "company": "Virksomhed",
+    "email": "Email",
+    "dealName": "Aftalenavn",
+    "contactName": "Kontaktnavn",
+    "placeholders": {
+      "yourName": "Dit navn",
+      "companyName": "Virksomhedsnavn",
+      "email": "dig@eksempel.dk",
+      "dealName": "f.eks. Hansen Gård FD20",
+      "primaryContact": "Primær kontakt"
+    }
+  },
+  "modals": {
+    "emailQuote": {
+      "title": "Email Tilbud",
+      "quotePreview": "Tilbudsforhåndsvisning",
+      "sendQuote": "Send Tilbud",
+      "sending": "Sender...",
+      "sent": "Tilbud Sendt!",
+      "checkInbox": "Tjek din indbakke"
+    },
+    "createDeal": {
+      "title": "Opret Aftale",
+      "dealValue": "Aftaleværdi",
+      "createDeal": "Opret Aftale",
+      "creating": "Opretter...",
+      "created": "Aftale Oprettet!",
+      "addedToPipeline": "Tilføjet til din pipeline"
+    }
+  },
+  "common": {
+    "included": "Inkluderet",
+    "switchTo": "Skift til {label}",
+    "firstYear": "første år",
+    "freeFirstYear": "{price} første år"
+  },
+  "rowConfig": {
+    "title": "+Såningskonfiguration",
+    "subtitle": "Konfigurer din såningsopsætning",
+    "seedSize": "Frøstørrelse",
+    "small": "Lille (6mm)",
+    "large": "Stor (14mm)",
+    "activeRows": "Aktive Rækker",
+    "rowSpacing": "Rækkeafstand",
+    "wheelSpacing": "Hjulafstand",
+    "workingWidth": "Arbejdsbredde",
+    "passiveRows": "Passive Rækker",
+    "rowPlacement": "Rækkeplacering",
+    "bedMode": "Bed",
+    "fieldMode": "Mark",
+    "customMode": "Brugerdefineret",
+    "dailyCapacity": "Daglig Kapacitet",
+    "hectaresPerDay": "ha/dag",
+    "hours": "timer"
+  },
+  "crops": {
+    "sugarBeet": "Sukkerroe",
+    "carrot": "Gulerod",
+    "onion": "Løg",
+    "cabbage": "Kål",
+    "parsnip": "Pastinak"
+  },
+  "validation": {
+    "minimumRowDistance": "Minimum rækkeafstand for {seedSize} frø er {distance}mm",
+    "allRowSpacingsMinimum": "Alle rækkeafstande skal være mindst {distance}mm for {seedSize} frø",
+    "maximumActiveRows": "Maksimalt {max} aktive rækker tilladt",
+    "workingWidthExceeds": "Arbejdsbredde ({width}mm) overstiger maksimum {max}mm",
+    "threeWheelEvenRows": "3-hjulskonfiguration kræver et lige antal rækker (forhjulet skal være centreret)"
+  },
+  "recommendations": {
+    "excellent": "Fremragende - hjul perfekt centreret mellem rækker",
+    "good": "God - hjul godt placeret mellem rækker",
+    "acceptable": "Acceptabel - mindre forskydning fra rækkecentre",
+    "consider": "Overvej at justere rækkeafstand for bedre hjuljustering"
+  },
+  "language": {
+    "select": "Sprog",
+    "en": "English",
+    "da": "Dansk",
+    "de": "Deutsch",
+    "fr": "Francais",
+    "nl": "Nederlands"
+  }
+}

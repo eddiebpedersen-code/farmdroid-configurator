@@ -2,7 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Globe } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ConfiguratorState,
   DEFAULT_CONFIG,
@@ -12,6 +14,7 @@ import {
   Currency,
   PRICES,
 } from "@/lib/configurator-data";
+import { locales, localeNames, type Locale } from "@/i18n/config";
 
 // Step Components
 import { StepBaseRobot } from "@/components/configurator/step-base-robot";
@@ -39,12 +42,89 @@ const slideVariants = {
   }),
 };
 
+// Language selector component
+function LanguageSelector() {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const t = useTranslations("language");
+
+  // Get current locale from pathname
+  const currentLocale = pathname.split("/")[1] as Locale;
+
+  const switchLocale = (newLocale: Locale) => {
+    const newPathname = pathname.replace(`/${currentLocale}`, `/${newLocale}`);
+    router.push(newPathname);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors rounded-lg hover:bg-stone-100"
+      >
+        <Globe className="h-4 w-4" />
+        <span className="hidden sm:inline">{localeNames[currentLocale]}</span>
+        <span className="sm:hidden">{currentLocale.toUpperCase()}</span>
+      </button>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-stone-200 py-1 z-50">
+            {locales.map((locale) => (
+              <button
+                key={locale}
+                onClick={() => switchLocale(locale)}
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-stone-50 transition-colors ${
+                  locale === currentLocale
+                    ? "text-stone-900 font-medium bg-stone-50"
+                    : "text-stone-600"
+                }`}
+              >
+                {localeNames[locale]}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function ConfiguratorPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [direction, setDirection] = useState(0);
   const [config, setConfig] = useState<ConfiguratorState>(DEFAULT_CONFIG);
 
+  const t = useTranslations("navigation");
+  const tSteps = useTranslations("steps");
+  const tService = useTranslations("servicePlan");
+  const tCommon = useTranslations("common");
+
   const priceBreakdown = calculatePrice(config, currentStep);
+
+  // Get translated step titles
+  const stepKeys = [
+    "baseRobot",
+    "wheelConfig",
+    "seedConfig",
+    "weedConfig",
+    "powerSource",
+    "accessories",
+    "servicePlan",
+    "summary",
+  ] as const;
+
+  const translatedSteps = STEPS.map((step, index) => ({
+    ...step,
+    title: tSteps(`${stepKeys[index]}.title`),
+    subtitle: tSteps(`${stepKeys[index]}.subtitle`),
+  }));
 
   const updateConfig = useCallback((updates: Partial<ConfiguratorState>) => {
     setConfig((prev) => ({ ...prev, ...updates }));
@@ -112,7 +192,7 @@ export default function ConfiguratorPage() {
           <div className="flex items-center justify-between">
             {/* Progress Steps */}
             <div className="flex items-center gap-0.5 md:gap-1">
-              {STEPS.map((step, index) => (
+              {translatedSteps.map((step, index) => (
                 <button
                   key={step.id}
                   onClick={() => goToStep(step.id)}
@@ -127,7 +207,7 @@ export default function ConfiguratorPage() {
                         : "w-1.5 md:w-2 bg-stone-200"
                     }`}
                   />
-                  {index < STEPS.length - 1 && (
+                  {index < translatedSteps.length - 1 && (
                     <div className="w-0.5 md:w-1" />
                   )}
                   {/* Tooltip - hidden on mobile */}
@@ -140,8 +220,11 @@ export default function ConfiguratorPage() {
               ))}
             </div>
 
-            {/* Currency Selector & Price Display */}
+            {/* Language Selector, Currency Selector & Price Display */}
             <div className="flex items-center gap-2 md:gap-4">
+              {/* Language Selector */}
+              <LanguageSelector />
+
               {/* Currency Toggle */}
               <div className="flex items-center bg-stone-100 rounded-lg p-0.5">
                 {(["EUR", "DKK"] as Currency[]).map((curr) => (
@@ -177,17 +260,17 @@ export default function ConfiguratorPage() {
                 >
                   {currentStep >= 7 && config.servicePlan === "premium" ? (
                     <>
-                      <span className="text-xs text-stone-500">Care Premium:</span>
+                      <span className="text-xs text-stone-500">{tService("plans.premium.name")}:</span>
                       <span className="text-xs text-stone-400 line-through">
                         {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                       </span>
                       <span className="text-xs font-semibold text-teal-600">
-                        {formatPrice(0, config.currency)} first year
+                        {formatPrice(0, config.currency)} {tCommon("firstYear")}
                       </span>
                     </>
                   ) : currentStep >= 7 && config.servicePlan === "standard" ? (
                     <span className="text-xs text-stone-500">
-                      Care Standard: {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
+                      {tService("plans.standard.name")}: {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
                     </span>
                   ) : (
                     <span className="text-xs text-stone-400">
@@ -228,10 +311,10 @@ export default function ConfiguratorPage() {
             {/* Step indicator */}
             <div className="flex items-center gap-2 md:gap-3">
               <span className="text-xs md:text-sm text-stone-400">
-                {currentStep} / {STEPS.length}
+                {currentStep} / {translatedSteps.length}
               </span>
               <span className="text-xs md:text-sm font-medium text-stone-700 hidden sm:inline">
-                {STEPS[currentStep - 1].title}
+                {translatedSteps[currentStep - 1].title}
               </span>
             </div>
 
@@ -243,17 +326,17 @@ export default function ConfiguratorPage() {
                   className="h-11 md:h-10 px-3 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Back</span>
+                  <span className="hidden sm:inline">{t("back")}</span>
                 </button>
               )}
 
-              {currentStep < STEPS.length ? (
+              {currentStep < translatedSteps.length ? (
                 <button
                   onClick={nextStep}
                   className="h-11 md:h-10 px-4 md:px-6 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-sm font-medium flex items-center gap-1.5 transition-colors"
                 >
-                  <span className="hidden sm:inline">Continue</span>
-                  <span className="sm:hidden">Next</span>
+                  <span className="hidden sm:inline">{t("continue")}</span>
+                  <span className="sm:hidden">{t("next")}</span>
                   <ChevronRight className="h-4 w-4" />
                 </button>
               ) : (
@@ -262,8 +345,8 @@ export default function ConfiguratorPage() {
                   className="h-11 md:h-10 px-4 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
                 >
                   <RotateCcw className="h-4 w-4" />
-                  <span className="hidden sm:inline">Start Over</span>
-                  <span className="sm:hidden">Reset</span>
+                  <span className="hidden sm:inline">{t("startOver")}</span>
+                  <span className="sm:hidden">{t("reset")}</span>
                 </button>
               )}
             </div>

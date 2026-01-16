@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Wrench } from "lucide-react";
+import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -16,15 +17,15 @@ interface StepSpraySystemProps {
 }
 
 export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) {
+  const t = useTranslations("spraySystem");
+  const tCommon = useTranslations("common");
+
   const sprayPrice = PRICES.spraySystem.base + (config.activeRows * PRICES.spraySystem.perRow);
   const combiToolPrice = config.activeRows * PRICES.accessories.combiToolPerRow;
 
-  const sprayFeatures = [
-    "110L tank capacity",
-    "Precision nozzles per row",
-    "GPS-guided application",
-    "Variable rate control",
-  ];
+  const standardWeedFeatureKeys = ["weedingWires", "knifeInrow"] as const;
+  const combiToolFeatureKeys = ["fingerWeeding", "ridging", "perActiveRow"] as const;
+  const sprayFeatureKeys = ["tankCapacity", "precisionNozzles", "gpsGuided", "variableRate"] as const;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
@@ -147,13 +148,13 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
         {/* Title */}
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">+Weed Configuration</h1>
-          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">Configure your weeding setup</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
+          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
         </div>
 
         {/* Mechanical Weeding Section */}
         <div className="space-y-2 md:space-y-3">
-          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">Mechanical Weeding</p>
+          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("mechanicalWeeding")}</p>
 
           {/* Standard +Weed Config - Always included */}
           <div className="p-3 md:p-4 rounded-lg border border-stone-900 bg-stone-50">
@@ -163,21 +164,21 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   <Check className="h-3 w-3 text-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-stone-900 text-sm md:text-base">Standard +Weed Config</p>
-                  <p className="text-xs text-stone-500 mt-0.5">Included with every FarmDroid</p>
+                  <p className="font-medium text-stone-900 text-sm md:text-base">{t("standardWeedConfig.name")}</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{t("standardWeedConfig.description")}</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {["Weeding Wires", "Knife for Inrow"].map((feature) => (
+                    {standardWeedFeatureKeys.map((key) => (
                       <span
-                        key={feature}
+                        key={key}
                         className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
                       >
-                        {feature}
+                        {t(`standardWeedConfig.features.${key}`)}
                       </span>
                     ))}
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900">Included</span>
+              <span className="text-sm font-medium text-stone-900">{tCommon("included")}</span>
             </div>
           </div>
 
@@ -202,22 +203,22 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-stone-900 text-sm md:text-base">+ Combi Tool</p>
+                    <p className="font-medium text-stone-900 text-sm md:text-base">{t("combiTool.name")}</p>
                   </div>
-                  <p className="text-xs text-stone-500 mt-0.5">Multi-purpose tool attachment for enhanced weeding</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{t("combiTool.description")}</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {["Finger weeding", "Ridging", "Per active row"].map((feature) => (
+                    {combiToolFeatureKeys.map((key) => (
                       <span
-                        key={feature}
+                        key={key}
                         className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
                       >
-                        {feature}
+                        {t(`combiTool.features.${key}`)}
                       </span>
                     ))}
                   </div>
                   {config.combiTool && (
                     <p className="text-xs text-stone-400 mt-2">
-                      {formatPrice(PRICES.accessories.combiToolPerRow, config.currency)} × {config.activeRows} rows
+                      {t("combiTool.pricePerRow", { price: formatPrice(PRICES.accessories.combiToolPerRow, config.currency), count: config.activeRows })}
                     </p>
                   )}
                 </div>
@@ -231,7 +232,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
 
         {/* Spray System Section */}
         <div className="space-y-2 md:space-y-3 pt-2">
-          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">+Spray System</p>
+          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("spraySystemSection")}</p>
 
           {/* Spray System Add-on */}
           <button
@@ -253,27 +254,27 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-stone-900 text-sm md:text-base">+SPRAY System</p>
+                    <p className="font-medium text-stone-900 text-sm md:text-base">{t("spray.name")}</p>
                   </div>
-                  <p className="text-xs text-stone-500 mt-0.5">Precision spraying with GPS guidance</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{t("spray.description")}</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    {sprayFeatures.map((feature) => (
+                    {sprayFeatureKeys.map((key) => (
                       <span
-                        key={feature}
+                        key={key}
                         className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
                       >
-                        {feature}
+                        {t(`spray.features.${key}`)}
                       </span>
                     ))}
                   </div>
                   {config.spraySystem && (
                     <div className="mt-3 pt-3 border-t border-stone-200 space-y-1 text-xs text-stone-400">
                       <div className="flex justify-between">
-                        <span>Base system</span>
+                        <span>{t("spray.baseSystem")}</span>
                         <span>{formatPrice(PRICES.spraySystem.base, config.currency)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>{config.activeRows} row nozzles</span>
+                        <span>{t("spray.rowNozzles", { count: config.activeRows })}</span>
                         <span>{formatPrice(config.activeRows * PRICES.spraySystem.perRow, config.currency)}</span>
                       </div>
                     </div>
@@ -290,12 +291,12 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
         {/* Info text */}
         <p className="text-sm text-stone-500 pt-4 border-t border-stone-100">
           {config.spraySystem && config.combiTool
-            ? "Full weeding setup with mechanical tools and precision spraying for maximum weed control."
+            ? t("info.both")
             : config.spraySystem
-            ? "The +SPRAY system enables targeted herbicide application with GPS precision, reducing chemical usage by up to 90%."
+            ? t("info.sprayOnly")
             : config.combiTool
-            ? "Enhanced mechanical weeding with Combi Tool attachments for improved soil management and weed control."
-            : "Standard mechanical weeding configuration, perfect for organic certification requirements."}
+            ? t("info.combiOnly")
+            : t("info.standard")}
         </p>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Truck } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -17,29 +18,31 @@ interface StepBaseRobotProps {
   priceBreakdown: PriceBreakdown;
 }
 
-const productViews = [
-  { id: 1, src: "/farmdroid-fd20.png", label: "Side View" },
-];
-
 export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
   const [activeView, setActiveView] = useState(0);
+  const t = useTranslations("baseRobot");
+  const tCommon = useTranslations("common");
+
+  const productViews = [
+    { id: 1, src: "/farmdroid-fd20.png", label: t("views.sideView") },
+  ];
 
   const specs = [
-    { value: "12", unit: "rows", label: "Up to" },
-    { value: "12-24", unit: "h", label: "Runtime" },
-    { value: "1.6", unit: "kW", label: "Solar peak power" },
-    { value: "5.7", unit: "kWh", label: "Lithium batteries" },
+    { value: "12", unit: t("specs.rows"), label: t("specs.upTo") },
+    { value: "12-24", unit: "h", label: t("specs.runtime") },
+    { value: "1.6", unit: "kW", label: t("specs.solarPeakPower") },
+    { value: "5.7", unit: "kWh", label: t("specs.lithiumBatteries") },
   ];
 
-  const features = [
-    "1.6 kW solar power system",
-    "Lithium batteries 5.7 kWh capacity",
-    "Dual GPS navigation system",
-    "Autonomous operation",
-    "Remote monitoring via app",
-    "Premium subscription (1 year included)",
-    "1 year warranty",
-  ];
+  const featureKeys = [
+    "solarPower",
+    "batteries",
+    "gps",
+    "autonomous",
+    "remoteMonitoring",
+    "premiumSubscription",
+    "warranty",
+  ] as const;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
@@ -87,7 +90,7 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
                     key={view.id}
                     onClick={() => setActiveView(index)}
                     className="group relative p-2"
-                    aria-label={`Switch to ${view.label}`}
+                    aria-label={tCommon("switchTo", { label: view.label })}
                   >
                     <motion.div
                       className={`h-2 rounded-full transition-all duration-300 ${
@@ -133,16 +136,16 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
       <div className="lg:col-span-2 space-y-6">
         {/* Title */}
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">FD20 Robot V2.6</h1>
-          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">The autonomous seeding & weeding robot for precision farming</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("productTitle")}</h1>
+          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("productDescription")}</p>
         </div>
 
         {/* Robot Selection Card */}
         <div className="border border-stone-200 rounded-lg p-4 md:p-5 relative">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-medium text-stone-900 text-sm md:text-base">FD20 Robot V2.6</p>
-              <p className="text-xs md:text-sm text-stone-500 mt-0.5">Base configuration</p>
+              <p className="font-medium text-stone-900 text-sm md:text-base">{t("productTitle")}</p>
+              <p className="text-xs md:text-sm text-stone-500 mt-0.5">{t("baseConfiguration")}</p>
             </div>
             <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
               <span className="text-base md:text-lg font-semibold text-stone-900">{formatPrice(PRICES.baseRobot, config.currency)}</span>
@@ -155,18 +158,18 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
 
         {/* Features */}
         <div className="pt-4">
-          <p className="text-sm font-medium text-stone-700 mb-3">Included:</p>
+          <p className="text-sm font-medium text-stone-700 mb-3">{t("included")}</p>
           <ul className="space-y-2">
-            {features.map((feature, index) => (
+            {featureKeys.map((key, index) => (
               <motion.li
-                key={feature}
+                key={key}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 + index * 0.03 }}
                 className="flex items-center gap-2.5 text-sm text-stone-600"
               >
                 <div className="h-1 w-1 rounded-full bg-stone-400" />
-                {feature}
+                {t(`features.${key}`)}
               </motion.li>
             ))}
           </ul>
@@ -177,8 +180,8 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
           <div className="flex items-center gap-3 text-sm">
             <Truck className="h-4 w-4 text-stone-400" />
             <div>
-              <span className="text-stone-600">Estimated delivery: </span>
-              <span className="font-medium text-stone-900">4-8 weeks from order</span>
+              <span className="text-stone-600">{t("delivery.label")} </span>
+              <span className="font-medium text-stone-900">{t("delivery.value")}</span>
             </div>
           </div>
         </div>

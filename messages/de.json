@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "title": "FarmDroid Konfigurator",
+    "description": "Konfigurieren Sie Ihren FarmDroid FD20 Roboter"
+  },
+  "navigation": {
+    "back": "Zurück",
+    "next": "Weiter",
+    "continue": "Fortfahren",
+    "reset": "Zurücksetzen",
+    "startOver": "Neu starten"
+  },
+  "steps": {
+    "baseRobot": {
+      "title": "Basis-Roboter",
+      "subtitle": "FD20 Roboter V2.6"
+    },
+    "wheelConfig": {
+      "title": "Radkonfiguration",
+      "subtitle": "Radkonfiguration auswählen"
+    },
+    "seedConfig": {
+      "title": "+Saat-Konfiguration",
+      "subtitle": "Konfigurieren Sie Ihre Aussaat"
+    },
+    "weedConfig": {
+      "title": "+Unkraut-Konfiguration",
+      "subtitle": "Konfigurieren Sie Ihre Unkrautbekämpfung"
+    },
+    "powerSource": {
+      "title": "Stromquelle",
+      "subtitle": "Wählen Sie Ihre Stromkonfiguration"
+    },
+    "accessories": {
+      "title": "Zubehör",
+      "subtitle": "Zusätzliche Ausrüstung"
+    },
+    "servicePlan": {
+      "title": "Service & Garantie",
+      "subtitle": "Support- und Schutzpläne"
+    },
+    "summary": {
+      "title": "Zusammenfassung",
+      "subtitle": "Überprüfen Sie Ihre Konfiguration"
+    }
+  },
+  "baseRobot": {
+    "productTitle": "FD20 Roboter V2.6",
+    "productDescription": "Der autonome Sä- und Hackroboter für Präzisionslandwirtschaft",
+    "baseConfiguration": "Basiskonfiguration",
+    "included": "Inklusive:",
+    "delivery": {
+      "label": "Voraussichtliche Lieferung:",
+      "value": "4-8 Wochen ab Bestellung"
+    },
+    "features": {
+      "solarPower": "1,6 kW Solaranlage",
+      "batteries": "Lithium-Batterien 5,7 kWh Kapazität",
+      "gps": "Doppeltes GPS-Navigationssystem",
+      "autonomous": "Autonomer Betrieb",
+      "remoteMonitoring": "Fernüberwachung per App",
+      "premiumSubscription": "Premium-Abonnement (1 Jahr inklusive)",
+      "warranty": "1 Jahr Garantie"
+    },
+    "specs": {
+      "rows": "Reihen",
+      "upTo": "Bis zu",
+      "runtime": "Laufzeit",
+      "solarPeakPower": "Solar-Spitzenleistung",
+      "lithiumBatteries": "Lithium-Batterien"
+    },
+    "views": {
+      "sideView": "Seitenansicht",
+      "frontView": "Frontansicht"
+    }
+  },
+  "wheelConfig": {
+    "title": "Radkonfiguration",
+    "subtitle": "Wählen Sie zwischen 3-Rad- und 4-Rad-Aufbau",
+    "learnMore": "Mehr über Radkonfigurationen erfahren",
+    "moreInfo": "Weitere Informationen",
+    "options": {
+      "pfw": {
+        "name": "Passives Vorderrad",
+        "subtitle": "Optimal für flache Felder mit weiterem Reihenabstand (45-50 cm)",
+        "description": "Die Standard-Radkonfiguration bietet Stabilität und gleichmäßige Führung auf flachem Gelände. Ideal für Kulturen mit gerader Reihenzahl und weiterem Reihenabstand, wie z.B. Zuckerrüben (45-50 cm)."
+      },
+      "afw": {
+        "name": "Aktives Vorderrad",
+        "subtitle": "Automatische Neigung für Hanglagen über 8%",
+        "description": "Für hügeliges Gelände verfügt das aktive Vorderrad über einen Aktuator, der das Vorderrad automatisch neigt, um die Stabilität zu gewährleisten. Empfohlen für Hanglagen über 8% und Seitenneigungen über 5%, sowie für Kulturen mit gerader Reihenzahl und weiterem Abstand (ca. 45-50 cm)."
+      },
+      "dfw": {
+        "name": "Doppeltes Vorderrad",
+        "subtitle": "Enger Reihenabstand bis 22,5 cm und Beetsysteme",
+        "description": "Ausgestattet mit zwei Vorderrädern statt einem, verbessert diese Konfiguration Balance und Präzision, besonders für Kulturen mit engem Reihenabstand bis 22,5 cm. Perfekt für flache Felder und Beetsysteme, funktioniert gut mit gerader und ungerader Reihenzahl."
+      }
+    },
+    "configTypes": {
+      "threeWheel": "3-Rad",
+      "fourWheel": "4-Rad",
+      "openField": "Offenes Feld",
+      "bedConfig": "Beetkonfiguration"
+    },
+    "infoPanel": {
+      "title": "Radkonfigurationen",
+      "intro": "Jedes Feld ist anders, und so auch jeder FarmDroid. Der FD20 kann mit verstellbaren Radabständen, Reihenzahlen und einer Auswahl von drei Vorderradkonfigurationen an Ihre spezifischen Bedingungen angepasst werden.",
+      "adjustmentRange": "Ihre ideale Konfiguration hängt von mehreren Parametern ab, einschließlich Kulturart, Reihenabstand, Bodenbedingungen und Hangneigung Ihres Feldes. Die doppelten Hinterräder des FD20 können zwischen 160-230 cm in 10 cm Schritten eingestellt werden.",
+      "passiveFrontWheel": "1. Passives Vorderrad",
+      "dualFrontWheel": "2. Doppeltes Vorderrad",
+      "activeFrontWheel": "3. Aktives Vorderrad",
+      "footer": "Mit diesen Konfigurationsmöglichkeiten können Sie Ihren FarmDroid optimal an Ihr Gelände, Ihre Kulturen und Ihre Arbeitsweise anpassen. Unsere Roboterspezialisten helfen Ihnen gerne bei der Planung der optimalen Konfiguration für Ihren Betrieb."
+    },
+    "selectionInfo": {
+      "dfw": "4-Rad-Konfiguration bietet maximale Stabilität. Alle Räder laufen außerhalb der Reihen, ideal für Beetkultur.",
+      "afw": "Aktives Vorderrad bietet bessere Traktion bei weichen Bodenbedingungen und behält die Fähigkeit für offenes Feld.",
+      "pfw": "Passives Vorderrad läuft zwischen den Reihen und ermöglicht eine größere Arbeitsbreite bei offener Feldkultur."
+    }
+  },
+  "powerSource": {
+    "title": "Stromquelle",
+    "subtitle": "Wählen Sie Ihre Stromkonfiguration",
+    "pureElectric": "Rein Elektrisch",
+    "hybridPower": "Hybrid-Antrieb",
+    "solar": {
+      "name": "Solar",
+      "description": "Standard: 12-24 Stunden täglicher Betrieb",
+      "features": {
+        "solarPanels": "1,6 kW Solarpanele",
+        "battery": "5,7 kWh Batterie",
+        "zeroEmission": "Null Emissionen"
+      }
+    },
+    "powerBank": {
+      "name": "+ Power Bank",
+      "description": "Erweitert: Fügt ~10 Stunden täglichen Betrieb hinzu",
+      "features": {
+        "extraCapacity": "5,7 kWh Zusatzkapazität",
+        "totalCapacity": "11,4 kWh gesamt",
+        "chargedExternally": "Extern geladen",
+        "smartCharging": "Intelligentes Solar-Laden"
+      }
+    },
+    "hybrid": {
+      "name": "Solar + Generator",
+      "description": "Maximum: 24+ Stunden Dauerbetrieb",
+      "features": {
+        "solarPanels": "1,6 kW Solarpanele",
+        "battery": "5,7 kWh Batterie",
+        "generatorBackup": "Generator-Backup",
+        "allWeather": "Allwetter-Betrieb"
+      }
+    },
+    "info": {
+      "hybrid": "Hybridkonfiguration fügt Generator-Backup für maximale Betriebszeit unter allen Bedingungen hinzu.",
+      "powerBank": "Erweiterter elektrischer Betrieb mit doppelter Batteriekapazität - bleibt vollständig emissionsfrei.",
+      "solar": "Reine Solarenergie bietet sauberen, leisen Betrieb, ideal für die meisten Landwirtschaftsbedingungen."
+    }
+  },
+  "spraySystem": {
+    "title": "+Unkraut-Konfiguration",
+    "subtitle": "Konfigurieren Sie Ihre Unkrautbekämpfung",
+    "mechanicalWeeding": "Mechanische Unkrautbekämpfung",
+    "spraySystemSection": "+Sprühsystem",
+    "standardWeedConfig": {
+      "name": "Standard +Unkraut-Konfiguration",
+      "description": "Bei jedem FarmDroid inklusive",
+      "features": {
+        "weedingWires": "Hackdrähte",
+        "knifeInrow": "Messer für Inrow"
+      }
+    },
+    "combiTool": {
+      "name": "+ Kombi-Werkzeug",
+      "description": "Multifunktionswerkzeug für verbesserte Unkrautbekämpfung",
+      "features": {
+        "fingerWeeding": "Fingerhacke",
+        "ridging": "Häufeln",
+        "perActiveRow": "Pro aktive Reihe"
+      },
+      "pricePerRow": "{price} × {count} Reihen"
+    },
+    "spray": {
+      "name": "+SPRAY System",
+      "description": "Präzisionsspritzen mit GPS-Führung",
+      "features": {
+        "tankCapacity": "110L Tankkapazität",
+        "precisionNozzles": "Präzisionsdüsen pro Reihe",
+        "gpsGuided": "GPS-geführte Ausbringung",
+        "variableRate": "Variable Dosierung"
+      },
+      "baseSystem": "Basissystem",
+      "rowNozzles": "{count} Reihendüsen"
+    },
+    "info": {
+      "both": "Komplette Unkrautbekämpfung mit mechanischen Werkzeugen und Präzisionsspritzen für maximale Unkrautkontrolle.",
+      "sprayOnly": "Das +SPRAY-System ermöglicht gezielte Herbizidausbringung mit GPS-Präzision und reduziert den Chemikalieneinsatz um bis zu 90%.",
+      "combiOnly": "Verbesserte mechanische Unkrautbekämpfung mit Kombi-Werkzeug-Anbauteilen für bessere Bodenbearbeitung und Unkrautkontrolle.",
+      "standard": "Standard mechanische Unkrautkonfiguration, perfekt für Bio-Zertifizierungsanforderungen."
+    }
+  },
+  "accessories": {
+    "title": "Zubehör",
+    "subtitle": "Zusätzliche Ausrüstung für Ihren FarmDroid",
+    "items": {
+      "starterKit": {
+        "name": "Starter-Kit",
+        "description": "Essentielles Pflegepaket mit Basisstation V3 und Feldaufbau-Werkzeugen"
+      },
+      "roadTransport": {
+        "name": "Straßentransportplattform",
+        "description": "Transportplattform zum Bewegen des FD20 zwischen Feldern auf öffentlichen Straßen"
+      },
+      "fieldBracket": {
+        "name": "Feldhalterung mit Kette",
+        "description": "Sichere Montagehalterung für Feldpositionierung"
+      },
+      "powerBank": {
+        "name": "Power Bank",
+        "description": "Zusätzliche Batteriekapazität für erweiterten Betrieb"
+      },
+      "combiTool": {
+        "name": "Kombi-Werkzeug",
+        "description": "Multifunktionswerkzeug-Anbau"
+      }
+    },
+    "recommended": "Empfohlen",
+    "selected": "Ausgewählt",
+    "total": "Gesamt",
+    "itemsLabel": "Artikel",
+    "emptyMessage": "Zubehör ist optional. Sie können es später über unsere Serviceabteilung hinzufügen.",
+    "selectedMessage": "{count} Zubehörartikel ausgewählt für {price}.",
+    "selectedMessagePlural": "{count} Zubehörartikel ausgewählt für {price}."
+  },
+  "servicePlan": {
+    "title": "Service & Garantie",
+    "subtitle": "Wählen Sie Ihren Support- und Schutzplan",
+    "features": "Funktionen",
+    "servicePlanLabel": "Serviceplan",
+    "billedAnnually": "Jährlich abgerechnet",
+    "firstYearIncluded": "1. Jahr inklusive",
+    "perYear": "/Jahr",
+    "plans": {
+      "none": "Kein Serviceplan",
+      "standard": {
+        "name": "Care Standard",
+        "description": "Essenzieller Support und Wartung"
+      },
+      "premium": {
+        "name": "Care Premium",
+        "description": "Voller Support mit Software-Upgrades und Agrirouter",
+        "recommended": "EMPFOHLEN"
+      }
+    },
+    "featuresList": {
+      "supportCentre": "Supportcenter (Telefon und E-Mail)",
+      "aiAssistant": "KI-Assistent und Wissensdatenbank",
+      "softwareMaintenance": "Softwarewartung",
+      "farmDroidApp": "FarmDroid App",
+      "iotConnectivity": "IoT-Konnektivität (Basisstation + Roboter)",
+      "fieldDataBackup": "Felddaten-Backup",
+      "baseStationSurvey": "Basisstationsvermessung",
+      "agrirouter": "Verbindung zu Agrirouter",
+      "softwareUpgrades": "Software-Upgrades"
+    },
+    "warranty": {
+      "title": "Garantieverlängerung",
+      "extension": "+2 Jahre Garantieverlängerung",
+      "description": "Deckt Teile und Austausch ab. Erfordert jährliche Wartung des FD20."
+    }
+  },
+  "summary": {
+    "title": "Ihre Konfiguration",
+    "subtitle": "Überprüfen und finalisieren Sie Ihren FarmDroid",
+    "total": "Gesamt",
+    "delivery": "Voraussichtliche Lieferung: 12 Wochen ab Bestellung",
+    "lineItems": {
+      "baseRobot": "FD20 Roboter V2.6",
+      "hybridPower": "Hybrid-Stromsystem",
+      "activeFrontWheel": "Aktives Vorderrad",
+      "dualFrontWheel": "Doppeltes Vorderrad",
+      "activeRows": "{count}× Aktive Reihen ({size})",
+      "passiveRows": "{count}× Passive Reihen",
+      "spraySystem": "+SPRAY System",
+      "accessories": "Zubehör",
+      "warrantyExtension": "+2 Jahre Garantieverlängerung"
+    },
+    "configLabels": {
+      "rows": "Reihen",
+      "active": "Aktive",
+      "workingWidth": "Arbeitsbreite",
+      "power": "Strom",
+      "solar": "Solar",
+      "hybrid": "Hybrid"
+    },
+    "carePlan": "Care {plan}"
+  },
+  "forms": {
+    "name": "Name",
+    "company": "Unternehmen",
+    "email": "E-Mail",
+    "dealName": "Geschäftsname",
+    "contactName": "Kontaktname",
+    "placeholders": {
+      "yourName": "Ihr Name",
+      "companyName": "Firmenname",
+      "email": "sie@beispiel.de",
+      "dealName": "z.B. Müller Hof FD20",
+      "primaryContact": "Hauptansprechpartner"
+    }
+  },
+  "modals": {
+    "emailQuote": {
+      "title": "Angebot per E-Mail",
+      "quotePreview": "Angebotsvorschau",
+      "sendQuote": "Angebot senden",
+      "sending": "Wird gesendet...",
+      "sent": "Angebot gesendet!",
+      "checkInbox": "Prüfen Sie Ihren Posteingang"
+    },
+    "createDeal": {
+      "title": "Geschäft erstellen",
+      "dealValue": "Geschäftswert",
+      "createDeal": "Geschäft erstellen",
+      "creating": "Wird erstellt...",
+      "created": "Geschäft erstellt!",
+      "addedToPipeline": "Zu Ihrer Pipeline hinzugefügt"
+    }
+  },
+  "common": {
+    "included": "Inklusive",
+    "switchTo": "Wechseln zu {label}",
+    "firstYear": "erstes Jahr",
+    "freeFirstYear": "{price} erstes Jahr"
+  },
+  "rowConfig": {
+    "title": "+Saat-Konfiguration",
+    "subtitle": "Konfigurieren Sie Ihre Aussaat",
+    "seedSize": "Saatgutgröße",
+    "small": "Klein (6mm)",
+    "large": "Groß (14mm)",
+    "activeRows": "Aktive Reihen",
+    "rowSpacing": "Reihenabstand",
+    "wheelSpacing": "Radabstand",
+    "workingWidth": "Arbeitsbreite",
+    "passiveRows": "Passive Reihen",
+    "rowPlacement": "Reihenplatzierung",
+    "bedMode": "Beet",
+    "fieldMode": "Feld",
+    "customMode": "Benutzerdefiniert",
+    "dailyCapacity": "Tageskapazität",
+    "hectaresPerDay": "ha/Tag",
+    "hours": "Stunden"
+  },
+  "crops": {
+    "sugarBeet": "Zuckerrübe",
+    "carrot": "Karotte",
+    "onion": "Zwiebel",
+    "cabbage": "Kohl",
+    "parsnip": "Pastinake"
+  },
+  "validation": {
+    "minimumRowDistance": "Minimaler Reihenabstand für {seedSize} Samen ist {distance}mm",
+    "allRowSpacingsMinimum": "Alle Reihenabstände müssen mindestens {distance}mm für {seedSize} Samen betragen",
+    "maximumActiveRows": "Maximal {max} aktive Reihen erlaubt",
+    "workingWidthExceeds": "Arbeitsbreite ({width}mm) überschreitet Maximum {max}mm",
+    "threeWheelEvenRows": "3-Rad-Konfiguration erfordert eine gerade Anzahl von Reihen (Vorderrad muss zentriert sein)"
+  },
+  "recommendations": {
+    "excellent": "Ausgezeichnet - Räder perfekt zwischen den Reihen zentriert",
+    "good": "Gut - Räder gut zwischen den Reihen positioniert",
+    "acceptable": "Akzeptabel - geringe Abweichung von den Reihenzentren",
+    "consider": "Erwägen Sie eine Anpassung des Reihenabstands für bessere Radausrichtung"
+  },
+  "language": {
+    "select": "Sprache",
+    "en": "English",
+    "da": "Dansk",
+    "de": "Deutsch",
+    "fr": "Francais",
+    "nl": "Nederlands"
+  }
+}

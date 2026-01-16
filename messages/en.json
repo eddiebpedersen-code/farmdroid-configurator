@@ -1,0 +1,383 @@
+{
+  "metadata": {
+    "title": "FarmDroid Configurator",
+    "description": "Configure your FarmDroid FD20 robot"
+  },
+  "navigation": {
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "reset": "Reset",
+    "startOver": "Start Over"
+  },
+  "steps": {
+    "baseRobot": {
+      "title": "Base Robot",
+      "subtitle": "FD20 Robot V2.6"
+    },
+    "wheelConfig": {
+      "title": "Wheel Configuration",
+      "subtitle": "Select wheel configuration"
+    },
+    "seedConfig": {
+      "title": "+Seed Configuration",
+      "subtitle": "Configure your seeding setup"
+    },
+    "weedConfig": {
+      "title": "+Weed Configuration",
+      "subtitle": "Configure your weeding setup"
+    },
+    "powerSource": {
+      "title": "Power Source",
+      "subtitle": "Choose your power configuration"
+    },
+    "accessories": {
+      "title": "Accessories",
+      "subtitle": "Additional equipment"
+    },
+    "servicePlan": {
+      "title": "Service & Warranty",
+      "subtitle": "Support and protection plans"
+    },
+    "summary": {
+      "title": "Summary",
+      "subtitle": "Review your configuration"
+    }
+  },
+  "baseRobot": {
+    "productTitle": "FD20 Robot V2.6",
+    "productDescription": "The autonomous seeding & weeding robot for precision farming",
+    "baseConfiguration": "Base configuration",
+    "included": "Included:",
+    "delivery": {
+      "label": "Estimated delivery:",
+      "value": "4-8 weeks from order"
+    },
+    "features": {
+      "solarPower": "1.6 kW solar power system",
+      "batteries": "Lithium batteries 5.7 kWh capacity",
+      "gps": "Dual GPS navigation system",
+      "autonomous": "Autonomous operation",
+      "remoteMonitoring": "Remote monitoring via app",
+      "premiumSubscription": "Premium subscription (1 year included)",
+      "warranty": "1 year warranty"
+    },
+    "specs": {
+      "rows": "rows",
+      "upTo": "Up to",
+      "runtime": "Runtime",
+      "solarPeakPower": "Solar peak power",
+      "lithiumBatteries": "Lithium batteries"
+    },
+    "views": {
+      "sideView": "Side View",
+      "frontView": "Front View"
+    }
+  },
+  "wheelConfig": {
+    "title": "Wheel Configuration",
+    "subtitle": "Choose between 3-wheel and 4-wheel setup",
+    "learnMore": "Learn more about wheel configurations",
+    "moreInfo": "More information",
+    "options": {
+      "pfw": {
+        "name": "Passive Front Wheel",
+        "subtitle": "Best for flat fields with wider row spacing (45-50 cm)",
+        "description": "The standard wheel configuration provides stability and smooth guidance on flat terrain. Ideal for crops with even row counts and wider row spacing, such as sugar beets (45-50 cm)."
+      },
+      "afw": {
+        "name": "Active Front Wheel",
+        "subtitle": "Auto-tilting stability for slopes above 8%",
+        "description": "For hilly terrains, the Active Front Wheel adds an actuator that automatically tilts the front wheel to maintain stability. Recommended for slopes above 8% and side inclines over 5%, and for crops with even row numbers and wider spacing (around 45-50 cm)."
+      },
+      "dfw": {
+        "name": "Dual Front Wheel",
+        "subtitle": "Narrow row spacing down to 22.5 cm & bed systems",
+        "description": "Equipped with two front wheels instead of one, this setup enhances balance and precision, particularly for crops with narrow row spacing down to 22.5 cm. Perfect for flat fields and bed systems, works well with both even and uneven row counts."
+      }
+    },
+    "configTypes": {
+      "threeWheel": "3-wheel",
+      "fourWheel": "4-wheel",
+      "openField": "Open field",
+      "bedConfig": "Bed config"
+    },
+    "infoPanel": {
+      "title": "Wheel Configurations",
+      "intro": "Every field is different, and so is every FarmDroid. The FD20 can be tailored to your specific conditions with adjustable wheel distances, row numbers, and a choice of three front wheel configurations.",
+      "adjustmentRange": "Your ideal setup depends on several parameters, including crop type, row spacing, soil conditions, and the slope of your field. The FD20's dual back wheels can be adjusted between 160-230 cm in 10 cm increments.",
+      "passiveFrontWheel": "1. Passive Front Wheel",
+      "dualFrontWheel": "2. Dual Front Wheel",
+      "activeFrontWheel": "3. Active Front Wheel",
+      "footer": "With these configuration options, you can fine-tune your FarmDroid to match your terrain, crops, and working style. Our robot specialists are always ready to help you design the setup that fits your farm best."
+    },
+    "selectionInfo": {
+      "dfw": "4-wheel configuration provides maximum stability. All wheels run outside the rows, ideal for bed cultivation.",
+      "afw": "Active front wheel provides better traction in soft soil conditions while maintaining open field capability.",
+      "pfw": "Passive front wheel runs between rows, allowing for wider working width in open field cultivation."
+    }
+  },
+  "powerSource": {
+    "title": "Power Source",
+    "subtitle": "Choose your power configuration",
+    "pureElectric": "Pure Electric",
+    "hybridPower": "Hybrid Power",
+    "solar": {
+      "name": "Solar",
+      "description": "Standard: 12-24h daily operation",
+      "features": {
+        "solarPanels": "1.6 kW solar panels",
+        "battery": "5.7 kWh battery",
+        "zeroEmission": "Zero emission"
+      }
+    },
+    "powerBank": {
+      "name": "+ Power Bank",
+      "description": "Extended: Adds ~10h daily operation",
+      "features": {
+        "extraCapacity": "5.7 kWh extra capacity",
+        "totalCapacity": "11.4 kWh total",
+        "chargedExternally": "Charged externally",
+        "smartCharging": "Smart Solar Charging"
+      }
+    },
+    "hybrid": {
+      "name": "Solar + Generator",
+      "description": "Maximum: 24h+ continuous operation",
+      "features": {
+        "solarPanels": "1.6 kW solar panels",
+        "battery": "5.7 kWh battery",
+        "generatorBackup": "Generator backup",
+        "allWeather": "All-weather operation"
+      }
+    },
+    "info": {
+      "hybrid": "Hybrid configuration adds generator backup for maximum uptime in all conditions.",
+      "powerBank": "Extended electric operation with double battery capacity - stays fully emission-free.",
+      "solar": "Pure solar power provides clean, quiet operation ideal for most farming conditions."
+    }
+  },
+  "spraySystem": {
+    "title": "+Weed Configuration",
+    "subtitle": "Configure your weeding setup",
+    "mechanicalWeeding": "Mechanical Weeding",
+    "spraySystemSection": "+Spray System",
+    "standardWeedConfig": {
+      "name": "Standard +Weed Config",
+      "description": "Included with every FarmDroid",
+      "features": {
+        "weedingWires": "Weeding Wires",
+        "knifeInrow": "Knife for Inrow"
+      }
+    },
+    "combiTool": {
+      "name": "+ Combi Tool",
+      "description": "Multi-purpose tool attachment for enhanced weeding",
+      "features": {
+        "fingerWeeding": "Finger weeding",
+        "ridging": "Ridging",
+        "perActiveRow": "Per active row"
+      },
+      "pricePerRow": "{price} × {count} rows"
+    },
+    "spray": {
+      "name": "+SPRAY System",
+      "description": "Precision spraying with GPS guidance",
+      "features": {
+        "tankCapacity": "110L tank capacity",
+        "precisionNozzles": "Precision nozzles per row",
+        "gpsGuided": "GPS-guided application",
+        "variableRate": "Variable rate control"
+      },
+      "baseSystem": "Base system",
+      "rowNozzles": "{count} row nozzles"
+    },
+    "info": {
+      "both": "Full weeding setup with mechanical tools and precision spraying for maximum weed control.",
+      "sprayOnly": "The +SPRAY system enables targeted herbicide application with GPS precision, reducing chemical usage by up to 90%.",
+      "combiOnly": "Enhanced mechanical weeding with Combi Tool attachments for improved soil management and weed control.",
+      "standard": "Standard mechanical weeding configuration, perfect for organic certification requirements."
+    }
+  },
+  "accessories": {
+    "title": "Accessories",
+    "subtitle": "Additional equipment for your FarmDroid",
+    "items": {
+      "starterKit": {
+        "name": "Starter Kit",
+        "description": "Essential care package with base station V3 and field setup tools"
+      },
+      "roadTransport": {
+        "name": "Road Transport Platform",
+        "description": "Transport platform for moving FD20 between fields on public roads"
+      },
+      "fieldBracket": {
+        "name": "Field Bracket with Chain",
+        "description": "Secure mounting bracket for field positioning"
+      },
+      "powerBank": {
+        "name": "Power Bank",
+        "description": "Additional battery capacity for extended operation"
+      },
+      "combiTool": {
+        "name": "Combi Tool",
+        "description": "Multi-purpose tool attachment"
+      }
+    },
+    "recommended": "Recommended",
+    "selected": "Selected",
+    "total": "Total",
+    "itemsLabel": "items",
+    "emptyMessage": "Accessories are optional. You can add them later through our service department.",
+    "selectedMessage": "{count} accessory item selected for {price}.",
+    "selectedMessagePlural": "{count} accessory items selected for {price}."
+  },
+  "servicePlan": {
+    "title": "Service & Warranty",
+    "subtitle": "Choose your support and protection plan",
+    "features": "Features",
+    "servicePlanLabel": "Service Plan",
+    "billedAnnually": "Billed annually",
+    "firstYearIncluded": "1st year included",
+    "perYear": "/year",
+    "plans": {
+      "none": "No service plan",
+      "standard": {
+        "name": "Care Standard",
+        "description": "Essential support and maintenance"
+      },
+      "premium": {
+        "name": "Care Premium",
+        "description": "Full support with software upgrades and Agrirouter",
+        "recommended": "RECOMMENDED"
+      }
+    },
+    "featuresList": {
+      "supportCentre": "Support centre (phone and email)",
+      "aiAssistant": "AI assistant and Knowledge Base",
+      "softwareMaintenance": "Software maintenance",
+      "farmDroidApp": "FarmDroid App",
+      "iotConnectivity": "IoT connectivity (base station + robot)",
+      "fieldDataBackup": "Field data backup",
+      "baseStationSurvey": "Base station survey",
+      "agrirouter": "Connection to Agrirouter",
+      "softwareUpgrades": "Software upgrades"
+    },
+    "warranty": {
+      "title": "Warranty Extension",
+      "extension": "+2 Year Warranty Extension",
+      "description": "Covers parts and replacement. Requires FD20 to be serviced annually."
+    }
+  },
+  "summary": {
+    "title": "Your Configuration",
+    "subtitle": "Review and finalize your FarmDroid",
+    "total": "Total",
+    "delivery": "Estimated delivery: 12 weeks from order",
+    "lineItems": {
+      "baseRobot": "FD20 Robot V2.6",
+      "hybridPower": "Hybrid Power System",
+      "activeFrontWheel": "Active Front Wheel",
+      "dualFrontWheel": "Dual Front Wheel",
+      "activeRows": "{count}× Active Rows ({size})",
+      "passiveRows": "{count}× Passive Rows",
+      "spraySystem": "+SPRAY System",
+      "accessories": "Accessories",
+      "warrantyExtension": "+2 Year Warranty Extension"
+    },
+    "configLabels": {
+      "rows": "rows",
+      "active": "Active",
+      "workingWidth": "Working Width",
+      "power": "Power",
+      "solar": "Solar",
+      "hybrid": "Hybrid"
+    },
+    "carePlan": "Care {plan}"
+  },
+  "forms": {
+    "name": "Name",
+    "company": "Company",
+    "email": "Email",
+    "dealName": "Deal Name",
+    "contactName": "Contact Name",
+    "placeholders": {
+      "yourName": "Your name",
+      "companyName": "Company name",
+      "email": "you@example.com",
+      "dealName": "e.g., Mueller Farms FD20",
+      "primaryContact": "Primary contact"
+    }
+  },
+  "modals": {
+    "emailQuote": {
+      "title": "Email Quote",
+      "quotePreview": "Quote Preview",
+      "sendQuote": "Send Quote",
+      "sending": "Sending...",
+      "sent": "Quote Sent!",
+      "checkInbox": "Check your inbox"
+    },
+    "createDeal": {
+      "title": "Create Deal",
+      "dealValue": "Deal Value",
+      "createDeal": "Create Deal",
+      "creating": "Creating...",
+      "created": "Deal Created!",
+      "addedToPipeline": "Added to your pipeline"
+    }
+  },
+  "common": {
+    "included": "Included",
+    "switchTo": "Switch to {label}",
+    "firstYear": "first year",
+    "freeFirstYear": "{price} first year"
+  },
+  "rowConfig": {
+    "title": "+Seed Configuration",
+    "subtitle": "Configure your seeding setup",
+    "seedSize": "Seed Size",
+    "small": "Small (6mm)",
+    "large": "Large (14mm)",
+    "activeRows": "Active Rows",
+    "rowSpacing": "Row Spacing",
+    "wheelSpacing": "Wheel Spacing",
+    "workingWidth": "Working Width",
+    "passiveRows": "Passive Rows",
+    "rowPlacement": "Row Placement",
+    "bedMode": "Bed",
+    "fieldMode": "Field",
+    "customMode": "Custom",
+    "dailyCapacity": "Daily Capacity",
+    "hectaresPerDay": "ha/day",
+    "hours": "hours"
+  },
+  "crops": {
+    "sugarBeet": "Sugar Beet",
+    "carrot": "Carrot",
+    "onion": "Onion",
+    "cabbage": "Cabbage",
+    "parsnip": "Parsnip"
+  },
+  "validation": {
+    "minimumRowDistance": "Minimum row distance for {seedSize} seeds is {distance}mm",
+    "allRowSpacingsMinimum": "All row spacings must be at least {distance}mm for {seedSize} seeds",
+    "maximumActiveRows": "Maximum {max} active rows allowed",
+    "workingWidthExceeds": "Working width ({width}mm) exceeds maximum {max}mm",
+    "threeWheelEvenRows": "3-wheel configuration requires an even number of rows (front wheel must be centered)"
+  },
+  "recommendations": {
+    "excellent": "Excellent - wheels perfectly centered between rows",
+    "good": "Good - wheels well positioned between rows",
+    "acceptable": "Acceptable - minor offset from row centers",
+    "consider": "Consider adjusting row spacing for better wheel alignment"
+  },
+  "language": {
+    "select": "Language",
+    "en": "English",
+    "da": "Dansk",
+    "de": "Deutsch",
+    "fr": "Francais",
+    "nl": "Nederlands"
+  }
+}

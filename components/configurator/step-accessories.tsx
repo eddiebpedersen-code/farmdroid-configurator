@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Package, Truck, Link2, Check, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -15,47 +16,44 @@ interface StepAccessoriesProps {
   priceBreakdown: PriceBreakdown;
 }
 
-interface Accessory {
+interface AccessoryConfig {
   id: keyof Pick<ConfiguratorState, "starterKit" | "roadTransport" | "fieldBracket">;
-  name: string;
-  description: string;
+  translationKey: string;
   price: number;
   icon: typeof Package;
   recommended?: boolean;
 }
 
-const accessories: Accessory[] = [
+const accessoryConfigs: AccessoryConfig[] = [
   {
     id: "starterKit",
-    name: "Starter Kit",
-    description: "Essential care package with base station V3 and field setup tools",
+    translationKey: "starterKit",
     price: PRICES.accessories.starterKit,
     icon: Package,
     recommended: true,
   },
   {
     id: "roadTransport",
-    name: "Road Transport Platform",
-    description: "Transport platform for moving FD20 between fields on public roads",
+    translationKey: "roadTransport",
     price: PRICES.accessories.roadTransport,
     icon: Truck,
   },
   {
     id: "fieldBracket",
-    name: "Field Bracket with Chain",
-    description: "Secure mounting bracket for field positioning",
+    translationKey: "fieldBracket",
     price: PRICES.accessories.fieldBracket,
     icon: Link2,
   },
 ];
 
 export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) {
-  const toggleAccessory = (id: Accessory["id"]) => {
+  const t = useTranslations("accessories");
+  const toggleAccessory = (id: AccessoryConfig["id"]) => {
     updateConfig({ [id]: !config[id] });
   };
 
-  const selectedCount = accessories.filter((a) => config[a.id]).length;
-  const totalAccessoriesPrice = accessories
+  const selectedCount = accessoryConfigs.filter((a) => config[a.id]).length;
+  const totalAccessoriesPrice = accessoryConfigs
     .filter((a) => config[a.id])
     .reduce((sum, a) => sum + a.price, 0);
 
@@ -71,7 +69,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
             transition={{ duration: 0.3 }}
             className="grid grid-cols-2 gap-3 md:gap-4 max-w-lg mx-auto"
           >
-            {accessories.map((accessory, index) => {
+            {accessoryConfigs.map((accessory, index) => {
               const isSelected = config[accessory.id];
               const Icon = accessory.icon;
 
@@ -95,7 +93,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       <Icon className={`h-5 w-5 md:h-6 md:w-6 ${isSelected ? "text-white" : "text-stone-400"}`} />
                     </div>
                     <p className={`text-xs md:text-sm font-medium ${isSelected ? "text-stone-900" : "text-stone-500"}`}>
-                      {accessory.name}
+                      {t(`items.${accessory.translationKey}.name`)}
                     </p>
                     {isSelected && (
                       <motion.div
@@ -118,15 +116,15 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
           <div className="text-center">
             <p className="text-xl md:text-2xl font-semibold text-stone-900">
               {selectedCount}
-              <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">items</span>
+              <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">{t("itemsLabel")}</span>
             </p>
-            <p className="text-xs text-stone-500 mt-0.5">Selected</p>
+            <p className="text-xs text-stone-500 mt-0.5">{t("selected")}</p>
           </div>
           <div className="text-center">
             <p className="text-xl md:text-2xl font-semibold text-stone-900">
               {formatPrice(totalAccessoriesPrice, config.currency)}
             </p>
-            <p className="text-xs text-stone-500 mt-0.5">Total</p>
+            <p className="text-xs text-stone-500 mt-0.5">{t("total")}</p>
           </div>
         </div>
       </div>
@@ -135,13 +133,13 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
         {/* Title */}
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">Accessories</h1>
-          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">Additional equipment for your FarmDroid</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
+          <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
         </div>
 
         {/* Accessory list */}
         <div className="space-y-2 md:space-y-3">
-          {accessories.map((accessory) => {
+          {accessoryConfigs.map((accessory) => {
             const isSelected = config[accessory.id];
 
             return (
@@ -157,11 +155,11 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-                      <p className="font-medium text-stone-900 text-sm md:text-base">{accessory.name}</p>
+                      <p className="font-medium text-stone-900 text-sm md:text-base">{t(`items.${accessory.translationKey}.name`)}</p>
                       {accessory.recommended && (
                         <span className="flex items-center gap-1 text-[10px] md:text-xs bg-amber-100 text-amber-700 px-1.5 md:px-2 py-0.5 rounded-full">
                           <Star className="h-2.5 w-2.5 md:h-3 md:w-3" />
-                          Recommended
+                          {t("recommended")}
                         </span>
                       )}
                       {isSelected && (
@@ -170,7 +168,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         </div>
                       )}
                     </div>
-                    <p className="text-xs md:text-sm text-stone-500 mt-0.5">{accessory.description}</p>
+                    <p className="text-xs md:text-sm text-stone-500 mt-0.5">{t(`items.${accessory.translationKey}.description`)}</p>
                   </div>
                   <span className="text-sm md:text-base font-medium text-stone-900 flex-shrink-0">
                     +{formatPrice(accessory.price, config.currency)}
@@ -185,8 +183,10 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
         <div className="pt-4 border-t border-stone-100">
           <p className="text-sm text-stone-500">
             {selectedCount === 0
-              ? "Accessories are optional. You can add them later through our service department."
-              : `${selectedCount} accessory item${selectedCount > 1 ? "s" : ""} selected for ${formatPrice(totalAccessoriesPrice, config.currency)}.`}
+              ? t("emptyMessage")
+              : selectedCount > 1
+              ? t("selectedMessagePlural", { count: selectedCount, price: formatPrice(totalAccessoriesPrice, config.currency) })
+              : t("selectedMessage", { count: selectedCount, price: formatPrice(totalAccessoriesPrice, config.currency) })}
           </p>
         </div>
       </div>

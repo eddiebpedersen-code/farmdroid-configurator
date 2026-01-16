@@ -1,5 +1,7 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
+import { defaultLocale } from '@/i18n/config';
 
-export default function Home() {
-  redirect("/configurator");
+// Root page redirects to the default locale
+export default function RootPage() {
+  redirect(`/${defaultLocale}/configurator`);
 }
