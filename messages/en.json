@@ -8,7 +8,27 @@
     "next": "Next",
     "continue": "Continue",
     "reset": "Reset",
-    "startOver": "Start Over"
+    "startOver": "Start Over",
+    "stepOf": "Step {current} of {total}",
+    "completed": "Completed"
+  },
+  "persistence": {
+    "resumeTitle": "Welcome back!",
+    "resumeMessage": "You have a saved configuration from {time}. Would you like to continue where you left off?",
+    "resumeButton": "Resume Configuration",
+    "startFreshButton": "Start Fresh"
+  },
+  "priceBreakdown": {
+    "title": "Price Breakdown",
+    "baseRobot": "Base Robot",
+    "powerSource": "Power Source",
+    "frontWheel": "Front Wheel",
+    "activeRows": "Active Rows",
+    "passiveRows": "Passive Rows",
+    "spraySystem": "Spray System",
+    "accessories": "Accessories",
+    "warrantyExtension": "Warranty Extension",
+    "total": "Total"
   },
   "steps": {
     "baseRobot": {
@@ -24,7 +44,7 @@
       "subtitle": "Configure your seeding setup"
     },
     "weedConfig": {
-      "title": "++Weed Configuration",
+      "title": "+Weed Configuration",
       "subtitle": "Configure your weeding setup"
     },
     "powerSource": {
@@ -162,6 +182,8 @@
     "subtitle": "Configure your weeding setup",
     "mechanicalWeeding": "Mechanical Weeding",
     "spraySystemSection": "+Spray System",
+    "optionalWeedingTool": "Optional Weeding Tool",
+    "weedingToolNone": "None",
     "standardWeedConfig": {
       "name": "Standard +Weed Config",
       "description": "Included with every FarmDroid",
@@ -171,14 +193,21 @@
       }
     },
     "combiTool": {
-      "name": "+ Combi Tool",
+      "name": "Combi Tool",
       "description": "Multi-purpose tool attachment for enhanced weeding",
       "features": {
-        "fingerWeeding": "Finger weeding",
-        "ridging": "Ridging",
+        "notchedDiscs": "Notched discs for pre-cutting",
+        "lShares": "L-shares",
         "perActiveRow": "Per active row"
       },
       "pricePerRow": "{price} × {count} rows"
+    },
+    "weedCuttingDisc": {
+      "name": "Weed Cutting Disc",
+      "description": "Precision cutting disc for effective weed control",
+      "variant": "{size} variant",
+      "pricePerRow": "{price} × {count} rows",
+      "notAvailable": "Not available for this configuration"
     },
     "spray": {
       "name": "+SPRAY System",
@@ -196,16 +225,47 @@
       "both": "Full weeding setup with mechanical tools and precision spraying for maximum weed control.",
       "sprayOnly": "The +SPRAY system enables targeted herbicide application with GPS precision, reducing chemical usage by up to 90%.",
       "combiOnly": "Enhanced mechanical weeding with Combi Tool attachments for improved soil management and weed control.",
+      "weedCuttingDiscOnly": "Precision cutting discs provide effective mechanical weed control between rows.",
       "standard": "Standard mechanical weeding configuration, perfect for organic certification requirements."
     }
   },
   "accessories": {
     "title": "Accessories",
     "subtitle": "Additional equipment for your FarmDroid",
+    "groups": {
+      "bundles": "Bundles & Kits",
+      "connectivity": "Connectivity",
+      "transport": "Transport",
+      "maintenance": "Maintenance & Tools"
+    },
     "items": {
       "starterKit": {
         "name": "Starter Kit",
         "description": "Essential care package with base station V3 and field setup tools"
+      },
+      "fstFieldSetupTool": {
+        "name": "FST - Field Setup Tool",
+        "description": "Precision field setup tool for optimal robot calibration"
+      },
+      "baseStationV3": {
+        "name": "Base Station V3 Set",
+        "description": "GPS base station for high-precision navigation"
+      },
+      "essentialCarePackage": {
+        "name": "Essential Care Package",
+        "description": "Complete maintenance kit for robot upkeep"
+      },
+      "essentialCareSpray": {
+        "name": "Essential Care Package for +Spray",
+        "description": "Maintenance kit specifically for the spray system"
+      },
+      "additionalWeightKit": {
+        "name": "Additional Weight Kit",
+        "description": "4× 17.5kg weights for improved traction"
+      },
+      "toolbox": {
+        "name": "Toolbox with Tools",
+        "description": "Complete tool set for field maintenance"
       },
       "roadTransport": {
         "name": "Road Transport Platform",
@@ -218,19 +278,125 @@
       "powerBank": {
         "name": "Power Bank",
         "description": "Additional battery capacity for extended operation"
-      },
-      "combiTool": {
-        "name": "Combi Tool",
-        "description": "Multi-purpose tool attachment"
       }
     },
     "recommended": "Recommended",
     "selected": "Selected",
     "total": "Total",
     "itemsLabel": "items",
+    "includedInStarterKit": "Included in Starter Kit",
+    "includedWithCare": "Included with Care Package",
+    "included": "Included",
+    "starterKitIncludes": "Includes: FST Field Setup Tool, Base Station V3, Essential Care Package, Field Bracket",
     "emptyMessage": "Accessories are optional. You can add them later through our service department.",
     "selectedMessage": "{count} accessory item selected for {price}.",
-    "selectedMessagePlural": "{count} accessory items selected for {price}."
+    "selectedMessagePlural": "{count} accessory items selected for {price}.",
+    "infoModals": {
+      "learnMore": "Learn more",
+      "includedItems": "What's included",
+      "close": "Close",
+      "features": "Key features",
+      "starterKitBadge": "In Starter Kit",
+      "bundles": {
+        "title": "Starter Kit",
+        "description": "The Starter Kit bundles together everything you need to get your FarmDroid up and running quickly. It includes essential connectivity equipment, field setup tools, and maintenance supplies at a bundled price.",
+        "tip": {
+          "label": "Pro tip:",
+          "text": "The Starter Kit saves you money compared to buying items separately and ensures you have all the essentials from day one."
+        }
+      },
+      "connectivity": {
+        "title": "Connectivity",
+        "description": "Reliable connectivity is essential for your FarmDroid to operate autonomously. The Base Station provides centimeter-accurate GPS positioning, while the Field Setup Tool helps you configure your field boundaries precisely."
+      },
+      "transport": {
+        "title": "Transport",
+        "description": "Move your FarmDroid safely between fields and storage locations. The Field Bracket secures your robot during short moves, while the Road Transport Platform is required for transporting on public roads."
+      },
+      "maintenance": {
+        "title": "Maintenance & Tools",
+        "description": "Keep your FarmDroid running at peak performance with proper maintenance equipment. The Essential Care Package includes all the spare parts and consumables you'll need for regular upkeep."
+      },
+      "items": {
+        "fstFieldSetupTool": {
+          "name": "FST - Field Setup Tool",
+          "description": "The FST (Field Setup Tool) is a precision GPS device designed to help you accurately map your field boundaries and configure work zones. It connects directly to your FarmDroid system and ensures your robot knows exactly where to operate.",
+          "features": [
+            "High-precision GPS receiver",
+            "Easy field boundary mapping",
+            "Work zone configuration",
+            "Direct integration with FarmDroid system",
+            "Portable and rugged design"
+          ]
+        },
+        "baseStationV3": {
+          "name": "Base Station V3 Set",
+          "description": "The Base Station V3 is an RTK GPS base station that provides centimeter-level positioning accuracy for your FarmDroid. It broadcasts correction signals that enable precise autonomous navigation across your field.",
+          "features": [
+            "RTK GPS technology",
+            "Centimeter-level accuracy",
+            "Wide coverage range",
+            "Weather-resistant enclosure",
+            "Easy setup and configuration"
+          ]
+        },
+        "essentialCarePackage": {
+          "name": "Essential Care Package",
+          "description": "The Essential Care Package is a comprehensive maintenance kit containing all the spare parts and consumables you'll need for regular robot upkeep. Keep your FarmDroid running smoothly throughout the season.",
+          "features": [
+            "Replacement wear parts",
+            "Lubricants and greases",
+            "Cleaning supplies",
+            "Maintenance checklist",
+            "Storage case included"
+          ]
+        },
+        "fieldBracket": {
+          "name": "Field Bracket with Chain",
+          "description": "The Field Bracket provides a secure mounting point for moving your FarmDroid short distances using a tractor or ATV. Essential for repositioning your robot within your property without using the transport platform.",
+          "features": [
+            "Heavy-duty steel construction",
+            "Quick-attach design",
+            "Includes safety chain",
+            "Compatible with standard hitches",
+            "Rated for towing on soft ground"
+          ]
+        },
+        "roadTransport": {
+          "name": "Road Transport Platform",
+          "description": "The Road Transport Platform is a certified trailer solution for legally transporting your FarmDroid on public roads. Required when moving your robot between distant fields or to service locations.",
+          "features": [
+            "Road-legal certified",
+            "Integrated loading ramps",
+            "Secure tie-down points",
+            "LED lighting package",
+            "Fits standard tow hitches"
+          ]
+        },
+        "additionalWeightKit": {
+          "name": "Additional Weight Kit",
+          "description": "The Additional Weight Kit includes 4 × 17.5kg weights that can be attached to your FarmDroid to increase traction in challenging soil conditions. Ideal for wet, loose, or sloped terrain.",
+          "features": [
+            "4 × 17.5kg weights (70kg total)",
+            "Easy attachment system",
+            "Balanced weight distribution",
+            "Corrosion-resistant finish",
+            "Improves traction on slopes"
+          ]
+        },
+        "toolbox": {
+          "name": "Toolbox with Tools",
+          "description": "A complete set of tools specifically selected for FarmDroid field maintenance and minor adjustments. Everything you need to keep your robot running during the season.",
+          "features": [
+            "FarmDroid-specific tools",
+            "Metric wrench set",
+            "Screwdrivers and hex keys",
+            "Diagnostic tools",
+            "Durable carrying case"
+          ]
+        }
+      }
+    }
   },
   "servicePlan": {
     "title": "Service & Warranty",
@@ -281,6 +447,8 @@
       "dualFrontWheel": "Dual Front Wheel",
       "activeRows": "{count}× Active Rows ({size})",
       "passiveRows": "{count}× Passive Rows",
+      "combiTool": "Combi Tool ({count} rows)",
+      "weedCuttingDisc": "Weed Cutting Disc {variant} ({count} rows)",
       "spraySystem": "+SPRAY System",
       "accessories": "Accessories",
       "warrantyExtension": "+2 Year Warranty Extension"
@@ -388,7 +556,48 @@
     "patternTooltip": "Grid or diamond formation for optimal plant spacing.",
     "precisionWarning": "Precision seeding only possible at 10cm or above",
     "optimalWheelSpacing": "Optimal wheel spacing for this row config",
-    "suggestedSpacing": "Suggested: {spacing}cm — wheels centered between rows"
+    "suggestedSpacing": "Suggested: {spacing}cm — wheels centered between rows",
+    "seedInfoModal": {
+      "trigger": "What +Seed System to choose?",
+      "title": "Explore +Seed Systems",
+      "selectSystem": "Select +Seed {size}",
+      "currentlySelected": "Currently selected",
+      "cropComparison": "Crop compatibility",
+      "crop": "Crop",
+      "andMoreCrops": "+ 80 more crops",
+      "specifications": "Specifications",
+      "spec": "Spec",
+      "crops": {
+        "carrots": "Carrots",
+        "flowers": "Flowers",
+        "onions": "Onions",
+        "spinach": "Spinach",
+        "radish": "Radish",
+        "sugarBeets": "Sugar beets",
+        "redBeets": "Red beets",
+        "lettuce": "Lettuce",
+        "cabbage": "Cabbage",
+        "beans": "Beans",
+        "peas": "Peas",
+        "corn": "Corn",
+        "sunflowers": "Sunflowers"
+      },
+      "specs": {
+        "hopperWidth": "Hopper width",
+        "maxSeedSize": "Max seed size",
+        "minRowSpacing": "Min row spacing"
+      },
+      "systems": {
+        "6mm": {
+          "name": "+Seed 6mm System",
+          "description": "Designed for smaller seeds up to 6mm. Ideal for high-density planting with precise spacing."
+        },
+        "14mm": {
+          "name": "+Seed 14mm System",
+          "description": "Handles larger seeds up to 14mm. Perfect for crops that need more space between rows."
+        }
+      }
+    }
   },
   "crops": {
     "sprout": "Sprout",

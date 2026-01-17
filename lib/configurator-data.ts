@@ -11,6 +11,7 @@ export type Currency = "EUR" | "DKK";
 export type WheelConfig = "3-wheel" | "4-wheel";
 export type RowPlacementMode = "bed" | "field" | "custom"; // bed = inside wheels only, field = inside + outside, custom = manual
 export type ServicePlan = "none" | "standard" | "premium";
+export type WeedingTool = "none" | "combiTool" | "weedCuttingDisc";
 
 export interface ConfiguratorState {
   // Currency selection
@@ -35,15 +36,21 @@ export interface ConfiguratorState {
   rowsOutsideLeft: number; // number of rows outside left wheel (field/custom mode)
   rowsOutsideRight: number; // number of rows outside right wheel (field/custom mode)
 
-  // Step 5: Spray system
+  // Step 4: Spray/Weed system
   spraySystem: boolean;
+  weedingTool: WeedingTool;
 
   // Step 6: Accessories
   starterKit: boolean;
   roadTransport: boolean;
   fieldBracket: boolean;
   powerBank: boolean;
-  combiTool: boolean;
+  fstFieldSetupTool: boolean;
+  baseStationV3: boolean;
+  essentialCarePackage: boolean;
+  essentialCareSpray: boolean;
+  additionalWeightKit: boolean;
+  toolbox: boolean;
 
   // Step 7: Service & Warranty
   servicePlan: ServicePlan;
@@ -85,7 +92,7 @@ export const STEPS: StepInfo[] = [
   { id: 1, title: "Base Robot", subtitle: "FD20 Robot V2.6" },
   { id: 2, title: "Wheel Configuration", subtitle: "Select wheel configuration" },
   { id: 3, title: "+Seed Configuration", subtitle: "Configure your seeding setup" },
-  { id: 4, title: "++Weed Configuration", subtitle: "Configure your weeding setup" },
+  { id: 4, title: "+Weed Configuration", subtitle: "Configure your weeding setup" },
   { id: 5, title: "Power Source", subtitle: "Choose your power configuration" },
   { id: 6, title: "Accessories", subtitle: "Additional equipment" },
   { id: 7, title: "Service & Warranty", subtitle: "Support and protection plans" },
@@ -125,6 +132,13 @@ export const PRICES = {
     fieldBracket: 700,
     powerBank: 5000,
     combiToolPerRow: 400,
+    weedCuttingDiscPerRow: 360,
+    fstFieldSetupTool: 1990,
+    baseStationV3: 5790,
+    essentialCarePackage: 3290,
+    essentialCareSpray: 750,
+    additionalWeightKit: 515,
+    toolbox: 150,
   },
 
   servicePlan: {
@@ -183,11 +197,17 @@ export const DEFAULT_CONFIG: ConfiguratorState = {
   rowsOutsideLeft: 0,
   rowsOutsideRight: 0,
   spraySystem: false,
+  weedingTool: "none",
   starterKit: false,
   roadTransport: false,
   fieldBracket: false,
   powerBank: false,
-  combiTool: false,
+  fstFieldSetupTool: false,
+  baseStationV3: false,
+  essentialCarePackage: false,
+  essentialCareSpray: false,
+  additionalWeightKit: false,
+  toolbox: false,
   servicePlan: "premium",
   warrantyExtension: false,
 };
@@ -439,6 +459,29 @@ export function validateRowConfig(
 }
 
 /**
+ * Get the available weed cutting disc variant based on row distance
+ * The disc requires the row distance to be evenly divisible by 225mm or 250mm
+ * @param rowDistanceMm - The row distance in millimeters
+ * @returns "225mm" or "250mm" if available, null if not compatible
+ */
+export function getWeedCuttingDiscVariant(rowDistanceMm: number): "225mm" | "250mm" | null {
+  const divisibleBy225 = rowDistanceMm % 225 === 0;
+  const divisibleBy250 = rowDistanceMm % 250 === 0;
+
+  if (divisibleBy250) return "250mm"; // Prefer 250mm if both work
+  if (divisibleBy225) return "225mm";
+  return null; // Not compatible
+}
+
+/**
+ * Check if an accessory is included in the Starter Kit
+ */
+export function isIncludedInStarterKit(accessoryId: string): boolean {
+  const includedItems = ["fstFieldSetupTool", "baseStationV3", "essentialCarePackage", "fieldBracket"];
+  return includedItems.includes(accessoryId);
+}
+
+/**
  * Calculate total price and breakdown
  * @param config - The configurator state
  * @param currentStep - Optional current step (1-8). When provided, only includes pricing for steps the user has reached.
@@ -468,6 +511,16 @@ export function calculatePrice(config: ConfiguratorState, currentStep?: number):
     spraySystem = PRICES.spraySystem.base + (config.activeRows * PRICES.spraySystem.perRow);
   }
 
+  // Step 4: Weeding tools (part of weed config step)
+  let weedingTools = 0;
+  if (currentStep === undefined || currentStep >= 4) {
+    if (config.weedingTool === "combiTool") {
+      weedingTools = config.activeRows * PRICES.accessories.combiToolPerRow;
+    } else if (config.weedingTool === "weedCuttingDisc") {
+      weedingTools = config.activeRows * PRICES.accessories.weedCuttingDiscPerRow;
+    }
+  }
+
   // Step 5: Power source
   const powerSource = currentStep === undefined || currentStep >= 5
     ? PRICES.powerSource[config.powerSource]
@@ -476,11 +529,26 @@ export function calculatePrice(config: ConfiguratorState, currentStep?: number):
   // Step 6: Accessories
   let accessories = 0;
   if (currentStep === undefined || currentStep >= 6) {
-    if (config.starterKit) accessories += PRICES.accessories.starterKit;
+    if (config.starterKit) {
+      // Starter Kit includes: FST Field Setup Tool, Base Station V3, Essential Care Package, Field Bracket
+      accessories += PRICES.accessories.starterKit;
+    } else {
+      // Individual items (only charge if Starter Kit is NOT selected)
+      if (config.fstFieldSetupTool) accessories += PRICES.accessories.fstFieldSetupTool;
+      if (config.baseStationV3) accessories += PRICES.accessories.baseStationV3;
+      if (config.essentialCarePackage) accessories += PRICES.accessories.essentialCarePackage;
+      if (config.fieldBracket) accessories += PRICES.accessories.fieldBracket;
+    }
+    // Items NOT included in Starter Kit (always add if selected)
     if (config.roadTransport) accessories += PRICES.accessories.roadTransport;
-    if (config.fieldBracket) accessories += PRICES.accessories.fieldBracket;
     if (config.powerBank) accessories += PRICES.accessories.powerBank;
-    if (config.combiTool) accessories += config.activeRows * PRICES.accessories.combiToolPerRow;
+    // Essential Care Spray is automatically included when spray system is on AND (Starter Kit OR Essential Care Package is selected)
+    const hasEssentialCare = config.starterKit || config.essentialCarePackage;
+    if (config.spraySystem && hasEssentialCare) {
+      accessories += PRICES.accessories.essentialCareSpray;
+    }
+    if (config.additionalWeightKit) accessories += PRICES.accessories.additionalWeightKit;
+    if (config.toolbox) accessories += PRICES.accessories.toolbox;
   }
 
   // Step 7: Service & Warranty
@@ -495,7 +563,7 @@ export function calculatePrice(config: ConfiguratorState, currentStep?: number):
 
   // Passive rows are included with active row pricing, not charged separately
   // Service plan is an annual subscription and not included in one-time total
-  const total = baseRobot + powerSource + frontWheel + activeRows + spraySystem + accessories + warrantyExtension;
+  const total = baseRobot + powerSource + frontWheel + activeRows + spraySystem + weedingTools + accessories + warrantyExtension;
 
   return {
     baseRobot,
@@ -504,7 +572,7 @@ export function calculatePrice(config: ConfiguratorState, currentStep?: number):
     activeRows,
     passiveRows,
     spraySystem,
-    accessories,
+    accessories: accessories + weedingTools, // Include weeding tools in accessories for price breakdown
     servicePlan,
     warrantyExtension,
     total,
@@ -741,12 +809,28 @@ export function generateConfigSummary(config: ConfiguratorState): string[] {
     summary.push("+SPRAY System");
   }
 
+  // Weeding tools
+  if (config.weedingTool === "combiTool") {
+    summary.push("+ Combi Tool");
+  } else if (config.weedingTool === "weedCuttingDisc") {
+    const variant = getWeedCuttingDiscVariant(config.rowDistance);
+    summary.push(`+ Weed Cutting Disc (${variant || "N/A"})`);
+  }
+
   const accessories: string[] = [];
-  if (config.starterKit) accessories.push("Starter Kit");
+  if (config.starterKit) {
+    accessories.push("Starter Kit");
+  } else {
+    if (config.fstFieldSetupTool) accessories.push("FST Field Setup Tool");
+    if (config.baseStationV3) accessories.push("Base Station V3");
+    if (config.essentialCarePackage) accessories.push("Essential Care Package");
+    if (config.fieldBracket) accessories.push("Field Bracket");
+  }
   if (config.roadTransport) accessories.push("Road Transport");
-  if (config.fieldBracket) accessories.push("Field Bracket");
   if (config.powerBank) accessories.push("Power Bank");
-  if (config.combiTool) accessories.push("Combi Tool");
+  if (config.essentialCareSpray && config.spraySystem) accessories.push("Essential Care for +Spray");
+  if (config.additionalWeightKit) accessories.push("Additional Weight Kit");
+  if (config.toolbox) accessories.push("Toolbox");
 
   if (accessories.length > 0) {
     summary.push(`Accessories: ${accessories.join(", ")}`);

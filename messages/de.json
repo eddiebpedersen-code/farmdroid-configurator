@@ -8,7 +8,27 @@
     "next": "Weiter",
     "continue": "Fortfahren",
     "reset": "Zurücksetzen",
-    "startOver": "Neu starten"
+    "startOver": "Neu starten",
+    "stepOf": "Schritt {current} von {total}",
+    "completed": "Abgeschlossen"
+  },
+  "persistence": {
+    "resumeTitle": "Willkommen zurück!",
+    "resumeMessage": "Sie haben eine gespeicherte Konfiguration von {time}. Möchten Sie dort weitermachen?",
+    "resumeButton": "Konfiguration fortsetzen",
+    "startFreshButton": "Neu beginnen"
+  },
+  "priceBreakdown": {
+    "title": "Preisübersicht",
+    "baseRobot": "Basis-Roboter",
+    "powerSource": "Stromquelle",
+    "frontWheel": "Vorderrad",
+    "activeRows": "Aktive Reihen",
+    "passiveRows": "Passive Reihen",
+    "spraySystem": "Sprühsystem",
+    "accessories": "Zubehör",
+    "warrantyExtension": "Garantieverlängerung",
+    "total": "Gesamt"
   },
   "steps": {
     "baseRobot": {
@@ -20,11 +40,11 @@
       "subtitle": "Radkonfiguration auswählen"
     },
     "seedConfig": {
-      "title": "+Saat-Konfiguration",
+      "title": "+Seed Configuration",
       "subtitle": "Konfigurieren Sie Ihre Aussaat"
     },
     "weedConfig": {
-      "title": "++Unkraut-Konfiguration",
+      "title": "+Weed Configuration",
       "subtitle": "Konfigurieren Sie Ihre Unkrautbekämpfung"
     },
     "powerSource": {
@@ -158,12 +178,14 @@
     }
   },
   "spraySystem": {
-    "title": "++Unkraut-Konfiguration",
+    "title": "+Weed Configuration",
     "subtitle": "Konfigurieren Sie Ihre Unkrautbekämpfung",
     "mechanicalWeeding": "Mechanische Unkrautbekämpfung",
     "spraySystemSection": "+Sprühsystem",
+    "optionalWeedingTool": "Optionales Hackwerkzeug",
+    "weedingToolNone": "Keines",
     "standardWeedConfig": {
-      "name": "Standard +Unkraut-Konfiguration",
+      "name": "Standard +Weed Config",
       "description": "Bei jedem FarmDroid inklusive",
       "features": {
         "weedingWires": "Hackdrähte",
@@ -171,14 +193,21 @@
       }
     },
     "combiTool": {
-      "name": "+ Kombi-Werkzeug",
+      "name": "Kombi-Werkzeug",
       "description": "Multifunktionswerkzeug für verbesserte Unkrautbekämpfung",
       "features": {
-        "fingerWeeding": "Fingerhacke",
-        "ridging": "Häufeln",
+        "notchedDiscs": "Gezahnte Scheiben zum Vorschneiden",
+        "lShares": "L-Schare",
         "perActiveRow": "Pro aktive Reihe"
       },
       "pricePerRow": "{price} × {count} Reihen"
+    },
+    "weedCuttingDisc": {
+      "name": "Unkrautschneidescheibe",
+      "description": "Präzisionsschneidescheibe für effektive Unkrautbekämpfung",
+      "variant": "{size} Variante",
+      "pricePerRow": "{price} × {count} Reihen",
+      "notAvailable": "Nicht verfügbar für diese Konfiguration"
     },
     "spray": {
       "name": "+SPRAY System",
@@ -196,16 +225,47 @@
       "both": "Komplette Unkrautbekämpfung mit mechanischen Werkzeugen und Präzisionsspritzen für maximale Unkrautkontrolle.",
       "sprayOnly": "Das +SPRAY-System ermöglicht gezielte Herbizidausbringung mit GPS-Präzision und reduziert den Chemikalieneinsatz um bis zu 90%.",
       "combiOnly": "Verbesserte mechanische Unkrautbekämpfung mit Kombi-Werkzeug-Anbauteilen für bessere Bodenbearbeitung und Unkrautkontrolle.",
+      "weedCuttingDiscOnly": "Präzisionsschneidescheiben bieten effektive mechanische Unkrautkontrolle zwischen den Reihen.",
       "standard": "Standard mechanische Unkrautkonfiguration, perfekt für Bio-Zertifizierungsanforderungen."
     }
   },
   "accessories": {
     "title": "Zubehör",
     "subtitle": "Zusätzliche Ausrüstung für Ihren FarmDroid",
+    "groups": {
+      "bundles": "Pakete & Kits",
+      "connectivity": "Konnektivität",
+      "transport": "Transport",
+      "maintenance": "Wartung & Werkzeuge"
+    },
     "items": {
       "starterKit": {
         "name": "Starter-Kit",
         "description": "Essentielles Pflegepaket mit Basisstation V3 und Feldaufbau-Werkzeugen"
+      },
+      "fstFieldSetupTool": {
+        "name": "FST - Feldaufbau-Werkzeug",
+        "description": "Präzisions-Feldaufbauwerkzeug für optimale Roboterkalibrierung"
+      },
+      "baseStationV3": {
+        "name": "Basisstation V3 Set",
+        "description": "GPS-Basisstation für hochpräzise Navigation"
+      },
+      "essentialCarePackage": {
+        "name": "Essential Care Paket",
+        "description": "Komplettes Wartungsset für Roboterpflege"
+      },
+      "essentialCareSpray": {
+        "name": "Essential Care Paket für +Spray",
+        "description": "Wartungsset speziell für das Sprühsystem"
+      },
+      "additionalWeightKit": {
+        "name": "Zusätzliches Gewichtsset",
+        "description": "4× 17,5kg Gewichte für verbesserte Traktion"
+      },
+      "toolbox": {
+        "name": "Werkzeugkasten mit Werkzeugen",
+        "description": "Komplettes Werkzeugset für Feldwartung"
       },
       "roadTransport": {
         "name": "Straßentransportplattform",
@@ -218,19 +278,125 @@
       "powerBank": {
         "name": "Power Bank",
         "description": "Zusätzliche Batteriekapazität für erweiterten Betrieb"
-      },
-      "combiTool": {
-        "name": "Kombi-Werkzeug",
-        "description": "Multifunktionswerkzeug-Anbau"
       }
     },
     "recommended": "Empfohlen",
     "selected": "Ausgewählt",
     "total": "Gesamt",
     "itemsLabel": "Artikel",
+    "includedInStarterKit": "Im Starter-Kit enthalten",
+    "includedWithCare": "Im Care Paket enthalten",
+    "included": "Enthalten",
+    "starterKitIncludes": "Enthält: FST Feldaufbau-Werkzeug, Basisstation V3, Essential Care Paket, Feldhalterung",
     "emptyMessage": "Zubehör ist optional. Sie können es später über unsere Serviceabteilung hinzufügen.",
     "selectedMessage": "{count} Zubehörartikel ausgewählt für {price}.",
-    "selectedMessagePlural": "{count} Zubehörartikel ausgewählt für {price}."
+    "selectedMessagePlural": "{count} Zubehörartikel ausgewählt für {price}.",
+    "infoModals": {
+      "learnMore": "Mehr erfahren",
+      "includedItems": "Was ist enthalten",
+      "close": "Schließen",
+      "features": "Hauptmerkmale",
+      "starterKitBadge": "Im Starter-Kit",
+      "bundles": {
+        "title": "Starter-Kit",
+        "description": "Das Starter-Kit bündelt alles, was Sie brauchen, um Ihren FarmDroid schnell zum Laufen zu bringen. Es enthält wichtige Konnektivitätsausrüstung, Feldeinrichtungstools und Wartungsbedarf zu einem Paketpreis.",
+        "tip": {
+          "label": "Profi-Tipp:",
+          "text": "Das Starter-Kit spart Ihnen Geld im Vergleich zum Einzelkauf und stellt sicher, dass Sie von Anfang an alle wichtigen Dinge haben."
+        }
+      },
+      "connectivity": {
+        "title": "Konnektivität",
+        "description": "Zuverlässige Konnektivität ist essentiell für den autonomen Betrieb Ihres FarmDroid. Die Basisstation bietet zentimetergenaue GPS-Positionierung, während das Feldeinrichtungs-Tool Ihnen hilft, Ihre Feldgrenzen präzise zu konfigurieren."
+      },
+      "transport": {
+        "title": "Transport",
+        "description": "Bewegen Sie Ihren FarmDroid sicher zwischen Feldern und Lagerorten. Die Feldhalterung sichert Ihren Roboter bei kurzen Transporten, während die Straßentransportplattform für den Transport auf öffentlichen Straßen erforderlich ist."
+      },
+      "maintenance": {
+        "title": "Wartung & Werkzeuge",
+        "description": "Halten Sie Ihren FarmDroid mit der richtigen Wartungsausrüstung auf Höchstleistung. Das Essential Care Paket enthält alle Ersatzteile und Verbrauchsmaterialien, die Sie für die regelmäßige Wartung benötigen."
+      },
+      "items": {
+        "fstFieldSetupTool": {
+          "name": "FST - Feldeinrichtungs-Tool",
+          "description": "Das FST (Field Setup Tool) ist ein Präzisions-GPS-Gerät, das Ihnen hilft, Ihre Feldgrenzen genau zu kartieren und Arbeitszonen zu konfigurieren. Es verbindet sich direkt mit Ihrem FarmDroid-System und stellt sicher, dass Ihr Roboter genau weiß, wo er arbeiten soll.",
+          "features": [
+            "Hochpräziser GPS-Empfänger",
+            "Einfache Feldgrenzenkartierung",
+            "Arbeitszonenkonfiguration",
+            "Direkte Integration mit FarmDroid-System",
+            "Tragbares und robustes Design"
+          ]
+        },
+        "baseStationV3": {
+          "name": "Basisstation V3 Set",
+          "description": "Die Basisstation V3 ist eine RTK GPS-Basisstation, die zentimetergenaue Positionierung für Ihren FarmDroid bietet. Sie sendet Korrektursignale aus, die eine präzise autonome Navigation über Ihr Feld ermöglichen.",
+          "features": [
+            "RTK GPS-Technologie",
+            "Zentimetergenauigkeit",
+            "Große Abdeckungsreichweite",
+            "Wetterfestes Gehäuse",
+            "Einfache Einrichtung und Konfiguration"
+          ]
+        },
+        "essentialCarePackage": {
+          "name": "Essential Care Paket",
+          "description": "Das Essential Care Paket ist ein umfassendes Wartungskit mit allen Ersatzteilen und Verbrauchsmaterialien, die Sie für die regelmäßige Roboterwartung benötigen. Halten Sie Ihren FarmDroid während der gesamten Saison reibungslos am Laufen.",
+          "features": [
+            "Ersatz-Verschleißteile",
+            "Schmiermittel und Fette",
+            "Reinigungsmittel",
+            "Wartungscheckliste",
+            "Aufbewahrungskoffer inklusive"
+          ]
+        },
+        "fieldBracket": {
+          "name": "Feldhalterung mit Kette",
+          "description": "Die Feldhalterung bietet einen sicheren Befestigungspunkt zum Bewegen Ihres FarmDroid über kurze Strecken mit einem Traktor oder ATV. Unverzichtbar für die Neupositionierung Ihres Roboters auf Ihrem Grundstück ohne die Transportplattform.",
+          "features": [
+            "Robuste Stahlkonstruktion",
+            "Schnellbefestigungsdesign",
+            "Sicherheitskette inklusive",
+            "Kompatibel mit Standardanhängerkupplungen",
+            "Zugelassen für Schleppen auf weichem Boden"
+          ]
+        },
+        "roadTransport": {
+          "name": "Straßentransportplattform",
+          "description": "Die Straßentransportplattform ist eine zertifizierte Anhängerlösung für den legalen Transport Ihres FarmDroid auf öffentlichen Straßen. Erforderlich beim Transport Ihres Roboters zwischen entfernten Feldern oder zu Servicestandorten.",
+          "features": [
+            "Straßenzugelassen",
+            "Integrierte Laderampen",
+            "Sichere Verzurrpunkte",
+            "LED-Beleuchtungspaket",
+            "Passt auf Standard-Anhängerkupplungen"
+          ]
+        },
+        "additionalWeightKit": {
+          "name": "Zusätzliches Gewichtskit",
+          "description": "Das zusätzliche Gewichtskit enthält 4 × 17,5kg Gewichte, die an Ihrem FarmDroid befestigt werden können, um die Traktion bei schwierigen Bodenverhältnissen zu erhöhen. Ideal für nasses, lockeres oder abschüssiges Gelände.",
+          "features": [
+            "4 × 17,5kg Gewichte (70kg gesamt)",
+            "Einfaches Befestigungssystem",
+            "Ausgewogene Gewichtsverteilung",
+            "Korrosionsbeständige Oberfläche",
+            "Verbessert Traktion an Hängen"
+          ]
+        },
+        "toolbox": {
+          "name": "Werkzeugkasten mit Werkzeugen",
+          "description": "Ein kompletter Werkzeugsatz speziell für FarmDroid-Feldwartung und kleinere Anpassungen ausgewählt. Alles, was Sie brauchen, um Ihren Roboter während der Saison am Laufen zu halten.",
+          "features": [
+            "FarmDroid-spezifische Werkzeuge",
+            "Metrischer Schraubenschlüsselsatz",
+            "Schraubendreher und Inbusschlüssel",
+            "Diagnosewerkzeuge",
+            "Strapazierfähiger Tragekoffer"
+          ]
+        }
+      }
+    }
   },
   "servicePlan": {
     "title": "Service & Garantie",
@@ -281,6 +447,8 @@
       "dualFrontWheel": "Doppeltes Vorderrad",
       "activeRows": "{count}× Aktive Reihen ({size})",
       "passiveRows": "{count}× Passive Reihen",
+      "combiTool": "Kombi-Werkzeug ({count} Reihen)",
+      "weedCuttingDisc": "Unkrautschneidescheibe {variant} ({count} Reihen)",
       "spraySystem": "+SPRAY System",
       "accessories": "Zubehör",
       "warrantyExtension": "+2 Jahre Garantieverlängerung"
@@ -388,7 +556,48 @@
     "patternTooltip": "Gitter- oder Diamantformation für optimalen Pflanzenabstand.",
     "precisionWarning": "Präzisionssaat nur ab 10cm möglich",
     "optimalWheelSpacing": "Optimaler Radabstand für diese Reihenkonfiguration",
-    "suggestedSpacing": "Empfohlen: {spacing}cm — Räder zentriert zwischen Reihen"
+    "suggestedSpacing": "Empfohlen: {spacing}cm — Räder zentriert zwischen Reihen",
+    "seedInfoModal": {
+      "trigger": "Welches +Seed System wählen?",
+      "title": "+Seed Systeme erkunden",
+      "selectSystem": "+Seed {size} auswählen",
+      "currentlySelected": "Aktuell ausgewählt",
+      "cropComparison": "Kulturkompatibilität",
+      "crop": "Kultur",
+      "andMoreCrops": "+ 80 weitere Kulturen",
+      "specifications": "Spezifikationen",
+      "spec": "Spez",
+      "crops": {
+        "carrots": "Karotten",
+        "flowers": "Blumen",
+        "onions": "Zwiebeln",
+        "spinach": "Spinat",
+        "radish": "Radieschen",
+        "sugarBeets": "Zuckerrüben",
+        "redBeets": "Rote Bete",
+        "lettuce": "Salat",
+        "cabbage": "Kohl",
+        "beans": "Bohnen",
+        "peas": "Erbsen",
+        "corn": "Mais",
+        "sunflowers": "Sonnenblumen"
+      },
+      "specs": {
+        "hopperWidth": "Behälterbreite",
+        "maxSeedSize": "Max Saatgutgröße",
+        "minRowSpacing": "Min Reihenabstand"
+      },
+      "systems": {
+        "6mm": {
+          "name": "+Seed 6mm System",
+          "description": "Für kleinere Samen bis 6mm. Ideal für dichte Bepflanzung mit präzisem Abstand."
+        },
+        "14mm": {
+          "name": "+Seed 14mm System",
+          "description": "Verarbeitet größere Samen bis 14mm. Perfekt für Kulturen die mehr Platz zwischen den Reihen benötigen."
+        }
+      }
+    }
   },
   "crops": {
     "sprout": "Spross",

@@ -8,7 +8,27 @@
     "next": "Næste",
     "continue": "Fortsæt",
     "reset": "Nulstil",
-    "startOver": "Start forfra"
+    "startOver": "Start forfra",
+    "stepOf": "Trin {current} af {total}",
+    "completed": "Fuldført"
+  },
+  "persistence": {
+    "resumeTitle": "Velkommen tilbage!",
+    "resumeMessage": "Du har en gemt konfiguration fra {time}. Vil du fortsætte, hvor du slap?",
+    "resumeButton": "Genoptag konfiguration",
+    "startFreshButton": "Start forfra"
+  },
+  "priceBreakdown": {
+    "title": "Prisoversigt",
+    "baseRobot": "Basis Robot",
+    "powerSource": "Strømkilde",
+    "frontWheel": "Forhjul",
+    "activeRows": "Aktive rækker",
+    "passiveRows": "Passive rækker",
+    "spraySystem": "Sprøjtesystem",
+    "accessories": "Tilbehør",
+    "warrantyExtension": "Garantiforlængelse",
+    "total": "I alt"
   },
   "steps": {
     "baseRobot": {
@@ -20,11 +40,11 @@
       "subtitle": "Vælg hjulkonfiguration"
     },
     "seedConfig": {
-      "title": "+Såningskonfiguration",
+      "title": "+Seed Configuration",
       "subtitle": "Konfigurer din såningsopsætning"
     },
     "weedConfig": {
-      "title": "++Lugekonfiguration",
+      "title": "+Weed Configuration",
       "subtitle": "Konfigurer din lugeopsætning"
     },
     "powerSource": {
@@ -158,12 +178,14 @@
     }
   },
   "spraySystem": {
-    "title": "++Lugekonfiguration",
+    "title": "+Weed Configuration",
     "subtitle": "Konfigurer din lugeopsætning",
     "mechanicalWeeding": "Mekanisk Lugning",
     "spraySystemSection": "+Sprøjtesystem",
+    "optionalWeedingTool": "Valgfrit Lugeværktøj",
+    "weedingToolNone": "Ingen",
     "standardWeedConfig": {
-      "name": "Standard +Luge-konfiguration",
+      "name": "Standard +Weed Config",
       "description": "Inkluderet med hver FarmDroid",
       "features": {
         "weedingWires": "Lugetråde",
@@ -171,14 +193,21 @@
       }
     },
     "combiTool": {
-      "name": "+ Kombi-værktøj",
+      "name": "Kombi-værktøj",
       "description": "Multifunktionsværktøj til forbedret lugning",
       "features": {
-        "fingerWeeding": "Fingerlugning",
-        "ridging": "Hypning",
+        "notchedDiscs": "Takkede skiver til forsnit",
+        "lShares": "L-skær",
         "perActiveRow": "Per aktiv række"
       },
       "pricePerRow": "{price} × {count} rækker"
+    },
+    "weedCuttingDisc": {
+      "name": "Ukrudtsskæreskive",
+      "description": "Præcisionsskæreskive til effektiv ukrudtsbekæmpelse",
+      "variant": "{size} variant",
+      "pricePerRow": "{price} × {count} rækker",
+      "notAvailable": "Ikke tilgængelig for denne konfiguration"
     },
     "spray": {
       "name": "+SPRAY System",
@@ -196,16 +225,47 @@
       "both": "Komplet lugeopsætning med mekaniske værktøjer og præcisionssprøjtning for maksimal ukrudtskontrol.",
       "sprayOnly": "+SPRAY-systemet muliggør målrettet herbicidpåføring med GPS-præcision, reducerer kemikalieforbrug med op til 90%.",
       "combiOnly": "Forbedret mekanisk lugning med Kombi-værktøjstilbehør til forbedret jordbehandling og ukrudtskontrol.",
+      "weedCuttingDiscOnly": "Præcisionsskæreskiver giver effektiv mekanisk ukrudtskontrol mellem rækkerne.",
       "standard": "Standard mekanisk lugekonfiguration, perfekt til økologisk certificering."
     }
   },
   "accessories": {
     "title": "Tilbehør",
     "subtitle": "Ekstra udstyr til din FarmDroid",
+    "groups": {
+      "bundles": "Pakker & Kits",
+      "connectivity": "Tilslutning",
+      "transport": "Transport",
+      "maintenance": "Vedligeholdelse & Værktøj"
+    },
     "items": {
       "starterKit": {
         "name": "Startpakke",
         "description": "Essentiel plejepakke med basestation V3 og markopsætningsværktøjer"
+      },
+      "fstFieldSetupTool": {
+        "name": "FST - Markopsætningsværktøj",
+        "description": "Præcisions markopsætningsværktøj til optimal robotkalibrering"
+      },
+      "baseStationV3": {
+        "name": "Basestation V3 Sæt",
+        "description": "GPS-basestation til høj-præcisions navigation"
+      },
+      "essentialCarePackage": {
+        "name": "Essentiel Plejepakke",
+        "description": "Komplet vedligeholdelsessæt til robotpleje"
+      },
+      "essentialCareSpray": {
+        "name": "Essentiel Plejepakke til +Spray",
+        "description": "Vedligeholdelsessæt specifikt til sprøjtesystemet"
+      },
+      "additionalWeightKit": {
+        "name": "Ekstra Vægtsæt",
+        "description": "4× 17,5kg vægte til forbedret trækkraft"
+      },
+      "toolbox": {
+        "name": "Værktøjskasse med Værktøj",
+        "description": "Komplet værktøjssæt til markvedligeholdelse"
       },
       "roadTransport": {
         "name": "Vejtransportplatform",
@@ -218,19 +278,125 @@
       "powerBank": {
         "name": "Power Bank",
         "description": "Ekstra batterikapacitet til udvidet drift"
-      },
-      "combiTool": {
-        "name": "Kombi-værktøj",
-        "description": "Multifunktionsværktøjstilbehør"
       }
     },
     "recommended": "Anbefalet",
     "selected": "Valgt",
     "total": "Total",
     "itemsLabel": "varer",
+    "includedInStarterKit": "Inkluderet i Startpakke",
+    "includedWithCare": "Inkluderet med Plejepakke",
+    "included": "Inkluderet",
+    "starterKitIncludes": "Inkluderer: FST Markopsætningsværktøj, Basestation V3, Essentiel Plejepakke, Markbeslag",
     "emptyMessage": "Tilbehør er valgfrit. Du kan tilføje dem senere via vores serviceafdeling.",
     "selectedMessage": "{count} tilbehørsvare valgt til {price}.",
-    "selectedMessagePlural": "{count} tilbehørsvarer valgt til {price}."
+    "selectedMessagePlural": "{count} tilbehørsvarer valgt til {price}.",
+    "infoModals": {
+      "learnMore": "Læs mere",
+      "includedItems": "Hvad er inkluderet",
+      "close": "Luk",
+      "features": "Nøglefunktioner",
+      "starterKitBadge": "I Starter Kit",
+      "bundles": {
+        "title": "Starter Kit",
+        "description": "Starter Kit samler alt, hvad du behøver for at få din FarmDroid hurtigt i gang. Det inkluderer essentielt tilslutningsudstyr, feltopsætningsværktøjer og vedligeholdelsesartikler til en samlet pris.",
+        "tip": {
+          "label": "Pro tip:",
+          "text": "Starter Kit sparer dig penge sammenlignet med at købe tingene separat og sikrer, at du har alt det væsentlige fra dag ét."
+        }
+      },
+      "connectivity": {
+        "title": "Tilslutning",
+        "description": "Pålidelig tilslutning er afgørende for, at din FarmDroid kan operere autonomt. Basestationen giver centimeter-nøjagtig GPS-positionering, mens Feltopsætningsværktøjet hjælper dig med at konfigurere dine feltgrænser præcist."
+      },
+      "transport": {
+        "title": "Transport",
+        "description": "Flyt din FarmDroid sikkert mellem marker og opbevaringssteder. Feltbeslaget sikrer din robot under korte flytninger, mens Vejtransportplatformen er påkrævet til transport på offentlige veje."
+      },
+      "maintenance": {
+        "title": "Vedligeholdelse & Værktøj",
+        "description": "Hold din FarmDroid kørende på topniveau med korrekt vedligeholdelsesudstyr. Essential Care-pakken inkluderer alle reservedele og forbrugsstoffer, du behøver til regelmæssig vedligeholdelse."
+      },
+      "items": {
+        "fstFieldSetupTool": {
+          "name": "FST - Feltopsætningsværktøj",
+          "description": "FST (Field Setup Tool) er en præcisions GPS-enhed designet til at hjælpe dig med nøjagtigt at kortlægge dine feltgrænser og konfigurere arbejdszoner. Den forbinder direkte til dit FarmDroid-system og sikrer, at din robot ved præcis, hvor den skal operere.",
+          "features": [
+            "Højpræcisions GPS-modtager",
+            "Nem feltgrænsekortlægning",
+            "Konfiguration af arbejdszoner",
+            "Direkte integration med FarmDroid-system",
+            "Bærbart og robust design"
+          ]
+        },
+        "baseStationV3": {
+          "name": "Base Station V3 Sæt",
+          "description": "Base Station V3 er en RTK GPS-basestation, der giver centimeter-niveau positioneringsnøjagtighed til din FarmDroid. Den udsender korrektionssignaler, der muliggør præcis autonom navigation på tværs af din mark.",
+          "features": [
+            "RTK GPS-teknologi",
+            "Centimeter-nøjagtighed",
+            "Bred dækningsrækkevidde",
+            "Vejrbestandig kabinet",
+            "Nem opsætning og konfiguration"
+          ]
+        },
+        "essentialCarePackage": {
+          "name": "Essential Care Package",
+          "description": "Essential Care Package er et omfattende vedligeholdelseskit, der indeholder alle reservedele og forbrugsstoffer, du behøver til regelmæssig robotvedligeholdelse. Hold din FarmDroid kørende problemfrit gennem hele sæsonen.",
+          "features": [
+            "Udskiftningsdele",
+            "Smøremidler og fedtstoffer",
+            "Rengøringsartikler",
+            "Vedligeholdelsestjekliste",
+            "Opbevaringskasse inkluderet"
+          ]
+        },
+        "fieldBracket": {
+          "name": "Feltbeslag med Kæde",
+          "description": "Feltbeslaget giver et sikkert monteringspunkt til at flytte din FarmDroid korte afstande ved hjælp af en traktor eller ATV. Essentiel til omplacering af din robot på din ejendom uden at bruge transportplatformen.",
+          "features": [
+            "Robust stålkonstruktion",
+            "Hurtig-monterings design",
+            "Inkluderer sikkerhedskæde",
+            "Kompatibel med standard trækkroge",
+            "Godkendt til slæbning på blød jord"
+          ]
+        },
+        "roadTransport": {
+          "name": "Vejtransportplatform",
+          "description": "Vejtransportplatformen er en certificeret trailerløsning til lovlig transport af din FarmDroid på offentlige veje. Påkrævet ved flytning af din robot mellem fjerne marker eller til servicelokaliteter.",
+          "features": [
+            "Vejlegalt certificeret",
+            "Integrerede læsseramper",
+            "Sikre fastspændingspunkter",
+            "LED-belysningspakke",
+            "Passer til standard trækkroge"
+          ]
+        },
+        "additionalWeightKit": {
+          "name": "Ekstra Vægtkit",
+          "description": "Ekstra Vægtkit inkluderer 4 × 17,5kg vægte, der kan monteres på din FarmDroid for at øge trækkraften under udfordrende jordforhold. Ideel til våd, løs eller skrånende terræn.",
+          "features": [
+            "4 × 17,5kg vægte (70kg total)",
+            "Nemt monteringssystem",
+            "Balanceret vægtfordeling",
+            "Korrosionsbestandig finish",
+            "Forbedrer trækkraft på skråninger"
+          ]
+        },
+        "toolbox": {
+          "name": "Værktøjskasse med Værktøj",
+          "description": "Et komplet sæt værktøjer specifikt udvalgt til FarmDroid feltvedligeholdelse og mindre justeringer. Alt hvad du behøver for at holde din robot kørende i sæsonen.",
+          "features": [
+            "FarmDroid-specifikke værktøjer",
+            "Metrisk skruenøglesæt",
+            "Skruetrækkere og unbrakonøgler",
+            "Diagnostiske værktøjer",
+            "Holdbar bæretaske"
+          ]
+        }
+      }
+    }
   },
   "servicePlan": {
     "title": "Service & Garanti",
@@ -281,6 +447,8 @@
       "dualFrontWheel": "Dobbelt Forhjul",
       "activeRows": "{count}× Aktive Rækker ({size})",
       "passiveRows": "{count}× Passive Rækker",
+      "combiTool": "Kombi-værktøj ({count} rækker)",
+      "weedCuttingDisc": "Ukrudtsskæreskive {variant} ({count} rækker)",
       "spraySystem": "+SPRAY System",
       "accessories": "Tilbehør",
       "warrantyExtension": "+2 Års Garantiforlængelse"
@@ -388,7 +556,48 @@
     "patternTooltip": "Gitter- eller diamantformation for optimal planteafstand.",
     "precisionWarning": "Præcisionssåning kun mulig ved 10cm eller derover",
     "optimalWheelSpacing": "Optimal hjulafstand for denne rækkekonfiguration",
-    "suggestedSpacing": "Foreslået: {spacing}cm — hjul centreret mellem rækker"
+    "suggestedSpacing": "Foreslået: {spacing}cm — hjul centreret mellem rækker",
+    "seedInfoModal": {
+      "trigger": "Hvilket +Seed System skal jeg vælge?",
+      "title": "Udforsk +Seed Systemer",
+      "selectSystem": "Vælg +Seed {size}",
+      "currentlySelected": "Aktuelt valgt",
+      "cropComparison": "Afgrødekompatibilitet",
+      "crop": "Afgrøde",
+      "andMoreCrops": "+ 80 andre afgrøder",
+      "specifications": "Specifikationer",
+      "spec": "Spec",
+      "crops": {
+        "carrots": "Gulerødder",
+        "flowers": "Blomster",
+        "onions": "Løg",
+        "spinach": "Spinat",
+        "radish": "Radiser",
+        "sugarBeets": "Sukkerroer",
+        "redBeets": "Rødbeder",
+        "lettuce": "Salat",
+        "cabbage": "Kål",
+        "beans": "Bønner",
+        "peas": "Ærter",
+        "corn": "Majs",
+        "sunflowers": "Solsikker"
+      },
+      "specs": {
+        "hopperWidth": "Beholderbredde",
+        "maxSeedSize": "Maks frøstørrelse",
+        "minRowSpacing": "Min rækkeafstand"
+      },
+      "systems": {
+        "6mm": {
+          "name": "+Seed 6mm System",
+          "description": "Designet til mindre frø op til 6mm. Ideel til tæt plantning med præcis afstand."
+        },
+        "14mm": {
+          "name": "+Seed 14mm System",
+          "description": "Håndterer større frø op til 14mm. Perfekt til afgrøder der har brug for mere plads mellem rækkerne."
+        }
+      }
+    }
   },
   "crops": {
     "sprout": "Spire",

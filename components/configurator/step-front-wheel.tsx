@@ -343,14 +343,20 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
 
         {/* Config type indicator */}
         <div className="flex justify-center gap-6 md:gap-8 pt-4 md:pt-6 border-t border-stone-100">
-          <div className={`text-center ${config.frontWheel !== "DFW" ? "opacity-100" : "opacity-40"}`}>
+          <button
+            onClick={() => config.frontWheel === "DFW" && updateConfig({ frontWheel: "PFW" })}
+            className={`text-center transition-opacity ${config.frontWheel !== "DFW" ? "opacity-100" : "opacity-40 hover:opacity-60 cursor-pointer"}`}
+          >
             <p className="text-base md:text-lg font-semibold text-stone-900">{t("configTypes.threeWheel")}</p>
             <p className="text-xs text-stone-500">{t("configTypes.openField")}</p>
-          </div>
-          <div className={`text-center ${config.frontWheel === "DFW" ? "opacity-100" : "opacity-40"}`}>
+          </button>
+          <button
+            onClick={() => config.frontWheel !== "DFW" && updateConfig({ frontWheel: "DFW" })}
+            className={`text-center transition-opacity ${config.frontWheel === "DFW" ? "opacity-100" : "opacity-40 hover:opacity-60 cursor-pointer"}`}
+          >
             <p className="text-base md:text-lg font-semibold text-stone-900">{t("configTypes.fourWheel")}</p>
             <p className="text-xs text-stone-500">{t("configTypes.bedConfig")}</p>
-          </div>
+          </button>
         </div>
       </div>
 

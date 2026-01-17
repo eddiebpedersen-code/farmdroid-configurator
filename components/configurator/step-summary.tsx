@@ -18,6 +18,7 @@ import {
   Truck,
   Shield,
   Star,
+  Scissors,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -27,6 +28,7 @@ import {
   calculatePassiveRows,
   calculateRowWorkingWidth,
   PRICES,
+  getWeedCuttingDiscVariant,
 } from "@/lib/configurator-data";
 
 interface StepSummaryProps {
@@ -317,6 +319,15 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
   const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
   const workingWidth = calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
 
+  // Calculate weeding tool price
+  const weedingToolPrice = config.weedingTool === "combiTool"
+    ? config.activeRows * PRICES.accessories.combiToolPerRow
+    : config.weedingTool === "weedCuttingDisc"
+    ? config.activeRows * PRICES.accessories.weedCuttingDiscPerRow
+    : 0;
+
+  const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
+
   const lineItems = [
     {
       icon: Cpu,
@@ -350,10 +361,20 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
       label: t("lineItems.spraySystem"),
       value: priceBreakdown.spraySystem,
     },
+    config.weedingTool === "combiTool" && {
+      icon: Scissors,
+      label: t("lineItems.combiTool", { count: config.activeRows }),
+      value: weedingToolPrice,
+    },
+    config.weedingTool === "weedCuttingDisc" && {
+      icon: Scissors,
+      label: t("lineItems.weedCuttingDisc", { count: config.activeRows, variant: weedCuttingDiscVariant || "" }),
+      value: weedingToolPrice,
+    },
     priceBreakdown.accessories > 0 && {
       icon: Package,
       label: t("lineItems.accessories"),
-      value: priceBreakdown.accessories,
+      value: priceBreakdown.accessories - weedingToolPrice, // Subtract weeding tools since they're shown separately
     },
     config.warrantyExtension && {
       icon: Shield,

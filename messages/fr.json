@@ -8,7 +8,27 @@
     "next": "Suivant",
     "continue": "Continuer",
     "reset": "Réinitialiser",
-    "startOver": "Recommencer"
+    "startOver": "Recommencer",
+    "stepOf": "Étape {current} sur {total}",
+    "completed": "Terminé"
+  },
+  "persistence": {
+    "resumeTitle": "Bon retour !",
+    "resumeMessage": "Vous avez une configuration sauvegardée de {time}. Voulez-vous reprendre là où vous en étiez ?",
+    "resumeButton": "Reprendre la configuration",
+    "startFreshButton": "Recommencer à zéro"
+  },
+  "priceBreakdown": {
+    "title": "Détail des prix",
+    "baseRobot": "Robot de base",
+    "powerSource": "Source d'énergie",
+    "frontWheel": "Roue avant",
+    "activeRows": "Rangées actives",
+    "passiveRows": "Rangées passives",
+    "spraySystem": "Système de pulvérisation",
+    "accessories": "Accessoires",
+    "warrantyExtension": "Extension de garantie",
+    "total": "Total"
   },
   "steps": {
     "baseRobot": {
@@ -20,11 +40,11 @@
       "subtitle": "Sélectionner la configuration des roues"
     },
     "seedConfig": {
-      "title": "+Configuration Semis",
+      "title": "+Seed Configuration",
       "subtitle": "Configurez votre système de semis"
     },
     "weedConfig": {
-      "title": "++Configuration Désherbage",
+      "title": "+Weed Configuration",
       "subtitle": "Configurez votre système de désherbage"
     },
     "powerSource": {
@@ -158,12 +178,14 @@
     }
   },
   "spraySystem": {
-    "title": "++Configuration Désherbage",
+    "title": "+Weed Configuration",
     "subtitle": "Configurez votre système de désherbage",
     "mechanicalWeeding": "Désherbage Mécanique",
     "spraySystemSection": "+Système de Pulvérisation",
+    "optionalWeedingTool": "Outil de Désherbage Optionnel",
+    "weedingToolNone": "Aucun",
     "standardWeedConfig": {
-      "name": "Config. +Désherbage Standard",
+      "name": "Standard +Weed Config",
       "description": "Inclus avec chaque FarmDroid",
       "features": {
         "weedingWires": "Fils de désherbage",
@@ -171,14 +193,21 @@
       }
     },
     "combiTool": {
-      "name": "+ Outil Combi",
+      "name": "Outil Combi",
       "description": "Outil multifonction pour désherbage amélioré",
       "features": {
-        "fingerWeeding": "Désherbage à doigts",
-        "ridging": "Buttage",
+        "notchedDiscs": "Disques crantés pour pré-coupe",
+        "lShares": "Socs en L",
         "perActiveRow": "Par rang actif"
       },
       "pricePerRow": "{price} × {count} rangs"
+    },
+    "weedCuttingDisc": {
+      "name": "Disque de Coupe des Mauvaises Herbes",
+      "description": "Disque de coupe de précision pour un contrôle efficace des mauvaises herbes",
+      "variant": "Variante {size}",
+      "pricePerRow": "{price} × {count} rangs",
+      "notAvailable": "Non disponible pour cette configuration"
     },
     "spray": {
       "name": "Système +SPRAY",
@@ -196,16 +225,47 @@
       "both": "Configuration complète de désherbage avec outils mécaniques et pulvérisation de précision pour un contrôle maximal des mauvaises herbes.",
       "sprayOnly": "Le système +SPRAY permet une application ciblée d'herbicides avec précision GPS, réduisant l'utilisation de produits chimiques jusqu'à 90%.",
       "combiOnly": "Désherbage mécanique amélioré avec accessoires Outil Combi pour une meilleure gestion du sol et contrôle des mauvaises herbes.",
+      "weedCuttingDiscOnly": "Les disques de coupe de précision offrent un contrôle mécanique efficace des mauvaises herbes entre les rangs.",
       "standard": "Configuration de désherbage mécanique standard, parfaite pour les exigences de certification biologique."
     }
   },
   "accessories": {
     "title": "Accessoires",
     "subtitle": "Équipement supplémentaire pour votre FarmDroid",
+    "groups": {
+      "bundles": "Packs & Kits",
+      "connectivity": "Connectivité",
+      "transport": "Transport",
+      "maintenance": "Entretien & Outils"
+    },
     "items": {
       "starterKit": {
         "name": "Kit de Démarrage",
         "description": "Pack d'entretien essentiel avec station de base V3 et outils de configuration de terrain"
+      },
+      "fstFieldSetupTool": {
+        "name": "FST - Outil de Configuration Terrain",
+        "description": "Outil de configuration terrain de précision pour calibrage optimal du robot"
+      },
+      "baseStationV3": {
+        "name": "Station de Base V3",
+        "description": "Station de base GPS pour navigation haute précision"
+      },
+      "essentialCarePackage": {
+        "name": "Pack d'Entretien Essentiel",
+        "description": "Kit de maintenance complet pour l'entretien du robot"
+      },
+      "essentialCareSpray": {
+        "name": "Pack d'Entretien Essentiel pour +Spray",
+        "description": "Kit de maintenance spécifique au système de pulvérisation"
+      },
+      "additionalWeightKit": {
+        "name": "Kit de Poids Supplémentaire",
+        "description": "4× 17,5kg de poids pour une meilleure traction"
+      },
+      "toolbox": {
+        "name": "Boîte à Outils avec Outils",
+        "description": "Ensemble d'outils complet pour la maintenance terrain"
       },
       "roadTransport": {
         "name": "Plateforme de Transport Routier",
@@ -218,19 +278,125 @@
       "powerBank": {
         "name": "Batterie Externe",
         "description": "Capacité de batterie supplémentaire pour fonctionnement prolongé"
-      },
-      "combiTool": {
-        "name": "Outil Combi",
-        "description": "Accessoire outil multifonction"
       }
     },
     "recommended": "Recommandé",
     "selected": "Sélectionné",
     "total": "Total",
     "itemsLabel": "articles",
+    "includedInStarterKit": "Inclus dans le Kit de Démarrage",
+    "includedWithCare": "Inclus avec le Pack d'Entretien",
+    "included": "Inclus",
+    "starterKitIncludes": "Comprend : FST Outil de Configuration, Station de Base V3, Pack d'Entretien Essentiel, Support de Terrain",
     "emptyMessage": "Les accessoires sont optionnels. Vous pouvez les ajouter plus tard via notre service après-vente.",
     "selectedMessage": "{count} article accessoire sélectionné pour {price}.",
-    "selectedMessagePlural": "{count} articles accessoires sélectionnés pour {price}."
+    "selectedMessagePlural": "{count} articles accessoires sélectionnés pour {price}.",
+    "infoModals": {
+      "learnMore": "En savoir plus",
+      "includedItems": "Ce qui est inclus",
+      "close": "Fermer",
+      "features": "Caractéristiques clés",
+      "starterKitBadge": "Dans le Kit",
+      "bundles": {
+        "title": "Kit de Démarrage",
+        "description": "Le Kit de Démarrage regroupe tout ce dont vous avez besoin pour démarrer rapidement votre FarmDroid. Il comprend les équipements de connectivité essentiels, les outils de configuration de terrain et les fournitures de maintenance à un prix groupé.",
+        "tip": {
+          "label": "Conseil pro :",
+          "text": "Le Kit de Démarrage vous fait économiser de l'argent par rapport à l'achat séparé et vous garantit d'avoir tous les essentiels dès le premier jour."
+        }
+      },
+      "connectivity": {
+        "title": "Connectivité",
+        "description": "Une connectivité fiable est essentielle pour que votre FarmDroid fonctionne de manière autonome. La Station de Base fournit un positionnement GPS précis au centimètre près, tandis que l'Outil de Configuration de Terrain vous aide à configurer précisément les limites de votre champ."
+      },
+      "transport": {
+        "title": "Transport",
+        "description": "Déplacez votre FarmDroid en toute sécurité entre les champs et les lieux de stockage. Le Support de Terrain sécurise votre robot pendant les déplacements courts, tandis que la Plateforme de Transport Routier est requise pour le transport sur les voies publiques."
+      },
+      "maintenance": {
+        "title": "Maintenance & Outils",
+        "description": "Maintenez votre FarmDroid à des performances optimales avec un équipement de maintenance approprié. Le Pack d'Entretien Essentiel comprend toutes les pièces de rechange et consommables nécessaires à l'entretien régulier."
+      },
+      "items": {
+        "fstFieldSetupTool": {
+          "name": "FST - Outil de Configuration",
+          "description": "Le FST (Field Setup Tool) est un appareil GPS de précision conçu pour vous aider à cartographier avec précision les limites de votre champ et à configurer les zones de travail. Il se connecte directement à votre système FarmDroid et garantit que votre robot sait exactement où opérer.",
+          "features": [
+            "Récepteur GPS haute précision",
+            "Cartographie facile des limites de champ",
+            "Configuration des zones de travail",
+            "Intégration directe avec le système FarmDroid",
+            "Design portable et robuste"
+          ]
+        },
+        "baseStationV3": {
+          "name": "Station de Base V3",
+          "description": "La Station de Base V3 est une station de base GPS RTK qui offre une précision de positionnement au centimètre pour votre FarmDroid. Elle émet des signaux de correction permettant une navigation autonome précise sur votre champ.",
+          "features": [
+            "Technologie GPS RTK",
+            "Précision centimétrique",
+            "Large portée de couverture",
+            "Boîtier résistant aux intempéries",
+            "Installation et configuration faciles"
+          ]
+        },
+        "essentialCarePackage": {
+          "name": "Pack d'Entretien Essentiel",
+          "description": "Le Pack d'Entretien Essentiel est un kit de maintenance complet contenant toutes les pièces de rechange et consommables nécessaires à l'entretien régulier du robot. Gardez votre FarmDroid en parfait état de fonctionnement tout au long de la saison.",
+          "features": [
+            "Pièces d'usure de rechange",
+            "Lubrifiants et graisses",
+            "Produits de nettoyage",
+            "Liste de contrôle de maintenance",
+            "Mallette de rangement incluse"
+          ]
+        },
+        "fieldBracket": {
+          "name": "Support de Terrain avec Chaîne",
+          "description": "Le Support de Terrain offre un point d'ancrage sécurisé pour déplacer votre FarmDroid sur de courtes distances à l'aide d'un tracteur ou d'un VTT. Essentiel pour repositionner votre robot sur votre propriété sans utiliser la plateforme de transport.",
+          "features": [
+            "Construction en acier robuste",
+            "Design à fixation rapide",
+            "Chaîne de sécurité incluse",
+            "Compatible avec les attelages standard",
+            "Homologué pour le remorquage sur sol meuble"
+          ]
+        },
+        "roadTransport": {
+          "name": "Plateforme de Transport Routier",
+          "description": "La Plateforme de Transport Routier est une solution de remorque certifiée pour transporter légalement votre FarmDroid sur les voies publiques. Requise pour déplacer votre robot entre des champs éloignés ou vers des sites de service.",
+          "features": [
+            "Certifié pour la route",
+            "Rampes de chargement intégrées",
+            "Points d'arrimage sécurisés",
+            "Kit d'éclairage LED",
+            "Compatible avec les attelages standard"
+          ]
+        },
+        "additionalWeightKit": {
+          "name": "Kit de Poids Supplémentaires",
+          "description": "Le Kit de Poids Supplémentaires comprend 4 × 17,5kg de poids qui peuvent être fixés à votre FarmDroid pour augmenter la traction dans des conditions de sol difficiles. Idéal pour les terrains humides, meubles ou en pente.",
+          "features": [
+            "4 × 17,5kg de poids (70kg au total)",
+            "Système de fixation facile",
+            "Distribution équilibrée du poids",
+            "Finition résistante à la corrosion",
+            "Améliore la traction en pente"
+          ]
+        },
+        "toolbox": {
+          "name": "Boîte à Outils Complète",
+          "description": "Un ensemble complet d'outils spécialement sélectionnés pour la maintenance sur le terrain et les ajustements mineurs du FarmDroid. Tout ce dont vous avez besoin pour maintenir votre robot opérationnel pendant la saison.",
+          "features": [
+            "Outils spécifiques FarmDroid",
+            "Jeu de clés métriques",
+            "Tournevis et clés Allen",
+            "Outils de diagnostic",
+            "Mallette de transport durable"
+          ]
+        }
+      }
+    }
   },
   "servicePlan": {
     "title": "Service & Garantie",
@@ -281,6 +447,8 @@
       "dualFrontWheel": "Double Roue Avant",
       "activeRows": "{count}× Rangs Actifs ({size})",
       "passiveRows": "{count}× Rangs Passifs",
+      "combiTool": "Outil Combi ({count} rangs)",
+      "weedCuttingDisc": "Disque de Coupe {variant} ({count} rangs)",
       "spraySystem": "Système +SPRAY",
       "accessories": "Accessoires",
       "warrantyExtension": "+2 Ans d'Extension de Garantie"
@@ -388,7 +556,48 @@
     "patternTooltip": "Formation en grille ou losange pour un espacement optimal.",
     "precisionWarning": "Semis de précision possible uniquement à 10cm ou plus",
     "optimalWheelSpacing": "Écartement de roues optimal pour cette config de rangs",
-    "suggestedSpacing": "Suggéré : {spacing}cm — roues centrées entre les rangs"
+    "suggestedSpacing": "Suggéré : {spacing}cm — roues centrées entre les rangs",
+    "seedInfoModal": {
+      "trigger": "Quel système +Seed choisir ?",
+      "title": "Explorer les systèmes +Seed",
+      "selectSystem": "Sélectionner +Seed {size}",
+      "currentlySelected": "Actuellement sélectionné",
+      "cropComparison": "Compatibilité cultures",
+      "crop": "Culture",
+      "andMoreCrops": "+ 80 autres cultures",
+      "specifications": "Spécifications",
+      "spec": "Spéc",
+      "crops": {
+        "carrots": "Carottes",
+        "flowers": "Fleurs",
+        "onions": "Oignons",
+        "spinach": "Épinards",
+        "radish": "Radis",
+        "sugarBeets": "Betteraves sucrières",
+        "redBeets": "Betteraves rouges",
+        "lettuce": "Laitue",
+        "cabbage": "Chou",
+        "beans": "Haricots",
+        "peas": "Pois",
+        "corn": "Maïs",
+        "sunflowers": "Tournesols"
+      },
+      "specs": {
+        "hopperWidth": "Largeur trémie",
+        "maxSeedSize": "Taille max graine",
+        "minRowSpacing": "Espacement min rangs"
+      },
+      "systems": {
+        "6mm": {
+          "name": "Système +Seed 6mm",
+          "description": "Pour les petites graines jusqu'à 6mm. Idéal pour les plantations denses avec espacement précis."
+        },
+        "14mm": {
+          "name": "Système +Seed 14mm",
+          "description": "Gère les graines jusqu'à 14mm. Parfait pour les cultures nécessitant plus d'espace entre les rangs."
+        }
+      }
+    }
   },
   "crops": {
     "sprout": "Pousse",

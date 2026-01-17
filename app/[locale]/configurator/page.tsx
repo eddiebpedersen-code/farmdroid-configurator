@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw, Globe } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Globe, Check, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -14,6 +14,13 @@ import {
   Currency,
   PRICES,
 } from "@/lib/configurator-data";
+import {
+  saveConfiguration,
+  loadConfiguration,
+  hasSavedConfiguration,
+  clearConfiguration,
+  formatSavedTime,
+} from "@/lib/persistence";
 import { locales, localeNames, type Locale } from "@/i18n/config";
 
 // Step Components
@@ -63,8 +70,10 @@ function LanguageSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors rounded-lg hover:bg-stone-100"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
       >
-        <Globe className="h-4 w-4" />
+        <Globe className="h-4 w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{localeNames[currentLocale]}</span>
         <span className="sm:hidden">{currentLocale.toUpperCase()}</span>
       </button>
@@ -74,12 +83,19 @@ function LanguageSelector() {
           <div
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
+            aria-hidden="true"
           />
-          <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-stone-200 py-1 z-50">
+          <div
+            className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-stone-200 py-1 z-50"
+            role="listbox"
+            aria-label={t("select")}
+          >
             {locales.map((locale) => (
               <button
                 key={locale}
                 onClick={() => switchLocale(locale)}
+                role="option"
+                aria-selected={locale === currentLocale}
                 className={`w-full text-left px-4 py-2 text-sm hover:bg-stone-50 transition-colors ${
                   locale === currentLocale
                     ? "text-stone-900 font-medium bg-stone-50"
@@ -96,17 +112,193 @@ function LanguageSelector() {
   );
 }
 
+// Price breakdown tooltip component
+function PriceBreakdownTooltip({
+  priceBreakdown,
+  currency,
+  isOpen,
+  onToggle,
+}: {
+  priceBreakdown: ReturnType<typeof calculatePrice>;
+  currency: Currency;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const t = useTranslations("priceBreakdown");
+
+  const items = [
+    { key: "baseRobot", value: priceBreakdown.baseRobot },
+    { key: "powerSource", value: priceBreakdown.powerSource },
+    { key: "frontWheel", value: priceBreakdown.frontWheel },
+    { key: "activeRows", value: priceBreakdown.activeRows },
+    { key: "passiveRows", value: priceBreakdown.passiveRows },
+    { key: "spraySystem", value: priceBreakdown.spraySystem },
+    { key: "accessories", value: priceBreakdown.accessories },
+    { key: "warrantyExtension", value: priceBreakdown.warrantyExtension },
+  ].filter((item) => item.value > 0);
+
+  return (
+    <div className="relative">
+      <button
+        onClick={onToggle}
+        className="flex items-center gap-1 text-xs text-stone-500 hover:text-stone-700 transition-colors"
+        aria-expanded={isOpen}
+        aria-label={t("title")}
+      >
+        <span>{t("title")}</span>
+        <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={onToggle}
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-stone-200 p-4 z-50"
+              role="tooltip"
+            >
+              <h3 className="text-sm font-semibold text-stone-900 mb-3">{t("title")}</h3>
+              <div className="space-y-2">
+                {items.map((item) => (
+                  <div key={item.key} className="flex justify-between text-sm">
+                    <span className="text-stone-600">{t(item.key)}</span>
+                    <span className="text-stone-900 font-medium">
+                      {formatPrice(item.value, currency)}
+                    </span>
+                  </div>
+                ))}
+                <div className="border-t border-stone-200 pt-2 mt-2">
+                  <div className="flex justify-between text-sm font-semibold">
+                    <span className="text-stone-900">{t("total")}</span>
+                    <span className="text-stone-900">
+                      {formatPrice(priceBreakdown.total, currency)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Resume configuration modal
+function ResumeConfigurationModal({
+  savedTime,
+  onResume,
+  onStartFresh,
+  locale,
+}: {
+  savedTime: number;
+  onResume: () => void;
+  onStartFresh: () => void;
+  locale: string;
+}) {
+  const t = useTranslations("persistence");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="resume-dialog-title"
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full"
+      >
+        <h2 id="resume-dialog-title" className="text-xl font-semibold text-stone-900 mb-2">
+          {t("resumeTitle")}
+        </h2>
+        <p className="text-stone-600 mb-6">
+          {t("resumeMessage", { time: formatSavedTime(savedTime, locale) })}
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onStartFresh}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-900 border border-stone-200 rounded-lg hover:bg-stone-50 transition-colors"
+          >
+            {t("startFreshButton")}
+          </button>
+          <button
+            onClick={onResume}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-lg transition-colors"
+            autoFocus
+          >
+            {t("resumeButton")}
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function ConfiguratorPage() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [highestStepReached, setHighestStepReached] = useState(1);
   const [direction, setDirection] = useState(0);
   const [config, setConfig] = useState<ConfiguratorState>(DEFAULT_CONFIG);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [savedState, setSavedState] = useState<{ config: ConfiguratorState; step: number; highestStepReached: number; timestamp: number } | null>(null);
+  const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
+  const [previousTotal, setPreviousTotal] = useState<number | null>(null);
+
+  const pathname = usePathname();
+  const currentLocale = pathname.split("/")[1] as Locale;
 
   const t = useTranslations("navigation");
   const tSteps = useTranslations("steps");
   const tService = useTranslations("servicePlan");
   const tCommon = useTranslations("common");
 
-  const priceBreakdown = calculatePrice(config, currentStep);
+  const priceBreakdown = calculatePrice(config, highestStepReached);
+
+  // Check for saved configuration on mount
+  useEffect(() => {
+    if (hasSavedConfiguration()) {
+      const saved = loadConfiguration();
+      if (saved) {
+        setSavedState({
+          config: saved.config,
+          step: saved.step,
+          highestStepReached: saved.highestStepReached || saved.step,
+          timestamp: saved.timestamp
+        });
+        setShowResumeModal(true);
+      }
+    }
+  }, []);
+
+  // Auto-save configuration on changes
+  useEffect(() => {
+    // Don't save if we're showing the resume modal (initial load)
+    if (!showResumeModal && config !== DEFAULT_CONFIG) {
+      saveConfiguration(config, currentStep, highestStepReached);
+    }
+  }, [config, currentStep, highestStepReached, showResumeModal]);
+
+  // Track price changes for animation
+  useEffect(() => {
+    if (previousTotal !== null && previousTotal !== priceBreakdown.total) {
+      // Price changed - could trigger animation here
+    }
+    setPreviousTotal(priceBreakdown.total);
+  }, [priceBreakdown.total, previousTotal]);
 
   // Get translated step titles
   const stepKeys = [
@@ -133,12 +325,15 @@ export default function ConfiguratorPage() {
   const goToStep = useCallback((step: number) => {
     setDirection(step > currentStep ? 1 : -1);
     setCurrentStep(step);
+    setHighestStepReached((prev) => Math.max(prev, step));
   }, [currentStep]);
 
   const nextStep = useCallback(() => {
     if (currentStep < STEPS.length) {
       setDirection(1);
-      setCurrentStep((prev) => prev + 1);
+      const newStep = currentStep + 1;
+      setCurrentStep(newStep);
+      setHighestStepReached((prev) => Math.max(prev, newStep));
     }
   }, [currentStep]);
 
@@ -152,7 +347,23 @@ export default function ConfiguratorPage() {
   const resetConfig = useCallback(() => {
     setConfig(DEFAULT_CONFIG);
     setCurrentStep(1);
+    setHighestStepReached(1);
     setDirection(-1);
+    clearConfiguration();
+  }, []);
+
+  const handleResume = useCallback(() => {
+    if (savedState) {
+      setConfig(savedState.config);
+      setCurrentStep(savedState.step);
+      setHighestStepReached(savedState.highestStepReached);
+    }
+    setShowResumeModal(false);
+  }, [savedState]);
+
+  const handleStartFresh = useCallback(() => {
+    clearConfiguration();
+    setShowResumeModal(false);
   }, []);
 
   const renderStepContent = () => {
@@ -186,39 +397,79 @@ export default function ConfiguratorPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Minimal Header */}
-      <div className="border-b border-stone-100 sticky top-0 z-20 bg-white/80 backdrop-blur-sm">
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-stone-900 focus:text-white focus:rounded-lg"
+      >
+        Skip to main content
+      </a>
+
+      {/* Resume Configuration Modal */}
+      <AnimatePresence>
+        {showResumeModal && savedState && (
+          <ResumeConfigurationModal
+            savedTime={savedState.timestamp}
+            onResume={handleResume}
+            onStartFresh={handleStartFresh}
+            locale={currentLocale}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Header */}
+      <header className="border-b border-stone-100 sticky top-0 z-20 bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-3 md:py-5">
           <div className="flex items-center justify-between">
-            {/* Progress Steps */}
-            <div className="flex items-center gap-0.5 md:gap-1">
-              {translatedSteps.map((step, index) => (
-                <button
-                  key={step.id}
-                  onClick={() => goToStep(step.id)}
-                  className="group flex items-center"
-                >
-                  <div
-                    className={`h-1.5 md:h-2 transition-all duration-300 rounded-full ${
-                      step.id === currentStep
-                        ? "w-5 md:w-8 bg-stone-900"
-                        : step.id < currentStep
-                        ? "w-1.5 md:w-2 bg-stone-400"
-                        : "w-1.5 md:w-2 bg-stone-200"
-                    }`}
-                  />
-                  {index < translatedSteps.length - 1 && (
-                    <div className="w-0.5 md:w-1" />
-                  )}
-                  {/* Tooltip - hidden on mobile */}
-                  <div className="hidden md:block absolute mt-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <div className="bg-stone-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                      {step.title}
+            {/* Enhanced Progress Steps - Compact with checkmarks */}
+            <nav aria-label="Configuration progress" className="flex items-center gap-0.5 md:gap-1">
+              {translatedSteps.map((step, index) => {
+                const isCompleted = step.id < currentStep;
+                const isCurrent = step.id === currentStep;
+
+                return (
+                  <button
+                    key={step.id}
+                    onClick={() => goToStep(step.id)}
+                    className="group relative flex items-center"
+                    aria-current={isCurrent ? "step" : undefined}
+                    aria-label={`${step.title}${isCompleted ? ` - ${t("completed")}` : ""}`}
+                  >
+                    {/* Step indicator */}
+                    {isCompleted ? (
+                      // Completed step - show checkmark
+                      <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-teal-500 flex items-center justify-center transition-all">
+                        <Check className="h-3 w-3 md:h-3.5 md:w-3.5 text-white" aria-hidden="true" />
+                      </div>
+                    ) : isCurrent ? (
+                      // Current step - show number with active styling
+                      <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-stone-900 flex items-center justify-center transition-all">
+                        <span className="text-[10px] md:text-xs font-semibold text-white">{step.id}</span>
+                      </div>
+                    ) : (
+                      // Future step - show number with muted styling
+                      <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-stone-200 flex items-center justify-center transition-all group-hover:bg-stone-300">
+                        <span className="text-[10px] md:text-xs font-medium text-stone-500">{step.id}</span>
+                      </div>
+                    )}
+
+                    {/* Connector line */}
+                    {index < translatedSteps.length - 1 && (
+                      <div className={`w-2 md:w-4 h-0.5 transition-colors ${
+                        isCompleted ? "bg-teal-500" : "bg-stone-200"
+                      }`} aria-hidden="true" />
+                    )}
+
+                    {/* Tooltip on hover */}
+                    <div className="hidden md:block absolute top-full mt-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30">
+                      <div className="bg-stone-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                        {step.title}
+                      </div>
                     </div>
-                  </div>
-                </button>
-              ))}
-            </div>
+                  </button>
+                );
+              })}
+            </nav>
 
             {/* Language Selector, Currency Selector & Price Display */}
             <div className="flex items-center gap-2 md:gap-4">
@@ -226,11 +477,13 @@ export default function ConfiguratorPage() {
               <LanguageSelector />
 
               {/* Currency Toggle */}
-              <div className="flex items-center bg-stone-100 rounded-lg p-0.5">
+              <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Currency">
                 {(["EUR", "DKK"] as Currency[]).map((curr) => (
                   <button
                     key={curr}
                     onClick={() => updateConfig({ currency: curr })}
+                    role="radio"
+                    aria-checked={config.currency === curr}
                     className={`px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-medium rounded-md transition-all ${
                       config.currency === curr
                         ? "bg-white text-stone-900 shadow-sm"
@@ -242,16 +495,33 @@ export default function ConfiguratorPage() {
                 ))}
               </div>
 
-              {/* Price */}
-              <div className="text-right min-w-[180px] md:min-w-[240px]">
+              {/* Price with breakdown */}
+              <div className="text-right min-w-[140px] md:min-w-[200px]">
+                {/* Live region for price announcements */}
+                <div aria-live="polite" aria-atomic="true" className="sr-only">
+                  Total price: {formatPrice(priceBreakdown.total, config.currency)}
+                </div>
+
                 <motion.p
                   key={`${priceBreakdown.total}-${config.currency}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className="text-lg md:text-2xl font-semibold text-stone-900 tracking-tight"
                 >
                   {formatPrice(priceBreakdown.total, config.currency)}
                 </motion.p>
+
+                {/* Price breakdown toggle */}
+                <div className="flex items-center justify-end gap-2 mt-0.5">
+                  <PriceBreakdownTooltip
+                    priceBreakdown={priceBreakdown}
+                    currency={config.currency}
+                    isOpen={showPriceBreakdown}
+                    onToggle={() => setShowPriceBreakdown(!showPriceBreakdown)}
+                  />
+                </div>
+
+                {/* Service plan indicator */}
                 <motion.div
                   key={`service-${config.servicePlan}-${config.currency}-${currentStep}`}
                   initial={{ opacity: 0 }}
@@ -282,10 +552,10 @@ export default function ConfiguratorPage() {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentStep}
@@ -302,16 +572,16 @@ export default function ConfiguratorPage() {
             {renderStepContent()}
           </motion.div>
         </AnimatePresence>
-      </div>
+      </main>
 
-      {/* Clean Footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-stone-100 z-20">
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-stone-100 z-20">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-3 md:py-4">
           <div className="flex items-center justify-between">
             {/* Step indicator */}
             <div className="flex items-center gap-2 md:gap-3">
               <span className="text-xs md:text-sm text-stone-400">
-                {currentStep} / {translatedSteps.length}
+                {t("stepOf", { current: currentStep, total: translatedSteps.length })}
               </span>
               <span className="text-xs md:text-sm font-medium text-stone-700 hidden sm:inline">
                 {translatedSteps[currentStep - 1].title}
@@ -319,13 +589,13 @@ export default function ConfiguratorPage() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center gap-2 md:gap-3">
+            <nav aria-label="Step navigation" className="flex items-center gap-2 md:gap-3">
               {currentStep > 1 && (
                 <button
                   onClick={prevStep}
                   className="h-11 md:h-10 px-3 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                   <span className="hidden sm:inline">{t("back")}</span>
                 </button>
               )}
@@ -337,22 +607,22 @@ export default function ConfiguratorPage() {
                 >
                   <span className="hidden sm:inline">{t("continue")}</span>
                   <span className="sm:hidden">{t("next")}</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
                 </button>
               ) : (
                 <button
                   onClick={resetConfig}
                   className="h-11 md:h-10 px-4 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
                 >
-                  <RotateCcw className="h-4 w-4" />
+                  <RotateCcw className="h-4 w-4" aria-hidden="true" />
                   <span className="hidden sm:inline">{t("startOver")}</span>
                   <span className="sm:hidden">{t("reset")}</span>
                 </button>
               )}
-            </div>
+            </nav>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

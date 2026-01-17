@@ -8,6 +8,8 @@ import {
   PriceBreakdown,
   formatPrice,
   PRICES,
+  getWeedCuttingDiscVariant,
+  WeedingTool,
 } from "@/lib/configurator-data";
 
 interface StepSpraySystemProps {
@@ -22,9 +24,18 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
 
   const sprayPrice = PRICES.spraySystem.base + (config.activeRows * PRICES.spraySystem.perRow);
   const combiToolPrice = config.activeRows * PRICES.accessories.combiToolPerRow;
+  const weedCuttingDiscPrice = config.activeRows * PRICES.accessories.weedCuttingDiscPerRow;
+
+  // Check if weed cutting disc is available for current row distance
+  const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
+  const isWeedCuttingDiscAvailable = weedCuttingDiscVariant !== null;
+
+  const handleWeedingToolChange = (tool: WeedingTool) => {
+    updateConfig({ weedingTool: tool });
+  };
 
   const standardWeedFeatureKeys = ["weedingWires", "knifeInrow"] as const;
-  const combiToolFeatureKeys = ["fingerWeeding", "ridging", "perActiveRow"] as const;
+  const combiToolFeatureKeys = ["notchedDiscs", "lShares"] as const;
   const sprayFeatureKeys = ["tankCapacity", "precisionNozzles", "gpsGuided", "variableRate"] as const;
 
   return (
@@ -32,7 +43,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
       {/* Left: Product Image - Takes 3 columns */}
       <div className="lg:col-span-3 flex items-center justify-center">
         <motion.div
-          key={`${config.spraySystem}-${config.combiTool}`}
+          key={`${config.spraySystem}-${config.weedingTool}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -80,7 +91,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
             </g>
 
             {/* Combi Tool if selected */}
-            {config.combiTool && (
+            {config.weedingTool === "combiTool" && (
               <motion.g
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -102,6 +113,37 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                       x2={50 + i * 25}
                       y2="152"
                       stroke="#7c3aed"
+                      strokeWidth="2"
+                    />
+                  </g>
+                ))}
+              </motion.g>
+            )}
+
+            {/* Weed Cutting Disc if selected */}
+            {config.weedingTool === "weedCuttingDisc" && (
+              <motion.g
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Weed cutting disc attachments (circular discs) */}
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <g key={`disc-${i}`}>
+                    <circle
+                      cx={50 + i * 25}
+                      cy="150"
+                      r="6"
+                      fill="none"
+                      stroke="#dc2626"
+                      strokeWidth="2"
+                    />
+                    <line
+                      x1={50 + i * 25}
+                      y1="144"
+                      x2={50 + i * 25}
+                      y2="148"
+                      stroke="#dc2626"
                       strokeWidth="2"
                     />
                   </g>
@@ -182,11 +224,14 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
             </div>
           </div>
 
-          {/* Combi Tool Add-on */}
+          {/* Optional Weeding Tool Section Label */}
+          <p className="text-xs text-stone-400 mt-3 ml-2 md:ml-4">{t("optionalWeedingTool")}</p>
+
+          {/* Combi Tool Option */}
           <button
-            onClick={() => updateConfig({ combiTool: !config.combiTool })}
+            onClick={() => handleWeedingToolChange(config.weedingTool === "combiTool" ? "none" : "combiTool")}
             className={`w-full text-left p-3 md:p-4 rounded-lg border transition-all ml-2 md:ml-4 ${
-              config.combiTool
+              config.weedingTool === "combiTool"
                 ? "border-stone-900 bg-stone-50"
                 : "border-stone-200 hover:border-stone-300"
             }`}
@@ -195,16 +240,14 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-start gap-2 md:gap-3">
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-colors ${
-                  config.combiTool
+                  config.weedingTool === "combiTool"
                     ? "bg-stone-900"
                     : "border-2 border-stone-300"
                 }`}>
-                  {config.combiTool && <Check className="h-3 w-3 text-white" />}
+                  {config.weedingTool === "combiTool" && <Check className="h-3 w-3 text-white" />}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-stone-900 text-sm md:text-base">{t("combiTool.name")}</p>
-                  </div>
+                  <p className="font-medium text-stone-900 text-sm md:text-base">{t("combiTool.name")}</p>
                   <p className="text-xs text-stone-500 mt-0.5">{t("combiTool.description")}</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {combiToolFeatureKeys.map((key) => (
@@ -216,7 +259,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                       </span>
                     ))}
                   </div>
-                  {config.combiTool && (
+                  {config.weedingTool === "combiTool" && (
                     <p className="text-xs text-stone-400 mt-2">
                       {t("combiTool.pricePerRow", { price: formatPrice(PRICES.accessories.combiToolPerRow, config.currency), count: config.activeRows })}
                     </p>
@@ -225,6 +268,55 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
               </div>
               <span className="text-sm font-medium text-stone-900 ml-3">
                 +{formatPrice(combiToolPrice, config.currency)}
+              </span>
+            </div>
+          </button>
+
+          {/* Weed Cutting Disc Option */}
+          <button
+            onClick={() => isWeedCuttingDiscAvailable && handleWeedingToolChange(config.weedingTool === "weedCuttingDisc" ? "none" : "weedCuttingDisc")}
+            disabled={!isWeedCuttingDiscAvailable}
+            className={`w-full text-left p-3 md:p-4 rounded-lg border transition-all ml-2 md:ml-4 ${
+              !isWeedCuttingDiscAvailable
+                ? "border-stone-200 bg-stone-50 opacity-60 cursor-not-allowed"
+                : config.weedingTool === "weedCuttingDisc"
+                ? "border-stone-900 bg-stone-50"
+                : "border-stone-200 hover:border-stone-300"
+            }`}
+            style={{ width: "calc(100% - 0.5rem)" }}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-2 md:gap-3">
+                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-colors ${
+                  config.weedingTool === "weedCuttingDisc"
+                    ? "bg-stone-900"
+                    : "border-2 border-stone-300"
+                }`}>
+                  {config.weedingTool === "weedCuttingDisc" && <Check className="h-3 w-3 text-white" />}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className={`font-medium text-sm md:text-base ${isWeedCuttingDiscAvailable ? "text-stone-900" : "text-stone-400"}`}>
+                      {t("weedCuttingDisc.name")} {isWeedCuttingDiscAvailable && `(${weedCuttingDiscVariant})`}
+                    </p>
+                    {!isWeedCuttingDiscAvailable && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-200 text-stone-500">
+                        {t("weedCuttingDisc.notAvailable")}
+                      </span>
+                    )}
+                  </div>
+                  <p className={`text-xs mt-0.5 ${isWeedCuttingDiscAvailable ? "text-stone-500" : "text-stone-400"}`}>
+                    {t("weedCuttingDisc.description")}
+                  </p>
+                  {config.weedingTool === "weedCuttingDisc" && isWeedCuttingDiscAvailable && (
+                    <p className="text-xs text-stone-400 mt-2">
+                      {t("weedCuttingDisc.pricePerRow", { price: formatPrice(PRICES.accessories.weedCuttingDiscPerRow, config.currency), count: config.activeRows })}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <span className={`text-sm font-medium ml-3 ${isWeedCuttingDiscAvailable ? "text-stone-900" : "text-stone-400"}`}>
+                +{formatPrice(weedCuttingDiscPrice, config.currency)}
               </span>
             </div>
           </button>
@@ -290,12 +382,14 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
 
         {/* Info text */}
         <p className="text-sm text-stone-500 pt-4 border-t border-stone-100">
-          {config.spraySystem && config.combiTool
+          {config.spraySystem && config.weedingTool !== "none"
             ? t("info.both")
             : config.spraySystem
             ? t("info.sprayOnly")
-            : config.combiTool
+            : config.weedingTool === "combiTool"
             ? t("info.combiOnly")
+            : config.weedingTool === "weedCuttingDisc"
+            ? t("info.weedCuttingDiscOnly")
             : t("info.standard")}
         </p>
       </div>
