@@ -175,6 +175,56 @@
       "hybrid": "Hybrideconfiguratie voegt generator back-up toe voor maximale uptime onder alle omstandigheden.",
       "powerBank": "Uitgebreide elektrische werking met dubbele batterijcapaciteit - blijft volledig emissievrij.",
       "solar": "Zuivere zonne-energie biedt schone, stille werking ideaal voor de meeste landbouwomstandigheden."
+    },
+    "learnMore": "Meer informatie",
+    "infoModal": {
+      "title": "Stroombronopties",
+      "specifications": "Specificaties",
+      "close": "Sluiten",
+      "options": {
+        "solar": {
+          "name": "Zonne-energie",
+          "description": "De standaard FarmDroid stroomconfiguratie maakt gebruik van een 1,6 kW zonnepaneelopstelling gecombineerd met een 5,7 kWh lithium-batterijpakket. Deze opstelling biedt 12-24 uur dagelijkse werking afhankelijk van weersomstandigheden en seizoen, waardoor het ideaal is voor de meeste landbouwwerkzaamheden.",
+          "specs": [
+            "1,6 kW piek zonnepaneel output",
+            "5,7 kWh lithium-batterijcapaciteit",
+            "12-24 uur dagelijkse werking",
+            "Nul emissies",
+            "Stille werking",
+            "Minimaal onderhoud vereist"
+          ],
+          "tipLabel": "Ideaal voor:",
+          "tipText": "Standaard veldgroottes en typische groeiseizoenen. Perfect voor biologische boerderijen waar nul emissies en stille werking prioriteiten zijn."
+        },
+        "powerBank": {
+          "name": "Power Bank",
+          "description": "De FarmDroid Power Bank is een extra batterij-eenheid die de energiecapaciteit van uw robot verdubbelt. Het levert extra 5,7 kWh vermogen, waardoor verlengde gebruikstijden van ongeveer 10 extra uur per dag mogelijk zijn, terwijl het volledig emissievrij blijft.",
+          "specs": [
+            "5,7 kWh extra lithium-batterijcapaciteit",
+            "Verdubbelt de totale capaciteit naar 11,4 kWh",
+            "Quick-connect systeem voor eenvoudige bevestiging",
+            "Extern opladen via standaard stopcontact",
+            "Slim opladen met zonne-integratie",
+            "Weerbestendige behuizing (IP65-gecertificeerd)"
+          ],
+          "tipLabel": "Ideaal voor:",
+          "tipText": "Grote velden, lange werkdagen of noordelijke regio's met beperkt zonlicht. Zorgt ervoor dat uw FarmDroid zijn taken kan voltooien, zelfs op bewolkte dagen."
+        },
+        "hybrid": {
+          "name": "Hybride (Zonne-energie + Generator)",
+          "description": "De hybride stroomconfiguratie combineert zonnepanelen met een generator back-up systeem. Deze opstelling garandeert 24+ uur continue werking ongeacht de weersomstandigheden, waardoor het de meest betrouwbare optie is voor veeleisende landbouwwerkzaamheden.",
+          "specs": [
+            "1,6 kW zonnepanelen + generator back-up",
+            "5,7 kWh lithium-batterij",
+            "24+ uur continue werking",
+            "Betrouwbaarheid bij alle weersomstandigheden",
+            "Automatisch schakelen tussen stroombronnen",
+            "Uitgebreid bereik voor grote operaties"
+          ],
+          "tipLabel": "Ideaal voor:",
+          "tipText": "Grootschalige operaties die maximale uptime vereisen, regio's met onvoorspelbaar weer, of tijdkritische landbouwvensters waar continue werking essentieel is."
+        }
+      }
     }
   },
   "spraySystem": {
@@ -227,6 +277,70 @@
       "combiOnly": "Verbeterd mechanisch wieden met Combi Gereedschap hulpstukken voor verbeterd bodembeheer en onkruidbestrijding.",
       "weedCuttingDiscOnly": "Precisiesnijschijven bieden effectieve mechanische onkruidbestrijding tussen de rijen.",
       "standard": "Standaard mechanische wiedconfiguratie, perfect voor biologische certificeringseisen."
+    },
+    "learnMore": "Meer informatie",
+    "infoModal": {
+      "title": "Wied- & Spuitopties",
+      "specifications": "Specificaties",
+      "close": "Sluiten",
+      "options": {
+        "standardWeeding": {
+          "name": "Standaard Wieden",
+          "description": "De standaard wiedconfiguratie is inbegrepen bij elke FarmDroid en biedt effectieve mechanische onkruidbestrijding. Het gebruikt precisie wieddraden die het bodemoppervlak tussen de rijen verstoren, gecombineerd met intra-rij messen die onkruid dicht bij de gewasplanten snijden.",
+          "specs": [
+            "Wieddraden voor tussen-rij cultivatie",
+            "Intra-rij messen voor dicht-bij-plant wieden",
+            "Instelbare werkdiepte",
+            "Compatibel met alle rijafstanden",
+            "Geen chemische input vereist",
+            "Biologisch gecertificeerd"
+          ],
+          "tipLabel": "Ideaal voor:",
+          "tipText": "Biologische boerderijen en operaties gericht op chemievrij onkruidbeheer. De standaard setup handelt de meeste gangbare onkruiddruk effectief af."
+        },
+        "combiTool": {
+          "name": "Combi Gereedschap",
+          "description": "Het Combi Gereedschap is een geavanceerd mechanisch wiedhulpstuk dat getande schijven en L-scharen toevoegt aan uw FarmDroid. De getande schijven snijden de grond voor de wiedbewerking, terwijl de L-scharen zorgen voor extra grondbeweging voor betere onkruidbegraving.",
+          "specs": [
+            "Getande schijven voor voorsnijden van grond",
+            "L-scharen voor verbeterde grondbeweging",
+            "Verbeterde onkruidbegravingscapaciteit",
+            "Werkt met standaard wiedgereedschap",
+            "Instelbaar per actieve rij",
+            "Robuuste constructie"
+          ],
+          "tipLabel": "Ideaal voor:",
+          "tipText": "Velden met hoge onkruiddruk of verdichte grond. Het Combi Gereedschap biedt agressievere mechanische actie bij uitdagende omstandigheden."
+        },
+        "weedCuttingDisc": {
+          "name": "Onkruidsnijschijf",
+          "description": "De Onkruidsnijschijf is een precisie snijgereedschap dat effectieve onkruidbestrijding tussen rijen biedt. Beschikbaar in 225mm en 250mm varianten afhankelijk van uw rijafstand, snijden deze schijven onkruid aan het bodemoppervlak voor schone, efficiënte onkruidbeheersing.",
+          "specs": [
+            "Precisie geslepen snijrand",
+            "Beschikbaar in 225mm en 250mm maten",
+            "Ontwerp met lage bodemverstoring",
+            "Zelfscherpende mes technologie",
+            "Eenvoudig vervangingssysteem",
+            "Compatibel met specifieke rijafstanden"
+          ],
+          "tipLabel": "Ideaal voor:",
+          "tipText": "Operaties die schone snijactie vereisen met minimale bodemverstoring. Ideaal voor gewassen die gevoelig zijn voor grondbeweging of waar precisie kritisch is."
+        },
+        "spraySystem": {
+          "name": "+Spray Systeem",
+          "description": "Het +SPRAY systeem voegt precisie spuitcapaciteit toe aan uw FarmDroid. Met een 110L tank en GPS-geleide spuitkoppen maakt het gerichte toepassing van herbiciden, meststoffen of andere vloeistoffen mogelijk met tot 90% reductie in chemicaliëngebruik vergeleken met breedwerpig spuiten.",
+          "specs": [
+            "110L tankinhoud",
+            "GPS-geleide precisie spuitkoppen",
+            "Variabele dosering controle",
+            "Individuele rij afsluiting",
+            "Tot 90% chemicaliënreductie",
+            "Compatibel met de meeste vloeibare inputs"
+          ],
+          "tipLabel": "Ideaal voor:",
+          "tipText": "Conventionele boerderijen die chemicaliëngebruik willen verminderen, of operaties die gerichte toepassing van vloeibare meststoffen of gewasbeschermingsmiddelen vereisen."
+        }
+      }
     }
   },
   "accessories": {
@@ -291,6 +405,9 @@
     "emptyMessage": "Accessoires zijn optioneel. U kunt ze later toevoegen via onze serviceafdeling.",
     "selectedMessage": "{count} accessoire-item geselecteerd voor {price}.",
     "selectedMessagePlural": "{count} accessoire-items geselecteerd voor {price}.",
+    "viewGrid": "Overzicht",
+    "viewPhotos": "Foto's",
+    "noAccessoriesSelected": "Selecteer accessoires om foto's te zien",
     "infoModals": {
       "learnMore": "Meer informatie",
       "includedItems": "Wat is inbegrepen",

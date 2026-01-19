@@ -175,6 +175,56 @@
       "hybrid": "Hybridkonfiguration tilføjer generator-backup for maksimal oppetid under alle forhold.",
       "powerBank": "Udvidet elektrisk drift med dobbelt batterikapacitet - forbliver helt emissionsfri.",
       "solar": "Ren solenergi giver ren, støjsvag drift ideel til de fleste landbrugsforhold."
+    },
+    "learnMore": "Læs mere",
+    "infoModal": {
+      "title": "Strømkildemuligheder",
+      "specifications": "Specifikationer",
+      "close": "Luk",
+      "options": {
+        "solar": {
+          "name": "Solenergi",
+          "description": "Standard FarmDroid strømkonfiguration bruger et 1,6 kW solpanelarray kombineret med en 5,7 kWh lithiumbatteripakke. Denne opsætning giver 12-24 timers daglig drift afhængigt af vejrforhold og årstid, hvilket gør den ideel til de fleste landbrugsoperationer.",
+          "specs": [
+            "1,6 kW peak solpanel output",
+            "5,7 kWh lithiumbatterikapacitet",
+            "12-24 timers daglig drift",
+            "Nul emissioner",
+            "Lydløs drift",
+            "Minimal vedligeholdelse krævet"
+          ],
+          "tipLabel": "Bedst til:",
+          "tipText": "Standardmarkstørrelser og typiske vækstsæsoner. Perfekt til økologiske landbrug, hvor nul emissioner og stille drift er prioriteter."
+        },
+        "powerBank": {
+          "name": "Power Bank",
+          "description": "FarmDroid Power Bank er en ekstra batterienhed, der fordobler din robots energikapacitet. Den giver ekstra 5,7 kWh strøm, hvilket muliggør forlængede driftstider på cirka 10 ekstra timer om dagen, samtidig med at den er helt emissionsfri.",
+          "specs": [
+            "5,7 kWh ekstra lithiumbatterikapacitet",
+            "Fordobler den samlede kapacitet til 11,4 kWh",
+            "Quick-connect system til nem tilslutning",
+            "Ekstern opladning via standardstikkontakt",
+            "Smart opladning med solintegration",
+            "Vejrbestandig kabinet (IP65-klassificeret)"
+          ],
+          "tipLabel": "Bedst til:",
+          "tipText": "Store marker, lange arbejdsdage eller nordlige regioner med begrænset sollys. Sikrer, at din FarmDroid kan fuldføre sine opgaver selv på overskyede dage."
+        },
+        "hybrid": {
+          "name": "Hybrid (Sol + Generator)",
+          "description": "Hybrid strømkonfigurationen kombinerer solpaneler med et generator backup-system. Denne opsætning sikrer 24+ timers kontinuerlig drift uanset vejrforhold, hvilket gør den til den mest pålidelige mulighed for krævende landbrugsoperationer.",
+          "specs": [
+            "1,6 kW solpaneler + generator backup",
+            "5,7 kWh lithiumbatteri",
+            "24+ timers kontinuerlig drift",
+            "Pålidelighed i al slags vejr",
+            "Automatisk skift mellem strømkilder",
+            "Udvidet rækkevidde til store operationer"
+          ],
+          "tipLabel": "Bedst til:",
+          "tipText": "Storskalerede operationer, der kræver maksimal oppetid, regioner med uforudsigeligt vejr, eller tidskritiske landbrugsvinduer, hvor kontinuerlig drift er essentiel."
+        }
+      }
     }
   },
   "spraySystem": {
@@ -227,6 +277,70 @@
       "combiOnly": "Forbedret mekanisk lugning med Kombi-værktøjstilbehør til forbedret jordbehandling og ukrudtskontrol.",
       "weedCuttingDiscOnly": "Præcisionsskæreskiver giver effektiv mekanisk ukrudtskontrol mellem rækkerne.",
       "standard": "Standard mekanisk lugekonfiguration, perfekt til økologisk certificering."
+    },
+    "learnMore": "Læs mere",
+    "infoModal": {
+      "title": "Luge- & Sprøjtemuligheder",
+      "specifications": "Specifikationer",
+      "close": "Luk",
+      "options": {
+        "standardWeeding": {
+          "name": "Standard Lugning",
+          "description": "Standard lugekonfiguration er inkluderet med hver FarmDroid og giver effektiv mekanisk ukrudtskontrol. Den bruger præcisionslugetråde, der forstyrrer jordoverfladen mellem rækkerne, kombineret med i-række knive, der skærer ukrudt tæt på afgrøderne.",
+          "specs": [
+            "Lugetråde til mellem-række dyrkning",
+            "I-række knive til tæt-på-plante lugning",
+            "Justerbar arbejdsdybde",
+            "Kompatibel med alle rækkeafstande",
+            "Ingen kemikalier krævet",
+            "Økologisk certificeret"
+          ],
+          "tipLabel": "Bedst til:",
+          "tipText": "Økologiske landbrug og operationer fokuseret på kemikaliefri ukrudtsbekæmpelse. Standardopsætningen håndterer de fleste almindelige ukrudtstryk effektivt."
+        },
+        "combiTool": {
+          "name": "Kombi-værktøj",
+          "description": "Kombi-værktøjet er et avanceret mekanisk lugetilbehør, der tilføjer tandede skiver og L-skær til din FarmDroid. De tandede skiver forskærer jorden før lugeoperationen, mens L-skærene giver ekstra jordbevægelse for bedre ukrudtsnedgravning.",
+          "specs": [
+            "Tandede skiver til forskæring af jord",
+            "L-skær til forbedret jordbevægelse",
+            "Forbedret ukrudtsnedgravning",
+            "Fungerer med standard lugeværktøjer",
+            "Justerbar per aktiv række",
+            "Robust konstruktion"
+          ],
+          "tipLabel": "Bedst til:",
+          "tipText": "Marker med højt ukrudtstryk eller kompakt jord. Kombi-værktøjet giver mere aggressiv mekanisk handling under udfordrende forhold."
+        },
+        "weedCuttingDisc": {
+          "name": "Ukrudtsskæreskive",
+          "description": "Ukrudtsskæreskiven er et præcisionsskæreværktøj, der giver effektiv ukrudtskontrol mellem rækker. Fås i 225mm og 250mm varianter afhængigt af din rækkeafstand, disse skiver skærer ukrudt ved jordoverfladen for ren, effektiv ukrudtsbekæmpelse.",
+          "specs": [
+            "Præcisionsslebet skærekant",
+            "Fås i 225mm og 250mm størrelser",
+            "Lavt jordforstyrrelsesdesign",
+            "Selvslibrende klingeteknologi",
+            "Let udskiftningssystem",
+            "Kompatibel med specifikke rækkeafstande"
+          ],
+          "tipLabel": "Bedst til:",
+          "tipText": "Operationer, der kræver ren skærehandling med minimal jordforstyrrelse. Ideel til afgrøder, der er følsomme over for jordbevægelse, eller hvor præcision er kritisk."
+        },
+        "spraySystem": {
+          "name": "+Spray System",
+          "description": "+SPRAY-systemet tilføjer præcisionssprøjtning til din FarmDroid. Med en 110L tank og GPS-styrede dyser muliggør det målrettet påføring af herbicider, gødning eller andre væsker med op til 90% reduktion i kemikalieforbrug sammenlignet med bredsprøjtning.",
+          "specs": [
+            "110L tankkapacitet",
+            "GPS-styrede præcisionsdyser",
+            "Variabel doseringskontrol",
+            "Individuel rækkelukining",
+            "Op til 90% kemikaliereduktion",
+            "Kompatibel med de fleste flydende input"
+          ],
+          "tipLabel": "Bedst til:",
+          "tipText": "Konventionelle landbrug, der ønsker at reducere kemikalieforbrug, eller operationer, der kræver målrettet påføring af flydende gødning eller plantebeskyttelsesprodukter."
+        }
+      }
     }
   },
   "accessories": {
@@ -291,6 +405,9 @@
     "emptyMessage": "Tilbehør er valgfrit. Du kan tilføje dem senere via vores serviceafdeling.",
     "selectedMessage": "{count} tilbehørsvare valgt til {price}.",
     "selectedMessagePlural": "{count} tilbehørsvarer valgt til {price}.",
+    "viewGrid": "Oversigt",
+    "viewPhotos": "Billeder",
+    "noAccessoriesSelected": "Vælg tilbehør for at se billeder",
     "infoModals": {
       "learnMore": "Læs mere",
       "includedItems": "Hvad er inkluderet",

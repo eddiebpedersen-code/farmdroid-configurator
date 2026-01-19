@@ -175,6 +175,56 @@
       "hybrid": "La configuration hybride ajoute un générateur de secours pour une disponibilité maximale dans toutes les conditions.",
       "powerBank": "Fonctionnement électrique étendu avec double capacité de batterie - reste totalement sans émission.",
       "solar": "L'énergie solaire pure offre un fonctionnement propre et silencieux idéal pour la plupart des conditions agricoles."
+    },
+    "learnMore": "En savoir plus",
+    "infoModal": {
+      "title": "Options de source d'énergie",
+      "specifications": "Spécifications",
+      "close": "Fermer",
+      "options": {
+        "solar": {
+          "name": "Énergie solaire",
+          "description": "La configuration d'alimentation standard FarmDroid utilise un ensemble de panneaux solaires de 1,6 kW combiné à un pack de batteries lithium de 5,7 kWh. Cette configuration offre 12 à 24 heures de fonctionnement quotidien selon les conditions météorologiques et la saison, ce qui la rend idéale pour la plupart des opérations agricoles.",
+          "specs": [
+            "Puissance de crête panneau solaire de 1,6 kW",
+            "Capacité de batterie lithium de 5,7 kWh",
+            "12-24 heures de fonctionnement quotidien",
+            "Zéro émission",
+            "Fonctionnement silencieux",
+            "Entretien minimal requis"
+          ],
+          "tipLabel": "Idéal pour :",
+          "tipText": "Tailles de champs standard et saisons de croissance typiques. Parfait pour les fermes biologiques où le zéro émission et le fonctionnement silencieux sont prioritaires."
+        },
+        "powerBank": {
+          "name": "Power Bank",
+          "description": "La Power Bank FarmDroid est une unité de batterie supplémentaire qui double la capacité énergétique de votre robot. Elle fournit 5,7 kWh de puissance supplémentaire, permettant des temps de fonctionnement prolongés d'environ 10 heures supplémentaires par jour tout en restant totalement sans émission.",
+          "specs": [
+            "Capacité de batterie lithium supplémentaire de 5,7 kWh",
+            "Double la capacité totale à 11,4 kWh",
+            "Système de connexion rapide pour un montage facile",
+            "Charge externe via prise standard",
+            "Charge intelligente avec intégration solaire",
+            "Boîtier résistant aux intempéries (certifié IP65)"
+          ],
+          "tipLabel": "Idéal pour :",
+          "tipText": "Grands champs, longues journées de travail ou régions nordiques avec un ensoleillement limité. Garantit que votre FarmDroid peut accomplir ses tâches même par temps nuageux."
+        },
+        "hybrid": {
+          "name": "Hybride (Solaire + Générateur)",
+          "description": "La configuration d'alimentation hybride combine des panneaux solaires avec un système de générateur de secours. Cette configuration assure plus de 24 heures de fonctionnement continu quelles que soient les conditions météorologiques, ce qui en fait l'option la plus fiable pour les opérations agricoles exigeantes.",
+          "specs": [
+            "Panneaux solaires 1,6 kW + générateur de secours",
+            "Batterie lithium de 5,7 kWh",
+            "Plus de 24 heures de fonctionnement continu",
+            "Fiabilité tous temps",
+            "Commutation automatique entre les sources d'alimentation",
+            "Portée étendue pour les grandes opérations"
+          ],
+          "tipLabel": "Idéal pour :",
+          "tipText": "Opérations à grande échelle nécessitant une disponibilité maximale, régions avec météo imprévisible ou fenêtres agricoles critiques où le fonctionnement continu est essentiel."
+        }
+      }
     }
   },
   "spraySystem": {
@@ -227,6 +277,70 @@
       "combiOnly": "Désherbage mécanique amélioré avec accessoires Outil Combi pour une meilleure gestion du sol et contrôle des mauvaises herbes.",
       "weedCuttingDiscOnly": "Les disques de coupe de précision offrent un contrôle mécanique efficace des mauvaises herbes entre les rangs.",
       "standard": "Configuration de désherbage mécanique standard, parfaite pour les exigences de certification biologique."
+    },
+    "learnMore": "En savoir plus",
+    "infoModal": {
+      "title": "Options de désherbage et pulvérisation",
+      "specifications": "Spécifications",
+      "close": "Fermer",
+      "options": {
+        "standardWeeding": {
+          "name": "Désherbage Standard",
+          "description": "La configuration de désherbage standard est incluse avec chaque FarmDroid et offre un contrôle mécanique efficace des mauvaises herbes. Elle utilise des fils de désherbage de précision qui perturbent la surface du sol entre les rangs, combinés à des couteaux intra-rang qui coupent les mauvaises herbes près des plantes cultivées.",
+          "specs": [
+            "Fils de désherbage pour culture inter-rangs",
+            "Couteaux intra-rang pour désherbage proche des plantes",
+            "Profondeur de travail réglable",
+            "Compatible avec tous les espacements de rangs",
+            "Aucun apport chimique requis",
+            "Certifié agriculture biologique"
+          ],
+          "tipLabel": "Idéal pour :",
+          "tipText": "Fermes biologiques et opérations axées sur la gestion des mauvaises herbes sans produits chimiques. La configuration standard gère efficacement la plupart des pressions d'adventices courantes."
+        },
+        "combiTool": {
+          "name": "Outil Combi",
+          "description": "L'Outil Combi est un accessoire de désherbage mécanique avancé qui ajoute des disques crantés et des socs en L à votre FarmDroid. Les disques crantés pré-coupent le sol avant l'opération de désherbage, tandis que les socs en L fournissent un mouvement de sol supplémentaire pour un meilleur enfouissement des mauvaises herbes.",
+          "specs": [
+            "Disques crantés pour pré-coupe du sol",
+            "Socs en L pour mouvement de sol amélioré",
+            "Capacité d'enfouissement des mauvaises herbes améliorée",
+            "Fonctionne avec les outils de désherbage standard",
+            "Réglable par rang actif",
+            "Construction robuste"
+          ],
+          "tipLabel": "Idéal pour :",
+          "tipText": "Champs avec forte pression d'adventices ou sol compacté. L'Outil Combi offre une action mécanique plus agressive pour des conditions difficiles."
+        },
+        "weedCuttingDisc": {
+          "name": "Disque de coupe",
+          "description": "Le Disque de coupe est un outil de coupe de précision qui offre un contrôle efficace des mauvaises herbes inter-rangs. Disponible en variantes 225mm et 250mm selon votre espacement de rangs, ces disques coupent les mauvaises herbes à la surface du sol pour une gestion propre et efficace.",
+          "specs": [
+            "Bord de coupe de précision",
+            "Disponible en tailles 225mm et 250mm",
+            "Conception à faible perturbation du sol",
+            "Technologie de lame auto-affûtante",
+            "Système de remplacement facile",
+            "Compatible avec des espacements de rangs spécifiques"
+          ],
+          "tipLabel": "Idéal pour :",
+          "tipText": "Opérations nécessitant une action de coupe propre avec perturbation minimale du sol. Idéal pour les cultures sensibles au mouvement du sol ou lorsque la précision est critique."
+        },
+        "spraySystem": {
+          "name": "Système +Spray",
+          "description": "Le système +SPRAY ajoute une capacité de pulvérisation de précision à votre FarmDroid. Avec un réservoir de 110L et des buses guidées par GPS, il permet une application ciblée d'herbicides, d'engrais ou d'autres liquides avec une réduction allant jusqu'à 90% de l'utilisation de produits chimiques par rapport à la pulvérisation en plein.",
+          "specs": [
+            "Capacité de réservoir de 110L",
+            "Buses de précision guidées par GPS",
+            "Contrôle de débit variable",
+            "Coupure individuelle par rang",
+            "Réduction des produits chimiques jusqu'à 90%",
+            "Compatible avec la plupart des intrants liquides"
+          ],
+          "tipLabel": "Idéal pour :",
+          "tipText": "Fermes conventionnelles cherchant à réduire l'utilisation de produits chimiques, ou opérations nécessitant une application ciblée d'engrais liquides ou de produits phytosanitaires."
+        }
+      }
     }
   },
   "accessories": {
@@ -291,6 +405,9 @@
     "emptyMessage": "Les accessoires sont optionnels. Vous pouvez les ajouter plus tard via notre service après-vente.",
     "selectedMessage": "{count} article accessoire sélectionné pour {price}.",
     "selectedMessagePlural": "{count} articles accessoires sélectionnés pour {price}.",
+    "viewGrid": "Aperçu",
+    "viewPhotos": "Photos",
+    "noAccessoriesSelected": "Sélectionnez des accessoires pour voir les photos",
     "infoModals": {
       "learnMore": "En savoir plus",
       "includedItems": "Ce qui est inclus",

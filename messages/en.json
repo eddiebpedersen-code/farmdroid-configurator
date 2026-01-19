@@ -36,7 +36,7 @@
       "subtitle": "FD20 Robot V2.6"
     },
     "wheelConfig": {
-      "title": "Wheel Configuration",
+      "title": "Wheel ++ Configuration",
       "subtitle": "Select wheel configuration"
     },
     "seedConfig": {
@@ -95,7 +95,7 @@
     }
   },
   "wheelConfig": {
-    "title": "Wheel Configuration",
+    "title": "Wheel ++ Configuration",
     "subtitle": "Choose between 3-wheel and 4-wheel setup",
     "learnMore": "Learn more about wheel configurations",
     "moreInfo": "More information",
@@ -175,6 +175,56 @@
       "hybrid": "Hybrid configuration adds generator backup for maximum uptime in all conditions.",
       "powerBank": "Extended electric operation with double battery capacity - stays fully emission-free.",
       "solar": "Pure solar power provides clean, quiet operation ideal for most farming conditions."
+    },
+    "learnMore": "Learn more",
+    "infoModal": {
+      "title": "Power Source Options",
+      "specifications": "Specifications",
+      "close": "Close",
+      "options": {
+        "solar": {
+          "name": "Solar Power",
+          "description": "The standard FarmDroid power configuration uses a 1.6 kW solar panel array combined with a 5.7 kWh lithium battery pack. This setup provides 12-24 hours of daily operation depending on weather conditions and season, making it ideal for most farming operations.",
+          "specs": [
+            "1.6 kW peak solar panel output",
+            "5.7 kWh lithium battery capacity",
+            "12-24 hours daily operation",
+            "Zero emissions",
+            "Silent operation",
+            "Minimal maintenance required"
+          ],
+          "tipLabel": "Best for:",
+          "tipText": "Standard field sizes and typical growing seasons. Perfect for organic farms where zero emissions and quiet operation are priorities."
+        },
+        "powerBank": {
+          "name": "Power Bank",
+          "description": "The FarmDroid Power Bank is an additional battery unit that doubles your robot's energy capacity. It provides an extra 5.7 kWh of power, enabling extended operation times of approximately 10 additional hours per day while maintaining zero emissions.",
+          "specs": [
+            "5.7 kWh extra lithium battery capacity",
+            "Doubles total capacity to 11.4 kWh",
+            "Quick-connect system for easy attachment",
+            "External charging via standard outlet",
+            "Smart charging with solar integration",
+            "Weather-resistant enclosure (IP65 rated)"
+          ],
+          "tipLabel": "Best for:",
+          "tipText": "Large fields, long working days, or northern regions with limited sunlight. Ensures your FarmDroid can complete its tasks even on cloudy days."
+        },
+        "hybrid": {
+          "name": "Hybrid (Solar + Generator)",
+          "description": "The hybrid power configuration combines solar panels with a generator backup system. This setup ensures 24+ hours of continuous operation regardless of weather conditions, making it the most reliable option for demanding agricultural operations.",
+          "specs": [
+            "1.6 kW solar panels + generator backup",
+            "5.7 kWh lithium battery",
+            "24+ hours continuous operation",
+            "All-weather reliability",
+            "Automatic switching between power sources",
+            "Extended range for large operations"
+          ],
+          "tipLabel": "Best for:",
+          "tipText": "Large-scale operations requiring maximum uptime, regions with unpredictable weather, or time-critical farming windows where continuous operation is essential."
+        }
+      }
     }
   },
   "spraySystem": {
@@ -227,6 +277,70 @@
       "combiOnly": "Enhanced mechanical weeding with Combi Tool attachments for improved soil management and weed control.",
       "weedCuttingDiscOnly": "Precision cutting discs provide effective mechanical weed control between rows.",
       "standard": "Standard mechanical weeding configuration, perfect for organic certification requirements."
+    },
+    "learnMore": "Learn more",
+    "infoModal": {
+      "title": "Weeding & Spray Options",
+      "specifications": "Specifications",
+      "close": "Close",
+      "options": {
+        "standardWeeding": {
+          "name": "Standard Weeding",
+          "description": "The standard weeding configuration is included with every FarmDroid and provides effective mechanical weed control. It uses precision weeding wires that disturb the soil surface between rows, combined with inrow knives that cut weeds close to the crop plants.",
+          "specs": [
+            "Weeding wires for inter-row cultivation",
+            "Inrow knives for close-to-plant weeding",
+            "Adjustable working depth",
+            "Compatible with all row spacings",
+            "No chemical input required",
+            "Organic farming certified"
+          ],
+          "tipLabel": "Best for:",
+          "tipText": "Organic farms and operations focused on chemical-free weed management. The standard setup handles most common weed pressure effectively."
+        },
+        "combiTool": {
+          "name": "Combi Tool",
+          "description": "The Combi Tool is an advanced mechanical weeding attachment that adds notched discs and L-shares to your FarmDroid. The notched discs pre-cut the soil ahead of the weeding operation, while the L-shares provide additional soil movement for better weed burial.",
+          "specs": [
+            "Notched discs for pre-cutting soil",
+            "L-shares for enhanced soil movement",
+            "Improved weed burial capability",
+            "Works with standard weeding tools",
+            "Adjustable per active row",
+            "Heavy-duty construction"
+          ],
+          "tipLabel": "Best for:",
+          "tipText": "Fields with heavy weed pressure or compacted soil. The Combi Tool provides more aggressive mechanical action for challenging conditions."
+        },
+        "weedCuttingDisc": {
+          "name": "Weed Cutting Disc",
+          "description": "The Weed Cutting Disc is a precision cutting tool that provides effective inter-row weed control. Available in 225mm and 250mm variants depending on your row spacing, these discs cut weeds at the soil surface for clean, efficient weed management.",
+          "specs": [
+            "Precision-ground cutting edge",
+            "Available in 225mm and 250mm sizes",
+            "Low soil disturbance design",
+            "Self-sharpening blade technology",
+            "Easy replacement system",
+            "Compatible with specific row spacings"
+          ],
+          "tipLabel": "Best for:",
+          "tipText": "Operations requiring clean cutting action with minimal soil disturbance. Ideal for crops sensitive to soil movement or where precision is critical."
+        },
+        "spraySystem": {
+          "name": "+Spray System",
+          "description": "The +SPRAY system adds precision spraying capability to your FarmDroid. With a 110L tank and GPS-guided nozzles, it enables targeted application of herbicides, fertilizers, or other liquids with up to 90% reduction in chemical usage compared to broadcast spraying.",
+          "specs": [
+            "110L tank capacity",
+            "GPS-guided precision nozzles",
+            "Variable rate control",
+            "Individual row shutoff",
+            "Up to 90% chemical reduction",
+            "Compatible with most liquid inputs"
+          ],
+          "tipLabel": "Best for:",
+          "tipText": "Conventional farms looking to reduce chemical usage, or operations requiring targeted application of liquid fertilizers or crop protection products."
+        }
+      }
     }
   },
   "accessories": {
@@ -291,6 +405,9 @@
     "emptyMessage": "Accessories are optional. You can add them later through our service department.",
     "selectedMessage": "{count} accessory item selected for {price}.",
     "selectedMessagePlural": "{count} accessory items selected for {price}.",
+    "viewGrid": "Overview",
+    "viewPhotos": "Photos",
+    "noAccessoriesSelected": "Select accessories to see photos",
     "infoModals": {
       "learnMore": "Learn more",
       "includedItems": "What's included",

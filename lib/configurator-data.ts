@@ -90,7 +90,7 @@ export interface CropPreset {
 
 export const STEPS: StepInfo[] = [
   { id: 1, title: "Base Robot", subtitle: "FD20 Robot V2.6" },
-  { id: 2, title: "Wheel Configuration", subtitle: "Select wheel configuration" },
+  { id: 2, title: "Wheel ++ Configuration", subtitle: "Select wheel configuration" },
   { id: 3, title: "+Seed Configuration", subtitle: "Configure your seeding setup" },
   { id: 4, title: "+Weed Configuration", subtitle: "Configure your weeding setup" },
   { id: 5, title: "Power Source", subtitle: "Choose your power configuration" },
@@ -156,7 +156,7 @@ export const WHEEL_CONSTRAINTS = {
   maxWheelSpacing: 2300, // 230cm maximum
   wheelSpacingIncrement: 100, // 10cm increments
   wheelWidth: 170, // 17cm wheel width
-  minRowToWheelGap: 50, // minimum 5cm gap between row and wheel edge
+  minRowToWheelGap: 65, // 6.5cm clearance (wheel centered in min 30cm gap: (300-170)/2 = 65mm)
 };
 
 // Row configuration constraints
@@ -357,6 +357,46 @@ export function calculatePassiveRows(activeRows: number, rowDistance: number): n
 export function calculateRowSpan(rowSpacings: number[]): number {
   if (rowSpacings.length === 0) return 0;
   return rowSpacings.reduce((sum, s) => sum + s, 0);
+}
+
+/**
+ * Detect if row spacings form an alternating pattern (exactly 2 values alternating)
+ * Returns the two values if alternating, null otherwise
+ */
+export function detectAlternatingPattern(rowSpacings: number[]): { valueA: number; valueB: number } | null {
+  if (rowSpacings.length < 2) return null;
+
+  const uniqueValues = [...new Set(rowSpacings)];
+  if (uniqueValues.length !== 2) return null;
+
+  const [valueA, valueB] = uniqueValues;
+
+  // Check if pattern alternates: A-B-A-B... or B-A-B-A...
+  for (let i = 0; i < rowSpacings.length; i++) {
+    const expected = i % 2 === 0 ? rowSpacings[0] : (rowSpacings[0] === valueA ? valueB : valueA);
+    if (rowSpacings[i] !== expected) return null;
+  }
+
+  return { valueA, valueB };
+}
+
+/**
+ * Calculate the between-pass spacing for alternating patterns
+ * For alternating patterns (A-B-A-B), returns the "other" value to continue the pattern
+ * For non-alternating patterns, returns the base rowDistance
+ */
+export function calculateBetweenPassSpacing(rowSpacings: number[], rowDistance: number): number {
+  const pattern = detectAlternatingPattern(rowSpacings);
+
+  if (pattern) {
+    // Get outer spacing (first spacing in pattern)
+    const outerSpacing = rowSpacings[0];
+    // Return the OTHER value to continue alternation
+    return outerSpacing === pattern.valueA ? pattern.valueB : pattern.valueA;
+  }
+
+  // Non-alternating: use base row distance
+  return rowDistance;
 }
 
 /**
@@ -643,6 +683,14 @@ export function calculateOptimalWheelSpacing(
 
   let bestSpacing = minWheelSpacing;
   let bestScore = Infinity;
+  let bestClearance = 0;
+
+  // Fallback tracking: if no spacing meets clearance, use the one with maximum clearance
+  let fallbackSpacing = minWheelSpacing;
+  let fallbackClearance = 0;
+
+  const halfWheelWidth = WHEEL_CONSTRAINTS.wheelWidth / 2; // 85mm
+  const minClearanceRequired = WHEEL_CONSTRAINTS.minRowToWheelGap; // 300mm (30cm)
 
   // Test each possible wheel spacing
   for (let spacing = minWheelSpacing; spacing <= maxWheelSpacing; spacing += wheelSpacingIncrement) {
@@ -650,7 +698,44 @@ export function calculateOptimalWheelSpacing(
     const leftWheelCenter = -spacing / 2;
     const rightWheelCenter = spacing / 2;
 
-    // Calculate how far each wheel CENTER is from the nearest gap midpoint
+    // Calculate wheel edge positions
+    const leftWheelInnerEdge = leftWheelCenter + halfWheelWidth;
+    const leftWheelOuterEdge = leftWheelCenter - halfWheelWidth;
+    const rightWheelInnerEdge = rightWheelCenter - halfWheelWidth;
+    const rightWheelOuterEdge = rightWheelCenter + halfWheelWidth;
+
+    // Check clearance from wheel EDGES to ALL rows
+    let minClearance = Infinity;
+    for (const rowPos of rowPositions) {
+      // Check if row is inside either wheel (overlap)
+      const inLeftWheel = rowPos > leftWheelOuterEdge && rowPos < leftWheelInnerEdge;
+      const inRightWheel = rowPos > rightWheelInnerEdge && rowPos < rightWheelOuterEdge;
+
+      if (inLeftWheel || inRightWheel) {
+        minClearance = 0;
+        break;
+      }
+
+      // Distance from row to nearest wheel edge
+      const toLeftWheelInner = Math.abs(rowPos - leftWheelInnerEdge);
+      const toLeftWheelOuter = Math.abs(rowPos - leftWheelOuterEdge);
+      const toRightWheelInner = Math.abs(rowPos - rightWheelInnerEdge);
+      const toRightWheelOuter = Math.abs(rowPos - rightWheelOuterEdge);
+
+      const clearance = Math.min(toLeftWheelInner, toLeftWheelOuter, toRightWheelInner, toRightWheelOuter);
+      minClearance = Math.min(minClearance, clearance);
+    }
+
+    // Track fallback (spacing with maximum clearance)
+    if (minClearance > fallbackClearance) {
+      fallbackClearance = minClearance;
+      fallbackSpacing = spacing;
+    }
+
+    // Skip spacings that don't meet minimum clearance requirement
+    if (minClearance < minClearanceRequired) continue;
+
+    // Calculate alignment score (how far each wheel CENTER is from the nearest gap midpoint)
     let leftScore = Infinity;
     let rightScore = Infinity;
 
@@ -668,19 +753,29 @@ export function calculateOptimalWheelSpacing(
     if (totalScore < bestScore || (totalScore === bestScore && spacing > bestSpacing)) {
       bestScore = totalScore;
       bestSpacing = spacing;
+      bestClearance = minClearance;
     }
   }
 
-  // Generate recommendation text
+  // If no spacing met clearance requirement, use the fallback with best clearance
+  if (bestScore === Infinity) {
+    bestSpacing = fallbackSpacing;
+    bestClearance = fallbackClearance;
+    bestScore = 999; // High score to indicate poor alignment
+  }
+
+  // Generate recommendation text based on clearance and alignment
   let recommendation = "";
-  if (bestScore < 20) {
-    recommendation = "Excellent - wheels perfectly centered between rows";
+  if (bestClearance < minClearanceRequired) {
+    recommendation = "Warning - wheels may be too close to rows";
+  } else if (bestScore < 20) {
+    recommendation = "Excellent - wheels well centered with good clearance";
   } else if (bestScore < 50) {
     recommendation = "Good - wheels well positioned between rows";
   } else if (bestScore < 100) {
-    recommendation = "Acceptable - minor offset from row centers";
+    recommendation = "Acceptable - wheels maintain safe clearance";
   } else {
-    recommendation = "Consider adjusting row spacing for better wheel alignment";
+    recommendation = "Optimal for clearance - consider adjusting rows for better centering";
   }
 
   return {

@@ -1,8 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, Info, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -16,10 +18,232 @@ interface StepPowerSourceProps {
   priceBreakdown: PriceBreakdown;
 }
 
+type PowerOptionId = "solar" | "powerBank" | "hybrid";
+
+// Power Source Info Modal Component
+function PowerSourceInfoModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  const t = useTranslations("powerSource.infoModal");
+  const [activeOption, setActiveOption] = useState<PowerOptionId>("solar");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const powerOptions: PowerOptionId[] = ["solar", "powerBank", "hybrid"];
+
+  // Image paths for each power option
+  const optionImages: Record<PowerOptionId, string[]> = {
+    solar: ["/farmdroid-fd20.png"],
+    powerBank: ["/accessories/power-bank-1.jpg", "/accessories/power-bank-2.jpg"],
+    hybrid: ["/farmdroid-fd20.png"],
+  };
+
+  const images = optionImages[activeOption];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  // Reset image index when switching options
+  const handleOptionChange = (option: PowerOptionId) => {
+    setActiveOption(option);
+    setCurrentImageIndex(0);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/50 z-50"
+          />
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
+          >
+            {/* Left: Image area with gallery */}
+            <div className="relative flex-1 bg-stone-100 min-h-[250px] lg:min-h-0">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${activeOption}-${currentImageIndex}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={images[currentImageIndex]}
+                    alt={t(`options.${activeOption}.name`)}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 60vw"
+                  />
+                  {/* Gradient overlay for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Navigation arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Image indicators */}
+              {images.length > 1 && (
+                <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
+                  {images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`h-2 w-2 rounded-full transition-colors ${
+                        idx === currentImageIndex
+                          ? "bg-white"
+                          : "bg-white/50 hover:bg-white/75"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Caption at bottom of image */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <p className="text-lg md:text-xl font-medium">{t(`options.${activeOption}.name`)}</p>
+              </div>
+            </div>
+
+            {/* Right: Info panel */}
+            <div className="w-full lg:w-[400px] xl:w-[450px] flex flex-col bg-white">
+              {/* Header with close button */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
+                <h2 className="text-lg font-semibold text-stone-900">{t("title")}</h2>
+                <button
+                  onClick={onClose}
+                  className="p-2 -mr-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Tabs for power options */}
+              <div className="flex border-b border-stone-200 overflow-x-auto">
+                {powerOptions.map((option) => {
+                  const isActive = activeOption === option;
+                  return (
+                    <button
+                      key={option}
+                      onClick={() => handleOptionChange(option)}
+                      className={`flex-1 min-w-0 py-3 px-3 text-xs font-medium transition-colors relative whitespace-nowrap ${
+                        isActive
+                          ? "text-stone-900"
+                          : "text-stone-500 hover:text-stone-700"
+                      }`}
+                    >
+                      <span className="truncate block">{t(`options.${option}.name`)}</span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activePowerTab"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900"
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Content area */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-5">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeOption}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <h3 className="text-base font-semibold text-stone-900">{t(`options.${activeOption}.name`)}</h3>
+                      <p className="text-sm text-stone-600 mt-3 leading-relaxed">
+                        {t(`options.${activeOption}.description`)}
+                      </p>
+                    </div>
+
+                    {/* Specifications */}
+                    <div className="space-y-2 pt-2">
+                      <h4 className="text-sm font-medium text-stone-900">{t("specifications")}</h4>
+                      <ul className="space-y-2">
+                        {(t.raw(`options.${activeOption}.specs`) as string[])?.map((spec: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-stone-600">
+                            <Check className="h-4 w-4 text-teal-600 flex-shrink-0 mt-0.5" />
+                            <span>{spec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Use case tip */}
+                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                      <p className="text-sm text-amber-800">
+                        <span className="font-medium">{t(`options.${activeOption}.tipLabel`)}</span>{" "}
+                        {t(`options.${activeOption}.tipText`)}
+                      </p>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-stone-100 bg-white">
+                <button
+                  onClick={onClose}
+                  className="w-full py-2.5 px-4 bg-stone-900 text-white text-sm font-medium rounded-lg hover:bg-stone-800 transition-colors"
+                >
+                  {t("close")}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) {
   const hasGenerator = config.powerSource === "hybrid";
   const hasPowerBank = config.powerBank && !hasGenerator;
   const t = useTranslations("powerSource");
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   const solarFeatureKeys = ["solarPanels", "battery", "zeroEmission"] as const;
   const powerBankFeatureKeys = ["extraCapacity", "totalCapacity", "chargedExternally", "smartCharging"] as const;
@@ -122,7 +346,18 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
         {/* Title */}
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
+            <button
+              onClick={() => setShowInfoModal(true)}
+              className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-700 transition-colors group"
+            >
+              <span className="flex items-center justify-center h-4 w-4 rounded-full border border-stone-300 group-hover:border-stone-400 group-hover:bg-stone-100 transition-colors">
+                <Info className="h-2.5 w-2.5" />
+              </span>
+              <span className="underline underline-offset-2">{t("learnMore")}</span>
+            </button>
+          </div>
           <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
         </div>
 
@@ -266,6 +501,12 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
             : t("info.solar")}
         </p>
       </div>
+
+      {/* Power Source Info Modal */}
+      <PowerSourceInfoModal
+        isOpen={showInfoModal}
+        onClose={() => setShowInfoModal(false)}
+      />
     </div>
   );
 }

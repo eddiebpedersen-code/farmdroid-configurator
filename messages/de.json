@@ -175,6 +175,56 @@
       "hybrid": "Hybridkonfiguration fügt Generator-Backup für maximale Betriebszeit unter allen Bedingungen hinzu.",
       "powerBank": "Erweiterter elektrischer Betrieb mit doppelter Batteriekapazität - bleibt vollständig emissionsfrei.",
       "solar": "Reine Solarenergie bietet sauberen, leisen Betrieb, ideal für die meisten Landwirtschaftsbedingungen."
+    },
+    "learnMore": "Mehr erfahren",
+    "infoModal": {
+      "title": "Stromquellenoptionen",
+      "specifications": "Spezifikationen",
+      "close": "Schließen",
+      "options": {
+        "solar": {
+          "name": "Solarstrom",
+          "description": "Die Standard-FarmDroid-Stromkonfiguration verwendet ein 1,6 kW Solarpanel-Array in Kombination mit einem 5,7 kWh Lithium-Batteriepaket. Dieses Setup bietet je nach Wetterbedingungen und Jahreszeit 12-24 Stunden täglichen Betrieb und ist damit ideal für die meisten landwirtschaftlichen Betriebe.",
+          "specs": [
+            "1,6 kW Spitzenleistung Solarpanel",
+            "5,7 kWh Lithium-Batteriekapazität",
+            "12-24 Stunden täglicher Betrieb",
+            "Null Emissionen",
+            "Geräuschloser Betrieb",
+            "Minimaler Wartungsaufwand"
+          ],
+          "tipLabel": "Am besten für:",
+          "tipText": "Standardfeldgrößen und typische Wachstumssaisonen. Perfekt für Bio-Betriebe, bei denen Emissionsfreiheit und leiser Betrieb Priorität haben."
+        },
+        "powerBank": {
+          "name": "Power Bank",
+          "description": "Die FarmDroid Power Bank ist eine zusätzliche Batterieeinheit, die die Energiekapazität Ihres Roboters verdoppelt. Sie bietet zusätzliche 5,7 kWh Leistung und ermöglicht verlängerte Betriebszeiten von etwa 10 zusätzlichen Stunden pro Tag bei völliger Emissionsfreiheit.",
+          "specs": [
+            "5,7 kWh zusätzliche Lithium-Batteriekapazität",
+            "Verdoppelt die Gesamtkapazität auf 11,4 kWh",
+            "Schnellverbindungssystem für einfache Montage",
+            "Externe Aufladung über Standardsteckdose",
+            "Intelligentes Laden mit Solarintegration",
+            "Wetterfestes Gehäuse (IP65-zertifiziert)"
+          ],
+          "tipLabel": "Am besten für:",
+          "tipText": "Große Felder, lange Arbeitstage oder nördliche Regionen mit begrenztem Sonnenlicht. Stellt sicher, dass Ihr FarmDroid seine Aufgaben auch an bewölkten Tagen erledigen kann."
+        },
+        "hybrid": {
+          "name": "Hybrid (Solar + Generator)",
+          "description": "Die Hybrid-Stromkonfiguration kombiniert Solarpanele mit einem Generator-Backup-System. Dieses Setup gewährleistet 24+ Stunden Dauerbetrieb unabhängig von den Wetterbedingungen und ist damit die zuverlässigste Option für anspruchsvolle landwirtschaftliche Betriebe.",
+          "specs": [
+            "1,6 kW Solarpanele + Generator-Backup",
+            "5,7 kWh Lithium-Batterie",
+            "24+ Stunden Dauerbetrieb",
+            "Allwetter-Zuverlässigkeit",
+            "Automatisches Umschalten zwischen Stromquellen",
+            "Erweiterte Reichweite für große Betriebe"
+          ],
+          "tipLabel": "Am besten für:",
+          "tipText": "Großbetriebe, die maximale Betriebszeit erfordern, Regionen mit unvorhersehbarem Wetter oder zeitkritische landwirtschaftliche Fenster, in denen Dauerbetrieb unerlässlich ist."
+        }
+      }
     }
   },
   "spraySystem": {
@@ -227,6 +277,70 @@
       "combiOnly": "Verbesserte mechanische Unkrautbekämpfung mit Kombi-Werkzeug-Anbauteilen für bessere Bodenbearbeitung und Unkrautkontrolle.",
       "weedCuttingDiscOnly": "Präzisionsschneidescheiben bieten effektive mechanische Unkrautkontrolle zwischen den Reihen.",
       "standard": "Standard mechanische Unkrautkonfiguration, perfekt für Bio-Zertifizierungsanforderungen."
+    },
+    "learnMore": "Mehr erfahren",
+    "infoModal": {
+      "title": "Unkraut- & Sprühoptionen",
+      "specifications": "Spezifikationen",
+      "close": "Schließen",
+      "options": {
+        "standardWeeding": {
+          "name": "Standard-Hacken",
+          "description": "Die Standard-Hackkonfiguration ist bei jedem FarmDroid enthalten und bietet effektive mechanische Unkrautkontrolle. Sie verwendet Präzisionshackdrähte, die die Bodenoberfläche zwischen den Reihen stören, kombiniert mit Reihenmessern, die Unkraut nahe an den Kulturpflanzen schneiden.",
+          "specs": [
+            "Hackdrähte für Zwischen-Reihen-Kultivierung",
+            "Reihenmesser für pflanzennahes Hacken",
+            "Einstellbare Arbeitstiefe",
+            "Kompatibel mit allen Reihenabständen",
+            "Keine Chemikalien erforderlich",
+            "Bio-zertifiziert"
+          ],
+          "tipLabel": "Am besten für:",
+          "tipText": "Bio-Betriebe und Operationen, die auf chemiefreie Unkrautbekämpfung fokussiert sind. Das Standard-Setup bewältigt die meisten üblichen Unkrautdrücke effektiv."
+        },
+        "combiTool": {
+          "name": "Kombi-Werkzeug",
+          "description": "Das Kombi-Werkzeug ist ein fortschrittlicher mechanischer Hackaufsatz, der gezahnte Scheiben und L-Schare zu Ihrem FarmDroid hinzufügt. Die gezahnten Scheiben schneiden den Boden vor dem Hackvorgang, während die L-Schare für zusätzliche Bodenbewegung für besseres Unkrautvergraben sorgen.",
+          "specs": [
+            "Gezahnte Scheiben zum Vorschneiden des Bodens",
+            "L-Schare für verbesserte Bodenbewegung",
+            "Verbesserte Unkrautvergrabungsfähigkeit",
+            "Funktioniert mit Standard-Hackwerkzeugen",
+            "Einstellbar pro aktiver Reihe",
+            "Robuste Konstruktion"
+          ],
+          "tipLabel": "Am besten für:",
+          "tipText": "Felder mit hohem Unkrautdruck oder verdichtetem Boden. Das Kombi-Werkzeug bietet aggressivere mechanische Aktion bei herausfordernden Bedingungen."
+        },
+        "weedCuttingDisc": {
+          "name": "Unkrautschneidescheibe",
+          "description": "Die Unkrautschneidescheibe ist ein Präzisionsschneidewerkzeug, das effektive Unkrautkontrolle zwischen den Reihen bietet. Erhältlich in 225mm und 250mm Varianten je nach Reihenabstand, schneiden diese Scheiben Unkraut an der Bodenoberfläche für saubere, effiziente Unkrautbekämpfung.",
+          "specs": [
+            "Präzisionsgeschliffene Schneidkante",
+            "Erhältlich in 225mm und 250mm Größen",
+            "Design mit geringer Bodenstörung",
+            "Selbstschärfende Klingentechnologie",
+            "Einfaches Austauschsystem",
+            "Kompatibel mit spezifischen Reihenabständen"
+          ],
+          "tipLabel": "Am besten für:",
+          "tipText": "Operationen, die saubere Schneidwirkung mit minimaler Bodenstörung erfordern. Ideal für Kulturen, die empfindlich auf Bodenbewegung reagieren, oder wo Präzision kritisch ist."
+        },
+        "spraySystem": {
+          "name": "+Spray System",
+          "description": "Das +SPRAY-System fügt Präzisionssprühfähigkeit zu Ihrem FarmDroid hinzu. Mit einem 110L Tank und GPS-gesteuerten Düsen ermöglicht es gezielte Ausbringung von Herbiziden, Düngemitteln oder anderen Flüssigkeiten mit bis zu 90% Reduzierung des Chemikalieneinsatzes im Vergleich zur Breitspritzung.",
+          "specs": [
+            "110L Tankkapazität",
+            "GPS-gesteuerte Präzisionsdüsen",
+            "Variable Dosierungskontrolle",
+            "Individuelle Reihenabschaltung",
+            "Bis zu 90% Chemikalienreduzierung",
+            "Kompatibel mit den meisten Flüssiginputs"
+          ],
+          "tipLabel": "Am besten für:",
+          "tipText": "Konventionelle Betriebe, die den Chemikalieneinsatz reduzieren möchten, oder Operationen, die gezielte Ausbringung von Flüssigdünger oder Pflanzenschutzmitteln erfordern."
+        }
+      }
     }
   },
   "accessories": {
@@ -291,6 +405,9 @@
     "emptyMessage": "Zubehör ist optional. Sie können es später über unsere Serviceabteilung hinzufügen.",
     "selectedMessage": "{count} Zubehörartikel ausgewählt für {price}.",
     "selectedMessagePlural": "{count} Zubehörartikel ausgewählt für {price}.",
+    "viewGrid": "Übersicht",
+    "viewPhotos": "Fotos",
+    "noAccessoriesSelected": "Zubehör auswählen, um Fotos zu sehen",
     "infoModals": {
       "learnMore": "Mehr erfahren",
       "includedItems": "Was ist enthalten",

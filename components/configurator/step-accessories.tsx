@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Package, Truck, Link2, Check, Star, Radio, Wifi, Wrench, Weight, Box, Info, X } from "lucide-react";
+import { Package, Truck, Link2, Check, Star, Radio, Wifi, Wrench, Weight, Box, Info, X, ChevronLeft, ChevronRight, Grid3X3, ImageIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import {
@@ -391,9 +391,13 @@ function GroupInfoButton({ onClick }: { onClick: () => void }) {
   );
 }
 
+type ViewMode = "grid" | "photos";
+
 export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) {
   const t = useTranslations("accessories");
   const [activeModal, setActiveModal] = useState<GroupType | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const toggleAccessory = (id: AccessoryId) => {
     if (id === "starterKit") {
@@ -443,6 +447,66 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
   const visibleMaintenance = maintenanceConfigs.filter(a => !shouldHideItem(a));
   const visibleExtras = [...visibleConnectivity, ...visibleTransport, ...visibleMaintenance];
 
+  // Product photos for carousel - map accessory IDs to their images
+  const accessoryImages: Record<string, { src: string; name: string }> = {
+    starterKit: { src: "/farmdroid-fd20.png", name: t("items.starterKit.name") },
+    fstFieldSetupTool: { src: "/farmdroid-fd20.png", name: t("items.fstFieldSetupTool.name") },
+    baseStationV3: { src: "/farmdroid-fd20.png", name: t("items.baseStationV3.name") },
+    essentialCarePackage: { src: "/farmdroid-fd20.png", name: t("items.essentialCarePackage.name") },
+    essentialCareSpray: { src: "/farmdroid-fd20.png", name: t("items.essentialCareSpray.name") },
+    fieldBracket: { src: "/farmdroid-fd20.png", name: t("items.fieldBracket.name") },
+    roadTransport: { src: "/farmdroid-fd20.png", name: t("items.roadTransport.name") },
+    additionalWeightKit: { src: "/farmdroid-fd20.png", name: t("items.additionalWeightKit.name") },
+    toolbox: { src: "/farmdroid-fd20.png", name: t("items.toolbox.name") },
+  };
+
+  // Get list of selected/included accessories for the photo carousel
+  const getSelectedAccessories = () => {
+    const selected: { id: string; src: string; name: string }[] = [];
+
+    // Add starter kit if selected
+    if (config.starterKit) {
+      selected.push({ id: "starterKit", ...accessoryImages.starterKit });
+    }
+
+    // Add individually selected items (not covered by starter kit)
+    allExtraConfigs.forEach((accessory) => {
+      const isSelected = config[accessory.id as keyof ConfiguratorState];
+      const isDisabled = isDisabledByStarterKit(accessory);
+      const isAutoIncluded = isAutoIncludedWithCare(accessory);
+
+      if ((isSelected || isDisabled || isAutoIncluded) && accessoryImages[accessory.id]) {
+        // Don't duplicate if already added via starter kit
+        if (!selected.find(s => s.id === accessory.id)) {
+          selected.push({ id: accessory.id, ...accessoryImages[accessory.id] });
+        }
+      }
+    });
+
+    return selected;
+  };
+
+  const selectedAccessoryPhotos = getSelectedAccessories();
+
+  // Reset photo index when selection changes
+  useEffect(() => {
+    if (currentPhotoIndex >= selectedAccessoryPhotos.length) {
+      setCurrentPhotoIndex(Math.max(0, selectedAccessoryPhotos.length - 1));
+    }
+  }, [selectedAccessoryPhotos.length, currentPhotoIndex]);
+
+  const nextPhoto = () => {
+    if (selectedAccessoryPhotos.length > 0) {
+      setCurrentPhotoIndex((prev) => (prev + 1) % selectedAccessoryPhotos.length);
+    }
+  };
+
+  const prevPhoto = () => {
+    if (selectedAccessoryPhotos.length > 0) {
+      setCurrentPhotoIndex((prev) => (prev - 1 + selectedAccessoryPhotos.length) % selectedAccessoryPhotos.length);
+    }
+  };
+
   // Calculate selected count and total price
   const allAccessories = [...bundleConfigs, ...visibleExtras];
   const selectedCount = allAccessories.filter((a) => {
@@ -462,74 +526,196 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
       {/* Left: Visualization - Takes 3 columns */}
       <div className="lg:col-span-3 flex flex-col">
-        {/* Accessory grid visualization */}
-        <div className="flex-1 py-4 md:py-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-3 gap-2 md:gap-3 max-w-lg mx-auto"
+        {/* View switcher tabs */}
+        <div className="flex justify-center gap-2 mb-4">
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              viewMode === "grid"
+                ? "bg-stone-900 text-white"
+                : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+            }`}
           >
-            {allAccessories.slice(0, 9).map((accessory, index) => {
-              const isSelected = config[accessory.id as keyof ConfiguratorState];
-              const isDisabled = isDisabledByStarterKit(accessory);
-              const isAutoIncluded = isAutoIncludedWithCare(accessory);
-              const isIncludedOrDisabled = isDisabled || isAutoIncluded;
-              const Icon = accessory.icon;
+            <Grid3X3 className="h-3.5 w-3.5" />
+            {t("viewGrid")}
+          </button>
+          <button
+            onClick={() => setViewMode("photos")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              viewMode === "photos"
+                ? "bg-stone-900 text-white"
+                : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+            }`}
+          >
+            <ImageIcon className="h-3.5 w-3.5" />
+            {t("viewPhotos")}
+          </button>
+        </div>
 
-              return (
-                <motion.button
-                  key={accessory.id}
-                  onClick={() => !isIncludedOrDisabled && toggleAccessory(accessory.id)}
-                  disabled={isIncludedOrDisabled}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  className={`p-3 md:p-4 rounded-lg border transition-all ${
-                    isIncludedOrDisabled
-                      ? "border-stone-200 bg-stone-100 opacity-60 cursor-not-allowed"
-                      : isSelected
-                      ? "border-stone-900 bg-stone-50"
-                      : "border-stone-200 bg-white hover:border-stone-300"
-                  }`}
-                >
-                  <div className="flex flex-col items-center text-center gap-1 md:gap-2">
-                    <div className={`h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center ${
-                      isIncludedOrDisabled
-                        ? "bg-stone-200"
-                        : isSelected
-                        ? "bg-stone-900"
-                        : "bg-stone-100"
-                    }`}>
-                      <Icon className={`h-4 w-4 md:h-5 md:w-5 ${
+        {/* Content area */}
+        <div className="flex-1 py-4 md:py-8 relative">
+          <AnimatePresence mode="wait">
+            {viewMode === "grid" ? (
+              /* Accessory grid visualization */
+              <motion.div
+                key="grid"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="grid grid-cols-3 gap-2 md:gap-3 max-w-lg mx-auto"
+              >
+                {allAccessories.slice(0, 9).map((accessory, index) => {
+                  const isSelected = config[accessory.id as keyof ConfiguratorState];
+                  const isDisabled = isDisabledByStarterKit(accessory);
+                  const isAutoIncluded = isAutoIncludedWithCare(accessory);
+                  const isIncludedOrDisabled = isDisabled || isAutoIncluded;
+                  const Icon = accessory.icon;
+
+                  return (
+                    <motion.button
+                      key={accessory.id}
+                      onClick={() => !isIncludedOrDisabled && toggleAccessory(accessory.id)}
+                      disabled={isIncludedOrDisabled}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                      className={`p-3 md:p-4 rounded-lg border transition-all ${
                         isIncludedOrDisabled
-                          ? "text-stone-400"
+                          ? "border-stone-200 bg-stone-100 opacity-60 cursor-not-allowed"
                           : isSelected
-                          ? "text-white"
-                          : "text-stone-400"
-                      }`} />
-                    </div>
-                    <p className={`text-[10px] md:text-xs font-medium line-clamp-2 ${
-                      isIncludedOrDisabled
-                        ? "text-stone-400"
-                        : isSelected
-                        ? "text-stone-900"
-                        : "text-stone-500"
-                    }`}>
-                      {t(`items.${accessory.translationKey}.name`)}
-                    </p>
-                    <div
-                      className={`h-4 w-4 md:h-5 md:w-5 rounded-full flex items-center justify-center bg-stone-900 transition-opacity ${
-                        (isSelected || isIncludedOrDisabled) ? "opacity-100" : "opacity-0"
+                          ? "border-stone-900 bg-stone-50"
+                          : "border-stone-200 bg-white hover:border-stone-300"
                       }`}
                     >
-                      <Check className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" />
+                      <div className="flex flex-col items-center text-center gap-1 md:gap-2">
+                        <div className={`h-8 w-8 md:h-10 md:w-10 rounded-full flex items-center justify-center ${
+                          isIncludedOrDisabled
+                            ? "bg-stone-200"
+                            : isSelected
+                            ? "bg-stone-900"
+                            : "bg-stone-100"
+                        }`}>
+                          <Icon className={`h-4 w-4 md:h-5 md:w-5 ${
+                            isIncludedOrDisabled
+                              ? "text-stone-400"
+                              : isSelected
+                              ? "text-white"
+                              : "text-stone-400"
+                          }`} />
+                        </div>
+                        <p className={`text-[10px] md:text-xs font-medium line-clamp-2 ${
+                          isIncludedOrDisabled
+                            ? "text-stone-400"
+                            : isSelected
+                            ? "text-stone-900"
+                            : "text-stone-500"
+                        }`}>
+                          {t(`items.${accessory.translationKey}.name`)}
+                        </p>
+                        <div
+                          className={`h-4 w-4 md:h-5 md:w-5 rounded-full flex items-center justify-center bg-stone-900 transition-opacity ${
+                            (isSelected || isIncludedOrDisabled) ? "opacity-100" : "opacity-0"
+                          }`}
+                        >
+                          <Check className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" />
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </motion.div>
+            ) : (
+              /* Product photos carousel */
+              <motion.div
+                key="photos"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                className="max-w-lg mx-auto"
+              >
+                {selectedAccessoryPhotos.length > 0 ? (
+                  <div className="relative">
+                    {/* Main image */}
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-stone-100">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={currentPhotoIndex}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="absolute inset-0"
+                        >
+                          <Image
+                            src={selectedAccessoryPhotos[currentPhotoIndex]?.src || "/farmdroid-fd20.png"}
+                            alt={selectedAccessoryPhotos[currentPhotoIndex]?.name || "Accessory"}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 500px"
+                          />
+                          {/* Gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                        </motion.div>
+                      </AnimatePresence>
+
+                      {/* Navigation arrows */}
+                      {selectedAccessoryPhotos.length > 1 && (
+                        <>
+                          <button
+                            onClick={prevPhoto}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                          >
+                            <ChevronLeft className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={nextPhoto}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                          >
+                            <ChevronRight className="h-5 w-5" />
+                          </button>
+                        </>
+                      )}
+
+                      {/* Caption */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <p className="text-base md:text-lg font-medium">
+                          {selectedAccessoryPhotos[currentPhotoIndex]?.name}
+                        </p>
+                        <p className="text-xs text-white/70 mt-0.5">
+                          {currentPhotoIndex + 1} / {selectedAccessoryPhotos.length}
+                        </p>
+                      </div>
                     </div>
+
+                    {/* Thumbnail indicators */}
+                    {selectedAccessoryPhotos.length > 1 && (
+                      <div className="flex justify-center gap-1.5 mt-3">
+                        {selectedAccessoryPhotos.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentPhotoIndex(idx)}
+                            className={`h-2 w-2 rounded-full transition-colors ${
+                              idx === currentPhotoIndex
+                                ? "bg-stone-900"
+                                : "bg-stone-300 hover:bg-stone-400"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </motion.button>
-              );
-            })}
-          </motion.div>
+                ) : (
+                  /* Empty state */
+                  <div className="aspect-[4/3] rounded-xl bg-stone-100 flex flex-col items-center justify-center text-stone-400">
+                    <ImageIcon className="h-12 w-12 mb-2" />
+                    <p className="text-sm">{t("noAccessoriesSelected")}</p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Summary row */}
