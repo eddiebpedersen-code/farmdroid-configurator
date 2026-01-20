@@ -61,7 +61,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             <div
               className={`p-4 text-center transition-colors ${
                 config.servicePlan === "standard"
-                  ? "bg-teal-50 border-l-2 border-r-2 border-t-2 border-teal-500"
+                  ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500"
                   : "bg-stone-50"
               }`}
             >
@@ -73,7 +73,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             <div
               className={`p-4 text-center transition-colors relative ${
                 config.servicePlan === "premium"
-                  ? "bg-teal-50 border-l-2 border-r-2 border-t-2 border-teal-500 rounded-tr-xl"
+                  ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500 rounded-tr-xl"
                   : "bg-stone-50"
               }`}
             >
@@ -100,22 +100,22 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                 </div>
                 <div
                   className={`p-3 flex items-center justify-center ${
-                    config.servicePlan === "standard" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                    config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                   }`}
                 >
                   {feature.standard ? (
-                    <Check className="h-5 w-5 text-teal-600" />
+                    <Check className="h-5 w-5 text-emerald-600" />
                   ) : (
                     <X className="h-5 w-5 text-stone-300" />
                   )}
                 </div>
                 <div
                   className={`p-3 flex items-center justify-center ${
-                    config.servicePlan === "premium" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                    config.servicePlan === "premium" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                   }`}
                 >
                   {feature.premium ? (
-                    <Check className="h-5 w-5 text-teal-600" />
+                    <Check className="h-5 w-5 text-emerald-600" />
                   ) : (
                     <X className="h-5 w-5 text-stone-300" />
                   )}
@@ -129,11 +129,11 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             <div className="p-3">
               <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
             </div>
-            <div className={`p-3 text-center ${config.servicePlan === "standard" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500" : ""}`}>
+            <div className={`p-3 text-center ${config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500" : ""}`}>
               <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
             </div>
-            <div className={`p-3 text-center ${config.servicePlan === "premium" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500 rounded-br-xl" : ""}`}>
-              <span className="text-xs text-teal-600 italic font-medium">
+            <div className={`p-3 text-center ${config.servicePlan === "premium" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500 rounded-br-xl" : ""}`}>
+              <span className="text-xs text-emerald-600 italic font-medium">
                 {t("firstYearIncluded")}
               </span>
             </div>
@@ -160,24 +160,24 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
           {/* Premium Option */}
           <button
             onClick={() => selectPlan("premium")}
-            className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+            className={`selection-card w-full p-4 rounded-xl border-2 transition-all text-left card-hover ${
               config.servicePlan === "premium"
-                ? "border-teal-500 bg-teal-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected border-emerald-500"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  {config.servicePlan === "premium" && (
+                    <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                    </div>
+                  )}
                   <span className="text-sm font-semibold text-stone-900">{t("plans.premium.name")}</span>
                   <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">
                     {t("plans.premium.recommended")}
                   </span>
-                  {config.servicePlan === "premium" && (
-                    <div className="h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
-                      <Check className="h-3 w-3 text-white" />
-                    </div>
-                  )}
                 </div>
                 <p className="text-xs text-stone-500 mt-1">
                   {t("plans.premium.description")}
@@ -187,7 +187,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                 <span className="text-sm text-stone-400 line-through">
                   {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                 </span>
-                <p className="text-sm font-semibold text-teal-600">
+                <p className="text-sm font-semibold text-emerald-600">
                   {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
                 </p>
               </div>
@@ -197,21 +197,21 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
           {/* Standard Option */}
           <button
             onClick={() => selectPlan("standard")}
-            className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+            className={`selection-card w-full p-4 rounded-xl border-2 transition-all text-left card-hover ${
               config.servicePlan === "standard"
-                ? "border-teal-500 bg-teal-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected border-emerald-500"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-stone-900">{t("plans.standard.name")}</span>
+                <div className="flex items-center gap-2.5">
                   {config.servicePlan === "standard" && (
-                    <div className="h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
-                      <Check className="h-3 w-3 text-white" />
+                    <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
                     </div>
                   )}
+                  <span className="text-sm font-semibold text-stone-900">{t("plans.standard.name")}</span>
                 </div>
                 <p className="text-xs text-stone-500 mt-1">
                   {t("plans.standard.description")}
@@ -226,17 +226,17 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
           {/* No Plan Option */}
           <button
             onClick={() => selectPlan("none")}
-            className={`w-full p-3 rounded-xl border-2 transition-all text-left ${
+            className={`w-full p-3 rounded-xl border-2 transition-all text-left card-hover ${
               config.servicePlan === "none"
                 ? "border-stone-400 bg-stone-50"
-                : "border-stone-200 hover:border-stone-300"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-sm text-stone-600">{t("plans.none")}</span>
               {config.servicePlan === "none" && (
                 <div className="h-5 w-5 rounded-full bg-stone-400 flex items-center justify-center">
-                  <Check className="h-3 w-3 text-white" />
+                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
                 </div>
               )}
             </div>
@@ -252,23 +252,23 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
 
           <button
             onClick={() => updateConfig({ warrantyExtension: !config.warrantyExtension })}
-            className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+            className={`selection-card w-full p-4 rounded-xl border-2 transition-all text-left card-hover ${
               config.warrantyExtension
-                ? "border-teal-500 bg-teal-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected border-emerald-500"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  {config.warrantyExtension && (
+                    <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                    </div>
+                  )}
                   <span className="text-sm font-semibold text-stone-900">
                     {t("warranty.extension")}
                   </span>
-                  {config.warrantyExtension && (
-                    <div className="h-5 w-5 rounded-full bg-teal-500 flex items-center justify-center">
-                      <Check className="h-3 w-3 text-white" />
-                    </div>
-                  )}
                 </div>
                 <p className="text-xs text-stone-500 mt-1">
                   {t("warranty.description")}

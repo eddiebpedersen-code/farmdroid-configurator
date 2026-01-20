@@ -1,8 +1,16 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { Inter } from 'next/font/google';
 import { routing } from '@/i18n/routing';
+import { ToastProvider } from '@/components/ui/toast';
 import "../globals.css";
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -46,7 +54,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={inter.variable}>
       <head>
         {/* hreflang tags for SEO */}
         {routing.locales.map((loc) => (
@@ -61,7 +69,9 @@ export default async function LocaleLayout({
       </head>
       <body className="antialiased bg-stone-50 min-h-screen">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -24,7 +24,9 @@
     "powerSource": "Power Source",
     "frontWheel": "Front Wheel",
     "activeRows": "Active Rows",
+    "activeRowsWithCount": "{count}× Active Rows ({size})",
     "passiveRows": "Passive Rows",
+    "passiveRowsWithCount": "{count}× Passive Rows",
     "spraySystem": "Spray System",
     "accessories": "Accessories",
     "warrantyExtension": "Warranty Extension",
@@ -592,6 +594,9 @@
       "email": "you@example.com",
       "dealName": "e.g., Mueller Farms FD20",
       "primaryContact": "Primary contact"
+    },
+    "validation": {
+      "invalidEmail": "Please enter a valid email address"
     }
   },
   "modals": {
@@ -616,7 +621,9 @@
     "included": "Included",
     "switchTo": "Switch to {label}",
     "firstYear": "first year",
-    "freeFirstYear": "{price} first year"
+    "freeFirstYear": "{price} first year",
+    "configurationReset": "Configuration has been reset",
+    "autoSaved": "Auto-saved"
   },
   "rowConfig": {
     "title": "+Seed Configuration",
@@ -672,8 +679,18 @@
     "spacingTooltip": "Distance between plants along each row. Min 3cm.",
     "patternTooltip": "Grid or diamond formation for optimal plant spacing.",
     "precisionWarning": "Precision seeding only possible at 10cm or above",
+    "seedSizeTip": {
+      "label": "Tip:",
+      "text": "6mm works for small seeds like carrots, onions, and spinach. 14mm handles larger seeds like beets, beans, and corn.",
+      "learnMore": "Learn more"
+    },
     "optimalWheelSpacing": "Optimal wheel spacing for this row config",
     "suggestedSpacing": "Suggested: {spacing}cm — wheels centered between rows",
+    "emptyState": {
+      "title": "Configure Your Seeding Setup",
+      "description": "Add rows to define how your FarmDroid will seed your crops. You can adjust spacing, seed size, and more.",
+      "addRows": "Add First Rows"
+    },
     "seedInfoModal": {
       "trigger": "What +Seed System to choose?",
       "title": "Explore +Seed Systems",
@@ -714,7 +731,8 @@
           "description": "Handles larger seeds up to 14mm. Perfect for crops that need more space between rows."
         }
       }
-    }
+    },
+    "visualizationAria": "Interactive row configuration showing {rows} rows at {spacing}cm spacing"
   },
   "crops": {
     "sprout": "Sprout",
@@ -747,5 +765,83 @@
     "de": "Deutsch",
     "fr": "Francais",
     "nl": "Nederlands"
+  },
+  "quote": {
+    "shareQuote": "Share Quote",
+    "customizeQuote": "Customize Quote",
+    "showPricing": "Show pricing",
+    "lineItems": "Line Items",
+    "customItems": "Custom Items",
+    "addItem": "Add",
+    "addDiscount": "Add Discount",
+    "itemDescriptionPlaceholder": "Description (e.g. Installation)",
+    "pricePlaceholder": "Price",
+    "notesAndTerms": "Notes & Terms",
+    "notesPlaceholder": "Add any additional notes, terms, or conditions...",
+    "validUntil": "Valid Until",
+    "total": "Total",
+    "copyLink": "Copy Link",
+    "downloadPdf": "Download PDF",
+    "generatingPdf": "Generating...",
+    "linkCopied": "Link copied to clipboard",
+    "linkCopyFailed": "Failed to copy link",
+    "pdfDownloaded": "PDF downloaded",
+    "pdfFailed": "Failed to generate PDF",
+    "quoteReference": "Quote Reference",
+    "quoteDate": "Quote Date",
+    "configurationSummary": "Configuration Summary",
+    "priceBreakdown": "Price Breakdown",
+    "description": "Description",
+    "price": "Price",
+    "custom": "Custom",
+    "included": "Included",
+    "vatNote": "All prices exclude VAT",
+    "pricingOnRequest": "Pricing available on request. Contact us for a detailed quote.",
+    "contactUs": "Contact Us",
+    "generatedWith": "Generated with FarmDroid Configurator",
+    "loading": "Loading quote...",
+    "errorTitle": "Quote Not Found",
+    "errorNoData": "No quote data was provided. Please generate a new quote from the configurator.",
+    "errorInvalid": "The quote link is invalid or has expired. Please request a new quote.",
+    "startNewConfig": "Start New Configuration",
+    "print": "Print",
+    "lineItems.baseRobot": "FD20 Base Robot",
+    "lineItems.powerSource.solar": "Solar Power System",
+    "lineItems.powerSource.hybrid": "Hybrid Power System",
+    "lineItems.frontWheel.PFW": "Passive Front Wheel",
+    "lineItems.frontWheel.AFW": "Active Front Wheel",
+    "lineItems.frontWheel.DFW": "Dual Front Wheel",
+    "lineItems.activeRows": "{count}x Active Rows ({size})",
+    "lineItems.passiveRows": "{count}x Passive Rows",
+    "lineItems.spraySystem": "+SPRAY System",
+    "lineItems.accessories": "Accessories",
+    "lineItems.warrantyExtension": "2-Year Warranty Extension",
+    "config.rows": "Rows",
+    "config.active": "active",
+    "config.passive": "passive",
+    "config.seedSize": "Seed Size",
+    "config.rowSpacing": "Row Spacing",
+    "config.workingWidth": "Working Width",
+    "config.powerSource": "Power Source",
+    "config.hybrid": "Hybrid",
+    "config.solar": "Solar",
+    "config.frontWheel": "Front Wheel",
+    "config.passiveFrontWheel": "Passive",
+    "config.activeFrontWheel": "Active",
+    "config.dualFrontWheel": "Dual",
+    "config.spraySystem": "Spray System",
+    "config.included": "Included",
+    "config.warranty": "Warranty",
+    "config.extended": "3 Years",
+    "config.accessories": "Accessories",
+    "accessories.starterKit": "Starter Kit",
+    "accessories.roadTransport": "Road Transport",
+    "accessories.fieldBracket": "Field Bracket",
+    "accessories.powerBank": "Power Bank",
+    "accessories.fstTool": "FST Tool",
+    "accessories.baseStation": "Base Station",
+    "accessories.carePkg": "Care Package",
+    "accessories.weightKit": "Weight Kit",
+    "accessories.toolbox": "Toolbox"
   }
 }

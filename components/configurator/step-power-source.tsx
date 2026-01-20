@@ -12,6 +12,9 @@ import {
   PRICES,
 } from "@/lib/configurator-data";
 
+// Subtle gray blur placeholder for smooth image loading
+const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
+
 interface StepPowerSourceProps {
   config: ConfiguratorState;
   updateConfig: (updates: Partial<ConfiguratorState>) => void;
@@ -94,6 +97,8 @@ function PowerSourceInfoModal({
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 60vw"
+                    placeholder="blur"
+                    blurDataURL={blurDataURL}
                   />
                   {/* Gradient overlay for text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -204,7 +209,7 @@ function PowerSourceInfoModal({
                       <ul className="space-y-2">
                         {(t.raw(`options.${activeOption}.specs`) as string[])?.map((spec: string, idx: number) => (
                           <li key={idx} className="flex items-start gap-2 text-sm text-stone-600">
-                            <Check className="h-4 w-4 text-teal-600 flex-shrink-0 mt-0.5" />
+                            <Check className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>{spec}</span>
                           </li>
                         ))}
@@ -362,15 +367,15 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
         </div>
 
         {/* Pure Electric Section */}
-        <div className="space-y-2 md:space-y-3">
+        <div className="space-y-3 md:space-y-4">
           <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("pureElectric")}</p>
 
           {/* Solar Base */}
-          <div className="p-3 md:p-4 rounded-lg border border-stone-900 bg-stone-50">
+          <div className="selection-card selected p-4 md:p-5 rounded-xl border">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2 md:gap-3">
-                <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center mt-0.5 flex-shrink-0">
-                  <Check className="h-3 w-3 text-white" />
+              <div className="flex items-start gap-2.5 md:gap-3">
+                <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
                 </div>
                 <div>
                   <p className="font-medium text-stone-900 text-sm md:text-base">{t("solar.name")}</p>
@@ -379,7 +384,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                     {solarFeatureKeys.map((key) => (
                       <span
                         key={key}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"
                       >
                         {t(`solar.features.${key}`)}
                       </span>
@@ -387,7 +392,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900">{t("solar.name") === "Solar" ? "Included" : t("solar.name")}</span>
+              <span className="text-sm font-semibold text-stone-900">{t("solar.name") === "Solar" ? "Included" : t("solar.name")}</span>
             </div>
           </div>
 
@@ -400,21 +405,21 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                 updateConfig({ powerSource: "solar", powerBank: true });
               }
             }}
-            className={`w-full text-left p-3 md:p-4 rounded-lg border transition-all ml-2 md:ml-4 ${
+            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ml-3 md:ml-5 ${
               hasPowerBank
-                ? "border-stone-900 bg-stone-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
-            style={{ width: "calc(100% - 0.5rem)" }}
+            style={{ width: "calc(100% - 0.75rem)" }}
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2 md:gap-3">
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-colors ${
+              <div className="flex items-start gap-2.5 md:gap-3">
+                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   hasPowerBank
-                    ? "bg-stone-900"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
-                  {hasPowerBank && <Check className="h-3 w-3 text-white" />}
+                  {hasPowerBank && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -425,7 +430,9 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                     {powerBankFeatureKeys.map((key) => (
                       <span
                         key={key}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
+                        className={`text-[10px] px-2 py-0.5 rounded-full ${
+                          hasPowerBank ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
+                        }`}
                       >
                         {t(`powerBank.features.${key}`)}
                       </span>
@@ -433,7 +440,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900 ml-3">
+              <span className="text-sm font-semibold text-stone-900 ml-3">
                 +{formatPrice(PRICES.accessories.powerBank, config.currency)}
               </span>
             </div>
@@ -441,7 +448,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
         </div>
 
         {/* Hybrid Power Section */}
-        <div className="space-y-2 md:space-y-3 pt-2">
+        <div className="space-y-3 md:space-y-4 pt-3">
           <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("hybridPower")}</p>
 
           {/* Generator Add-on */}
@@ -453,20 +460,20 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                 updateConfig({ powerSource: "hybrid", powerBank: false });
               }
             }}
-            className={`w-full text-left p-3 md:p-4 rounded-lg border transition-all ${
+            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ${
               hasGenerator
-                ? "border-stone-900 bg-stone-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2 md:gap-3">
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-colors ${
+              <div className="flex items-start gap-2.5 md:gap-3">
+                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   hasGenerator
-                    ? "bg-stone-900"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
-                  {hasGenerator && <Check className="h-3 w-3 text-white" />}
+                  {hasGenerator && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -477,7 +484,9 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                     {hybridFeatureKeys.map((key) => (
                       <span
                         key={key}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
+                        className={`text-[10px] px-2 py-0.5 rounded-full ${
+                          hasGenerator ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
+                        }`}
                       >
                         {t(`hybrid.features.${key}`)}
                       </span>
@@ -485,7 +494,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900 ml-3">
+              <span className="text-sm font-semibold text-stone-900 ml-3">
                 +{formatPrice(PRICES.powerSource.hybrid, config.currency)}
               </span>
             </div>

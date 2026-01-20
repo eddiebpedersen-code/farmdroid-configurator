@@ -13,6 +13,9 @@ import {
   PRICES,
 } from "@/lib/configurator-data";
 
+// Subtle gray blur placeholder for smooth image loading
+const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
+
 interface StepFrontWheelProps {
   config: ConfiguratorState;
   updateConfig: (updates: Partial<ConfiguratorState>) => void;
@@ -43,7 +46,7 @@ function InfoTooltip({ description }: { description: string }) {
         }}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
-        className="p-1 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+        className="p-2.5 -m-1.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
         aria-label={t("moreInfo")}
       >
         <Info className="h-4 w-4" />
@@ -278,6 +281,8 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                     priority
                     className="object-contain"
                     sizes="(max-width: 768px) 100vw, 60vw"
+                    placeholder="blur"
+                    blurDataURL={blurDataURL}
                   />
                 </div>
               ) : config.frontWheel === "PFW" ? (
@@ -303,6 +308,8 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                           priority
                           className="object-contain"
                           sizes="(max-width: 768px) 100vw, 60vw"
+                          placeholder="blur"
+                          blurDataURL={blurDataURL}
                         />
                       </motion.div>
                     </AnimatePresence>
@@ -381,7 +388,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
         <WheelInfoPanel isOpen={showInfo} onClose={() => setShowInfo(false)} />
 
         {/* Options */}
-        <div className="space-y-2 md:space-y-3">
+        <div className="space-y-3 md:space-y-4">
           {wheelOptions.map((option) => {
             const isSelected = config.frontWheel === option.id;
 
@@ -389,26 +396,26 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
               <button
                 key={option.id}
                 onClick={() => updateConfig({ frontWheel: option.id })}
-                className={`w-full text-left p-4 md:p-5 rounded-lg border transition-all ${
+                className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ${
                   isSelected
-                    ? "border-stone-900 bg-stone-50"
-                    : "border-stone-200 hover:border-stone-300"
+                    ? "selected"
+                    : "border-stone-200 hover:border-stone-300 bg-white"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-stone-900 text-sm md:text-base">{t(option.nameKey)}</p>
-                      <InfoTooltip description={t(option.descriptionKey)} />
+                    <div className="flex items-center gap-2.5 flex-wrap">
                       {isSelected && (
-                        <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center">
-                          <Check className="h-3 w-3 text-white" />
+                        <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                          <Check className="h-3 w-3 text-white" strokeWidth={3} />
                         </div>
                       )}
+                      <p className="font-medium text-stone-900 text-sm md:text-base">{t(option.nameKey)}</p>
+                      <InfoTooltip description={t(option.descriptionKey)} />
                     </div>
-                    <p className="text-xs text-stone-500 mt-0.5">{t(option.subtitleKey)}</p>
+                    <p className="text-xs text-stone-500 mt-1">{t(option.subtitleKey)}</p>
                   </div>
-                  <span className="text-sm md:text-base font-medium text-stone-900 flex-shrink-0">
+                  <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
                     {option.price === 0 ? tCommon("included") : `+${formatPrice(option.price, config.currency)}`}
                   </span>
                 </div>

@@ -24,7 +24,9 @@
     "powerSource": "Strømkilde",
     "frontWheel": "Forhjul",
     "activeRows": "Aktive rækker",
+    "activeRowsWithCount": "{count}× Aktive rækker ({size})",
     "passiveRows": "Passive rækker",
+    "passiveRowsWithCount": "{count}× Passive rækker",
     "spraySystem": "Sprøjtesystem",
     "accessories": "Tilbehør",
     "warrantyExtension": "Garantiforlængelse",
@@ -592,6 +594,9 @@
       "email": "dig@eksempel.dk",
       "dealName": "f.eks. Hansen Gård FD20",
       "primaryContact": "Primær kontakt"
+    },
+    "validation": {
+      "invalidEmail": "Indtast venligst en gyldig emailadresse"
     }
   },
   "modals": {
@@ -616,7 +621,9 @@
     "included": "Inkluderet",
     "switchTo": "Skift til {label}",
     "firstYear": "første år",
-    "freeFirstYear": "{price} første år"
+    "freeFirstYear": "{price} første år",
+    "configurationReset": "Konfiguration er blevet nulstillet",
+    "autoSaved": "Auto-gemt"
   },
   "rowConfig": {
     "title": "+Såningskonfiguration",
@@ -672,8 +679,18 @@
     "spacingTooltip": "Afstand mellem planter langs hver række. Min 3cm.",
     "patternTooltip": "Gitter- eller diamantformation for optimal planteafstand.",
     "precisionWarning": "Præcisionssåning kun mulig ved 10cm eller derover",
+    "seedSizeTip": {
+      "label": "Tip:",
+      "text": "6mm fungerer til små frø som gulerødder, løg og spinat. 14mm håndterer større frø som roer, bønner og majs.",
+      "learnMore": "Læs mere"
+    },
     "optimalWheelSpacing": "Optimal hjulafstand for denne rækkekonfiguration",
     "suggestedSpacing": "Foreslået: {spacing}cm — hjul centreret mellem rækker",
+    "emptyState": {
+      "title": "Konfigurer din såopsætning",
+      "description": "Tilføj rækker for at definere hvordan din FarmDroid vil så dine afgrøder. Du kan justere afstand, frøstørrelse og mere.",
+      "addRows": "Tilføj første rækker"
+    },
     "seedInfoModal": {
       "trigger": "Hvilket +Seed System skal jeg vælge?",
       "title": "Udforsk +Seed Systemer",
@@ -714,7 +731,8 @@
           "description": "Håndterer større frø op til 14mm. Perfekt til afgrøder der har brug for mere plads mellem rækkerne."
         }
       }
-    }
+    },
+    "visualizationAria": "Interaktiv rækkekonfiguration viser {rows} rækker med {spacing}cm afstand"
   },
   "crops": {
     "sprout": "Spire",
@@ -747,5 +765,83 @@
     "de": "Deutsch",
     "fr": "Francais",
     "nl": "Nederlands"
+  },
+  "quote": {
+    "shareQuote": "Del Tilbud",
+    "customizeQuote": "Tilpas Tilbud",
+    "showPricing": "Vis priser",
+    "lineItems": "Varelinjer",
+    "customItems": "Tilpassede Varer",
+    "addItem": "Tilføj",
+    "addDiscount": "Tilføj Rabat",
+    "itemDescriptionPlaceholder": "Beskrivelse (f.eks. Installation)",
+    "pricePlaceholder": "Pris",
+    "notesAndTerms": "Noter & Betingelser",
+    "notesPlaceholder": "Tilføj yderligere noter, betingelser eller vilkår...",
+    "validUntil": "Gyldig Til",
+    "total": "Total",
+    "copyLink": "Kopier Link",
+    "downloadPdf": "Download PDF",
+    "generatingPdf": "Genererer...",
+    "linkCopied": "Link kopieret til udklipsholder",
+    "linkCopyFailed": "Kunne ikke kopiere link",
+    "pdfDownloaded": "PDF downloadet",
+    "pdfFailed": "Kunne ikke generere PDF",
+    "quoteReference": "Tilbudsreference",
+    "quoteDate": "Tilbudsdato",
+    "configurationSummary": "Konfigurationsoversigt",
+    "priceBreakdown": "Prisopdeling",
+    "description": "Beskrivelse",
+    "price": "Pris",
+    "custom": "Tilpasset",
+    "included": "Inkluderet",
+    "vatNote": "Alle priser er ekskl. moms",
+    "pricingOnRequest": "Priser tilgængelige efter forespørgsel. Kontakt os for et detaljeret tilbud.",
+    "contactUs": "Kontakt Os",
+    "generatedWith": "Genereret med FarmDroid Konfigurator",
+    "loading": "Indlæser tilbud...",
+    "errorTitle": "Tilbud Ikke Fundet",
+    "errorNoData": "Ingen tilbudsdata blev angivet. Opret venligst et nyt tilbud fra konfiguratoren.",
+    "errorInvalid": "Tilbudslinket er ugyldigt eller udløbet. Anmod venligst om et nyt tilbud.",
+    "startNewConfig": "Start Ny Konfiguration",
+    "print": "Print",
+    "lineItems.baseRobot": "FD20 Basisrobot",
+    "lineItems.powerSource.solar": "Solcellesystem",
+    "lineItems.powerSource.hybrid": "Hybridsystem",
+    "lineItems.frontWheel.PFW": "Passivt Forhjul",
+    "lineItems.frontWheel.AFW": "Aktivt Forhjul",
+    "lineItems.frontWheel.DFW": "Dobbelt Forhjul",
+    "lineItems.activeRows": "{count}x Aktive Rækker ({size})",
+    "lineItems.passiveRows": "{count}x Passive Rækker",
+    "lineItems.spraySystem": "+SPRAY System",
+    "lineItems.accessories": "Tilbehør",
+    "lineItems.warrantyExtension": "2-Års Garantiforlængelse",
+    "config.rows": "Rækker",
+    "config.active": "aktive",
+    "config.passive": "passive",
+    "config.seedSize": "Frøstørrelse",
+    "config.rowSpacing": "Rækkeafstand",
+    "config.workingWidth": "Arbejdsbredde",
+    "config.powerSource": "Strømkilde",
+    "config.hybrid": "Hybrid",
+    "config.solar": "Sol",
+    "config.frontWheel": "Forhjul",
+    "config.passiveFrontWheel": "Passiv",
+    "config.activeFrontWheel": "Aktiv",
+    "config.dualFrontWheel": "Dobbelt",
+    "config.spraySystem": "Sprøjtesystem",
+    "config.included": "Inkluderet",
+    "config.warranty": "Garanti",
+    "config.extended": "3 År",
+    "config.accessories": "Tilbehør",
+    "accessories.starterKit": "Startsæt",
+    "accessories.roadTransport": "Vejtransport",
+    "accessories.fieldBracket": "Feltbeslag",
+    "accessories.powerBank": "Powerbank",
+    "accessories.fstTool": "FST Værktøj",
+    "accessories.baseStation": "Basestation",
+    "accessories.carePkg": "Plejepakke",
+    "accessories.weightKit": "Vægtsæt",
+    "accessories.toolbox": "Værktøjskasse"
   }
 }

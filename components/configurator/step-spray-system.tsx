@@ -14,6 +14,9 @@ import {
   WeedingTool,
 } from "@/lib/configurator-data";
 
+// Subtle gray blur placeholder for smooth image loading
+const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
+
 interface StepSpraySystemProps {
   config: ConfiguratorState;
   updateConfig: (updates: Partial<ConfiguratorState>) => void;
@@ -277,6 +280,8 @@ function WeedConfigInfoModal({
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 60vw"
+                      placeholder="blur"
+                      blurDataURL={blurDataURL}
                     />
                     {/* Gradient overlay for text readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -390,7 +395,7 @@ function WeedConfigInfoModal({
                       <ul className="space-y-2">
                         {(t.raw(`options.${activeOption}.specs`) as string[])?.map((spec: string, idx: number) => (
                           <li key={idx} className="flex items-start gap-2 text-sm text-stone-600">
-                            <Check className="h-4 w-4 text-teal-600 flex-shrink-0 mt-0.5" />
+                            <Check className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>{spec}</span>
                           </li>
                         ))}
@@ -614,15 +619,15 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
         </div>
 
         {/* Mechanical Weeding Section */}
-        <div className="space-y-2 md:space-y-3">
+        <div className="space-y-3 md:space-y-4">
           <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("mechanicalWeeding")}</p>
 
           {/* Standard +Weed Config - Always included */}
-          <div className="p-3 md:p-4 rounded-lg border border-stone-900 bg-stone-50">
+          <div className="selection-card selected p-4 md:p-5 rounded-xl border">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2 md:gap-3">
-                <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center mt-0.5 flex-shrink-0">
-                  <Check className="h-3 w-3 text-white" />
+              <div className="flex items-start gap-2.5 md:gap-3">
+                <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
                 </div>
                 <div>
                   <p className="font-medium text-stone-900 text-sm md:text-base">{t("standardWeedConfig.name")}</p>
@@ -631,7 +636,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                     {standardWeedFeatureKeys.map((key) => (
                       <span
                         key={key}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"
                       >
                         {t(`standardWeedConfig.features.${key}`)}
                       </span>
@@ -639,7 +644,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900">{tCommon("included")}</span>
+              <span className="text-sm font-semibold text-stone-900">{tCommon("included")}</span>
             </div>
           </div>
 
@@ -649,21 +654,21 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
           {/* Combi Tool Option */}
           <button
             onClick={() => handleWeedingToolChange(config.weedingTool === "combiTool" ? "none" : "combiTool")}
-            className={`w-full text-left p-3 md:p-4 rounded-lg border transition-all ml-2 md:ml-4 ${
+            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ml-3 md:ml-5 ${
               config.weedingTool === "combiTool"
-                ? "border-stone-900 bg-stone-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
-            style={{ width: "calc(100% - 0.5rem)" }}
+            style={{ width: "calc(100% - 0.75rem)" }}
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2 md:gap-3">
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-colors ${
+              <div className="flex items-start gap-2.5 md:gap-3">
+                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   config.weedingTool === "combiTool"
-                    ? "bg-stone-900"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
-                  {config.weedingTool === "combiTool" && <Check className="h-3 w-3 text-white" />}
+                  {config.weedingTool === "combiTool" && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
                 </div>
                 <div>
                   <p className="font-medium text-stone-900 text-sm md:text-base">{t("combiTool.name")}</p>
@@ -672,7 +677,9 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                     {combiToolFeatureKeys.map((key) => (
                       <span
                         key={key}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
+                        className={`text-[10px] px-2 py-0.5 rounded-full ${
+                          config.weedingTool === "combiTool" ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
+                        }`}
                       >
                         {t(`combiTool.features.${key}`)}
                       </span>
@@ -685,7 +692,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   )}
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900 ml-3">
+              <span className="text-sm font-semibold text-stone-900 ml-3">
                 +{formatPrice(combiToolPrice, config.currency)}
               </span>
             </div>
@@ -695,23 +702,23 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
           <button
             onClick={() => isWeedCuttingDiscAvailable && handleWeedingToolChange(config.weedingTool === "weedCuttingDisc" ? "none" : "weedCuttingDisc")}
             disabled={!isWeedCuttingDiscAvailable}
-            className={`w-full text-left p-3 md:p-4 rounded-lg border transition-all ml-2 md:ml-4 ${
+            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border ${isWeedCuttingDiscAvailable && "card-hover"} ml-3 md:ml-5 ${
               !isWeedCuttingDiscAvailable
                 ? "border-stone-200 bg-stone-50 opacity-60 cursor-not-allowed"
                 : config.weedingTool === "weedCuttingDisc"
-                ? "border-stone-900 bg-stone-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
-            style={{ width: "calc(100% - 0.5rem)" }}
+            style={{ width: "calc(100% - 0.75rem)" }}
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2 md:gap-3">
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-colors ${
+              <div className="flex items-start gap-2.5 md:gap-3">
+                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   config.weedingTool === "weedCuttingDisc"
-                    ? "bg-stone-900"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
-                  {config.weedingTool === "weedCuttingDisc" && <Check className="h-3 w-3 text-white" />}
+                  {config.weedingTool === "weedCuttingDisc" && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -734,7 +741,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   )}
                 </div>
               </div>
-              <span className={`text-sm font-medium ml-3 ${isWeedCuttingDiscAvailable ? "text-stone-900" : "text-stone-400"}`}>
+              <span className={`text-sm font-semibold ml-3 ${isWeedCuttingDiscAvailable ? "text-stone-900" : "text-stone-400"}`}>
                 +{formatPrice(weedCuttingDiscPrice, config.currency)}
               </span>
             </div>
@@ -742,26 +749,26 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
         </div>
 
         {/* Spray System Section */}
-        <div className="space-y-2 md:space-y-3 pt-2">
+        <div className="space-y-3 md:space-y-4 pt-3">
           <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("spraySystemSection")}</p>
 
           {/* Spray System Add-on */}
           <button
             onClick={() => updateConfig({ spraySystem: !config.spraySystem })}
-            className={`w-full text-left p-3 md:p-4 rounded-lg border transition-all ${
+            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ${
               config.spraySystem
-                ? "border-stone-900 bg-stone-50"
-                : "border-stone-200 hover:border-stone-300"
+                ? "selected"
+                : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2 md:gap-3">
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-colors ${
+              <div className="flex items-start gap-2.5 md:gap-3">
+                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   config.spraySystem
-                    ? "bg-stone-900"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
-                  {config.spraySystem && <Check className="h-3 w-3 text-white" />}
+                  {config.spraySystem && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -772,14 +779,16 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                     {sprayFeatureKeys.map((key) => (
                       <span
                         key={key}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 text-stone-500"
+                        className={`text-[10px] px-2 py-0.5 rounded-full ${
+                          config.spraySystem ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
+                        }`}
                       >
                         {t(`spray.features.${key}`)}
                       </span>
                     ))}
                   </div>
                   {config.spraySystem && (
-                    <div className="mt-3 pt-3 border-t border-stone-200 space-y-1 text-xs text-stone-400">
+                    <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1 text-xs text-stone-400">
                       <div className="flex justify-between">
                         <span>{t("spray.baseSystem")}</span>
                         <span>{formatPrice(PRICES.spraySystem.base, config.currency)}</span>
@@ -792,7 +801,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   )}
                 </div>
               </div>
-              <span className="text-sm font-medium text-stone-900 ml-3">
+              <span className="text-sm font-semibold text-stone-900 ml-3">
                 +{formatPrice(sprayPrice, config.currency)}
               </span>
             </div>

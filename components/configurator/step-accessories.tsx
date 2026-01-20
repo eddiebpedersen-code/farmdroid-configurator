@@ -13,6 +13,9 @@ import {
   isIncludedInStarterKit,
 } from "@/lib/configurator-data";
 
+// Subtle gray blur placeholder for smooth image loading
+const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
+
 interface StepAccessoriesProps {
   config: ConfiguratorState;
   updateConfig: (updates: Partial<ConfiguratorState>) => void;
@@ -216,6 +219,8 @@ function AccessoriesInfoModal({
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 60vw"
+                    placeholder="blur"
+                    blurDataURL={blurDataURL}
                   />
                   {/* Gradient overlay for text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -261,7 +266,7 @@ function AccessoriesInfoModal({
                       >
                         <span className="truncate block">
                           {t(`items.${item}.name`)}
-                          {inStarterKit && <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-teal-500" />}
+                          {inStarterKit && <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />}
                         </span>
                         {isActive && (
                           <motion.div
@@ -290,8 +295,8 @@ function AccessoriesInfoModal({
                       <div className="space-y-3">
                         {items.map((item) => (
                           <div key={item} className="flex items-start gap-3 p-3 bg-stone-50 rounded-lg">
-                            <div className="h-6 w-6 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <Check className="h-3.5 w-3.5 text-teal-600" />
+                            <div className="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <Check className="h-3.5 w-3.5 text-emerald-600" />
                             </div>
                             <div>
                               <p className="text-sm font-medium text-stone-900">{t(`items.${item}.name`)}</p>
@@ -327,7 +332,7 @@ function AccessoriesInfoModal({
                         <div className="flex items-start justify-between gap-3">
                           <h3 className="text-base font-semibold text-stone-900">{t(`items.${activeItem}.name`)}</h3>
                           {isInStarterKit(activeItem) && (
-                            <span className="flex-shrink-0 inline-flex items-center gap-1 text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded-full">
+                            <span className="flex-shrink-0 inline-flex items-center gap-1 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
                               <Package className="h-3 w-3" />
                               {t("starterKitBadge")}
                             </span>
@@ -345,7 +350,7 @@ function AccessoriesInfoModal({
                           <ul className="space-y-2">
                             {(t.raw(`items.${activeItem}.features`) as string[])?.map((feature: string, idx: number) => (
                               <li key={idx} className="flex items-start gap-2 text-sm text-stone-600">
-                                <Check className="h-4 w-4 text-teal-600 flex-shrink-0 mt-0.5" />
+                                <Check className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                                 <span>{feature}</span>
                               </li>
                             ))}
@@ -381,10 +386,10 @@ function GroupInfoButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-700 transition-colors group"
+      className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-700 transition-colors group py-2"
     >
-      <span className="flex items-center justify-center h-4 w-4 rounded-full border border-stone-300 group-hover:border-stone-400 group-hover:bg-stone-100 transition-colors">
-        <Info className="h-2.5 w-2.5" />
+      <span className="flex items-center justify-center h-5 w-5 rounded-full border border-stone-300 group-hover:border-stone-400 group-hover:bg-stone-100 transition-colors">
+        <Info className="h-3 w-3" />
       </span>
       <span className="underline underline-offset-2">{t("learnMore")}</span>
     </button>
@@ -579,13 +584,13 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       disabled={isIncludedOrDisabled}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.03 }}
-                      className={`p-3 md:p-4 rounded-lg border transition-all ${
+                      transition={{ delay: index * 0.05 }}
+                      className={`p-3 md:p-4 rounded-xl border transition-all ${
                         isIncludedOrDisabled
                           ? "border-stone-200 bg-stone-100 opacity-60 cursor-not-allowed"
                           : isSelected
-                          ? "border-stone-900 bg-stone-50"
-                          : "border-stone-200 bg-white hover:border-stone-300"
+                          ? "border-emerald-500 bg-emerald-50/50"
+                          : "border-stone-200 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-sm"
                       }`}
                     >
                       <div className="flex flex-col items-center text-center gap-1 md:gap-2">
@@ -593,7 +598,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                           isIncludedOrDisabled
                             ? "bg-stone-200"
                             : isSelected
-                            ? "bg-stone-900"
+                            ? "bg-emerald-500"
                             : "bg-stone-100"
                         }`}>
                           <Icon className={`h-4 w-4 md:h-5 md:w-5 ${
@@ -614,11 +619,11 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                           {t(`items.${accessory.translationKey}.name`)}
                         </p>
                         <div
-                          className={`h-4 w-4 md:h-5 md:w-5 rounded-full flex items-center justify-center bg-stone-900 transition-opacity ${
+                          className={`h-4 w-4 md:h-5 md:w-5 rounded-full flex items-center justify-center transition-opacity ${
                             (isSelected || isIncludedOrDisabled) ? "opacity-100" : "opacity-0"
-                          }`}
+                          } ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500"}`}
                         >
-                          <Check className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" />
+                          <Check className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" strokeWidth={3} />
                         </div>
                       </div>
                     </motion.button>
@@ -654,6 +659,8 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                             fill
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, 500px"
+                            placeholder="blur"
+                            blurDataURL={blurDataURL}
                           />
                           {/* Gradient overlay */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -758,15 +765,20 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
               <button
                 key={accessory.id}
                 onClick={() => toggleAccessory(accessory.id)}
-                className={`w-full text-left p-4 md:p-5 rounded-lg border transition-all ${
+                className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ${
                   isSelected
-                    ? "border-stone-900 bg-stone-50"
-                    : "border-stone-200 hover:border-stone-300"
+                    ? "selected"
+                    : "border-stone-200 hover:border-stone-300 bg-white"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                    <div className="flex items-center gap-2.5 md:gap-3 flex-wrap">
+                      {isSelected && (
+                        <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                          <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                        </div>
+                      )}
                       <p className="font-medium text-stone-900 text-sm md:text-base">{t(`items.${accessory.translationKey}.name`)}</p>
                       {accessory.recommended && (
                         <span className="flex items-center gap-1 text-[10px] md:text-xs bg-amber-100 text-amber-700 px-1.5 md:px-2 py-0.5 rounded-full">
@@ -774,16 +786,11 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                           {t("recommended")}
                         </span>
                       )}
-                      {isSelected && (
-                        <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center">
-                          <Check className="h-3 w-3 text-white" />
-                        </div>
-                      )}
                     </div>
-                    <p className="text-xs md:text-sm text-stone-500 mt-0.5">{t(`items.${accessory.translationKey}.description`)}</p>
-                    <p className="text-xs text-teal-600 mt-2">{t("starterKitIncludes")}</p>
+                    <p className="text-xs md:text-sm text-stone-500 mt-1">{t(`items.${accessory.translationKey}.description`)}</p>
+                    <p className="text-xs text-emerald-600 mt-2">{t("starterKitIncludes")}</p>
                   </div>
-                  <span className="text-sm md:text-base font-medium text-stone-900 flex-shrink-0">
+                  <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
                     +{formatPrice(accessory.price, config.currency)}
                   </span>
                 </div>
@@ -794,7 +801,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
 
         {/* Connectivity Group */}
         {visibleConnectivity.length > 0 && (
-          <div className="space-y-2 md:space-y-3">
+          <div className="space-y-3 md:space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("groups.connectivity")}</p>
               <GroupInfoButton onClick={() => setActiveModal("connectivity")} />
@@ -811,28 +818,28 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                   key={accessory.id}
                   onClick={() => !isIncludedOrDisabled && toggleAccessory(accessory.id)}
                   disabled={isIncludedOrDisabled}
-                  className={`w-full text-left p-4 md:p-5 rounded-lg border transition-all ${
+                  className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border ${!isIncludedOrDisabled && "card-hover"} ${
                     isIncludedOrDisabled
                       ? "border-stone-200 bg-stone-50 cursor-not-allowed"
                       : isSelected
-                      ? "border-stone-900 bg-stone-50"
-                      : "border-stone-200 hover:border-stone-300"
+                      ? "selected"
+                      : "border-stone-200 hover:border-stone-300 bg-white"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 md:gap-3">
+                      <div className="flex items-center gap-2.5 md:gap-3">
+                        {(isSelected || isIncludedOrDisabled) && (
+                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500 checkmark-animated"}`}>
+                            <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                          </div>
+                        )}
                         <p className={`font-medium text-sm md:text-base ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
                           {t(`items.${accessory.translationKey}.name`)}
                         </p>
-                        {(isSelected || isIncludedOrDisabled) && (
-                          <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        )}
                       </div>
                       {accessory.includedInStarterKit && (
-                        <span className="inline-block text-[10px] md:text-xs bg-teal-100 text-teal-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedInStarterKit")}
                         </span>
                       )}
@@ -840,7 +847,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         {t(`items.${accessory.translationKey}.description`)}
                       </p>
                     </div>
-                    <span className={`text-sm md:text-base font-medium flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
+                    <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
                       {isDisabled ? t("included") : `+${formatPrice(accessory.price, config.currency)}`}
                     </span>
                   </div>
@@ -852,7 +859,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
 
         {/* Transport Group */}
         {visibleTransport.length > 0 && (
-          <div className="space-y-2 md:space-y-3">
+          <div className="space-y-3 md:space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("groups.transport")}</p>
               <GroupInfoButton onClick={() => setActiveModal("transport")} />
@@ -869,28 +876,28 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                   key={accessory.id}
                   onClick={() => !isIncludedOrDisabled && toggleAccessory(accessory.id)}
                   disabled={isIncludedOrDisabled}
-                  className={`w-full text-left p-4 md:p-5 rounded-lg border transition-all ${
+                  className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border ${!isIncludedOrDisabled && "card-hover"} ${
                     isIncludedOrDisabled
                       ? "border-stone-200 bg-stone-50 cursor-not-allowed"
                       : isSelected
-                      ? "border-stone-900 bg-stone-50"
-                      : "border-stone-200 hover:border-stone-300"
+                      ? "selected"
+                      : "border-stone-200 hover:border-stone-300 bg-white"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 md:gap-3">
+                      <div className="flex items-center gap-2.5 md:gap-3">
+                        {(isSelected || isIncludedOrDisabled) && (
+                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500 checkmark-animated"}`}>
+                            <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                          </div>
+                        )}
                         <p className={`font-medium text-sm md:text-base ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
                           {t(`items.${accessory.translationKey}.name`)}
                         </p>
-                        {(isSelected || isIncludedOrDisabled) && (
-                          <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        )}
                       </div>
                       {accessory.includedInStarterKit && (
-                        <span className="inline-block text-[10px] md:text-xs bg-teal-100 text-teal-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedInStarterKit")}
                         </span>
                       )}
@@ -898,7 +905,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         {t(`items.${accessory.translationKey}.description`)}
                       </p>
                     </div>
-                    <span className={`text-sm md:text-base font-medium flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
+                    <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
                       {isDisabled ? t("included") : `+${formatPrice(accessory.price, config.currency)}`}
                     </span>
                   </div>
@@ -910,7 +917,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
 
         {/* Maintenance Group */}
         {visibleMaintenance.length > 0 && (
-          <div className="space-y-2 md:space-y-3">
+          <div className="space-y-3 md:space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("groups.maintenance")}</p>
               <GroupInfoButton onClick={() => setActiveModal("maintenance")} />
@@ -927,33 +934,33 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                   key={accessory.id}
                   onClick={() => !isIncludedOrDisabled && toggleAccessory(accessory.id)}
                   disabled={isIncludedOrDisabled}
-                  className={`w-full text-left p-4 md:p-5 rounded-lg border transition-all ${
+                  className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border ${!isIncludedOrDisabled && "card-hover"} ${
                     isIncludedOrDisabled
                       ? "border-stone-200 bg-stone-50 cursor-not-allowed"
                       : isSelected
-                      ? "border-stone-900 bg-stone-50"
-                      : "border-stone-200 hover:border-stone-300"
+                      ? "selected"
+                      : "border-stone-200 hover:border-stone-300 bg-white"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 md:gap-3">
+                      <div className="flex items-center gap-2.5 md:gap-3">
+                        {(isSelected || isIncludedOrDisabled) && (
+                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500 checkmark-animated"}`}>
+                            <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                          </div>
+                        )}
                         <p className={`font-medium text-sm md:text-base ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
                           {t(`items.${accessory.translationKey}.name`)}
                         </p>
-                        {(isSelected || isIncludedOrDisabled) && (
-                          <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        )}
                       </div>
                       {accessory.includedInStarterKit && (
-                        <span className="inline-block text-[10px] md:text-xs bg-teal-100 text-teal-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedInStarterKit")}
                         </span>
                       )}
                       {accessory.requiresSpraySystem && (
-                        <span className="inline-block text-[10px] md:text-xs bg-teal-100 text-teal-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedWithCare")}
                         </span>
                       )}
@@ -961,7 +968,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         {t(`items.${accessory.translationKey}.description`)}
                       </p>
                     </div>
-                    <span className={`text-sm md:text-base font-medium flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
+                    <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
                       {isIncludedOrDisabled ? t("included") : `+${formatPrice(accessory.price, config.currency)}`}
                     </span>
                   </div>

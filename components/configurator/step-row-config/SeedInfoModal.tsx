@@ -147,14 +147,14 @@ export function SeedInfoModal({
                     </div>
                     <div className={`p-3 text-center transition-colors ${
                       activeTab === "6mm"
-                        ? "bg-teal-50 border-l-2 border-r-2 border-t-2 border-teal-500"
+                        ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500"
                         : "bg-stone-50"
                     }`}>
                       <div className="text-sm font-semibold text-stone-900">+Seed 6mm</div>
                     </div>
                     <div className={`p-3 text-center transition-colors ${
                       activeTab === "14mm"
-                        ? "bg-teal-50 border-l-2 border-r-2 border-t-2 border-teal-500 rounded-tr-xl"
+                        ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500 rounded-tr-xl"
                         : "bg-stone-50"
                     }`}>
                       <div className="text-sm font-semibold text-stone-900">+Seed 14mm</div>
@@ -181,19 +181,19 @@ export function SeedInfoModal({
                         <span className="text-sm text-stone-700">{crop.name}</span>
                       </div>
                       <div className={`p-3 flex items-center justify-center ${
-                        activeTab === "6mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                        activeTab === "6mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                       }`}>
                         {crop.supports6mm ? (
-                          <Check className="h-5 w-5 text-teal-600" />
+                          <Check className="h-5 w-5 text-emerald-600" />
                         ) : (
                           <X className="h-5 w-5 text-stone-300" />
                         )}
                       </div>
                       <div className={`p-3 flex items-center justify-center ${
-                        activeTab === "14mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                        activeTab === "14mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                       }`}>
                         {crop.supports14mm ? (
-                          <Check className="h-5 w-5 text-teal-600" />
+                          <Check className="h-5 w-5 text-emerald-600" />
                         ) : (
                           <X className="h-5 w-5 text-stone-300" />
                         )}
@@ -206,14 +206,14 @@ export function SeedInfoModal({
                       <span className="text-sm text-stone-500 italic">{t("andMoreCrops")}</span>
                     </div>
                     <div className={`p-3 flex items-center justify-center ${
-                      activeTab === "6mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500" : ""
+                      activeTab === "6mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500" : ""
                     }`}>
-                      <Check className="h-5 w-5 text-teal-600" />
+                      <Check className="h-5 w-5 text-emerald-600" />
                     </div>
                     <div className={`p-3 flex items-center justify-center ${
-                      activeTab === "14mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500 rounded-br-xl" : ""
+                      activeTab === "14mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500 rounded-br-xl" : ""
                     }`}>
-                      <Check className="h-5 w-5 text-teal-600" />
+                      <Check className="h-5 w-5 text-emerald-600" />
                     </div>
                   </div>
                 </div>
@@ -227,14 +227,14 @@ export function SeedInfoModal({
                     </div>
                     <div className={`p-3 text-center transition-colors ${
                       activeTab === "6mm"
-                        ? "bg-teal-50 border-l-2 border-r-2 border-t-2 border-teal-500"
+                        ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500"
                         : "bg-stone-50"
                     }`}>
                       <div className="text-sm font-semibold text-stone-900">+Seed 6mm</div>
                     </div>
                     <div className={`p-3 text-center transition-colors ${
                       activeTab === "14mm"
-                        ? "bg-teal-50 border-l-2 border-r-2 border-t-2 border-teal-500 rounded-tr-xl"
+                        ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500 rounded-tr-xl"
                         : "bg-stone-50"
                     }`}>
                       <div className="text-sm font-semibold text-stone-900">+Seed 14mm</div>
@@ -246,12 +246,12 @@ export function SeedInfoModal({
                       <span className="text-sm text-stone-700">{t("specs.hopperWidth")}</span>
                     </div>
                     <div className={`p-3 text-center ${
-                      activeTab === "6mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                      activeTab === "6mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                     }`}>
                       <span className="text-sm font-medium text-stone-900">21cm</span>
                     </div>
                     <div className={`p-3 text-center ${
-                      activeTab === "14mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                      activeTab === "14mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                     }`}>
                       <span className="text-sm font-medium text-stone-900">24cm</span>
                     </div>
@@ -261,12 +261,12 @@ export function SeedInfoModal({
                       <span className="text-sm text-stone-700">{t("specs.maxSeedSize")}</span>
                     </div>
                     <div className={`p-3 text-center ${
-                      activeTab === "6mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                      activeTab === "6mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                     }`}>
                       <span className="text-sm font-medium text-stone-900">6mm</span>
                     </div>
                     <div className={`p-3 text-center ${
-                      activeTab === "14mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-teal-500" : ""
+                      activeTab === "14mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                     }`}>
                       <span className="text-sm font-medium text-stone-900">14mm</span>
                     </div>
@@ -276,12 +276,12 @@ export function SeedInfoModal({
                       <span className="text-sm text-stone-700">{t("specs.minRowSpacing")}</span>
                     </div>
                     <div className={`p-3 text-center ${
-                      activeTab === "6mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500" : ""
+                      activeTab === "6mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500" : ""
                     }`}>
                       <span className="text-sm font-medium text-stone-900">22.5cm</span>
                     </div>
                     <div className={`p-3 text-center ${
-                      activeTab === "14mm" ? "bg-teal-50/50 border-l-2 border-r-2 border-b-2 border-teal-500 rounded-br-xl" : ""
+                      activeTab === "14mm" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500 rounded-br-xl" : ""
                     }`}>
                       <span className="text-sm font-medium text-stone-900">25cm</span>
                     </div>

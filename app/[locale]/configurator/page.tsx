@@ -1,15 +1,19 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw, Globe, Check, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Globe, Check, ChevronDown, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
+import { useToastActions } from "@/components/ui/toast";
+import { useKeyboardShortcuts, useFocusTrap } from "@/hooks/use-focus-trap";
 import {
   ConfiguratorState,
   DEFAULT_CONFIG,
   STEPS,
   calculatePrice,
+  calculatePassiveRows,
   formatPrice,
   Currency,
   PRICES,
@@ -48,6 +52,7 @@ const slideVariants = {
     opacity: 0,
   }),
 };
+
 
 // Language selector component
 function LanguageSelector() {
@@ -116,30 +121,52 @@ function LanguageSelector() {
 function PriceBreakdownTooltip({
   priceBreakdown,
   currency,
+  config,
   isOpen,
   onToggle,
 }: {
   priceBreakdown: ReturnType<typeof calculatePrice>;
   currency: Currency;
+  config: ConfiguratorState;
   isOpen: boolean;
   onToggle: () => void;
 }) {
   const t = useTranslations("priceBreakdown");
+  const tCommon = useTranslations("common");
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const passiveRowCount = calculatePassiveRows(config.activeRows, config.rowDistance);
 
   const items = [
-    { key: "baseRobot", value: priceBreakdown.baseRobot },
-    { key: "powerSource", value: priceBreakdown.powerSource },
-    { key: "frontWheel", value: priceBreakdown.frontWheel },
-    { key: "activeRows", value: priceBreakdown.activeRows },
-    { key: "passiveRows", value: priceBreakdown.passiveRows },
-    { key: "spraySystem", value: priceBreakdown.spraySystem },
-    { key: "accessories", value: priceBreakdown.accessories },
-    { key: "warrantyExtension", value: priceBreakdown.warrantyExtension },
-  ].filter((item) => item.value > 0);
+    { key: "baseRobot", value: priceBreakdown.baseRobot, label: t("baseRobot") },
+    { key: "powerSource", value: priceBreakdown.powerSource, label: t("powerSource") },
+    { key: "frontWheel", value: priceBreakdown.frontWheel, label: t("frontWheel") },
+    { key: "activeRows", value: priceBreakdown.activeRows, label: t("activeRowsWithCount", { count: config.activeRows, size: config.seedSize }) },
+    { key: "passiveRows", value: 0, included: true, label: t("passiveRowsWithCount", { count: passiveRowCount }), show: passiveRowCount > 0 },
+    { key: "spraySystem", value: priceBreakdown.spraySystem, label: t("spraySystem") },
+    { key: "accessories", value: priceBreakdown.accessories, label: t("accessories") },
+    { key: "warrantyExtension", value: priceBreakdown.warrantyExtension, label: t("warrantyExtension") },
+  ].filter((item) => item.value > 0 || item.show);
+
+  // Calculate dropdown position based on button
+  const getDropdownPosition = () => {
+    if (!buttonRef.current) return { top: 0, right: 0 };
+    const rect = buttonRef.current.getBoundingClientRect();
+    return {
+      top: rect.bottom + 8,
+      right: window.innerWidth - rect.right,
+    };
+  };
 
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         onClick={onToggle}
         className="flex items-center gap-1 text-xs text-stone-500 hover:text-stone-700 transition-colors"
         aria-expanded={isOpen}
@@ -149,45 +176,49 @@ function PriceBreakdownTooltip({
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={onToggle}
-              aria-hidden="true"
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-              className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-stone-200 p-4 z-50"
-              role="tooltip"
-            >
-              <h3 className="text-sm font-semibold text-stone-900 mb-3">{t("title")}</h3>
-              <div className="space-y-2">
-                {items.map((item) => (
-                  <div key={item.key} className="flex justify-between text-sm">
-                    <span className="text-stone-600">{t(item.key)}</span>
-                    <span className="text-stone-900 font-medium">
-                      {formatPrice(item.value, currency)}
-                    </span>
-                  </div>
-                ))}
-                <div className="border-t border-stone-200 pt-2 mt-2">
-                  <div className="flex justify-between text-sm font-semibold">
-                    <span className="text-stone-900">{t("total")}</span>
-                    <span className="text-stone-900">
-                      {formatPrice(priceBreakdown.total, currency)}
-                    </span>
-                  </div>
+      {mounted && isOpen && createPortal(
+        <AnimatePresence>
+          <div
+            className="fixed inset-0 z-[9998]"
+            onClick={onToggle}
+            aria-hidden="true"
+          />
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              position: 'fixed',
+              top: getDropdownPosition().top,
+              right: getDropdownPosition().right,
+            }}
+            className="w-64 bg-white rounded-lg shadow-xl border border-stone-200 p-4 z-[9999]"
+            role="tooltip"
+          >
+            <h3 className="text-sm font-semibold text-stone-900 mb-3">{t("title")}</h3>
+            <div className="space-y-2">
+              {items.map((item) => (
+                <div key={item.key} className="flex justify-between text-sm">
+                  <span className="text-stone-600">{item.label}</span>
+                  <span className="text-stone-900 font-medium">
+                    {item.included ? tCommon("included") : formatPrice(item.value, currency)}
+                  </span>
+                </div>
+              ))}
+              <div className="border-t border-stone-200 pt-2 mt-2">
+                <div className="flex justify-between text-sm font-semibold">
+                  <span className="text-stone-900">{t("total")}</span>
+                  <span className="text-stone-900">
+                    {formatPrice(priceBreakdown.total, currency)}
+                  </span>
                 </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
@@ -257,9 +288,11 @@ export default function ConfiguratorPage() {
   const [savedState, setSavedState] = useState<{ config: ConfiguratorState; step: number; highestStepReached: number; timestamp: number } | null>(null);
   const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
   const [previousTotal, setPreviousTotal] = useState<number | null>(null);
+  const [lastSavedTime, setLastSavedTime] = useState<number | null>(null);
 
   const pathname = usePathname();
   const currentLocale = pathname.split("/")[1] as Locale;
+  const toast = useToastActions();
 
   const t = useTranslations("navigation");
   const tSteps = useTranslations("steps");
@@ -289,6 +322,7 @@ export default function ConfiguratorPage() {
     // Don't save if we're showing the resume modal (initial load)
     if (!showResumeModal && config !== DEFAULT_CONFIG) {
       saveConfiguration(config, currentStep, highestStepReached);
+      setLastSavedTime(Date.now());
     }
   }, [config, currentStep, highestStepReached, showResumeModal]);
 
@@ -299,6 +333,28 @@ export default function ConfiguratorPage() {
     }
     setPreviousTotal(priceBreakdown.total);
   }, [priceBreakdown.total, previousTotal]);
+
+  // Keyboard shortcuts for step navigation
+  useKeyboardShortcuts(
+    {
+      arrowright: () => {
+        if (currentStep < STEPS.length) {
+          nextStep();
+        }
+      },
+      arrowleft: () => {
+        if (currentStep > 1) {
+          prevStep();
+        }
+      },
+      escape: () => {
+        if (showPriceBreakdown) {
+          setShowPriceBreakdown(false);
+        }
+      },
+    },
+    !showResumeModal // Disable shortcuts when modal is open
+  );
 
   // Get translated step titles
   const stepKeys = [
@@ -350,7 +406,9 @@ export default function ConfiguratorPage() {
     setHighestStepReached(1);
     setDirection(-1);
     clearConfiguration();
-  }, []);
+    setLastSavedTime(null);
+    toast.info(tCommon("configurationReset"));
+  }, [toast, tCommon]);
 
   const handleResume = useCallback(() => {
     if (savedState) {
@@ -438,7 +496,7 @@ export default function ConfiguratorPage() {
                     {/* Step indicator */}
                     {isCompleted ? (
                       // Completed step - show checkmark
-                      <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-teal-500 flex items-center justify-center transition-all">
+                      <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-emerald-500 flex items-center justify-center transition-all">
                         <Check className="h-3 w-3 md:h-3.5 md:w-3.5 text-white" aria-hidden="true" />
                       </div>
                     ) : isCurrent ? (
@@ -456,7 +514,7 @@ export default function ConfiguratorPage() {
                     {/* Connector line */}
                     {index < translatedSteps.length - 1 && (
                       <div className={`w-2 md:w-4 h-0.5 transition-colors ${
-                        isCompleted ? "bg-teal-500" : "bg-stone-200"
+                        isCompleted ? "bg-emerald-500" : "bg-stone-200"
                       }`} aria-hidden="true" />
                     )}
 
@@ -504,8 +562,9 @@ export default function ConfiguratorPage() {
 
                 <motion.p
                   key={`${priceBreakdown.total}-${config.currency}`}
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ scale: 1.08, opacity: 0.8 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   className="text-lg md:text-2xl font-semibold text-stone-900 tracking-tight"
                 >
                   {formatPrice(priceBreakdown.total, config.currency)}
@@ -516,6 +575,7 @@ export default function ConfiguratorPage() {
                   <PriceBreakdownTooltip
                     priceBreakdown={priceBreakdown}
                     currency={config.currency}
+                    config={config}
                     isOpen={showPriceBreakdown}
                     onToggle={() => setShowPriceBreakdown(!showPriceBreakdown)}
                   />
@@ -534,7 +594,7 @@ export default function ConfiguratorPage() {
                       <span className="text-xs text-stone-400 line-through">
                         {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                       </span>
-                      <span className="text-xs font-semibold text-teal-600">
+                      <span className="text-xs font-semibold text-emerald-600">
                         {formatPrice(0, config.currency)} {tCommon("firstYear")}
                       </span>
                     </>
@@ -548,14 +608,46 @@ export default function ConfiguratorPage() {
                     </span>
                   )}
                 </motion.div>
+
+                {/* Auto-save indicator */}
+                <AnimatePresence>
+                  {lastSavedTime && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center justify-end gap-1 mt-1"
+                    >
+                      <Save className="h-3 w-3 text-emerald-500" aria-hidden="true" />
+                      <span className="text-[10px] text-stone-400">{tCommon("autoSaved")}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Visual progress bar */}
+        <div className="h-1 bg-stone-100" aria-hidden="true">
+          <motion.div
+            className="h-full bg-emerald-500"
+            initial={false}
+            animate={{ width: `${((currentStep - 1) / (translatedSteps.length - 1)) * 100}%` }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          />
+        </div>
+
+        {/* Mobile step context - shows current step title on small screens */}
+        <div className="sm:hidden bg-stone-50 border-b border-stone-100 px-4 py-2">
+          <p className="text-sm font-medium text-stone-700 text-center">
+            {translatedSteps[currentStep - 1].title}
+          </p>
+        </div>
       </header>
 
       {/* Main Content */}
-      <main id="main-content" className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pb-24">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentStep}
@@ -593,7 +685,7 @@ export default function ConfiguratorPage() {
               {currentStep > 1 && (
                 <button
                   onClick={prevStep}
-                  className="h-11 md:h-10 px-3 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
+                  className="h-11 px-3 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
                 >
                   <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                   <span className="hidden sm:inline">{t("back")}</span>
@@ -603,7 +695,7 @@ export default function ConfiguratorPage() {
               {currentStep < translatedSteps.length ? (
                 <button
                   onClick={nextStep}
-                  className="h-11 md:h-10 px-4 md:px-6 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-sm font-medium flex items-center gap-1.5 transition-colors"
+                  className="h-11 px-4 md:px-6 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-sm font-medium flex items-center gap-1.5 transition-colors"
                 >
                   <span className="hidden sm:inline">{t("continue")}</span>
                   <span className="sm:hidden">{t("next")}</span>
@@ -612,7 +704,7 @@ export default function ConfiguratorPage() {
               ) : (
                 <button
                   onClick={resetConfig}
-                  className="h-11 md:h-10 px-4 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
+                  className="h-11 px-4 md:px-5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1.5"
                 >
                   <RotateCcw className="h-4 w-4" aria-hidden="true" />
                   <span className="hidden sm:inline">{t("startOver")}</span>

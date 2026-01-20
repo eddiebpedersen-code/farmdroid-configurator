@@ -24,7 +24,9 @@
     "powerSource": "Source d'énergie",
     "frontWheel": "Roue avant",
     "activeRows": "Rangées actives",
+    "activeRowsWithCount": "{count}× Rangées actives ({size})",
     "passiveRows": "Rangées passives",
+    "passiveRowsWithCount": "{count}× Rangées passives",
     "spraySystem": "Système de pulvérisation",
     "accessories": "Accessoires",
     "warrantyExtension": "Extension de garantie",
@@ -592,6 +594,9 @@
       "email": "vous@exemple.fr",
       "dealName": "ex. Ferme Dupont FD20",
       "primaryContact": "Contact principal"
+    },
+    "validation": {
+      "invalidEmail": "Veuillez entrer une adresse email valide"
     }
   },
   "modals": {
@@ -616,7 +621,9 @@
     "included": "Inclus",
     "switchTo": "Passer à {label}",
     "firstYear": "première année",
-    "freeFirstYear": "{price} première année"
+    "freeFirstYear": "{price} première année",
+    "configurationReset": "Configuration réinitialisée",
+    "autoSaved": "Sauvegardé automatiquement"
   },
   "rowConfig": {
     "title": "+Configuration Semis",
@@ -672,8 +679,18 @@
     "spacingTooltip": "Distance entre les plantes le long de chaque rang. Min 3cm.",
     "patternTooltip": "Formation en grille ou losange pour un espacement optimal.",
     "precisionWarning": "Semis de précision possible uniquement à 10cm ou plus",
+    "seedSizeTip": {
+      "label": "Conseil :",
+      "text": "6mm convient aux petites graines comme les carottes, oignons et épinards. 14mm gère les graines plus grosses comme les betteraves, haricots et maïs.",
+      "learnMore": "En savoir plus"
+    },
     "optimalWheelSpacing": "Écartement de roues optimal pour cette config de rangs",
     "suggestedSpacing": "Suggéré : {spacing}cm — roues centrées entre les rangs",
+    "emptyState": {
+      "title": "Configurez votre semis",
+      "description": "Ajoutez des rangs pour définir comment votre FarmDroid sèmera vos cultures. Vous pouvez ajuster l'espacement, la taille des graines et plus.",
+      "addRows": "Ajouter les premiers rangs"
+    },
     "seedInfoModal": {
       "trigger": "Quel système +Seed choisir ?",
       "title": "Explorer les systèmes +Seed",
@@ -714,7 +731,8 @@
           "description": "Gère les graines jusqu'à 14mm. Parfait pour les cultures nécessitant plus d'espace entre les rangs."
         }
       }
-    }
+    },
+    "visualizationAria": "Configuration interactive des rangs montrant {rows} rangs avec {spacing}cm d'espacement"
   },
   "crops": {
     "sprout": "Pousse",
@@ -747,5 +765,83 @@
     "de": "Deutsch",
     "fr": "Francais",
     "nl": "Nederlands"
+  },
+  "quote": {
+    "shareQuote": "Partager le Devis",
+    "customizeQuote": "Personnaliser le Devis",
+    "showPricing": "Afficher les prix",
+    "lineItems": "Lignes de Devis",
+    "customItems": "Articles Personnalisés",
+    "addItem": "Ajouter",
+    "addDiscount": "Ajouter Remise",
+    "itemDescriptionPlaceholder": "Description (ex. Installation)",
+    "pricePlaceholder": "Prix",
+    "notesAndTerms": "Notes & Conditions",
+    "notesPlaceholder": "Ajouter des notes, termes ou conditions supplémentaires...",
+    "validUntil": "Valide Jusqu'au",
+    "total": "Total",
+    "copyLink": "Copier le Lien",
+    "downloadPdf": "Télécharger le PDF",
+    "generatingPdf": "Génération...",
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "linkCopyFailed": "Impossible de copier le lien",
+    "pdfDownloaded": "PDF téléchargé",
+    "pdfFailed": "Impossible de générer le PDF",
+    "quoteReference": "Référence du Devis",
+    "quoteDate": "Date du Devis",
+    "configurationSummary": "Résumé de Configuration",
+    "priceBreakdown": "Détail des Prix",
+    "description": "Description",
+    "price": "Prix",
+    "custom": "Personnalisé",
+    "included": "Inclus",
+    "vatNote": "Tous les prix sont hors TVA",
+    "pricingOnRequest": "Prix disponibles sur demande. Contactez-nous pour un devis détaillé.",
+    "contactUs": "Contactez-Nous",
+    "generatedWith": "Généré avec le Configurateur FarmDroid",
+    "loading": "Chargement du devis...",
+    "errorTitle": "Devis Non Trouvé",
+    "errorNoData": "Aucune donnée de devis fournie. Veuillez générer un nouveau devis depuis le configurateur.",
+    "errorInvalid": "Le lien du devis est invalide ou a expiré. Veuillez demander un nouveau devis.",
+    "startNewConfig": "Démarrer une Nouvelle Configuration",
+    "print": "Imprimer",
+    "lineItems.baseRobot": "Robot de Base FD20",
+    "lineItems.powerSource.solar": "Système d'Alimentation Solaire",
+    "lineItems.powerSource.hybrid": "Système d'Alimentation Hybride",
+    "lineItems.frontWheel.PFW": "Roue Avant Passive",
+    "lineItems.frontWheel.AFW": "Roue Avant Active",
+    "lineItems.frontWheel.DFW": "Double Roue Avant",
+    "lineItems.activeRows": "{count}x Rangs Actifs ({size})",
+    "lineItems.passiveRows": "{count}x Rangs Passifs",
+    "lineItems.spraySystem": "Système +SPRAY",
+    "lineItems.accessories": "Accessoires",
+    "lineItems.warrantyExtension": "Extension de Garantie 2 Ans",
+    "config.rows": "Rangs",
+    "config.active": "actifs",
+    "config.passive": "passifs",
+    "config.seedSize": "Taille de Graine",
+    "config.rowSpacing": "Espacement des Rangs",
+    "config.workingWidth": "Largeur de Travail",
+    "config.powerSource": "Source d'Énergie",
+    "config.hybrid": "Hybride",
+    "config.solar": "Solaire",
+    "config.frontWheel": "Roue Avant",
+    "config.passiveFrontWheel": "Passive",
+    "config.activeFrontWheel": "Active",
+    "config.dualFrontWheel": "Double",
+    "config.spraySystem": "Système de Pulvérisation",
+    "config.included": "Inclus",
+    "config.warranty": "Garantie",
+    "config.extended": "3 Ans",
+    "config.accessories": "Accessoires",
+    "accessories.starterKit": "Kit de Démarrage",
+    "accessories.roadTransport": "Transport Routier",
+    "accessories.fieldBracket": "Support de Terrain",
+    "accessories.powerBank": "Batterie Externe",
+    "accessories.fstTool": "Outil FST",
+    "accessories.baseStation": "Station de Base",
+    "accessories.carePkg": "Pack Entretien",
+    "accessories.weightKit": "Kit de Poids",
+    "accessories.toolbox": "Boîte à Outils"
   }
 }

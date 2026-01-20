@@ -381,21 +381,68 @@ export function detectAlternatingPattern(rowSpacings: number[]): { valueA: numbe
 }
 
 /**
- * Calculate the between-pass spacing for alternating patterns
- * For alternating patterns (A-B-A-B), returns the "other" value to continue the pattern
- * For non-alternating patterns, returns the base rowDistance
+ * Detect if row spacings form a symmetric pattern (mirrors around center)
+ * Examples:
+ *   [25, 25, 25, 50, 25, 25, 25] - symmetric with center gap 50
+ *   [25, 50, 50, 25] - symmetric, even length
+ *   [30, 30, 30, 30] - uniform (special case of symmetric)
+ * Returns the recommended between-pass spacing, null if not symmetric
+ */
+export function detectSymmetricPattern(rowSpacings: number[]): { betweenPassSpacing: number } | null {
+  if (rowSpacings.length < 1) return null;
+
+  const len = rowSpacings.length;
+
+  // Check if all values are the same (uniform spacing)
+  const allSame = rowSpacings.every(s => s === rowSpacings[0]);
+  if (allSame) {
+    return { betweenPassSpacing: rowSpacings[0] };
+  }
+
+  // Check if symmetric (mirrors around center)
+  for (let i = 0; i < Math.floor(len / 2); i++) {
+    if (rowSpacings[i] !== rowSpacings[len - 1 - i]) {
+      return null; // Not symmetric
+    }
+  }
+
+  // It's symmetric! Determine the between-pass spacing
+  if (len % 2 === 1) {
+    // Odd length: use the center value
+    // e.g., [25, 25, 25, 50, 25, 25, 25] -> center is 50
+    const centerIdx = Math.floor(len / 2);
+    return { betweenPassSpacing: rowSpacings[centerIdx] };
+  } else {
+    // Even length: use the outer value (first/last spacing)
+    // e.g., [25, 50, 50, 25] -> use 25 to continue the pattern
+    return { betweenPassSpacing: rowSpacings[0] };
+  }
+}
+
+/**
+ * Calculate the between-pass spacing based on row pattern
+ * Priority:
+ *   1. Alternating patterns (A-B-A-B): returns the "other" value to continue alternation
+ *   2. Symmetric patterns: returns center value (odd) or outer value (even) to maintain symmetry
+ *   3. Non-pattern: returns the base rowDistance
  */
 export function calculateBetweenPassSpacing(rowSpacings: number[], rowDistance: number): number {
-  const pattern = detectAlternatingPattern(rowSpacings);
-
-  if (pattern) {
+  // First check for alternating pattern
+  const alternating = detectAlternatingPattern(rowSpacings);
+  if (alternating) {
     // Get outer spacing (first spacing in pattern)
     const outerSpacing = rowSpacings[0];
     // Return the OTHER value to continue alternation
-    return outerSpacing === pattern.valueA ? pattern.valueB : pattern.valueA;
+    return outerSpacing === alternating.valueA ? alternating.valueB : alternating.valueA;
   }
 
-  // Non-alternating: use base row distance
+  // Then check for symmetric pattern
+  const symmetric = detectSymmetricPattern(rowSpacings);
+  if (symmetric) {
+    return symmetric.betweenPassSpacing;
+  }
+
+  // Non-pattern: use base row distance
   return rowDistance;
 }
 

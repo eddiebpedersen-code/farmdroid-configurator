@@ -76,28 +76,24 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
   // Row span = distance from first to last row
   const rowSpan = rowSpacings.reduce((sum, s) => sum + s, 0);
-  // Working width = rowSpan + between-pass spacing
-  // For alternating patterns (A-B-A-B), adds the "other" value to continue the pattern
-  // For uniform/irregular patterns, adds the base row distance
-  // Minimum working width is rowSpan (to prevent pass overlap)
+  // Calculate between-pass spacing based on mode:
+  // - For alternating patterns (A-B-A-B), uses the "other" value to continue the pattern
+  // - For symmetric/uniform patterns, uses the pattern's natural spacing
+  // - For custom working width, derives from the override
+  // Between-pass spacing must be at least minRowDistance to prevent overlap with faded rows
   const patternBetweenPassSpacing = calculateBetweenPassSpacing(rowSpacings, config.rowDistance);
   const calculatedWorkingWidth = rowSpan + patternBetweenPassSpacing;
 
-  // Determine working width based on mode:
-  // - followWheelSpacing (Beds mode): working width follows wheel spacing
-  // - workingWidthOverride set: use the manual override
-  // - Otherwise (Pattern mode): use calculated working width to maintain row spacing pattern
-  const defaultWorkingWidth = calculatedWorkingWidth;
-  const baseWorkingWidth = followWheelSpacing
-    ? config.wheelSpacing
-    : (workingWidthOverride !== null ? workingWidthOverride : defaultWorkingWidth);
+  // Determine the desired between-pass spacing based on mode
+  const desiredBetweenPassSpacing = followWheelSpacing
+    ? config.wheelSpacing - rowSpan
+    : (workingWidthOverride !== null ? workingWidthOverride - rowSpan : patternBetweenPassSpacing);
 
-  // Working width can be less than wheel spacing, but never less than rowSpan (prevents overlap)
-  const minWorkingWidth = rowSpan;
-  const workingWidth = Math.max(baseWorkingWidth, minWorkingWidth);
-  // Actual between-pass spacing based on final working width
-  // When custom working width is set, the extra space is split equally to both sides
-  const betweenPassSpacing = workingWidth - rowSpan;
+  // Between-pass spacing stays constant, but can't go below minRowDistance
+  const betweenPassSpacing = Math.max(minRowDistance, desiredBetweenPassSpacing);
+
+  // Working width follows from rowSpan + betweenPassSpacing
+  const workingWidth = rowSpan + betweenPassSpacing;
 
   const validation = validateRowConfig(config.activeRows, config.rowDistance, config.seedSize, config.frontWheel, rowSpacings);
 
@@ -119,11 +115,16 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     edge: "left" | "right";
   } | null>(null);
   const [hoveredEdgeAdd, setHoveredEdgeAdd] = useState<"left" | "right" | null>(null);
+  const [isVisualizationHovered, setIsVisualizationHovered] = useState(false);
   const [hoveredSeedUnit, setHoveredSeedUnit] = useState<number | null>(null);
+  const [hoveredRemoveRow, setHoveredRemoveRow] = useState<number | null>(null);
+  const [draggingWorkingWidth, setDraggingWorkingWidth] = useState(false);
+  const [workingWidthHandleY, setWorkingWidthHandleY] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
   const dragStartX = useRef<number>(0);
   const dragStartSpacings = useRef<number[]>([]);
   const dragStartValue = useRef<number>(0);
+  const dragStartWorkingWidth = useRef<number>(0);
   const svgRef = useRef<SVGSVGElement>(null);
 
   // Animation state - now using CSS animations for smooth performance
@@ -313,6 +314,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   // Helper function to get mirror spacing index for symmetric configuration
   // With n spacings: spacing[i] mirrors spacing[n-1-i]
   const getMirrorSpacingIndex = (idx: number, totalSpacings: number) => totalSpacings - 1 - idx;
+  const getMirrorRowIndex = (idx: number) => config.activeRows - 1 - idx;
 
   // Max working width is 340cm (3400mm) - matches toolbeam length
   const maxWorkingWidth = 3400;
@@ -394,6 +396,35 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
     updateConfig({ rowSpacings: newSpacings });
   }, [config.activeRows, draggingRowIdx, minRowDistance, maxWorkingWidth, updateConfig, getMirrorSpacingIndex]);
+
+  // Working width drag handlers - dragging the boundary between passes
+  const handleWorkingWidthDragStart = useCallback((clientX: number) => {
+    setDraggingWorkingWidth(true);
+    dragStartX.current = clientX;
+    dragStartWorkingWidth.current = workingWidth;
+  }, [workingWidth]);
+
+  const handleWorkingWidthDragMove = useCallback((clientX: number) => {
+    if (!draggingWorkingWidth || !svgRef.current) return;
+
+    const rect = svgRef.current.getBoundingClientRect();
+    const svgScale = rect.width / svgWidth;
+    const deltaPx = clientX - dragStartX.current;
+    // Dragging LEFT (negative deltaPx) = INCREASE working width
+    // Dragging RIGHT (positive deltaPx) = DECREASE working width
+    const deltaMm = -deltaPx / (pxPerMm * svgScale);
+
+    const newWorkingWidth = dragStartWorkingWidth.current + deltaMm;
+    // Clamp to valid range and round to nearest 10mm (1cm)
+    // Minimum working width = rowSpan + minRowDistance (to ensure proper between-pass spacing)
+    const minWorkingWidth = rowSpan + minRowDistance;
+    const clampedWidth = Math.max(minWorkingWidth, Math.min(maxWorkingWidth, Math.round(newWorkingWidth / 10) * 10));
+
+    // Update working width override (exits Beds mode, enters custom mode)
+    setFollowWheelSpacing(false);
+    setWorkingWidthOverride(clampedWidth === calculatedWorkingWidth ? null : clampedWidth);
+  }, [draggingWorkingWidth, rowSpan, minRowDistance, maxWorkingWidth, calculatedWorkingWidth]);
+
   // Check if adding more rows would exceed max working width
   // New working width after adding = current rowSpan + new spacing + rowDistance
   const canAddMoreRows = (rowSpan + config.rowDistance + config.rowDistance) <= maxWorkingWidth && config.activeRows < ROW_CONSTRAINTS.maxActiveRows;
@@ -410,8 +441,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const handleAddRowAt = useCallback((gapIndex: number) => {
     // Always add rows in pairs for symmetry
     if (config.activeRows + 2 > ROW_CONSTRAINTS.maxActiveRows) return;
-    // Check if new working width would exceed max (adding 2 rows adds at least 2*minRowDistance to span)
-    if (rowSpan + minRowDistance * 2 > maxWorkingWidth) return;
+    // Note: No working width check needed here - inserting between rows splits existing gaps,
+    // it doesn't increase the total row span
 
     const totalSpacings = rowSpacings.length;
     const mirrorGapIndex = getMirrorSpacingIndex(gapIndex, totalSpacings);
@@ -562,6 +593,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     setDraggingWheelSide(null);
     setDraggingRowIdx(null);
     setHoveredSeedUnit(null);
+    setDraggingWorkingWidth(false);
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
@@ -569,8 +601,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       handleWheelDragMove(e.clientX);
     } else if (draggingRowIdx !== null) {
       handleRowDragMove(e.clientX);
+    } else if (draggingWorkingWidth) {
+      handleWorkingWidthDragMove(e.clientX);
     }
-  }, [draggingWheelSide, draggingRowIdx, handleWheelDragMove, handleRowDragMove]);
+  }, [draggingWheelSide, draggingRowIdx, draggingWorkingWidth, handleWheelDragMove, handleRowDragMove, handleWorkingWidthDragMove]);
 
   // Handler to set individual spacing value directly (with mirroring for symmetry)
   const handleSetSpacing = useCallback((spacingIdx: number, valueCm: number) => {
@@ -739,6 +773,34 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
         {/* View container with fixed height */}
         <div className="h-[420px] md:h-[480px] relative">
+          {/* Empty state overlay when no rows configured */}
+          {config.activeRows === 0 && viewMode === "2d" && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 text-center max-w-sm mx-4 pointer-events-auto"
+              >
+                <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                  <Plus className="h-6 w-6 text-emerald-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-stone-900 mb-2">
+                  {t("emptyState.title")}
+                </h3>
+                <p className="text-sm text-stone-500 mb-4">
+                  {t("emptyState.description")}
+                </p>
+                <button
+                  onClick={() => handleSetRowCount(is3Wheel ? 2 : 1)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  {t("emptyState.addRows")}
+                </button>
+              </motion.div>
+            </div>
+          )}
+
           {/* Daily Capacity Graph */}
           {viewMode === "3d" && (
             <motion.div
@@ -764,12 +826,18 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             className="w-full h-full"
             onMouseMove={handleMouseMove}
             onMouseUp={handleDragEnd}
-            onMouseLeave={handleDragEnd}
+            onMouseLeave={() => {
+              handleDragEnd();
+              setIsVisualizationHovered(false);
+            }}
+            onMouseEnter={() => setIsVisualizationHovered(true)}
           >
             <svg
               ref={svgRef}
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
               className="w-full h-full"
+              role="img"
+              aria-label={t("visualizationAria", { rows: config.activeRows, spacing: config.rowDistance / 10 })}
             >
               {/* Row area - subtle tinted background */}
               <rect
@@ -1204,7 +1272,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                             }
                           }}
                           autoFocus
-                          className="w-full h-full text-center text-[11px] font-medium text-stone-700 bg-white border border-teal-400 rounded outline-none"
+                          className="w-full h-full text-center text-[11px] font-medium text-stone-700 bg-white border border-emerald-400 rounded outline-none"
                           style={{ fontSize: "11px", padding: "2px" }}
                         />
                       </foreignObject>
@@ -1222,6 +1290,42 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   </g>
                 );
               })}
+
+              {/* Between-pass spacing dimension line - shown when hovering/dragging the working width handle */}
+              {(hoveredGap === -1 || draggingWorkingWidth) && previousPassRowsMm.length > 0 && (() => {
+                const prevRightmostMm = previousPassRowsMm[previousPassRowsMm.length - 1];
+                const currLeftmostMm = rowPositionsMm[0];
+                const visibleMinMm = -svgWidth / 2 / pxPerMm;
+                if (prevRightmostMm < visibleMinMm) return null;
+
+                const leftX = mmToX(prevRightmostMm);
+                const rightX = mmToX(currLeftmostMm);
+                const midX = (leftX + rightX) / 2;
+                const spacingY = rowAreaTop + 145;
+                const gapPx = rightX - leftX;
+
+                if (gapPx < 40) return null;
+
+                return (
+                  <g>
+                    {/* Left tick */}
+                    <line x1={leftX} y1={spacingY - 7} x2={leftX} y2={spacingY + 7} stroke="#0d9488" strokeWidth="1.5" />
+                    {/* Horizontal line */}
+                    <line x1={leftX} y1={spacingY} x2={rightX} y2={spacingY} stroke="#0d9488" strokeWidth="1.5" />
+                    {/* Right tick */}
+                    <line x1={rightX} y1={spacingY - 7} x2={rightX} y2={spacingY + 7} stroke="#0d9488" strokeWidth="1.5" />
+                    {/* Spacing value label */}
+                    <text
+                      x={midX}
+                      y={spacingY - 12}
+                      textAnchor="middle"
+                      className="text-[14px] font-bold fill-teal-600"
+                    >
+                      {(betweenPassSpacing / 10).toFixed(1)} cm
+                    </text>
+                  </g>
+                );
+              })()}
 
               {/* Wheel tracks in soil - rendered before seeding units so hoppers appear solid */}
               {(() => {
@@ -1362,6 +1466,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 const canRemove = config.activeRows > (is3Wheel ? 2 : 1);
                 const canDrag = config.activeRows > 1;
                 const isTooCloseToWheel = isRowTooCloseToWheel(rowMm);
+                // Check if this row is marked for removal (either directly hovered or its mirror pair)
+                const mirrorIdx = getMirrorRowIndex(idx);
+                const isMarkedForRemoval = hoveredRemoveRow !== null &&
+                  (idx === hoveredRemoveRow || idx === mirrorIdx || getMirrorRowIndex(hoveredRemoveRow) === idx);
 
                 return (
                   <g
@@ -1369,8 +1477,21 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onMouseEnter={() => setHoveredRow(idx)}
                     onMouseLeave={() => !isDragging && setHoveredRow(null)}
                   >
+                    {/* Removal highlight - shows when hovering remove button on this or paired row */}
+                    {isMarkedForRemoval && (
+                      <rect
+                        x={x - 15}
+                        y={rowAreaTop}
+                        width={30}
+                        height={rowAreaBottom - rowAreaTop}
+                        fill="rgba(248, 113, 113, 0.15)"
+                        rx={4}
+                        style={{ pointerEvents: "none" }}
+                      />
+                    )}
+
                     {/* Warning highlight */}
-                    {isTooCloseToWheel && (
+                    {isTooCloseToWheel && !isMarkedForRemoval && (
                       <rect
                         x={x - 12}
                         y={rowAreaTop}
@@ -1382,45 +1503,39 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       />
                     )}
 
-                    {/* Row number badge - above toolbeam */}
-                    <g transform={`translate(${x}, ${(rowAreaTop + rowAreaBottom) / 2 - 75})`}>
-                      {/* Invisible hover area that covers both badge and remove button */}
-                      <rect
-                        x="-20"
-                        y={canRemove ? "-45" : "-20"}
-                        width="40"
-                        height={canRemove ? "65" : "40"}
-                        fill="transparent"
-                        className={canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}
-                      />
-
-                      {/* Remove button - positioned above badge */}
-                      {isHovered && !isDragging && canRemove && (
-                        <g
-                          transform="translate(0, -30)"
-                          className="cursor-pointer"
-                          onClick={(e) => { e.stopPropagation(); handleRemoveRow(idx); }}
-                        >
-                          <circle r="12" fill="white" stroke="#e7e5e4" strokeWidth="1" />
-                          <line x1="-4" y1="0" x2="4" y2="0" stroke={colors.removeBtn} strokeWidth="2.5" strokeLinecap="round" />
-                        </g>
-                      )}
-
+                    {/* Row number badge - visual only, interaction handled in separate layer */}
+                    <g transform={`translate(${x}, ${(rowAreaTop + rowAreaBottom) / 2 - 75})`} style={{ pointerEvents: "none" }}>
                       {/* Badge circle */}
                       <circle
                         r={14}
-                        fill={isHovered || isDragging ? colors.activeRowHover : colors.activeRow}
-                        className={canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}
-                        onMouseDown={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); } : undefined}
+                        fill={isMarkedForRemoval ? "#fca5a5" : (isHovered || isDragging ? colors.activeRowHover : colors.activeRow)}
                       />
-                      <text
-                        y={5}
-                        textAnchor="middle"
-                        className="text-[12px] fill-white font-semibold select-none"
-                        style={{ pointerEvents: "none" }}
-                      >
-                        {idx + 1}
-                      </text>
+
+                      {/* Show X icon when hovered and can remove, otherwise show row number */}
+                      {isHovered && canRemove && !isDragging ? (
+                        <g>
+                          <line x1="-4" y1="-4" x2="4" y2="4" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                          <line x1="4" y1="-4" x2="-4" y2="4" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                        </g>
+                      ) : (
+                        <text
+                          y={5}
+                          textAnchor="middle"
+                          className={`text-[12px] font-semibold select-none ${isMarkedForRemoval ? "fill-red-700" : "fill-white"}`}
+                        >
+                          {idx + 1}
+                        </text>
+                      )}
+
+                      {/* Tooltip showing paired removal */}
+                      {hoveredRemoveRow === idx && (
+                        <g>
+                          <rect x="-52" y="22" width="104" height="22" rx="4" fill="#1c1917" fillOpacity="0.9" />
+                          <text y="37" textAnchor="middle" className="text-[10px] fill-white">
+                            Remove rows {Math.min(idx + 1, mirrorIdx + 1)} &amp; {Math.max(idx + 1, mirrorIdx + 1)}
+                          </text>
+                        </g>
+                      )}
                     </g>
                   </g>
                 );
@@ -1502,47 +1617,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   transform={`translate(${svgCenterX}, ${(rowAreaTop + rowAreaBottom) / 2})`}
                 >
                   <circle r="24" fill="white" stroke={colors.addBtn} strokeWidth="2" />
-                  <text y="6" textAnchor="middle" className="text-[20px] fill-teal-600 font-bold select-none">+</text>
-                  <text y="50" textAnchor="middle" className="text-[12px] fill-teal-600 font-medium">Click to add rows</text>
+                  <text y="6" textAnchor="middle" className="text-[20px] fill-emerald-600 font-bold select-none">+</text>
+                  <text y="50" textAnchor="middle" className="text-[12px] fill-emerald-600 font-medium">Click to add rows</text>
                 </g>
-              )}
-
-              {/* Add row buttons at edges - always visible when rows exist */}
-              {canAddMoreRows && config.activeRows > 0 && rowPositionsMm.length > 0 && (
-                <>
-                  <g
-                    className="cursor-pointer"
-                    onClick={() => handleAddRowEdge("left")}
-                    onMouseEnter={() => setHoveredEdgeAdd("left")}
-                    onMouseLeave={() => setHoveredEdgeAdd(null)}
-                    transform={`translate(${mmToX(rowPositionsMm[0]) - 40}, ${(rowAreaTop + rowAreaBottom) / 2})`}
-                  >
-                    <circle r="16" fill="white" stroke={hoveredEdgeAdd === "left" ? colors.activeRowHover : colors.addBtn} strokeWidth="2" />
-                    <text y="6" textAnchor="middle" className="text-[18px] fill-teal-600 font-bold select-none">+</text>
-                    {hoveredEdgeAdd === "left" && (
-                      <>
-                        <rect x="-45" y="22" width="90" height="22" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                        <text y="37" textAnchor="middle" className="text-[10px] fill-white">Add row{is3Wheel ? "s" : ""} on left</text>
-                      </>
-                    )}
-                  </g>
-                  <g
-                    className="cursor-pointer"
-                    onClick={() => handleAddRowEdge("right")}
-                    onMouseEnter={() => setHoveredEdgeAdd("right")}
-                    onMouseLeave={() => setHoveredEdgeAdd(null)}
-                    transform={`translate(${mmToX(rowPositionsMm[rowPositionsMm.length - 1]) + 40}, ${(rowAreaTop + rowAreaBottom) / 2})`}
-                  >
-                    <circle r="16" fill="white" stroke={hoveredEdgeAdd === "right" ? colors.activeRowHover : colors.addBtn} strokeWidth="2" />
-                    <text y="6" textAnchor="middle" className="text-[18px] fill-teal-600 font-bold select-none">+</text>
-                    {hoveredEdgeAdd === "right" && (
-                      <>
-                        <rect x="-48" y="22" width="96" height="22" rx="4" fill="#1c1917" fillOpacity="0.9" />
-                        <text y="37" textAnchor="middle" className="text-[10px] fill-white">Add row{is3Wheel ? "s" : ""} on right</text>
-                      </>
-                    )}
-                  </g>
-                </>
               )}
 
               {/* Hover zones between previous pass rows */}
@@ -1606,7 +1683,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 );
               })}
 
-              {/* Hover zone for gap between previous pass and current pass */}
+              {/* Draggable boundary between previous pass and current pass for adjusting working width */}
               {previousPassRowsMm.length > 0 && (() => {
                 const prevRightmostMm = previousPassRowsMm[previousPassRowsMm.length - 1];
                 const currLeftmostMm = rowPositionsMm[0];
@@ -1615,68 +1692,92 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 if (prevRightmostMm < visibleMinMm) return null;
 
                 const leftX = mmToX(prevRightmostMm);
-                const rightX = mmToX(currLeftmostMm);
-                const midX = (leftX + rightX) / 2;
-                const gapWidth = rightX - leftX;
-                const seedingUnitY = (rowAreaTop + rowAreaBottom) / 2 - 35;
-                const seedingUnitHeight = config.seedSize === "6mm" ? 90 : 100;
-                const isHovered = hoveredGap === -1; // Use -1 for previous pass gap
-                const isDragging = draggingRowIdx !== null;
-
-                // Account for seeding unit width - previous pass doesn't have visible seeding units,
-                // but current pass does, so only offset on the right side
-                const seedingUnitHalfWidth = config.seedSize === "6mm" ? 23 : 27;
-                const visibleGapEnd = rightX - seedingUnitHalfWidth;
-                const visibleGapWidth = visibleGapEnd - leftX;
+                const boundaryX = mmToX(currLeftmostMm);
+                const midX = (leftX + boundaryX) / 2;
+                const gapWidth = boundaryX - leftX;
+                const isHovered = hoveredGap === -1;
+                const isDragging = draggingWorkingWidth;
+                const isAnyDragging = draggingRowIdx !== null || draggingWorkingWidth;
 
                 if (gapWidth < 20) return null;
 
                 return (
-                  <g
-                    key="prev-pass-gap"
-                    onMouseEnter={() => !isDragging && setHoveredGap(-1)}
-                    onMouseLeave={() => setHoveredGap(null)}
-                  >
-                    {/* Hover area above seeding units - full gap width */}
-                    <rect
-                      x={leftX}
-                      y={rowAreaTop}
-                      width={gapWidth - 2}
-                      height={seedingUnitY - rowAreaTop}
-                      fill={isHovered ? "rgba(100, 116, 139, 0.08)" : "transparent"}
-                      pointerEvents="all"
-                    />
-                    {/* Hover area at seeding unit level - offset from current pass seeding unit */}
-                    {visibleGapWidth > 5 && (
+                  <g key="working-width-drag-handle">
+                    {/* Gap hover area for showing between-pass spacing */}
+                    <g
+                      onMouseEnter={() => !isAnyDragging && setHoveredGap(-1)}
+                      onMouseLeave={() => !isDragging && setHoveredGap(null)}
+                    >
                       <rect
                         x={leftX}
-                        y={seedingUnitY}
-                        width={visibleGapWidth}
-                        height={seedingUnitHeight}
-                        fill={isHovered ? "rgba(100, 116, 139, 0.08)" : "transparent"}
+                        y={rowAreaTop}
+                        width={gapWidth - 20}
+                        height={rowAreaBottom - rowAreaTop}
+                        fill={isHovered && !isDragging ? "rgba(100, 116, 139, 0.08)" : "transparent"}
                         pointerEvents="all"
                       />
-                    )}
-                    {/* Hover area below seeding units - full gap width */}
-                    <rect
-                      x={leftX}
-                      y={seedingUnitY + seedingUnitHeight}
-                      width={gapWidth - 2}
-                      height={rowAreaBottom - (seedingUnitY + seedingUnitHeight)}
-                      fill={isHovered ? "rgba(100, 116, 139, 0.08)" : "transparent"}
-                      pointerEvents="all"
-                    />
-                    {/* Between-pass spacing label - shown when hovered */}
-                    {isHovered && (
-                      <text
-                        x={midX}
-                        y={rowAreaTop + 145 - 12}
-                        textAnchor="middle"
-                        className="text-[14px] font-bold fill-stone-900"
-                      >
-                        {(betweenPassSpacing / 10).toFixed(1)} cm
-                      </text>
-                    )}
+                      {/* Between-pass spacing label - shown when hovered but not dragging */}
+                      {isHovered && !isDragging && (
+                        <text
+                          x={midX}
+                          y={rowAreaTop + 145 - 12}
+                          textAnchor="middle"
+                          className="text-[14px] font-bold fill-stone-900"
+                        >
+                          {(betweenPassSpacing / 10).toFixed(1)} cm
+                        </text>
+                      )}
+                    </g>
+
+                    {/* Draggable handle at the faded row closest to the robot */}
+                    {(() => {
+                      // Calculate handle Y position - follow mouse or use center as default
+                      const handleY = workingWidthHandleY !== null
+                        ? Math.max(rowAreaTop + 30, Math.min(rowAreaBottom - 30, workingWidthHandleY))
+                        : (rowAreaTop + rowAreaBottom) / 2;
+
+                      return (
+                        <g
+                          style={{ cursor: isDragging ? "grabbing" : (isHovered ? "grab" : "default") }}
+                          onMouseEnter={() => !isAnyDragging && setHoveredGap(-1)}
+                          onMouseLeave={() => {
+                            if (!isDragging) {
+                              setHoveredGap(null);
+                              setWorkingWidthHandleY(null);
+                            }
+                          }}
+                          onMouseMove={(e) => {
+                            if (!svgRef.current) return;
+                            const rect = svgRef.current.getBoundingClientRect();
+                            const svgY = (e.clientY - rect.top) * (svgHeight / rect.height);
+                            setWorkingWidthHandleY(svgY);
+                          }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleWorkingWidthDragStart(e.clientX);
+                          }}
+                        >
+                          {/* Invisible wider hit area for easier grabbing */}
+                          <rect
+                            x={leftX - 20}
+                            y={rowAreaTop}
+                            width={40}
+                            height={rowAreaBottom - rowAreaTop}
+                            fill="transparent"
+                            style={{ pointerEvents: "all" }}
+                          />
+                          {/* Drag handle bubble - only shown on hover */}
+                          {(isHovered || isDragging) && (
+                            <g transform={`translate(${leftX}, ${handleY})`} style={{ pointerEvents: "none" }}>
+                              <circle r="14" fill={isDragging ? "#0d9488" : "#14b8a6"} />
+                              <text y="5" textAnchor="middle" className="text-[12px] fill-white font-bold select-none">
+                                {"<>"}
+                              </text>
+                            </g>
+                          )}
+                        </g>
+                      );
+                    })()}
                   </g>
                 );
               })()}
@@ -1704,7 +1805,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 // Scale button size based on visible gap width
                 const buttonRadius = Math.min(14, Math.max(8, Math.max(visibleGapWidth, 20) / 3));
                 const fontSize = buttonRadius >= 12 ? "16px" : "12px";
-                const showAddButton = canAddMoreRows && gapWidth >= 30;
+                // For between-row inserts: only check max rows (not working width, since we're splitting existing gaps)
+                // and that the gap is large enough to split into two valid gaps
+                const canInsertBetweenRows = config.activeRows + 2 <= ROW_CONSTRAINTS.maxActiveRows && spacing >= minRowDistance * 2;
+                const showAddButton = canInsertBetweenRows && gapWidth >= 20;
 
                 return (
                   <g
@@ -1751,8 +1855,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       fill={isHoveredGap ? "rgba(13, 148, 136, 0.08)" : "transparent"}
                       pointerEvents="all"
                     />
-                    {/* Add button at seeding unit level */}
-                    {isHoveredGap && showAddButton && visibleGapWidth > 20 && (
+                    {/* Add button at seeding unit level - lower threshold for more consistent visibility */}
+                    {isHoveredGap && showAddButton && visibleGapWidth > 5 && (
                       <g transform={`translate(${midX}, ${seedingUnitY + seedingUnitHeight / 2})`}>
                         <circle
                           r={buttonRadius}
@@ -1764,7 +1868,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                           y={buttonRadius >= 12 ? 5 : 4}
                           textAnchor="middle"
                           style={{ fontSize }}
-                          className="fill-teal-600 font-medium select-none"
+                          className="fill-emerald-600 font-medium select-none"
                         >+</text>
                       </g>
                     )}
@@ -2174,6 +2278,72 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </text>
               </g>
 
+              {/* ========== BADGE INTERACTION LAYER - rendered on top of gap hover zones ========== */}
+              {rowPositionsMm.map((rowMm, idx) => {
+                const x = mmToX(rowMm);
+                const badgeY = (rowAreaTop + rowAreaBottom) / 2 - 75;
+                const isHovered = hoveredRow === idx;
+                const isDragging = draggingRowIdx === idx;
+                const canRemove = config.activeRows > (is3Wheel ? 2 : 1);
+                const canDrag = config.activeRows > 1;
+
+                return (
+                  <rect
+                    key={`badge-hover-${idx}`}
+                    x={x - 18}
+                    y={badgeY - 18}
+                    width={36}
+                    height={36}
+                    rx={18}
+                    fill="transparent"
+                    style={{ pointerEvents: "all" }}
+                    className={isHovered && canRemove && !isDragging ? "cursor-pointer" : (canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default")}
+                    onMouseEnter={() => {
+                      setHoveredRow(idx);
+                      if (canRemove) setHoveredRemoveRow(idx);
+                    }}
+                    onMouseLeave={() => {
+                      if (!isDragging) setHoveredRow(null);
+                      setHoveredRemoveRow(null);
+                    }}
+                    onClick={canRemove && !isDragging ? (e) => { e.stopPropagation(); handleRemoveRow(idx); } : undefined}
+                    onMouseDown={canDrag && !canRemove ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); } : undefined}
+                  />
+                );
+              })}
+
+              {/* ========== EDGE ADD BUTTONS - rendered on top of hover zones, only on hover ========== */}
+              {isVisualizationHovered && canAddMoreRows && config.activeRows > 0 && rowPositionsMm.length > 0 && (() => {
+                // Match positioning and style with between-row buttons
+                const seedingUnitY = (rowAreaTop + rowAreaBottom) / 2 - 35;
+                const seedingUnitHeight = config.seedSize === "6mm" ? 90 : 100;
+                const buttonY = seedingUnitY + seedingUnitHeight / 2;
+                const buttonRadius = 14;
+
+                return (
+                  <>
+                    <g
+                      className="cursor-pointer"
+                      style={{ pointerEvents: "auto" }}
+                      onClick={() => handleAddRowEdge("left")}
+                      transform={`translate(${mmToX(rowPositionsMm[0]) - 40}, ${buttonY})`}
+                    >
+                      <circle r={buttonRadius} fill="white" stroke={colors.addBtn} strokeWidth="1.5" />
+                      <text y="5" textAnchor="middle" style={{ fontSize: "16px" }} className="fill-emerald-600 font-medium select-none">+</text>
+                    </g>
+                    <g
+                      className="cursor-pointer"
+                      style={{ pointerEvents: "auto" }}
+                      onClick={() => handleAddRowEdge("right")}
+                      transform={`translate(${mmToX(rowPositionsMm[rowPositionsMm.length - 1]) + 40}, ${buttonY})`}
+                    >
+                      <circle r={buttonRadius} fill="white" stroke={colors.addBtn} strokeWidth="1.5" />
+                      <text y="5" textAnchor="middle" style={{ fontSize: "16px" }} className="fill-emerald-600 font-medium select-none">+</text>
+                    </g>
+                  </>
+                );
+              })()}
+
               {/* ========== TOOLTIP LAYER - renders on top of everything ========== */}
 
 
@@ -2404,7 +2574,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   <button
                     onClick={() => setSeedsPerGroup(Math.max(2, seedsPerGroup - 1))}
                     disabled={seedsPerGroup <= 2 || seedingMode !== "group"}
-                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -2412,7 +2582,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   <button
                     onClick={() => setSeedsPerGroup(Math.min(15, seedsPerGroup + 1))}
                     disabled={seedsPerGroup >= 15 || seedingMode !== "group"}
-                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -2459,7 +2629,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       setPlantSpacing(Math.max(3, Math.round((plantSpacing - step) * 10) / 10));
                     }}
                     disabled={plantSpacing <= 3 || seedingMode === "line"}
-                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -2478,12 +2648,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         }
                       }}
                       autoFocus
-                      className="w-12 h-6 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded outline-none"
+                      className="w-14 h-9 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     />
                   ) : (
                     <span
                       onClick={handleStartEditPlantSpacing}
-                      className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-teal-100 ${
+                      className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-emerald-100 ${
                         plantSpacing < 10 && seedingMode !== "line" ? "text-red-600" : "text-stone-900"
                       }`}
                     >
@@ -2496,7 +2666,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       setPlantSpacing(Math.min(40, Math.round((plantSpacing + step) * 10) / 10));
                     }}
                     disabled={plantSpacing >= 40 || seedingMode === "line"}
-                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -2574,19 +2744,19 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     rowSpacings: newSpacings
                   });
                 }}
-                className={`flex-1 text-left p-3 rounded-lg border transition-all ${
+                className={`selection-card flex-1 text-left p-3 rounded-xl border transition-all card-hover ${
                   isSelected
-                    ? "border-stone-900 bg-stone-50"
-                    : "border-stone-200 hover:border-stone-300"
+                    ? "selected"
+                    : "border-stone-200 hover:border-stone-300 bg-white"
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-stone-900">+Seed {size}</span>
                   {isSelected && (
-                    <div className="h-3.5 w-3.5 rounded-full bg-stone-900 flex items-center justify-center">
-                      <Check className="h-2 w-2 text-white" />
+                    <div className="h-4 w-4 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                      <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
                     </div>
                   )}
+                  <span className="text-sm font-medium text-stone-900">+Seed {size}</span>
                 </div>
                 <p className="text-xs text-stone-400 mt-0.5">{formatPrice(PRICES.activeRow[size], config.currency)}/row</p>
               </button>
@@ -2594,16 +2764,19 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           })}
         </div>
 
-        {/* Seed system info button - styled as a clear clickable link */}
-        <button
-          onClick={() => setShowSeedInfoModal(true)}
-          className="flex items-center gap-2 text-xs text-stone-600 hover:text-stone-900 transition-colors group"
-        >
-          <span className="flex items-center justify-center h-5 w-5 rounded-full border border-stone-300 group-hover:border-stone-400 group-hover:bg-stone-100 transition-colors">
-            <Info className="h-3 w-3" />
-          </span>
-          <span className="underline underline-offset-2">{t("seedInfoModal.trigger")}</span>
-        </button>
+        {/* Seed size tip with learn more link */}
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-xs text-amber-800">
+            <span className="font-medium">{t("seedSizeTip.label")}</span>{" "}
+            {t("seedSizeTip.text")}{" "}
+            <button
+              onClick={() => setShowSeedInfoModal(true)}
+              className="text-amber-700 hover:text-amber-900 underline underline-offset-2 transition-colors"
+            >
+              {t("seedSizeTip.learnMore")}
+            </button>
+          </p>
+        </div>
 
         {/* Seed Info Modal */}
         <SeedInfoModal
@@ -2624,14 +2797,14 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
         {/* Cost display */}
         {config.activeRows > 0 && (
-          <div className="py-2 px-3 rounded-lg bg-teal-50 border border-teal-100">
+          <div className="py-2 px-3 rounded-lg bg-emerald-50 border border-emerald-100">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-teal-700">{config.activeRows} active rows</span>
-              <span className="text-sm font-semibold text-teal-700">{formatPrice(config.activeRows * rowPrice, config.currency)}</span>
+              <span className="text-sm text-emerald-700">{config.activeRows} active rows</span>
+              <span className="text-sm font-semibold text-emerald-700">{formatPrice(config.activeRows * rowPrice, config.currency)}</span>
             </div>
             <div className="flex justify-between items-center mt-0.5">
-              <span className="text-xs text-teal-600">{totalPassiveRows} passive rows</span>
-              <span className="text-xs text-teal-500">{totalPassiveRows > 0 ? "included" : "–"}</span>
+              <span className="text-xs text-emerald-600">{totalPassiveRows} passive rows</span>
+              <span className="text-xs text-emerald-500">{totalPassiveRows > 0 ? "included" : "–"}</span>
             </div>
           </div>
         )}
@@ -2659,7 +2832,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   handleSetRowCount(config.activeRows - decrement);
                 }}
                 disabled={config.activeRows <= 0}
-                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -2674,7 +2847,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   }
                 }}
                 disabled={!canAddMoreRows}
-                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 <Plus className="h-3 w-3" />
               </button>
@@ -2724,7 +2897,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     });
                   }}
                   disabled={config.rowDistance <= minRowDistance}
-                  className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                 >
                   <Minus className="h-3 w-3" />
                 </button>
@@ -2743,12 +2916,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       }
                     }}
                     autoFocus
-                    className="w-12 h-6 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded outline-none"
+                    className="w-14 h-9 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                   />
                 ) : (
                   <span
                     onClick={handleStartEditRowDistance}
-                    className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-teal-100 ${hasFrontWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}
+                    className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-emerald-100 ${hasFrontWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}
                   >
                     {config.rowDistance / 10}cm
                   </span>
@@ -2764,7 +2937,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     });
                   }}
                   disabled={!canIncreaseRowDistance}
-                  className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                 >
                   <Plus className="h-3 w-3" />
                 </button>
@@ -2793,7 +2966,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.max(WHEEL_CONSTRAINTS.minWheelSpacing, config.wheelSpacing - 100) })}
                 disabled={config.wheelSpacing <= WHEEL_CONSTRAINTS.minWheelSpacing}
-                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -2801,7 +2974,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.min(WHEEL_CONSTRAINTS.maxWheelSpacing, config.wheelSpacing + 100) })}
                 disabled={config.wheelSpacing >= WHEEL_CONSTRAINTS.maxWheelSpacing}
-                className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 <Plus className="h-3 w-3" />
               </button>
@@ -2820,9 +2993,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
             if (isOptimal) {
               return (
-                <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-teal-50 border border-teal-200">
-                  <Check className="h-3.5 w-3.5 text-teal-600 flex-shrink-0" />
-                  <span className="text-xs text-teal-700">{t("optimalWheelSpacing")}</span>
+                <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-emerald-50 border border-emerald-200">
+                  <Check className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
+                  <span className="text-xs text-emerald-700">{t("optimalWheelSpacing")}</span>
                 </div>
               );
             }
@@ -2857,13 +3030,14 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     onClick={(e) => {
                       const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
                       const decreased = workingWidth - step;
-                      // Minimum is rowSpan to prevent pass overlap
-                      const newWidth = decreased < minWorkingWidth ? minWorkingWidth : decreased;
+                      // Minimum working width = rowSpan + minRowDistance to prevent pass overlap
+                      const minWidth = rowSpan + minRowDistance;
+                      const newWidth = decreased < minWidth ? minWidth : decreased;
                       setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
                       setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
                     }}
-                    disabled={workingWidth <= minWorkingWidth}
-                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                    disabled={workingWidth <= rowSpan + minRowDistance}
+                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -2882,12 +3056,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         }
                       }}
                       autoFocus
-                      className="w-12 h-6 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded outline-none"
+                      className="w-14 h-9 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                     />
                   ) : (
                     <span
                       onClick={handleStartEditWorkingWidth}
-                      className="text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-teal-100 text-stone-900"
+                      className="text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-emerald-100 text-stone-900"
                     >
                       {(workingWidth / 10).toFixed(0)}cm
                     </span>
@@ -2900,7 +3074,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
                     }}
                     disabled={workingWidth >= 5000}
-                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -2976,7 +3150,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 onClick={() => setSelectedCrop(crop)}
                 className={`w-9 h-9 rounded-lg text-lg transition-all flex items-center justify-center ${
                   selectedCrop.id === crop.id
-                    ? "bg-teal-50 border-2 border-teal-300 scale-105"
+                    ? "bg-emerald-50 border-2 border-emerald-300 scale-105"
                     : "bg-stone-100 hover:bg-stone-200 border-2 border-transparent"
                 }`}
                 title={tCrops(crop.nameKey)}
@@ -3011,7 +3185,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             </div>
             <button
               onClick={() => applyCropConfig(selectedCrop)}
-              className="w-full py-1.5 px-3 rounded-md bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium transition-colors"
+              className="w-full py-1.5 px-3 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition-colors"
             >
               {t("applyCropConfig", { crop: tCrops(selectedCrop.nameKey) })}
             </button>

@@ -24,7 +24,9 @@
     "powerSource": "Stromquelle",
     "frontWheel": "Vorderrad",
     "activeRows": "Aktive Reihen",
+    "activeRowsWithCount": "{count}× Aktive Reihen ({size})",
     "passiveRows": "Passive Reihen",
+    "passiveRowsWithCount": "{count}× Passive Reihen",
     "spraySystem": "Sprühsystem",
     "accessories": "Zubehör",
     "warrantyExtension": "Garantieverlängerung",
@@ -592,6 +594,9 @@
       "email": "sie@beispiel.de",
       "dealName": "z.B. Müller Hof FD20",
       "primaryContact": "Hauptansprechpartner"
+    },
+    "validation": {
+      "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
     }
   },
   "modals": {
@@ -616,7 +621,9 @@
     "included": "Inklusive",
     "switchTo": "Wechseln zu {label}",
     "firstYear": "erstes Jahr",
-    "freeFirstYear": "{price} erstes Jahr"
+    "freeFirstYear": "{price} erstes Jahr",
+    "configurationReset": "Konfiguration wurde zurückgesetzt",
+    "autoSaved": "Automatisch gespeichert"
   },
   "rowConfig": {
     "title": "+Saat-Konfiguration",
@@ -672,8 +679,18 @@
     "spacingTooltip": "Abstand zwischen Pflanzen entlang jeder Reihe. Min 3cm.",
     "patternTooltip": "Gitter- oder Diamantformation für optimalen Pflanzenabstand.",
     "precisionWarning": "Präzisionssaat nur ab 10cm möglich",
+    "seedSizeTip": {
+      "label": "Tipp:",
+      "text": "6mm funktioniert für kleine Samen wie Karotten, Zwiebeln und Spinat. 14mm eignet sich für größere Samen wie Rüben, Bohnen und Mais.",
+      "learnMore": "Mehr erfahren"
+    },
     "optimalWheelSpacing": "Optimaler Radabstand für diese Reihenkonfiguration",
     "suggestedSpacing": "Empfohlen: {spacing}cm — Räder zentriert zwischen Reihen",
+    "emptyState": {
+      "title": "Konfigurieren Sie Ihre Aussaat",
+      "description": "Fügen Sie Reihen hinzu, um zu definieren, wie Ihr FarmDroid säen soll. Sie können Abstände, Saatgutgröße und mehr anpassen.",
+      "addRows": "Erste Reihen hinzufügen"
+    },
     "seedInfoModal": {
       "trigger": "Welches +Seed System wählen?",
       "title": "+Seed Systeme erkunden",
@@ -714,7 +731,8 @@
           "description": "Verarbeitet größere Samen bis 14mm. Perfekt für Kulturen die mehr Platz zwischen den Reihen benötigen."
         }
       }
-    }
+    },
+    "visualizationAria": "Interaktive Reihenkonfiguration zeigt {rows} Reihen mit {spacing}cm Abstand"
   },
   "crops": {
     "sprout": "Spross",
@@ -747,5 +765,83 @@
     "de": "Deutsch",
     "fr": "Francais",
     "nl": "Nederlands"
+  },
+  "quote": {
+    "shareQuote": "Angebot Teilen",
+    "customizeQuote": "Angebot Anpassen",
+    "showPricing": "Preise anzeigen",
+    "lineItems": "Positionen",
+    "customItems": "Benutzerdefinierte Positionen",
+    "addItem": "Hinzufügen",
+    "addDiscount": "Rabatt Hinzufügen",
+    "itemDescriptionPlaceholder": "Beschreibung (z.B. Installation)",
+    "pricePlaceholder": "Preis",
+    "notesAndTerms": "Notizen & Bedingungen",
+    "notesPlaceholder": "Zusätzliche Notizen, Bedingungen oder Konditionen hinzufügen...",
+    "validUntil": "Gültig Bis",
+    "total": "Gesamt",
+    "copyLink": "Link Kopieren",
+    "downloadPdf": "PDF Herunterladen",
+    "generatingPdf": "Wird generiert...",
+    "linkCopied": "Link in Zwischenablage kopiert",
+    "linkCopyFailed": "Link konnte nicht kopiert werden",
+    "pdfDownloaded": "PDF heruntergeladen",
+    "pdfFailed": "PDF konnte nicht generiert werden",
+    "quoteReference": "Angebotsreferenz",
+    "quoteDate": "Angebotsdatum",
+    "configurationSummary": "Konfigurationsübersicht",
+    "priceBreakdown": "Preisaufschlüsselung",
+    "description": "Beschreibung",
+    "price": "Preis",
+    "custom": "Benutzerdefiniert",
+    "included": "Inklusive",
+    "vatNote": "Alle Preise verstehen sich ohne MwSt",
+    "pricingOnRequest": "Preise auf Anfrage erhältlich. Kontaktieren Sie uns für ein detailliertes Angebot.",
+    "contactUs": "Kontaktieren Sie Uns",
+    "generatedWith": "Erstellt mit FarmDroid Konfigurator",
+    "loading": "Angebot wird geladen...",
+    "errorTitle": "Angebot Nicht Gefunden",
+    "errorNoData": "Keine Angebotsdaten vorhanden. Bitte erstellen Sie ein neues Angebot im Konfigurator.",
+    "errorInvalid": "Der Angebotslink ist ungültig oder abgelaufen. Bitte fordern Sie ein neues Angebot an.",
+    "startNewConfig": "Neue Konfiguration Starten",
+    "print": "Drucken",
+    "lineItems.baseRobot": "FD20 Basisroboter",
+    "lineItems.powerSource.solar": "Solarstromsystem",
+    "lineItems.powerSource.hybrid": "Hybrid-Stromsystem",
+    "lineItems.frontWheel.PFW": "Passives Vorderrad",
+    "lineItems.frontWheel.AFW": "Aktives Vorderrad",
+    "lineItems.frontWheel.DFW": "Doppeltes Vorderrad",
+    "lineItems.activeRows": "{count}x Aktive Reihen ({size})",
+    "lineItems.passiveRows": "{count}x Passive Reihen",
+    "lineItems.spraySystem": "+SPRAY System",
+    "lineItems.accessories": "Zubehör",
+    "lineItems.warrantyExtension": "2-Jahres-Garantieverlängerung",
+    "config.rows": "Reihen",
+    "config.active": "aktiv",
+    "config.passive": "passiv",
+    "config.seedSize": "Saatgutgröße",
+    "config.rowSpacing": "Reihenabstand",
+    "config.workingWidth": "Arbeitsbreite",
+    "config.powerSource": "Stromquelle",
+    "config.hybrid": "Hybrid",
+    "config.solar": "Solar",
+    "config.frontWheel": "Vorderrad",
+    "config.passiveFrontWheel": "Passiv",
+    "config.activeFrontWheel": "Aktiv",
+    "config.dualFrontWheel": "Doppelt",
+    "config.spraySystem": "Sprühsystem",
+    "config.included": "Inklusive",
+    "config.warranty": "Garantie",
+    "config.extended": "3 Jahre",
+    "config.accessories": "Zubehör",
+    "accessories.starterKit": "Starter-Kit",
+    "accessories.roadTransport": "Straßentransport",
+    "accessories.fieldBracket": "Feldhalterung",
+    "accessories.powerBank": "Powerbank",
+    "accessories.fstTool": "FST Werkzeug",
+    "accessories.baseStation": "Basisstation",
+    "accessories.carePkg": "Pflegepaket",
+    "accessories.weightKit": "Gewichtssatz",
+    "accessories.toolbox": "Werkzeugkasten"
   }
 }

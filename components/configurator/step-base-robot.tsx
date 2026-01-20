@@ -12,6 +12,9 @@ import {
   PRICES,
 } from "@/lib/configurator-data";
 
+// Subtle gray blur placeholder for smooth image loading
+const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
+
 interface StepBaseRobotProps {
   config: ConfiguratorState;
   updateConfig: (updates: Partial<ConfiguratorState>) => void;
@@ -75,6 +78,8 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
                   className="object-contain drop-shadow-sm"
                   priority
                   sizes="(max-width: 768px) 100vw, 60vw"
+                  placeholder="blur"
+                  blurDataURL={blurDataURL}
                   style={{
                     mixBlendMode: "multiply",
                   }}
@@ -119,7 +124,7 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
               key={spec.label}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
               className="text-center"
             >
               <p className="text-lg md:text-2xl font-semibold text-stone-900">
@@ -141,34 +146,34 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
         </div>
 
         {/* Robot Selection Card */}
-        <div className="border border-stone-200 rounded-lg p-4 md:p-5 relative">
+        <div className="selection-card selected rounded-xl p-4 md:p-5 border relative">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-medium text-stone-900 text-sm md:text-base">{t("productTitle")}</p>
-              <p className="text-xs md:text-sm text-stone-500 mt-0.5">{t("baseConfiguration")}</p>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
-              <span className="text-base md:text-lg font-semibold text-stone-900">{formatPrice(PRICES.baseRobot, config.currency)}</span>
-              <div className="h-5 w-5 rounded-full bg-stone-900 flex items-center justify-center">
-                <Check className="h-3 w-3 text-white" />
+            <div className="flex items-start gap-2.5 min-w-0">
+              <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Check className="h-3 w-3 text-white" strokeWidth={3} />
+              </div>
+              <div>
+                <p className="font-medium text-stone-900 text-sm md:text-base">{t("productTitle")}</p>
+                <p className="text-xs md:text-sm text-stone-500 mt-0.5">{t("baseConfiguration")}</p>
               </div>
             </div>
+            <span className="text-base md:text-lg font-semibold text-stone-900 flex-shrink-0">{formatPrice(PRICES.baseRobot, config.currency)}</span>
           </div>
         </div>
 
         {/* Features */}
         <div className="pt-4">
           <p className="text-sm font-medium text-stone-700 mb-3">{t("included")}</p>
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {featureKeys.map((key, index) => (
               <motion.li
                 key={key}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 + index * 0.03 }}
+                transition={{ delay: 0.2 + index * 0.05 }}
                 className="flex items-center gap-2.5 text-sm text-stone-600"
               >
-                <div className="h-1 w-1 rounded-full bg-stone-400" />
+                <Check className="h-4 w-4 text-emerald-500 flex-shrink-0" strokeWidth={2.5} />
                 {t(`features.${key}`)}
               </motion.li>
             ))}

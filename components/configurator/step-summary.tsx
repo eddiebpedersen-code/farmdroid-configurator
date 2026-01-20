@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import {
   Mail,
   Building2,
@@ -19,8 +20,10 @@ import {
   Shield,
   Star,
   Scissors,
+  Share2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -30,6 +33,7 @@ import {
   PRICES,
   getWeedCuttingDiscVariant,
 } from "@/lib/configurator-data";
+import { QuoteCustomizationModal } from "@/components/quote/QuoteCustomizationModal";
 
 interface StepSummaryProps {
   config: ConfiguratorState;
@@ -57,8 +61,19 @@ function EmailQuoteModal({
   const [company, setCompany] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  // Email validation
+  const isValidEmail = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+  const emailError = emailTouched && email && !isValidEmail(email);
 
   const handleSend = async () => {
+    if (!isValidEmail(email)) {
+      setEmailTouched(true);
+      return;
+    }
     setSending(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setSending(false);
@@ -69,6 +84,7 @@ function EmailQuoteModal({
       setEmail("");
       setName("");
       setCompany("");
+      setEmailTouched(false);
     }, 2000);
   };
 
@@ -81,9 +97,9 @@ function EmailQuoteModal({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 overflow-hidden"
+        className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[calc(100vh-32px)] overflow-hidden flex flex-col"
       >
-        <div className="p-6 border-b border-stone-100">
+        <div className="p-6 border-b border-stone-100 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-stone-900">{tModals("emailQuote.title")}</h3>
             <button
@@ -95,7 +111,7 @@ function EmailQuoteModal({
           </div>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
           {sent ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -136,9 +152,17 @@ function EmailQuoteModal({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                  onBlur={() => setEmailTouched(true)}
+                  className={`mt-1 w-full h-11 px-4 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:border-transparent ${
+                    emailError
+                      ? "border-red-400 focus:ring-red-500"
+                      : "border-stone-200 focus:ring-emerald-500"
+                  }`}
                   placeholder={tForms("placeholders.email")}
                 />
+                {emailError && (
+                  <p className="mt-1 text-xs text-red-500">{tForms("validation.invalidEmail")}</p>
+                )}
               </div>
 
               <div className="bg-stone-50 rounded-lg p-4 mt-4">
@@ -150,10 +174,10 @@ function EmailQuoteModal({
         </div>
 
         {!sent && (
-          <div className="p-6 border-t border-stone-100">
+          <div className="p-6 border-t border-stone-100 flex-shrink-0">
             <button
               onClick={handleSend}
-              disabled={!email || sending}
+              disabled={!email || !isValidEmail(email) || sending}
               className="w-full h-12 rounded-lg bg-stone-900 hover:bg-stone-800 disabled:bg-stone-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
             >
               {sending ? (
@@ -215,9 +239,9 @@ function CreateDealModal({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 overflow-hidden"
+        className="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[calc(100vh-32px)] overflow-hidden flex flex-col"
       >
-        <div className="p-6 border-b border-stone-100">
+        <div className="p-6 border-b border-stone-100 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-stone-900">{tModals("createDeal.title")}</h3>
             <button
@@ -229,7 +253,7 @@ function CreateDealModal({
           </div>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
           {created ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -284,7 +308,7 @@ function CreateDealModal({
         </div>
 
         {!created && (
-          <div className="p-6 border-t border-stone-100">
+          <div className="p-6 border-t border-stone-100 flex-shrink-0">
             <button
               onClick={handleCreate}
               disabled={!dealName || creating}
@@ -313,8 +337,55 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
   const t = useTranslations("summary");
   const tCommon = useTranslations("common");
   const tModals = useTranslations("modals");
+  const tQuote = useTranslations("quote");
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1] || "en";
+
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showDealModal, setShowDealModal] = useState(false);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const hasTriggeredConfetti = useRef(false);
+
+  // Trigger celebration confetti on first mount
+  useEffect(() => {
+    // Only trigger once and respect reduced motion preference
+    if (hasTriggeredConfetti.current) return;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    hasTriggeredConfetti.current = true;
+
+    // Subtle celebration burst
+    const duration = 2000;
+    const animationEnd = Date.now() + duration;
+    const colors = ["#10b981", "#059669", "#34d399", "#6ee7b7"]; // Emerald colors
+
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: colors,
+        disableForReducedMotion: true,
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: colors,
+        disableForReducedMotion: true,
+      });
+
+      if (Date.now() < animationEnd) {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    // Small delay to let the page settle
+    setTimeout(frame, 300);
+  }, []);
 
   const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
   const workingWidth = calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
@@ -349,6 +420,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
       icon: Rows3,
       label: t("lineItems.activeRows", { count: config.activeRows, size: config.seedSize }),
       value: config.activeRows * PRICES.activeRow[config.seedSize],
+      breakdown: { count: config.activeRows, unitPrice: PRICES.activeRow[config.seedSize] },
     },
     passiveRows > 0 && {
       icon: Rows3,
@@ -365,11 +437,13 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
       icon: Scissors,
       label: t("lineItems.combiTool", { count: config.activeRows }),
       value: weedingToolPrice,
+      breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.combiToolPerRow },
     },
     config.weedingTool === "weedCuttingDisc" && {
       icon: Scissors,
       label: t("lineItems.weedCuttingDisc", { count: config.activeRows, variant: weedCuttingDiscVariant || "" }),
       value: weedingToolPrice,
+      breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.weedCuttingDiscPerRow },
     },
     priceBreakdown.accessories > 0 && {
       icon: Package,
@@ -381,7 +455,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
       label: t("lineItems.warrantyExtension"),
       value: priceBreakdown.warrantyExtension,
     },
-  ].filter(Boolean) as { icon: typeof Cpu; label: string; value: number; included?: boolean }[];
+  ].filter(Boolean) as { icon: typeof Cpu; label: string; value: number; included?: boolean; breakdown?: { count: number; unitPrice: number } }[];
 
   return (
     <>
@@ -547,7 +621,14 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
                 >
                   <div className="flex items-center gap-2 md:gap-3 min-w-0">
                     <Icon className="h-4 w-4 text-stone-400 flex-shrink-0" />
-                    <span className="text-sm md:text-base text-stone-700 truncate">{item.label}</span>
+                    <div className="min-w-0">
+                      <span className="text-sm md:text-base text-stone-700 truncate block">{item.label}</span>
+                      {item.breakdown && item.breakdown.count > 1 && (
+                        <span className="text-xs text-stone-400">
+                          {item.breakdown.count} × {formatPrice(item.breakdown.unitPrice, config.currency)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <span className="font-medium text-stone-900 text-sm md:text-base flex-shrink-0">
                     {item.included || item.value === 0 ? tCommon("included") : `+${formatPrice(item.value, config.currency)}`}
@@ -581,7 +662,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
             <div className="pt-3 mt-3 border-t border-stone-100">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-teal-600" />
+                  <Star className="h-4 w-4 text-emerald-600" />
                   <span className="text-sm text-stone-700">
                     {t("carePlan", { plan: config.servicePlan === "standard" ? "Standard" : "Premium" })}
                   </span>
@@ -592,7 +673,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
                       <span className="text-sm text-stone-400 line-through">
                         {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                       </span>
-                      <span className="text-sm font-semibold text-teal-600">
+                      <span className="text-sm font-semibold text-emerald-600">
                         {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
                       </span>
                     </div>
@@ -608,6 +689,14 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
 
           {/* Action buttons */}
           <div className="pt-4 space-y-3">
+            <button
+              onClick={() => setShowQuoteModal(true)}
+              className="w-full h-12 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium flex items-center justify-center gap-2 transition-colors"
+            >
+              <Share2 className="h-5 w-5" />
+              {tQuote("shareQuote")}
+            </button>
+
             <button
               onClick={() => setShowEmailModal(true)}
               className="w-full h-12 rounded-lg border border-stone-200 hover:border-stone-300 text-stone-700 font-medium flex items-center justify-center gap-2 transition-colors"
@@ -646,6 +735,15 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
           />
         )}
       </AnimatePresence>
+
+      {/* Quote Customization Modal */}
+      <QuoteCustomizationModal
+        isOpen={showQuoteModal}
+        onClose={() => setShowQuoteModal(false)}
+        config={config}
+        priceBreakdown={priceBreakdown}
+        locale={locale}
+      />
     </>
   );
 }

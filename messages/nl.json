@@ -24,7 +24,9 @@
     "powerSource": "Stroombron",
     "frontWheel": "Voorwiel",
     "activeRows": "Actieve rijen",
+    "activeRowsWithCount": "{count}× Actieve rijen ({size})",
     "passiveRows": "Passieve rijen",
+    "passiveRowsWithCount": "{count}× Passieve rijen",
     "spraySystem": "Sproeisysteem",
     "accessories": "Accessoires",
     "warrantyExtension": "Garantieverlenging",
@@ -592,6 +594,9 @@
       "email": "u@voorbeeld.nl",
       "dealName": "bijv. Jansen Boerderij FD20",
       "primaryContact": "Primaire contact"
+    },
+    "validation": {
+      "invalidEmail": "Voer een geldig e-mailadres in"
     }
   },
   "modals": {
@@ -616,7 +621,9 @@
     "included": "Inbegrepen",
     "switchTo": "Overschakelen naar {label}",
     "firstYear": "eerste jaar",
-    "freeFirstYear": "{price} eerste jaar"
+    "freeFirstYear": "{price} eerste jaar",
+    "configurationReset": "Configuratie is gereset",
+    "autoSaved": "Automatisch opgeslagen"
   },
   "rowConfig": {
     "title": "+Zaai-Configuratie",
@@ -672,8 +679,18 @@
     "spacingTooltip": "Afstand tussen planten langs elke rij. Min 3cm.",
     "patternTooltip": "Raster- of diamantformatie voor optimale plantafstand.",
     "precisionWarning": "Precisiezaai alleen mogelijk vanaf 10cm",
+    "seedSizeTip": {
+      "label": "Tip:",
+      "text": "6mm werkt voor kleine zaden zoals wortels, uien en spinazie. 14mm is geschikt voor grotere zaden zoals bieten, bonen en maïs.",
+      "learnMore": "Meer informatie"
+    },
     "optimalWheelSpacing": "Optimale wielafstand voor deze rijconfiguratie",
     "suggestedSpacing": "Voorgesteld: {spacing}cm — wielen gecentreerd tussen rijen",
+    "emptyState": {
+      "title": "Configureer uw zaai-opstelling",
+      "description": "Voeg rijen toe om te bepalen hoe uw FarmDroid zal zaaien. U kunt afstand, zaadgrootte en meer aanpassen.",
+      "addRows": "Eerste rijen toevoegen"
+    },
     "seedInfoModal": {
       "trigger": "Welk +Seed Systeem kiezen?",
       "title": "+Seed Systemen verkennen",
@@ -714,7 +731,8 @@
           "description": "Verwerkt grotere zaden tot 14mm. Perfect voor gewassen die meer ruimte nodig hebben tussen rijen."
         }
       }
-    }
+    },
+    "visualizationAria": "Interactieve rijconfiguratie toont {rows} rijen met {spacing}cm tussenafstand"
   },
   "crops": {
     "sprout": "Kiemplant",
@@ -747,5 +765,83 @@
     "de": "Deutsch",
     "fr": "Francais",
     "nl": "Nederlands"
+  },
+  "quote": {
+    "shareQuote": "Offerte Delen",
+    "customizeQuote": "Offerte Aanpassen",
+    "showPricing": "Prijzen tonen",
+    "lineItems": "Regelitems",
+    "customItems": "Aangepaste Items",
+    "addItem": "Toevoegen",
+    "addDiscount": "Korting Toevoegen",
+    "itemDescriptionPlaceholder": "Beschrijving (bijv. Installatie)",
+    "pricePlaceholder": "Prijs",
+    "notesAndTerms": "Notities & Voorwaarden",
+    "notesPlaceholder": "Voeg extra notities, voorwaarden of bepalingen toe...",
+    "validUntil": "Geldig Tot",
+    "total": "Totaal",
+    "copyLink": "Link Kopiëren",
+    "downloadPdf": "PDF Downloaden",
+    "generatingPdf": "Genereren...",
+    "linkCopied": "Link gekopieerd naar klembord",
+    "linkCopyFailed": "Link kopiëren mislukt",
+    "pdfDownloaded": "PDF gedownload",
+    "pdfFailed": "PDF genereren mislukt",
+    "quoteReference": "Offertereferentie",
+    "quoteDate": "Offertedatum",
+    "configurationSummary": "Configuratieoverzicht",
+    "priceBreakdown": "Prijsoverzicht",
+    "description": "Beschrijving",
+    "price": "Prijs",
+    "custom": "Aangepast",
+    "included": "Inbegrepen",
+    "vatNote": "Alle prijzen zijn exclusief BTW",
+    "pricingOnRequest": "Prijzen beschikbaar op aanvraag. Neem contact met ons op voor een gedetailleerde offerte.",
+    "contactUs": "Neem Contact Op",
+    "generatedWith": "Gegenereerd met FarmDroid Configurator",
+    "loading": "Offerte laden...",
+    "errorTitle": "Offerte Niet Gevonden",
+    "errorNoData": "Geen offertegegevens opgegeven. Maak een nieuwe offerte aan vanuit de configurator.",
+    "errorInvalid": "De offertelink is ongeldig of verlopen. Vraag een nieuwe offerte aan.",
+    "startNewConfig": "Nieuwe Configuratie Starten",
+    "print": "Afdrukken",
+    "lineItems.baseRobot": "FD20 Basisrobot",
+    "lineItems.powerSource.solar": "Zonne-energiesysteem",
+    "lineItems.powerSource.hybrid": "Hybride Energiesysteem",
+    "lineItems.frontWheel.PFW": "Passief Voorwiel",
+    "lineItems.frontWheel.AFW": "Actief Voorwiel",
+    "lineItems.frontWheel.DFW": "Dubbel Voorwiel",
+    "lineItems.activeRows": "{count}x Actieve Rijen ({size})",
+    "lineItems.passiveRows": "{count}x Passieve Rijen",
+    "lineItems.spraySystem": "+SPRAY Systeem",
+    "lineItems.accessories": "Accessoires",
+    "lineItems.warrantyExtension": "2-Jarige Garantieverlenging",
+    "config.rows": "Rijen",
+    "config.active": "actief",
+    "config.passive": "passief",
+    "config.seedSize": "Zaadgrootte",
+    "config.rowSpacing": "Rijafstand",
+    "config.workingWidth": "Werkbreedte",
+    "config.powerSource": "Energiebron",
+    "config.hybrid": "Hybride",
+    "config.solar": "Zonne",
+    "config.frontWheel": "Voorwiel",
+    "config.passiveFrontWheel": "Passief",
+    "config.activeFrontWheel": "Actief",
+    "config.dualFrontWheel": "Dubbel",
+    "config.spraySystem": "Spuitsysteem",
+    "config.included": "Inbegrepen",
+    "config.warranty": "Garantie",
+    "config.extended": "3 Jaar",
+    "config.accessories": "Accessoires",
+    "accessories.starterKit": "Startpakket",
+    "accessories.roadTransport": "Wegtransport",
+    "accessories.fieldBracket": "Veldbeugel",
+    "accessories.powerBank": "Powerbank",
+    "accessories.fstTool": "FST Gereedschap",
+    "accessories.baseStation": "Basisstation",
+    "accessories.carePkg": "Verzorgingspakket",
+    "accessories.weightKit": "Gewichtenset",
+    "accessories.toolbox": "Gereedschapskist"
   }
 }

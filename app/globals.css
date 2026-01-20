@@ -19,7 +19,7 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: system-ui, sans-serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
   }
 }
 
@@ -69,7 +69,7 @@
   }
 }
 
-/* Reduced motion preference */
+/* Reduced motion preference - accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -77,6 +77,17 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable hover transforms */
+  .card-hover:hover {
+    transform: none !important;
+  }
+
+  /* Disable checkmark animation */
+  .checkmark-animated {
+    animation: none !important;
   }
 }
 
@@ -97,4 +108,60 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.18);
+}
+
+/* Premium card hover effect */
+.card-hover {
+  @apply transition-all duration-200 ease-out;
+}
+
+.card-hover:hover {
+  @apply -translate-y-0.5 shadow-md;
+}
+
+/* Selection card styles */
+.selection-card {
+  @apply relative overflow-hidden transition-all duration-200 ease-out;
+}
+
+.selection-card::before {
+  content: '';
+  @apply absolute left-0 top-0 bottom-0 w-1 bg-transparent transition-all duration-200;
+}
+
+.selection-card.selected::before {
+  @apply bg-emerald-500;
+}
+
+.selection-card.selected {
+  @apply border-emerald-500 bg-emerald-50/50 shadow-sm;
+}
+
+/* Disabled state styling */
+.selection-card.disabled,
+button:disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+/* Custom focus ring styling */
+*:focus-visible {
+  @apply outline-none ring-2 ring-emerald-500 ring-offset-2;
+}
+
+/* Input focus styling */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  @apply outline-none ring-2 ring-emerald-500 border-emerald-500;
+}
+
+/* Checkmark animation */
+@keyframes checkmark-pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.checkmark-animated {
+  animation: checkmark-pop 0.2s ease-out forwards;
 }
