@@ -36,7 +36,7 @@
       "subtitle": "FD20 Robot V2.6"
     },
     "wheelConfig": {
-      "title": "Wheel ++ Configuration",
+      "title": "Wheel Configuration",
       "subtitle": "Select wheel configuration"
     },
     "seedConfig": {
@@ -95,7 +95,7 @@
     }
   },
   "wheelConfig": {
-    "title": "Wheel ++ Configuration",
+    "title": "Wheel Configuration",
     "subtitle": "Choose between 3-wheel and 4-wheel setup",
     "learnMore": "Learn more about wheel configurations",
     "moreInfo": "More information",

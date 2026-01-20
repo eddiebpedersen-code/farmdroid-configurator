@@ -90,7 +90,7 @@ export interface CropPreset {
 
 export const STEPS: StepInfo[] = [
   { id: 1, title: "Base Robot", subtitle: "FD20 Robot V2.6" },
-  { id: 2, title: "Wheel ++ Configuration", subtitle: "Select wheel configuration" },
+  { id: 2, title: "Wheel Configuration", subtitle: "Select wheel configuration" },
   { id: 3, title: "+Seed Configuration", subtitle: "Configure your seeding setup" },
   { id: 4, title: "+Weed Configuration", subtitle: "Configure your weeding setup" },
   { id: 5, title: "Power Source", subtitle: "Choose your power configuration" },
@@ -161,7 +161,7 @@ export const WHEEL_CONSTRAINTS = {
 
 // Row configuration constraints
 export const ROW_CONSTRAINTS = {
-  maxWorkingWidth: 3000, // 3m in mm
+  maxWorkingWidth: 3400, // 3.4m in mm - matches toolbeam length
   maxActiveRows: 12,
   minRowDistance: {
     "6mm": 225,

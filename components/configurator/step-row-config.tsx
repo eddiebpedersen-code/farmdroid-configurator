@@ -38,7 +38,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const t = useTranslations("rowConfig");
   const tCrops = useTranslations("crops");
 
-  // Working width override state - must be declared before calculations that use it
+  // Working width state - must be declared before calculations that use it
+  // followWheelSpacing: true = Beds mode (follows wheel spacing), false = Pattern mode or custom
+  const [followWheelSpacing, setFollowWheelSpacing] = useState(false);
   const [workingWidthOverride, setWorkingWidthOverride] = useState<number | null>(null);
   const [editingWorkingWidth, setEditingWorkingWidth] = useState(false);
 
@@ -81,13 +83,14 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const patternBetweenPassSpacing = calculateBetweenPassSpacing(rowSpacings, config.rowDistance);
   const calculatedWorkingWidth = rowSpan + patternBetweenPassSpacing;
 
-  // Determine default working width:
-  // - If manually overridden, use the override
-  // - If rows fit within wheels (bed mode), default to wheel spacing
-  // - Otherwise use the calculated working width based on pattern
-  const isBedMode = rowSpan <= config.wheelSpacing;
-  const defaultWorkingWidth = isBedMode ? config.wheelSpacing : calculatedWorkingWidth;
-  const baseWorkingWidth = workingWidthOverride !== null ? workingWidthOverride : defaultWorkingWidth;
+  // Determine working width based on mode:
+  // - followWheelSpacing (Beds mode): working width follows wheel spacing
+  // - workingWidthOverride set: use the manual override
+  // - Otherwise (Pattern mode): use calculated working width to maintain row spacing pattern
+  const defaultWorkingWidth = calculatedWorkingWidth;
+  const baseWorkingWidth = followWheelSpacing
+    ? config.wheelSpacing
+    : (workingWidthOverride !== null ? workingWidthOverride : defaultWorkingWidth);
 
   // Working width can be less than wheel spacing, but never less than rowSpan (prevents overlap)
   const minWorkingWidth = rowSpan;
@@ -264,35 +267,45 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   };
 
   // Helper to find distance from a wheel edge to the nearest row in a specific direction
-  const getDistanceToNearestRow = (wheelEdgeMm: number, direction: "left" | "right"): { distance: number; rowMm: number } | null => {
-    if (rowPositionsMm.length === 0) return null;
+  // Includes both current pass and previous pass rows
+  const getDistanceToNearestRow = (wheelEdgeMm: number, direction: "left" | "right"): { distance: number; rowMm: number; isPreviousPass: boolean } | null => {
+    // Combine current pass rows and previous pass rows
+    const allRows = [
+      ...rowPositionsMm.map(mm => ({ mm, isPreviousPass: false })),
+      ...previousPassRowsMm.map(mm => ({ mm, isPreviousPass: true })),
+    ];
+
+    if (allRows.length === 0) return null;
 
     // Filter rows based on direction
     // "left" means rows to the left of the edge (rowMm < wheelEdgeMm)
     // "right" means rows to the right of the edge (rowMm > wheelEdgeMm)
-    const rowsInDirection = rowPositionsMm.filter(rowMm =>
-      direction === "left" ? rowMm < wheelEdgeMm : rowMm > wheelEdgeMm
+    const rowsInDirection = allRows.filter(row =>
+      direction === "left" ? row.mm < wheelEdgeMm : row.mm > wheelEdgeMm
     );
 
     if (rowsInDirection.length === 0) return null;
 
     let nearestRow = rowsInDirection[0];
-    let minDistance = Math.abs(wheelEdgeMm - nearestRow);
+    let minDistance = Math.abs(wheelEdgeMm - nearestRow.mm);
 
-    for (const rowMm of rowsInDirection) {
-      const distance = Math.abs(wheelEdgeMm - rowMm);
+    for (const row of rowsInDirection) {
+      const distance = Math.abs(wheelEdgeMm - row.mm);
       if (distance < minDistance) {
         minDistance = distance;
-        nearestRow = rowMm;
+        nearestRow = row;
       }
     }
 
-    return { distance: minDistance, rowMm: nearestRow };
+    return { distance: minDistance, rowMm: nearestRow.mm, isPreviousPass: nearestRow.isPreviousPass };
   };
 
-  // Separate warning flags
+  // Separate warning flags for current pass
   const hasBackWheelProximityWarning = rowPositionsMm.some(isRowTooCloseToBackWheel);
   const hasFrontWheelProximityWarning = is3Wheel && rowPositionsMm.some(isRowTooCloseToFrontWheel);
+
+  // Warning flags for previous pass (crops from previous pass too close to left wheel)
+  const hasPreviousPassProximityWarning = previousPassRowsMm.some(isRowTooCloseToBackWheel);
 
   // Check if user has custom (non-uniform) spacings
   const hasCustomSpacings = rowSpacings.length > 0 && !rowSpacings.every(s => s === rowSpacings[0]);
@@ -300,6 +313,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   // Helper function to get mirror spacing index for symmetric configuration
   // With n spacings: spacing[i] mirrors spacing[n-1-i]
   const getMirrorSpacingIndex = (idx: number, totalSpacings: number) => totalSpacings - 1 - idx;
+
+  // Max working width is 340cm (3400mm) - matches toolbeam length
+  const maxWorkingWidth = 3400;
 
   // Row drag handlers - dragging pushes rows in the drag direction
   const handleRowDragStart = useCallback((idx: number, clientX: number) => {
@@ -321,12 +337,26 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     const isFirstRow = draggingRowIdx === 0;
     const isLastRow = draggingRowIdx === config.activeRows - 1;
 
-    // Helper to update a spacing and its mirror
+    // Calculate max row span (working width = rowSpan + betweenPassSpacing)
+    const maxRowSpan = maxWorkingWidth - minRowDistance;
+
+    // Helper to update a spacing and its mirror with max constraint
     const updateSpacingWithMirror = (spacingIdx: number, newValue: number) => {
-      const clampedValue = Math.max(minRowDistance, newValue);
-      newSpacings[spacingIdx] = clampedValue;
       const mirrorIdx = getMirrorSpacingIndex(spacingIdx, totalSpacings);
-      if (mirrorIdx !== spacingIdx) {
+      const isMirrored = mirrorIdx !== spacingIdx;
+
+      // Calculate current total of all OTHER spacings
+      const currentSpacing = dragStartSpacings.current[spacingIdx];
+      const mirrorSpacing = isMirrored ? dragStartSpacings.current[mirrorIdx] : 0;
+      const currentRowSpan = dragStartSpacings.current.reduce((sum, s) => sum + s, 0);
+      const otherSpacingsTotal = currentRowSpan - currentSpacing - mirrorSpacing;
+
+      // Max value that keeps total under maxRowSpan
+      const maxForThisSpacing = Math.floor((maxRowSpan - otherSpacingsTotal) / (isMirrored ? 2 : 1));
+
+      const clampedValue = Math.max(minRowDistance, Math.min(maxForThisSpacing, newValue));
+      newSpacings[spacingIdx] = clampedValue;
+      if (isMirrored) {
         newSpacings[mirrorIdx] = clampedValue;
       }
     };
@@ -363,13 +393,19 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     }
 
     updateConfig({ rowSpacings: newSpacings });
-  }, [config.activeRows, draggingRowIdx, minRowDistance, updateConfig, getMirrorSpacingIndex]);
-
-  // Max working width is 360cm (3600mm)
-  const maxWorkingWidth = 3600;
+  }, [config.activeRows, draggingRowIdx, minRowDistance, maxWorkingWidth, updateConfig, getMirrorSpacingIndex]);
   // Check if adding more rows would exceed max working width
   // New working width after adding = current rowSpan + new spacing + rowDistance
   const canAddMoreRows = (rowSpan + config.rowDistance + config.rowDistance) <= maxWorkingWidth && config.activeRows < ROW_CONSTRAINTS.maxActiveRows;
+
+  // Calculate maximum row distance for current row count
+  // Working width = (activeRows - 1) * rowDistance + betweenPassSpacing
+  // For uniform spacing, betweenPassSpacing = rowDistance, so workingWidth = activeRows * rowDistance
+  // maxRowDistance = maxWorkingWidth / activeRows
+  const maxRowDistanceForCurrentRows = config.activeRows > 0
+    ? Math.floor(maxWorkingWidth / config.activeRows / 10) * 10 // Round down to nearest 10mm (1cm)
+    : 800; // Default max when no rows
+  const canIncreaseRowDistance = config.rowDistance < Math.min(800, maxRowDistanceForCurrentRows);
 
   const handleAddRowAt = useCallback((gapIndex: number) => {
     // Always add rows in pairs for symmetry
@@ -539,18 +575,28 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   // Handler to set individual spacing value directly (with mirroring for symmetry)
   const handleSetSpacing = useCallback((spacingIdx: number, valueCm: number) => {
     const valueMm = valueCm * 10;
-    const clampedValue = Math.max(minRowDistance, Math.min(800, valueMm));
+    const mirrorIdx = getMirrorSpacingIndex(spacingIdx, rowSpacings.length);
+    const isMirrored = mirrorIdx !== spacingIdx;
+
+    // Calculate max allowed value that keeps total row span under maxWorkingWidth
+    // Working width = rowSpan + betweenPassSpacing, and betweenPassSpacing >= minRowDistance
+    // So rowSpan must be <= maxWorkingWidth - minRowDistance
+    const maxRowSpan = maxWorkingWidth - minRowDistance;
+    const currentSpacingTotal = rowSpacings[spacingIdx] + (isMirrored ? rowSpacings[mirrorIdx] : 0);
+    const otherSpacingsTotal = rowSpan - currentSpacingTotal;
+    const maxForThisSpacing = Math.floor((maxRowSpan - otherSpacingsTotal) / (isMirrored ? 2 : 1));
+
+    const clampedValue = Math.max(minRowDistance, Math.min(Math.min(800, maxForThisSpacing), valueMm));
     const newSpacings = [...rowSpacings];
     newSpacings[spacingIdx] = clampedValue;
 
     // Also update mirror spacing for symmetry
-    const mirrorIdx = getMirrorSpacingIndex(spacingIdx, rowSpacings.length);
-    if (mirrorIdx !== spacingIdx) {
+    if (isMirrored) {
       newSpacings[mirrorIdx] = clampedValue;
     }
 
     updateConfig({ rowSpacings: newSpacings });
-  }, [minRowDistance, rowSpacings, updateConfig, getMirrorSpacingIndex]);
+  }, [minRowDistance, maxWorkingWidth, rowSpan, rowSpacings, updateConfig, getMirrorSpacingIndex]);
 
   // Start editing a spacing value
   const handleStartEditSpacing = useCallback((idx: number) => {
@@ -584,7 +630,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     const normalizedValue = editingValue.replace(',', '.');
     const parsed = parseFloat(normalizedValue);
     if (!isNaN(parsed) && parsed > 0) {
-      const newDistanceMm = Math.max(minRowDistance, Math.min(800, Math.round(parsed * 10)));
+      // Clamp to min row distance and max of either 800mm or max for current row count
+      const maxDistance = Math.min(800, maxRowDistanceForCurrentRows);
+      const newDistanceMm = Math.max(minRowDistance, Math.min(maxDistance, Math.round(parsed * 10)));
       updateConfig({
         rowDistance: newDistanceMm,
         rowSpacings: generateRowSpacings(config.activeRows, newDistanceMm)
@@ -592,7 +640,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     }
     setEditingRowDistance(false);
     setEditingValue("");
-  }, [editingValue, minRowDistance, config.activeRows, updateConfig]);
+  }, [editingValue, minRowDistance, maxRowDistanceForCurrentRows, config.activeRows, updateConfig]);
 
   // Start editing plant spacing
   const handleStartEditPlantSpacing = useCallback(() => {
@@ -627,14 +675,16 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       const newWidth = Math.round(parsed * 10); // Convert cm to mm
       // Minimum is rowSpan to prevent pass overlap, maximum is 500cm
       const validWidth = Math.max(rowSpan, Math.min(5000, newWidth));
+      setFollowWheelSpacing(false); // Manual edit exits Beds mode
       setWorkingWidthOverride(validWidth === calculatedWorkingWidth ? null : validWidth);
     }
     setEditingWorkingWidth(false);
     setEditingValue("");
   }, [editingValue, calculatedWorkingWidth, rowSpan]);
 
-  // Reset working width to default (wheel spacing in bed mode, calculated otherwise)
+  // Reset working width to default (Pattern mode with calculated working width)
   const handleResetWorkingWidth = useCallback(() => {
+    setFollowWheelSpacing(false);
     setWorkingWidthOverride(null);
   }, []);
 
@@ -1248,13 +1298,13 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 );
               })()}
 
-              {/* Toolbeam - 3m wide horizontal bar */}
+              {/* Toolbeam - 3.4m wide horizontal bar */}
               {config.activeRows > 0 && (
                 <g>
                   <line
-                    x1={svgCenterX - (3000 / 2) * pxPerMm}
+                    x1={svgCenterX - (3400 / 2) * pxPerMm}
                     y1={(rowAreaTop + rowAreaBottom) / 2 - 50}
-                    x2={svgCenterX + (3000 / 2) * pxPerMm}
+                    x2={svgCenterX + (3400 / 2) * pxPerMm}
                     y2={(rowAreaTop + rowAreaBottom) / 2 - 50}
                     stroke={colors.activeRow}
                     strokeWidth={4}
@@ -1283,6 +1333,28 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               )}
 
               {/* Active Row Lines with drag/remove UI */}
+              {/* Warning highlights for previous pass rows too close to wheels */}
+              {previousPassRowsMm.map((rowMm, idx) => {
+                const x = mmToX(rowMm);
+                const isTooCloseToWheel = isRowTooCloseToBackWheel(rowMm);
+                // Only render if visible (within SVG bounds)
+                const visibleMinMm = -svgWidth / 2 / pxPerMm;
+                if (rowMm < visibleMinMm) return null;
+
+                return isTooCloseToWheel ? (
+                  <rect
+                    key={`prev-pass-warning-${idx}`}
+                    x={x - 12}
+                    y={rowAreaTop}
+                    width={24}
+                    height={rowAreaBottom - rowAreaTop}
+                    fill={colors.warningBg}
+                    rx={2}
+                    style={{ pointerEvents: "none" }}
+                  />
+                ) : null;
+              })}
+
               {rowPositionsMm.map((rowMm, idx) => {
                 const x = mmToX(rowMm);
                 const isHovered = hoveredRow === idx;
@@ -2242,9 +2314,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
         {/* Plants per hectare - centered below animation/graph */}
         <div className="flex justify-center mt-3 text-sm text-stone-500 h-6">
           {seedingMode !== "line" ? (() => {
-            const rowSpacingM = config.rowDistance / 1000;
+            // Calculate based on working width and active rows
+            const workingWidthM = workingWidth / 1000;
             const plantSpacingM = plantSpacing / 100;
-            const pointsPerHa = Math.round(10000 / (rowSpacingM * plantSpacingM));
+            const pointsPerHa = Math.round((10000 * config.activeRows) / (workingWidthM * plantSpacingM));
             const seedsPerHa = seedingMode === "group" ? pointsPerHa * seedsPerGroup : pointsPerHa;
             return (
               <>
@@ -2474,14 +2547,6 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             </div>
           </div>
 
-        {/* Validation error */}
-        {!validation.valid && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 py-2 px-3 rounded flex items-center gap-2 text-xs text-red-600 bg-red-50">
-            <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
-            {validation.error}
-          </motion.div>
-        )}
-
       </div>
 
       {/* Right: Configuration - Takes 2 columns (narrower) */}
@@ -2691,13 +2756,14 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 <button
                   onClick={(e) => {
                     const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                    const newDistance = Math.min(800, config.rowDistance + step);
+                    const maxDistance = Math.min(800, maxRowDistanceForCurrentRows);
+                    const newDistance = Math.min(maxDistance, config.rowDistance + step);
                     updateConfig({
                       rowDistance: newDistance,
                       rowSpacings: generateRowSpacings(config.activeRows, newDistance)
                     });
                   }}
-                  disabled={config.rowDistance >= 800}
+                  disabled={!canIncreaseRowDistance}
                   className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
                 >
                   <Plus className="h-3 w-3" />
@@ -2775,79 +2841,128 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           })()}
 
           {/* Working Width */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
               <span className="text-sm text-stone-600 font-medium">{t("workingWidth")}</span>
-              {workingWidthOverride !== null && (
-                <button
-                  onClick={handleResetWorkingWidth}
-                  className="text-[10px] text-teal-600 hover:text-teal-700 underline"
-                >
-                  Reset to recommended
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="relative group">
-                <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
-                <div className="absolute bottom-full left-0 mb-1.5 w-36 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  Hold Shift for 0.1cm
-                  <div className="absolute top-full left-2 border-4 border-transparent border-t-stone-900" />
+              <div className="flex items-center gap-1.5">
+                <div className="relative group">
+                  <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
+                  <div className="absolute bottom-full left-0 mb-1.5 w-36 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    Hold Shift for 0.1cm
+                    <div className="absolute top-full left-2 border-4 border-transparent border-t-stone-900" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between w-[120px] rounded-lg px-1.5 py-0.5 bg-stone-100">
+                  <button
+                    onClick={(e) => {
+                      const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
+                      const decreased = workingWidth - step;
+                      // Minimum is rowSpan to prevent pass overlap
+                      const newWidth = decreased < minWorkingWidth ? minWorkingWidth : decreased;
+                      setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
+                      setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
+                    }}
+                    disabled={workingWidth <= minWorkingWidth}
+                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </button>
+                  {editingWorkingWidth ? (
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={editingValue}
+                      onChange={(e) => setEditingValue(e.target.value)}
+                      onBlur={handleFinishEditWorkingWidth}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleFinishEditWorkingWidth();
+                        if (e.key === "Escape") {
+                          setEditingWorkingWidth(false);
+                          setEditingValue("");
+                        }
+                      }}
+                      autoFocus
+                      className="w-12 h-6 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded outline-none"
+                    />
+                  ) : (
+                    <span
+                      onClick={handleStartEditWorkingWidth}
+                      className="text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-teal-100 text-stone-900"
+                    >
+                      {(workingWidth / 10).toFixed(0)}cm
+                    </span>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
+                      const newWidth = Math.min(5000, workingWidth + step); // Max 500cm
+                      setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
+                      setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
+                    }}
+                    disabled={workingWidth >= 5000}
+                    className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center justify-between w-[120px] rounded-lg px-1.5 py-0.5 bg-stone-100">
-                <button
-                  onClick={(e) => {
-                    const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                    const decreased = workingWidth - step;
-                    // Minimum is rowSpan to prevent pass overlap
-                    const newWidth = decreased < minWorkingWidth ? minWorkingWidth : decreased;
-                    setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
-                  }}
-                  disabled={workingWidth <= minWorkingWidth}
-                  className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
-                >
-                  <Minus className="h-3 w-3" />
-                </button>
-                {editingWorkingWidth ? (
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={editingValue}
-                    onChange={(e) => setEditingValue(e.target.value)}
-                    onBlur={handleFinishEditWorkingWidth}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleFinishEditWorkingWidth();
-                      if (e.key === "Escape") {
-                        setEditingWorkingWidth(false);
-                        setEditingValue("");
-                      }
-                    }}
-                    autoFocus
-                    className="w-12 h-6 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded outline-none"
-                  />
-                ) : (
-                  <span
-                    onClick={handleStartEditWorkingWidth}
-                    className="text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-teal-100 text-stone-900"
-                  >
-                    {(workingWidth / 10).toFixed(0)}cm
-                  </span>
-                )}
-                <button
-                  onClick={(e) => {
-                    const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                    const newWidth = Math.min(5000, workingWidth + step); // Max 500cm
-                    setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
-                  }}
-                  disabled={workingWidth >= 5000}
-                  className="h-7 w-7 rounded-md bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed text-stone-600 transition-all flex items-center justify-center shadow-sm"
-                >
-                  <Plus className="h-3 w-3" />
-                </button>
-              </div>
             </div>
+
+            {/* Mode toggle - only shown when wheels are outside rows */}
+            {rowSpan <= config.wheelSpacing && config.wheelSpacing !== calculatedWorkingWidth && (
+              <div className="flex items-center justify-end gap-2">
+                <span className="text-xs text-stone-400">Optimize for</span>
+                <div className="flex items-center bg-stone-100 rounded-lg p-0.5">
+                  <div className="relative group/beds">
+                    <button
+                      onClick={() => {
+                        setFollowWheelSpacing(true);
+                        setWorkingWidthOverride(null);
+                      }}
+                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                        followWheelSpacing
+                          ? "bg-white text-stone-900 shadow-sm"
+                          : "text-stone-500 hover:text-stone-700"
+                      }`}
+                    >
+                      Beds
+                    </button>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-40 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover/beds:opacity-100 transition-opacity pointer-events-none z-10">
+                      Follow wheel spacing ({config.wheelSpacing / 10}cm). Wheel tracks align on each pass.
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-900" />
+                    </div>
+                  </div>
+                  <div className="relative group/pattern">
+                    <button
+                      onClick={() => {
+                        setFollowWheelSpacing(false);
+                        setWorkingWidthOverride(null);
+                      }}
+                      className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                        !followWheelSpacing && workingWidthOverride === null
+                          ? "bg-white text-stone-900 shadow-sm"
+                          : "text-stone-500 hover:text-stone-700"
+                      }`}
+                    >
+                      Pattern
+                    </button>
+                    <div className="absolute bottom-full right-0 mb-1.5 w-44 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover/pattern:opacity-100 transition-opacity pointer-events-none z-10">
+                      Maintain uniform {config.rowDistance / 10}cm spacing ({calculatedWorkingWidth / 10}cm) across the entire field.
+                      <div className="absolute top-full right-4 border-4 border-transparent border-t-stone-900" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* Validation error - shows when row config exceeds toolbeam */}
+          {!validation.valid && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-2 px-3 rounded flex items-center gap-2 text-xs text-red-600 bg-red-50">
+              <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+              {validation.error}
+            </motion.div>
+          )}
 
         </div>
 
