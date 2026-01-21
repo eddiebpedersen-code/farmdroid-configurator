@@ -10,6 +10,7 @@ import {
   formatPrice,
   PRICES,
 } from "@/lib/configurator-data";
+import { useMode } from "@/contexts/ModeContext";
 
 interface StepServicePlanProps {
   config: ConfiguratorState;
@@ -39,6 +40,7 @@ const featureConfigs: FeatureConfig[] = [
 export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) {
   const t = useTranslations("servicePlan");
   const tCommon = useTranslations("common");
+  const { showPrices } = useMode();
   const selectPlan = (plan: ServicePlan) => {
     updateConfig({ servicePlan: plan });
   };
@@ -66,9 +68,11 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               }`}
             >
               <div className="text-sm font-semibold text-stone-900">{t("plans.standard.name")}</div>
-              <div className="text-xs text-stone-500 mt-0.5">
-                {formatPrice(PRICES.servicePlan.standard, config.currency)}{t("perYear")}
-              </div>
+              {showPrices && (
+                <div className="text-xs text-stone-500 mt-0.5">
+                  {formatPrice(PRICES.servicePlan.standard, config.currency)}{t("perYear")}
+                </div>
+              )}
             </div>
             <div
               className={`p-4 text-center transition-colors relative ${
@@ -78,9 +82,11 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               }`}
             >
               <div className="text-sm font-semibold text-stone-900">{t("plans.premium.name")}</div>
-              <div className="text-xs text-stone-500 mt-0.5">
-                {formatPrice(PRICES.servicePlan.premium, config.currency)}{t("perYear")}
-              </div>
+              {showPrices && (
+                <div className="text-xs text-stone-500 mt-0.5">
+                  {formatPrice(PRICES.servicePlan.premium, config.currency)}{t("perYear")}
+                </div>
+              )}
             </div>
           </div>
 
@@ -183,14 +189,16 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   {t("plans.premium.description")}
                 </p>
               </div>
-              <div className="text-right ml-4">
-                <span className="text-sm text-stone-400 line-through">
-                  {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
-                </span>
-                <p className="text-sm font-semibold text-emerald-600">
-                  {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
-                </p>
-              </div>
+              {showPrices && (
+                <div className="text-right ml-4">
+                  <span className="text-sm text-stone-400 line-through">
+                    {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                  </span>
+                  <p className="text-sm font-semibold text-emerald-600">
+                    {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
+                  </p>
+                </div>
+              )}
             </div>
           </button>
 
@@ -217,9 +225,11 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   {t("plans.standard.description")}
                 </p>
               </div>
-              <span className="text-sm font-semibold text-stone-900 ml-4">
-                {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
-              </span>
+              {showPrices && (
+                <span className="text-sm font-semibold text-stone-900 ml-4">
+                  {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
+                </span>
+              )}
             </div>
           </button>
 
@@ -274,9 +284,11 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   {t("warranty.description")}
                 </p>
               </div>
-              <span className="text-sm font-semibold text-stone-900 ml-4">
-                {formatPrice(PRICES.warrantyExtension, config.currency)}
-              </span>
+              {showPrices && (
+                <span className="text-sm font-semibold text-stone-900 ml-4">
+                  {formatPrice(PRICES.warrantyExtension, config.currency)}
+                </span>
+              )}
             </div>
           </button>
         </div>

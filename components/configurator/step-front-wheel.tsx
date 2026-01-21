@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Info, X } from "lucide-react";
@@ -12,6 +13,7 @@ import {
   formatPrice,
   PRICES,
 } from "@/lib/configurator-data";
+import { useMode } from "@/contexts/ModeContext";
 
 // Subtle gray blur placeholder for smooth image loading
 const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
@@ -34,42 +36,61 @@ interface WheelOption {
 // Info tooltip for individual options
 function InfoTooltip({ description }: { description: string }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const t = useTranslations("wheelConfig");
 
+  const handleOpen = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.top - 8,
+        left: rect.left + rect.width / 2,
+      });
+    }
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setPosition(null);
+  };
+
   return (
-    <div className="relative">
+    <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          setIsOpen(!isOpen);
+          if (isOpen) {
+            handleClose();
+          } else {
+            handleOpen();
+          }
         }}
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => setIsOpen(false)}
-        className="p-2.5 -m-1.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+        onMouseEnter={handleOpen}
+        onMouseLeave={handleClose}
+        className="p-1.5 -m-1 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
         aria-label={t("moreInfo")}
       >
         <Info className="h-4 w-4" />
       </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 5 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-72"
-          >
-            <div className="bg-stone-900 text-white text-sm px-4 py-3 rounded-lg shadow-lg">
-              {description}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
-                <div className="border-8 border-transparent border-t-stone-900" />
-              </div>
+      {isOpen && position && typeof window !== 'undefined' && createPortal(
+        <div
+          className="fixed z-[9999] w-72 pointer-events-none"
+          style={{ top: position.top, left: position.left, transform: 'translate(-50%, -100%)' }}
+        >
+          <div className="bg-stone-900 text-white text-sm px-4 py-3 rounded-lg shadow-lg">
+            {description}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+              <div className="border-8 border-transparent border-t-stone-900" />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
@@ -223,6 +244,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
   const t = useTranslations("wheelConfig");
   const tCommon = useTranslations("common");
   const tBaseRobot = useTranslations("baseRobot");
+  const { showPrices } = useMode();
 
   const wheelOptions: WheelOption[] = [
     {
@@ -339,6 +361,23 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                     ))}
                   </div>
                 </div>
+              ) : config.frontWheel === "DFW" ? (
+                <div className="relative aspect-[16/10] w-full">
+                  {/* Ground shadow */}
+                  <div className="absolute bottom-[8%] left-1/2 -translate-x-1/2 w-[85%] h-12 bg-stone-900/20 rounded-[100%] blur-3xl" />
+                  <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[70%] h-8 bg-stone-900/30 rounded-[100%] blur-xl" />
+                  <div className="absolute bottom-[11%] left-1/2 -translate-x-1/2 w-[55%] h-5 bg-stone-900/40 rounded-[100%] blur-lg" />
+                  <Image
+                    src="/images/wheels/dfw.png"
+                    alt={`FarmDroid FD20 - ${t("options.dfw.name")}`}
+                    fill
+                    priority
+                    className="object-contain"
+                    sizes="(max-width: 768px) 100vw, 60vw"
+                    placeholder="blur"
+                    blurDataURL={blurDataURL}
+                  />
+                </div>
               ) : (
                 <div className="max-w-lg mx-auto">
                   <RobotIllustration wheelConfig={config.frontWheel} />
@@ -416,7 +455,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                     <p className="text-xs text-stone-500 mt-1">{t(option.subtitleKey)}</p>
                   </div>
                   <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
-                    {option.price === 0 ? tCommon("included") : `+${formatPrice(option.price, config.currency)}`}
+                    {option.price === 0 ? tCommon("standard") : showPrices ? `+${formatPrice(option.price, config.currency)}` : ""}
                   </span>
                 </div>
               </button>

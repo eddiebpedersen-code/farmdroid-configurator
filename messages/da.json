@@ -407,6 +407,7 @@
     "emptyMessage": "Tilbehør er valgfrit. Du kan tilføje dem senere via vores serviceafdeling.",
     "selectedMessage": "{count} tilbehørsvare valgt til {price}.",
     "selectedMessagePlural": "{count} tilbehørsvarer valgt til {price}.",
+    "selectedCountOnly": "{count, plural, =1 {# tilbehørsartikel valgt.} other {# tilbehørsartikler valgt.}}",
     "viewGrid": "Oversigt",
     "viewPhotos": "Billeder",
     "noAccessoriesSelected": "Vælg tilbehør for at se billeder",

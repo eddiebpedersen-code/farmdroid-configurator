@@ -136,14 +136,16 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [viewMode, setViewMode] = useState<"2d" | "3d">("2d");
   const [showSeedInfoModal, setShowSeedInfoModal] = useState(false);
 
-  // Crop type selection with recommended configurations
+  // Crop type selection with recommended configurations and seed size compatibility
   const cropTypes = [
-    { id: "sprout", emoji: "🌱", nameKey: "sprout" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 450, plantSpacing: 15 },
-    { id: "onion", emoji: "🧅", nameKey: "onion" as const, seedSize: "14mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 12 },
-    { id: "sugarbeet", emoji: "🥬", nameKey: "sugarBeet" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 500, plantSpacing: 18 },
-    { id: "lettuce", emoji: "🥗", nameKey: "lettuce" as const, seedSize: "14mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 30 },
-    { id: "corn", emoji: "🌽", nameKey: "corn" as const, seedSize: "14mm" as SeedSize, rows: 4, rowDistance: 750, plantSpacing: 20 },
-    { id: "greenbean", emoji: "🫛", nameKey: "greenBean" as const, seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 10 },
+    { id: "sprout", emoji: "🌱", nameKey: "sprout" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 450, plantSpacing: 15, supports6mm: true, supports14mm: true },
+    { id: "carrot", emoji: "🥕", nameKey: "carrot" as const, seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 5, supports6mm: true, supports14mm: false },
+    { id: "flower", emoji: "🌸", nameKey: "flower" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 20, supports6mm: true, supports14mm: false },
+    { id: "onion", emoji: "🧅", nameKey: "onion" as const, seedSize: "14mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 12, supports6mm: true, supports14mm: true },
+    { id: "sugarbeet", emoji: "🫜", nameKey: "sugarBeet" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 500, plantSpacing: 18, supports6mm: true, supports14mm: true },
+    { id: "lettuce", emoji: "🥬", nameKey: "lettuce" as const, seedSize: "14mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 30, supports6mm: true, supports14mm: true },
+    { id: "corn", emoji: "🌽", nameKey: "corn" as const, seedSize: "14mm" as SeedSize, rows: 4, rowDistance: 750, plantSpacing: 20, supports6mm: false, supports14mm: true },
+    { id: "greenbean", emoji: "🫛", nameKey: "greenBean" as const, seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 10, supports6mm: false, supports14mm: true },
   ];
   const [selectedCrop, setSelectedCrop] = useState(cropTypes[0]);
 
@@ -2570,11 +2572,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </div>
               </div>
               <div className="flex-1 flex justify-end">
-                <div className="flex items-center justify-between w-[168px] bg-stone-100 rounded-lg px-1.5 py-0.5">
+                <div className="flex items-center justify-between w-[168px] bg-stone-100 rounded-lg px-1 py-0.5">
                   <button
                     onClick={() => setSeedsPerGroup(Math.max(2, seedsPerGroup - 1))}
                     disabled={seedsPerGroup <= 2 || seedingMode !== "group"}
-                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -2582,7 +2584,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   <button
                     onClick={() => setSeedsPerGroup(Math.min(15, seedsPerGroup + 1))}
                     disabled={seedsPerGroup >= 15 || seedingMode !== "group"}
-                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -2620,7 +2622,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     <div className="absolute top-full left-2 border-4 border-transparent border-t-stone-900" />
                   </div>
                 </div>
-                <div className={`flex items-center justify-between w-[168px] rounded-lg px-1.5 py-0.5 ${
+                <div className={`flex items-center justify-between w-[168px] rounded-lg px-1 py-0.5 ${
                   plantSpacing < 10 && seedingMode !== "line" ? "bg-red-50 ring-1 ring-red-200" : "bg-stone-100"
                 }`}>
                   <button
@@ -2629,7 +2631,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       setPlantSpacing(Math.max(3, Math.round((plantSpacing - step) * 10) / 10));
                     }}
                     disabled={plantSpacing <= 3 || seedingMode === "line"}
-                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -2666,7 +2668,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       setPlantSpacing(Math.min(40, Math.round((plantSpacing + step) * 10) / 10));
                     }}
                     disabled={plantSpacing >= 40 || seedingMode === "line"}
-                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -2825,14 +2827,14 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </div>
               )}
             </div>
-            <div className="flex items-center justify-between w-[120px] bg-stone-100 rounded-lg px-1.5 py-0.5">
+            <div className="flex items-center justify-between w-[116px] rounded-lg px-1 py-0.5 bg-stone-100">
               <button
                 onClick={() => {
                   const decrement = is3Wheel && config.activeRows % 2 !== 0 ? 1 : (is3Wheel ? 2 : 1);
                   handleSetRowCount(config.activeRows - decrement);
                 }}
                 disabled={config.activeRows <= 0}
-                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -2847,7 +2849,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   }
                 }}
                 disabled={!canAddMoreRows}
-                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
               >
                 <Plus className="h-3 w-3" />
               </button>
@@ -2875,73 +2877,64 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="relative group">
-                <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
-                <div className="absolute bottom-full left-0 mb-1.5 w-36 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  Hold Shift for 0.1cm
-                  <div className="absolute top-full left-2 border-4 border-transparent border-t-stone-900" />
-                </div>
-              </div>
-              <div className={`flex items-center justify-between w-[120px] rounded-lg px-1.5 py-0.5 ${
-                hasFrontWheelProximityWarning ? "bg-red-50 ring-1 ring-red-200" : "bg-stone-100"
-              }`}>
-                <button
-                  onClick={(e) => {
-                    const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                    const decreased = config.rowDistance - step;
-                    const newDistance = decreased < minRowDistance ? minRowDistance : decreased;
-                    updateConfig({
-                      rowDistance: newDistance,
-                      rowSpacings: generateRowSpacings(config.activeRows, newDistance)
-                    });
+            <div className={`flex items-center justify-between w-[116px] rounded-lg px-1 py-0.5 ${
+              hasFrontWheelProximityWarning ? "bg-red-50 ring-1 ring-red-200" : "bg-stone-100"
+            }`}>
+              <button
+                onClick={(e) => {
+                  const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
+                  const decreased = config.rowDistance - step;
+                  const newDistance = decreased < minRowDistance ? minRowDistance : decreased;
+                  updateConfig({
+                    rowDistance: newDistance,
+                    rowSpacings: generateRowSpacings(config.activeRows, newDistance)
+                  });
+                }}
+                disabled={config.rowDistance <= minRowDistance}
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              {editingRowDistance ? (
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={editingValue}
+                  onChange={(e) => setEditingValue(e.target.value)}
+                  onBlur={handleFinishEditRowDistance}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleFinishEditRowDistance();
+                    if (e.key === "Escape") {
+                      setEditingRowDistance(false);
+                      setEditingValue("");
+                    }
                   }}
-                  disabled={config.rowDistance <= minRowDistance}
-                  className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                  autoFocus
+                  className="w-12 h-7 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                />
+              ) : (
+                <span
+                  onClick={handleStartEditRowDistance}
+                  className={`text-sm font-semibold cursor-pointer px-1 py-0.5 rounded transition-colors hover:bg-emerald-100 ${hasFrontWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}
                 >
-                  <Minus className="h-3 w-3" />
-                </button>
-                {editingRowDistance ? (
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={editingValue}
-                    onChange={(e) => setEditingValue(e.target.value)}
-                    onBlur={handleFinishEditRowDistance}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleFinishEditRowDistance();
-                      if (e.key === "Escape") {
-                        setEditingRowDistance(false);
-                        setEditingValue("");
-                      }
-                    }}
-                    autoFocus
-                    className="w-14 h-9 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  />
-                ) : (
-                  <span
-                    onClick={handleStartEditRowDistance}
-                    className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-emerald-100 ${hasFrontWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}
-                  >
-                    {config.rowDistance / 10}cm
-                  </span>
-                )}
-                <button
-                  onClick={(e) => {
-                    const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                    const maxDistance = Math.min(800, maxRowDistanceForCurrentRows);
-                    const newDistance = Math.min(maxDistance, config.rowDistance + step);
-                    updateConfig({
-                      rowDistance: newDistance,
-                      rowSpacings: generateRowSpacings(config.activeRows, newDistance)
-                    });
-                  }}
-                  disabled={!canIncreaseRowDistance}
-                  className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-                >
-                  <Plus className="h-3 w-3" />
-                </button>
-              </div>
+                  {config.rowDistance / 10}cm
+                </span>
+              )}
+              <button
+                onClick={(e) => {
+                  const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
+                  const maxDistance = Math.min(800, maxRowDistanceForCurrentRows);
+                  const newDistance = Math.min(maxDistance, config.rowDistance + step);
+                  updateConfig({
+                    rowDistance: newDistance,
+                    rowSpacings: generateRowSpacings(config.activeRows, newDistance)
+                  });
+                }}
+                disabled={!canIncreaseRowDistance}
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
             </div>
           </div>
 
@@ -2960,13 +2953,13 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </div>
               )}
             </div>
-            <div className={`flex items-center justify-between w-[120px] rounded-lg px-1.5 py-0.5 ${
+            <div className={`flex items-center justify-between w-[116px] rounded-lg px-1 py-0.5 ${
               hasBackWheelProximityWarning ? "bg-red-50 ring-1 ring-red-200" : "bg-stone-100"
             }`}>
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.max(WHEEL_CONSTRAINTS.minWheelSpacing, config.wheelSpacing - 100) })}
                 disabled={config.wheelSpacing <= WHEEL_CONSTRAINTS.minWheelSpacing}
-                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -2974,7 +2967,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.min(WHEEL_CONSTRAINTS.maxWheelSpacing, config.wheelSpacing + 100) })}
                 disabled={config.wheelSpacing >= WHEEL_CONSTRAINTS.maxWheelSpacing}
-                className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
               >
                 <Plus className="h-3 w-3" />
               </button>
@@ -3017,68 +3010,59 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-stone-600 font-medium">{t("workingWidth")}</span>
-              <div className="flex items-center gap-1.5">
-                <div className="relative group">
-                  <Info className="h-3.5 w-3.5 text-stone-400 cursor-help" />
-                  <div className="absolute bottom-full left-0 mb-1.5 w-36 p-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    Hold Shift for 0.1cm
-                    <div className="absolute top-full left-2 border-4 border-transparent border-t-stone-900" />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between w-[120px] rounded-lg px-1.5 py-0.5 bg-stone-100">
-                  <button
-                    onClick={(e) => {
-                      const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                      const decreased = workingWidth - step;
-                      // Minimum working width = rowSpan + minRowDistance to prevent pass overlap
-                      const minWidth = rowSpan + minRowDistance;
-                      const newWidth = decreased < minWidth ? minWidth : decreased;
-                      setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
-                      setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
+              <div className="flex items-center justify-between w-[116px] rounded-lg px-1 py-0.5 bg-stone-100">
+                <button
+                  onClick={(e) => {
+                    const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
+                    const decreased = workingWidth - step;
+                    // Minimum working width = rowSpan + minRowDistance to prevent pass overlap
+                    const minWidth = rowSpan + minRowDistance;
+                    const newWidth = decreased < minWidth ? minWidth : decreased;
+                    setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
+                    setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
+                  }}
+                  disabled={workingWidth <= rowSpan + minRowDistance}
+                  className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                >
+                  <Minus className="h-3 w-3" />
+                </button>
+                {editingWorkingWidth ? (
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={editingValue}
+                    onChange={(e) => setEditingValue(e.target.value)}
+                    onBlur={handleFinishEditWorkingWidth}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleFinishEditWorkingWidth();
+                      if (e.key === "Escape") {
+                        setEditingWorkingWidth(false);
+                        setEditingValue("");
+                      }
                     }}
-                    disabled={workingWidth <= rowSpan + minRowDistance}
-                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                    autoFocus
+                    className="w-12 h-7 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  />
+                ) : (
+                  <span
+                    onClick={handleStartEditWorkingWidth}
+                    className="text-sm font-semibold cursor-pointer px-1 py-0.5 rounded transition-colors hover:bg-emerald-100 text-stone-900"
                   >
-                    <Minus className="h-3 w-3" />
-                  </button>
-                  {editingWorkingWidth ? (
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={editingValue}
-                      onChange={(e) => setEditingValue(e.target.value)}
-                      onBlur={handleFinishEditWorkingWidth}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleFinishEditWorkingWidth();
-                        if (e.key === "Escape") {
-                          setEditingWorkingWidth(false);
-                          setEditingValue("");
-                        }
-                      }}
-                      autoFocus
-                      className="w-14 h-9 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    />
-                  ) : (
-                    <span
-                      onClick={handleStartEditWorkingWidth}
-                      className="text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-emerald-100 text-stone-900"
-                    >
-                      {(workingWidth / 10).toFixed(0)}cm
-                    </span>
-                  )}
-                  <button
-                    onClick={(e) => {
-                      const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                      const newWidth = Math.min(5000, workingWidth + step); // Max 500cm
-                      setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
-                      setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
-                    }}
-                    disabled={workingWidth >= 5000}
-                    className="h-9 w-9 sm:h-11 sm:w-11 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-600 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </button>
-                </div>
+                    {(workingWidth / 10).toFixed(0)}cm
+                  </span>
+                )}
+                <button
+                  onClick={(e) => {
+                    const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
+                    const newWidth = Math.min(5000, workingWidth + step); // Max 500cm
+                    setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
+                    setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
+                  }}
+                  disabled={workingWidth >= 5000}
+                  className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                >
+                  <Plus className="h-3 w-3" />
+                </button>
               </div>
             </div>
 
@@ -3144,20 +3128,31 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
         <div className="pt-3 border-t border-stone-100">
           <p className="text-xs font-medium text-stone-500 mb-2">{t("cropType")}</p>
           <div className="flex flex-wrap gap-1.5">
-            {cropTypes.map((crop) => (
-              <button
-                key={crop.id}
-                onClick={() => setSelectedCrop(crop)}
-                className={`w-9 h-9 rounded-lg text-lg transition-all flex items-center justify-center ${
-                  selectedCrop.id === crop.id
-                    ? "bg-emerald-50 border-2 border-emerald-300 scale-105"
-                    : "bg-stone-100 hover:bg-stone-200 border-2 border-transparent"
-                }`}
-                title={tCrops(crop.nameKey)}
-              >
-                {crop.emoji}
-              </button>
-            ))}
+            {cropTypes.map((crop) => {
+              const isCompatible = config.seedSize === "6mm" ? crop.supports6mm : crop.supports14mm;
+              const tooltipText = isCompatible ? tCrops(crop.nameKey) : t("cropNotCompatible", { crop: tCrops(crop.nameKey), seedSize: config.seedSize });
+              return (
+                <div key={crop.id} className="relative group">
+                  <button
+                    onClick={() => isCompatible && setSelectedCrop(crop)}
+                    disabled={!isCompatible}
+                    className={`w-9 h-9 rounded-lg text-lg transition-all flex items-center justify-center ${
+                      !isCompatible
+                        ? "bg-stone-50 border-2 border-transparent opacity-40 cursor-not-allowed grayscale"
+                        : selectedCrop.id === crop.id
+                          ? "bg-emerald-50 border-2 border-emerald-300 scale-105"
+                          : "bg-stone-100 hover:bg-stone-200 border-2 border-transparent"
+                    }`}
+                  >
+                    {crop.emoji}
+                  </button>
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-stone-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    {tooltipText}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-800" />
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Selected crop info & apply button */}

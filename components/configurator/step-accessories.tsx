@@ -12,6 +12,7 @@ import {
   PRICES,
   isIncludedInStarterKit,
 } from "@/lib/configurator-data";
+import { useMode } from "@/contexts/ModeContext";
 
 // Subtle gray blur placeholder for smooth image loading
 const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
@@ -403,6 +404,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
   const [activeModal, setActiveModal] = useState<GroupType | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const { showPrices } = useMode();
 
   const toggleAccessory = (id: AccessoryId) => {
     if (id === "starterKit") {
@@ -734,12 +736,14 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
             </p>
             <p className="text-xs text-stone-500 mt-0.5">{t("selected")}</p>
           </div>
-          <div className="text-center">
-            <p className="text-xl md:text-2xl font-semibold text-stone-900">
-              {formatPrice(totalAccessoriesPrice, config.currency)}
-            </p>
-            <p className="text-xs text-stone-500 mt-0.5">{t("total")}</p>
-          </div>
+          {showPrices && (
+            <div className="text-center">
+              <p className="text-xl md:text-2xl font-semibold text-stone-900">
+                {formatPrice(totalAccessoriesPrice, config.currency)}
+              </p>
+              <p className="text-xs text-stone-500 mt-0.5">{t("total")}</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -790,9 +794,11 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                     <p className="text-xs md:text-sm text-stone-500 mt-1">{t(`items.${accessory.translationKey}.description`)}</p>
                     <p className="text-xs text-emerald-600 mt-2">{t("starterKitIncludes")}</p>
                   </div>
-                  <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
-                    +{formatPrice(accessory.price, config.currency)}
-                  </span>
+                  {showPrices && (
+                    <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
+                      +{formatPrice(accessory.price, config.currency)}
+                    </span>
+                  )}
                 </div>
               </button>
             );
@@ -848,7 +854,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       </p>
                     </div>
                     <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
-                      {isDisabled ? t("included") : `+${formatPrice(accessory.price, config.currency)}`}
+                      {isDisabled ? t("included") : showPrices ? `+${formatPrice(accessory.price, config.currency)}` : ""}
                     </span>
                   </div>
                 </button>
@@ -906,7 +912,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       </p>
                     </div>
                     <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
-                      {isDisabled ? t("included") : `+${formatPrice(accessory.price, config.currency)}`}
+                      {isDisabled ? t("included") : showPrices ? `+${formatPrice(accessory.price, config.currency)}` : ""}
                     </span>
                   </div>
                 </button>
@@ -969,7 +975,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       </p>
                     </div>
                     <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
-                      {isIncludedOrDisabled ? t("included") : `+${formatPrice(accessory.price, config.currency)}`}
+                      {isIncludedOrDisabled ? t("included") : showPrices ? `+${formatPrice(accessory.price, config.currency)}` : ""}
                     </span>
                   </div>
                 </button>
@@ -983,9 +989,11 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
           <p className="text-sm text-stone-500">
             {selectedCount === 0
               ? t("emptyMessage")
-              : selectedCount > 1
-              ? t("selectedMessagePlural", { count: selectedCount, price: formatPrice(totalAccessoriesPrice, config.currency) })
-              : t("selectedMessage", { count: selectedCount, price: formatPrice(totalAccessoriesPrice, config.currency) })}
+              : showPrices
+                ? (selectedCount > 1
+                  ? t("selectedMessagePlural", { count: selectedCount, price: formatPrice(totalAccessoriesPrice, config.currency) })
+                  : t("selectedMessage", { count: selectedCount, price: formatPrice(totalAccessoriesPrice, config.currency) }))
+                : t("selectedCountOnly", { count: selectedCount })}
           </p>
         </div>
       </div>

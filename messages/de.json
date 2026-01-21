@@ -407,6 +407,7 @@
     "emptyMessage": "Zubehör ist optional. Sie können es später über unsere Serviceabteilung hinzufügen.",
     "selectedMessage": "{count} Zubehörartikel ausgewählt für {price}.",
     "selectedMessagePlural": "{count} Zubehörartikel ausgewählt für {price}.",
+    "selectedCountOnly": "{count, plural, =1 {# Zubehörartikel ausgewählt.} other {# Zubehörartikel ausgewählt.}}",
     "viewGrid": "Übersicht",
     "viewPhotos": "Fotos",
     "noAccessoriesSelected": "Zubehör auswählen, um Fotos zu sehen",

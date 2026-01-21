@@ -29,18 +29,31 @@ export function SeedInfoModal({
     }
   }, [isOpen, selectedSize]);
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Reset image index when tab changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [activeTab]);
+
+  // Same images for both systems for now
+  const seedImages = [
+    "/images/seed/seed-1.jpg",
+    "/images/seed/seed-2.jpg",
+    "/images/seed/seed-3.jpg",
+    "/images/seed/seed-4.jpg",
+    "/images/seed/seed-5.jpg",
+  ];
+
   const seedSystems = [
     {
       id: "6mm" as SeedSize,
-      image: "/seed-6mm.jpg",
     },
     {
       id: "14mm" as SeedSize,
-      image: "/seed-14mm.jpg",
     },
   ];
 
-  const currentSystem = seedSystems.find(s => s.id === activeTab) || seedSystems[0];
   const isCurrentSelected = selectedSize === activeTab;
 
   return (
@@ -63,11 +76,11 @@ export function SeedInfoModal({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
           >
-            {/* Left: Image area */}
+            {/* Left: Image area with gallery */}
             <div className="relative flex-1 bg-stone-100 min-h-[200px] lg:min-h-0">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeTab}
+                  key={`${activeTab}-${currentImageIndex}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -75,8 +88,8 @@ export function SeedInfoModal({
                   className="absolute inset-0"
                 >
                   <Image
-                    src={currentSystem.image}
-                    alt={t(`systems.${activeTab}.name`)}
+                    src={seedImages[currentImageIndex]}
+                    alt={`${t(`systems.${activeTab}.name`)} - Image ${currentImageIndex + 1}`}
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 60vw"
@@ -85,6 +98,42 @@ export function SeedInfoModal({
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 </motion.div>
               </AnimatePresence>
+
+              {/* Image navigation arrows */}
+              <button
+                onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? seedImages.length - 1 : prev - 1))}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-stone-700 shadow-lg transition-colors"
+                aria-label="Previous image"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setCurrentImageIndex((prev) => (prev === seedImages.length - 1 ? 0 : prev + 1))}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-stone-700 shadow-lg transition-colors"
+                aria-label="Next image"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Image dots indicator */}
+              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
+                {seedImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      idx === currentImageIndex
+                        ? "bg-white w-6"
+                        : "bg-white/50 hover:bg-white/75"
+                    }`}
+                    aria-label={`View image ${idx + 1}`}
+                  />
+                ))}
+              </div>
 
               {/* Caption at bottom of image */}
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -164,6 +213,7 @@ export function SeedInfoModal({
                   {[
                     { name: t("crops.carrots"), supports6mm: true, supports14mm: false },
                     { name: t("crops.flowers"), supports6mm: true, supports14mm: false },
+                    { name: t("crops.rapeseed"), supports6mm: true, supports14mm: true },
                     { name: t("crops.onions"), supports6mm: true, supports14mm: true },
                     { name: t("crops.spinach"), supports6mm: true, supports14mm: true },
                     { name: t("crops.radish"), supports6mm: true, supports14mm: true },

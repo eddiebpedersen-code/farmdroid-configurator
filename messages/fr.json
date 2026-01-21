@@ -407,6 +407,7 @@
     "emptyMessage": "Les accessoires sont optionnels. Vous pouvez les ajouter plus tard via notre service après-vente.",
     "selectedMessage": "{count} article accessoire sélectionné pour {price}.",
     "selectedMessagePlural": "{count} articles accessoires sélectionnés pour {price}.",
+    "selectedCountOnly": "{count, plural, =1 {# article accessoire sélectionné.} other {# articles accessoires sélectionnés.}}",
     "viewGrid": "Aperçu",
     "viewPhotos": "Photos",
     "noAccessoriesSelected": "Sélectionnez des accessoires pour voir les photos",

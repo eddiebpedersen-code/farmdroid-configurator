@@ -11,6 +11,7 @@ import {
   formatPrice,
   PRICES,
 } from "@/lib/configurator-data";
+import { useMode } from "@/contexts/ModeContext";
 
 // Subtle gray blur placeholder for smooth image loading
 const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
@@ -249,6 +250,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
   const hasPowerBank = config.powerBank && !hasGenerator;
   const t = useTranslations("powerSource");
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const { showPrices } = useMode();
 
   const solarFeatureKeys = ["solarPanels", "battery", "zeroEmission"] as const;
   const powerBankFeatureKeys = ["extraCapacity", "totalCapacity", "chargedExternally", "smartCharging"] as const;
@@ -440,9 +442,11 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-semibold text-stone-900 ml-3">
-                +{formatPrice(PRICES.accessories.powerBank, config.currency)}
-              </span>
+              {showPrices && (
+                <span className="text-sm font-semibold text-stone-900 ml-3">
+                  +{formatPrice(PRICES.accessories.powerBank, config.currency)}
+                </span>
+              )}
             </div>
           </button>
         </div>
@@ -494,9 +498,11 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                   </div>
                 </div>
               </div>
-              <span className="text-sm font-semibold text-stone-900 ml-3">
-                +{formatPrice(PRICES.powerSource.hybrid, config.currency)}
-              </span>
+              {showPrices && (
+                <span className="text-sm font-semibold text-stone-900 ml-3">
+                  +{formatPrice(PRICES.powerSource.hybrid, config.currency)}
+                </span>
+              )}
             </div>
           </button>
         </div>

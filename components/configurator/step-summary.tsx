@@ -34,6 +34,10 @@ import {
   getWeedCuttingDiscVariant,
 } from "@/lib/configurator-data";
 import { QuoteCustomizationModal } from "@/components/quote/QuoteCustomizationModal";
+import { useMode } from "@/contexts/ModeContext";
+import { LeadCaptureForm, LeadData } from "./lead-capture-form";
+import { ThankYouScreen } from "./thank-you-screen";
+import { PartnerActions } from "./partner-actions";
 
 interface StepSummaryProps {
   config: ConfiguratorState;
@@ -340,10 +344,13 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
   const tQuote = useTranslations("quote");
   const pathname = usePathname();
   const locale = pathname.split("/")[1] || "en";
+  const { mode } = useMode();
 
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showDealModal, setShowDealModal] = useState(false);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [leadData, setLeadData] = useState<LeadData | null>(null);
   const hasTriggeredConfetti = useRef(false);
 
   // Trigger celebration confetti on first mount
@@ -457,6 +464,180 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
     },
   ].filter(Boolean) as { icon: typeof Cpu; label: string; value: number; included?: boolean; breakdown?: { count: number; unitPrice: number } }[];
 
+  // Handle lead submission in public mode
+  const handleLeadSubmit = (lead: LeadData) => {
+    setLeadData(lead);
+    setShowThankYou(true);
+  };
+
+  // Handle restart (for both modes)
+  const handleRestart = () => {
+    setShowThankYou(false);
+    setLeadData(null);
+    onReset();
+  };
+
+  // Public mode: Show thank you screen after form submission
+  if (mode === "public" && showThankYou && leadData) {
+    return <ThankYouScreen lead={leadData} config={config} onRestart={handleRestart} />;
+  }
+
+  // Public mode: Show lead capture form
+  if (mode === "public") {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
+        {/* Left: Robot Visualization - Takes 3 columns */}
+        <div className="lg:col-span-3 flex flex-col">
+          {/* Robot visualization */}
+          <div className="flex-1 flex items-center justify-center py-4 md:py-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="w-full max-w-lg"
+            >
+              <svg viewBox="0 0 200 160" className="w-full h-auto">
+                {/* Spray tank if enabled */}
+                {config.spraySystem && (
+                  <motion.g
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <rect x="70" y="8" width="60" height="22" rx="4" fill="#3b82f6" />
+                    <text x="100" y="23" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
+                      110L
+                    </text>
+                  </motion.g>
+                )}
+
+                {/* Solar panels */}
+                <rect x="30" y="30" width="140" height="18" rx="4" fill="#10b981" />
+                {[0, 1, 2, 3].map((i) => (
+                  <line key={i} x1={50 + i * 32} y1="30" x2={50 + i * 32} y2="48" stroke="#047857" strokeWidth="2" />
+                ))}
+
+                {/* Robot body */}
+                <rect x="40" y="48" width="120" height="60" rx="8" fill="#059669" />
+
+                {/* Display */}
+                <rect x="70" y="58" width="60" height="25" rx="4" fill="#1f2937" />
+                <motion.rect
+                  x="75" y="63" width="50" height="15" rx="2" fill="#10b981" opacity="0.5"
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+
+                {/* Generator if hybrid */}
+                {config.powerSource === "hybrid" && (
+                  <motion.g
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <rect x="8" y="68" width="28" height="35" rx="3" fill="#6b7280" />
+                    <rect x="12" y="72" width="20" height="8" rx="1" fill="#374151" />
+                    <motion.rect
+                      x="16" y="84" width="6" height="6" fill="#22c55e"
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 0.8, repeat: Infinity }}
+                    />
+                    <path d="M36 85 L48 85 L48 75" stroke="#f59e0b" strokeWidth="2" fill="none" />
+                  </motion.g>
+                )}
+
+                {/* Spray arms if enabled */}
+                {config.spraySystem && (
+                  <motion.g
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <rect x="42" y="100" width="116" height="4" rx="2" fill="#60a5fa" />
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <g key={i}>
+                        <circle cx={52 + i * 24} cy="108" r="4" fill="#3b82f6" />
+                        <motion.path
+                          d={`M${52 + i * 24} 112 L${47 + i * 24} 126 L${57 + i * 24} 126 Z`}
+                          fill="#93c5fd"
+                          opacity={0.5}
+                          animate={{ opacity: [0.3, 0.6, 0.3] }}
+                          transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
+                        />
+                      </g>
+                    ))}
+                  </motion.g>
+                )}
+
+                {/* Back Wheels */}
+                <circle cx="60" cy="120" r="16" fill="#374151" />
+                <circle cx="60" cy="120" r="9" fill="#6b7280" />
+                <circle cx="140" cy="120" r="16" fill="#374151" />
+                <circle cx="140" cy="120" r="9" fill="#6b7280" />
+
+                {/* Front wheels based on config */}
+                {config.frontWheel === "DFW" ? (
+                  <>
+                    <circle cx="60" cy="140" r="10" fill="#374151" />
+                    <circle cx="60" cy="140" r="6" fill="#6b7280" />
+                    <circle cx="140" cy="140" r="10" fill="#374151" />
+                    <circle cx="140" cy="140" r="6" fill="#6b7280" />
+                  </>
+                ) : (
+                  <>
+                    <circle cx="100" cy="135" r="12" fill="#374151" />
+                    <circle cx="100" cy="135" r="7" fill="#6b7280" />
+                    {config.frontWheel === "AFW" && (
+                      <motion.circle
+                        cx="100" cy="135" r="4" fill="#f59e0b"
+                        animate={{ opacity: [1, 0.5, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                    )}
+                  </>
+                )}
+              </svg>
+            </motion.div>
+          </div>
+
+          {/* Config summary row */}
+          <div className="flex justify-center gap-6 md:gap-8 pt-4 md:pt-6 border-t border-stone-100">
+            <div className="text-center">
+              <p className="text-xl md:text-2xl font-semibold text-stone-900">
+                {config.activeRows}
+                <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">{t("configLabels.rows")}</span>
+              </p>
+              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.active")}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xl md:text-2xl font-semibold text-stone-900">
+                {(workingWidth / 10).toFixed(0)}
+                <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">cm</span>
+              </p>
+              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.workingWidth")}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xl md:text-2xl font-semibold text-stone-900">
+                {config.powerSource === "hybrid" ? t("configLabels.hybrid") : t("configLabels.solar")}
+              </p>
+              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.power")}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Lead Capture Form - Takes 2 columns */}
+        <div className="lg:col-span-2">
+          <LeadCaptureForm
+            config={config}
+            priceBreakdown={priceBreakdown}
+            onSubmit={handleLeadSubmit}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Partner mode: Show full summary with prices and partner actions
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
@@ -599,124 +780,18 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
           </div>
         </div>
 
-        {/* Right: Configuration - Takes 2 columns */}
-        <div className="lg:col-span-2 space-y-4 md:space-y-6">
-          {/* Title */}
-          <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
-            <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
-          </div>
-
-          {/* Price breakdown */}
-          <div className="space-y-2 md:space-y-3">
-            {lineItems.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center justify-between py-2 md:py-3 border-b border-stone-100 last:border-0 gap-3"
-                >
-                  <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                    <Icon className="h-4 w-4 text-stone-400 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <span className="text-sm md:text-base text-stone-700 truncate block">{item.label}</span>
-                      {item.breakdown && item.breakdown.count > 1 && (
-                        <span className="text-xs text-stone-400">
-                          {item.breakdown.count} × {formatPrice(item.breakdown.unitPrice, config.currency)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <span className="font-medium text-stone-900 text-sm md:text-base flex-shrink-0">
-                    {item.included || item.value === 0 ? tCommon("included") : `+${formatPrice(item.value, config.currency)}`}
-                  </span>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Total */}
-          <div className="pt-4 border-t border-stone-200">
-            <div className="flex items-center justify-between">
-              <span className="text-base md:text-lg font-semibold text-stone-900">{t("total")}</span>
-              <motion.span
-                key={priceBreakdown.total}
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                className="text-2xl md:text-3xl font-bold text-stone-900"
-              >
-                {formatPrice(priceBreakdown.total, config.currency)}
-              </motion.span>
-            </div>
-            <div className="flex items-center gap-2 mt-2 text-xs md:text-sm text-stone-500">
-              <Truck className="h-4 w-4 flex-shrink-0" />
-              <span>{t("delivery")}</span>
-            </div>
-          </div>
-
-          {/* Annual Service Plan */}
-          {config.servicePlan !== "none" && (
-            <div className="pt-3 mt-3 border-t border-stone-100">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-emerald-600" />
-                  <span className="text-sm text-stone-700">
-                    {t("carePlan", { plan: config.servicePlan === "standard" ? "Standard" : "Premium" })}
-                  </span>
-                </div>
-                <div className="text-right">
-                  {config.servicePlan === "premium" ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-stone-400 line-through">
-                        {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
-                      </span>
-                      <span className="text-sm font-semibold text-emerald-600">
-                        {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-sm font-semibold text-stone-900">
-                      {formatPrice(PRICES.servicePlan.standard, config.currency)}/year
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div className="pt-4 space-y-3">
-            <button
-              onClick={() => setShowQuoteModal(true)}
-              className="w-full h-12 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <Share2 className="h-5 w-5" />
-              {tQuote("shareQuote")}
-            </button>
-
-            <button
-              onClick={() => setShowEmailModal(true)}
-              className="w-full h-12 rounded-lg border border-stone-200 hover:border-stone-300 text-stone-700 font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <Mail className="h-5 w-5" />
-              {tModals("emailQuote.title")}
-            </button>
-
-            <button
-              onClick={() => setShowDealModal(true)}
-              className="w-full h-12 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-medium flex items-center justify-center gap-2 transition-colors"
-            >
-              <Building2 className="h-5 w-5" />
-              {tModals("createDeal.createDeal")}
-            </button>
-          </div>
+        {/* Right: Partner Actions - Takes 2 columns */}
+        <div className="lg:col-span-2">
+          <PartnerActions
+            config={config}
+            priceBreakdown={priceBreakdown}
+            onRestart={handleRestart}
+            onShareQuote={() => setShowQuoteModal(true)}
+          />
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Modals (only shown in partner mode) */}
       <AnimatePresence>
         {showEmailModal && (
           <EmailQuoteModal

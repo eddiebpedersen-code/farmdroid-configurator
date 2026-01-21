@@ -407,6 +407,7 @@
     "emptyMessage": "Accessoires zijn optioneel. U kunt ze later toevoegen via onze serviceafdeling.",
     "selectedMessage": "{count} accessoire-item geselecteerd voor {price}.",
     "selectedMessagePlural": "{count} accessoire-items geselecteerd voor {price}.",
+    "selectedCountOnly": "{count, plural, =1 {# accessoire-item geselecteerd.} other {# accessoire-items geselecteerd.}}",
     "viewGrid": "Overzicht",
     "viewPhotos": "Foto's",
     "noAccessoriesSelected": "Selecteer accessoires om foto's te zien",

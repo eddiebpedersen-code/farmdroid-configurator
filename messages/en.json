@@ -43,7 +43,7 @@
     },
     "seedConfig": {
       "title": "+Seed Configuration",
-      "subtitle": "Configure your seeding setup"
+      "subtitle": "Configure rows and spacing for 100+ different crops"
     },
     "weedConfig": {
       "title": "+Weed Configuration",
@@ -109,12 +109,12 @@
       },
       "afw": {
         "name": "Active Front Wheel",
-        "subtitle": "Auto-tilting stability for slopes above 8%",
+        "subtitle": "Auto-tilting front wheel for slopes above 8% and inclines above 5%",
         "description": "For hilly terrains, the Active Front Wheel adds an actuator that automatically tilts the front wheel to maintain stability. Recommended for slopes above 8% and side inclines over 5%, and for crops with even row numbers and wider spacing (around 45-50 cm)."
       },
       "dfw": {
         "name": "Dual Front Wheel",
-        "subtitle": "Narrow row spacing down to 22.5 cm & bed systems",
+        "subtitle": "Flat fields with narrow row spacing (down to 22.5 cm) & bed systems",
         "description": "Equipped with two front wheels instead of one, this setup enhances balance and precision, particularly for crops with narrow row spacing down to 22.5 cm. Perfect for flat fields and bed systems, works well with both even and uneven row counts."
       }
     },
@@ -135,7 +135,7 @@
     },
     "selectionInfo": {
       "dfw": "4-wheel configuration provides maximum stability. All wheels run outside the rows, ideal for bed cultivation.",
-      "afw": "Active front wheel provides better traction in soft soil conditions while maintaining open field capability.",
+      "afw": "Active front wheel provides better traction in fields with slopes and inclines.",
       "pfw": "Passive front wheel runs between rows, allowing for wider working width in open field cultivation."
     }
   },
@@ -403,10 +403,12 @@
     "includedInStarterKit": "Included in Starter Kit",
     "includedWithCare": "Included with Care Package",
     "included": "Included",
+    "standard": "Standard",
     "starterKitIncludes": "Includes: FST Field Setup Tool, Base Station V3, Essential Care Package, Field Bracket",
     "emptyMessage": "Accessories are optional. You can add them later through our service department.",
     "selectedMessage": "{count} accessory item selected for {price}.",
     "selectedMessagePlural": "{count} accessory items selected for {price}.",
+    "selectedCountOnly": "{count, plural, =1 {# accessory item selected.} other {# accessory items selected.}}",
     "viewGrid": "Overview",
     "viewPhotos": "Photos",
     "noAccessoriesSelected": "Select accessories to see photos",
@@ -619,6 +621,7 @@
   },
   "common": {
     "included": "Included",
+    "standard": "Standard",
     "switchTo": "Switch to {label}",
     "firstYear": "first year",
     "freeFirstYear": "{price} first year",
@@ -627,7 +630,7 @@
   },
   "rowConfig": {
     "title": "+Seed Configuration",
-    "subtitle": "Configure your seeding setup",
+    "subtitle": "Configure rows and spacing for 100+ different crops",
     "seedSize": "Seed Size",
     "small": "Small (6mm)",
     "large": "Large (14mm)",
@@ -648,6 +651,7 @@
     "spacing": "Spacing",
     "cropType": "Crop Type",
     "applyCropConfig": "Apply {crop} Config",
+    "cropNotCompatible": "{crop} is not compatible with +Seed {seedSize}",
     "plantSpacing": "Plant spacing",
     "seedSizeLabel": "Seed size",
     "seed": "+Seed",
@@ -704,6 +708,7 @@
       "crops": {
         "carrots": "Carrots",
         "flowers": "Flowers",
+        "rapeseed": "Rapeseed",
         "onions": "Onions",
         "spinach": "Spinach",
         "radish": "Radish",
@@ -724,24 +729,25 @@
       "systems": {
         "6mm": {
           "name": "+Seed 6mm System",
-          "description": "Designed for smaller seeds up to 6mm. Ideal for high-density planting with precise spacing."
+          "description": "Compatible with seeds from 0.5 mm up to 6 mm such as flower seeds, rapeseed, lettuce, endives/chicory, cabbage, onion, spinach, sugar beet, red beet, fodder beet and more."
         },
         "14mm": {
           "name": "+Seed 14mm System",
-          "description": "Handles larger seeds up to 14mm. Perfect for crops that need more space between rows."
+          "description": "Compatible with seeds from 0.8 mm up to 14 mm such as rapeseed, lettuce, endives/chicory, cabbage, onion, spinach, sugar beet, red beet, fodder beet, soya beans, green beans, field beans, chickpeas, maize and more."
         }
       }
     },
     "visualizationAria": "Interactive row configuration showing {rows} rows at {spacing}cm spacing"
   },
   "crops": {
-    "sprout": "Sprout",
+    "sprout": "Herbs",
     "onion": "Onion",
     "sugarBeet": "Sugar Beet",
     "lettuce": "Lettuce",
     "corn": "Corn",
     "greenBean": "Green Bean",
     "carrot": "Carrot",
+    "flower": "Flower",
     "cabbage": "Cabbage",
     "parsnip": "Parsnip"
   },

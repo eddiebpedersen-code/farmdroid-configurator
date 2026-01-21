@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Inter } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import { ToastProvider } from '@/components/ui/toast';
+import { ModeProvider } from '@/contexts/ModeContext';
 import "../globals.css";
 
 const inter = Inter({
@@ -69,9 +70,11 @@ export default async function LocaleLayout({
       </head>
       <body className="antialiased bg-stone-50 min-h-screen">
         <NextIntlClientProvider messages={messages}>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
+          <ModeProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </ModeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

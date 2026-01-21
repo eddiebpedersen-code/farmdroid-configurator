@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useToastActions } from "@/components/ui/toast";
 import { useKeyboardShortcuts, useFocusTrap } from "@/hooks/use-focus-trap";
+import { useMode } from "@/contexts/ModeContext";
 import {
   ConfiguratorState,
   DEFAULT_CONFIG,
@@ -293,6 +294,7 @@ export default function ConfiguratorPage() {
   const pathname = usePathname();
   const currentLocale = pathname.split("/")[1] as Locale;
   const toast = useToastActions();
+  const { showPrices } = useMode();
 
   const t = useTranslations("navigation");
   const tSteps = useTranslations("steps");
@@ -534,96 +536,100 @@ export default function ConfiguratorPage() {
               {/* Language Selector */}
               <LanguageSelector />
 
-              {/* Currency Toggle */}
-              <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Currency">
-                {(["EUR", "DKK"] as Currency[]).map((curr) => (
-                  <button
-                    key={curr}
-                    onClick={() => updateConfig({ currency: curr })}
-                    role="radio"
-                    aria-checked={config.currency === curr}
-                    className={`px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-medium rounded-md transition-all ${
-                      config.currency === curr
-                        ? "bg-white text-stone-900 shadow-sm"
-                        : "text-stone-500 hover:text-stone-700"
-                    }`}
-                  >
-                    {curr}
-                  </button>
-                ))}
-              </div>
-
-              {/* Price with breakdown */}
-              <div className="text-right min-w-[140px] md:min-w-[200px]">
-                {/* Live region for price announcements */}
-                <div aria-live="polite" aria-atomic="true" className="sr-only">
-                  Total price: {formatPrice(priceBreakdown.total, config.currency)}
-                </div>
-
-                <motion.p
-                  key={`${priceBreakdown.total}-${config.currency}`}
-                  initial={{ scale: 1.08, opacity: 0.8 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="text-lg md:text-2xl font-semibold text-stone-900 tracking-tight"
-                >
-                  {formatPrice(priceBreakdown.total, config.currency)}
-                </motion.p>
-
-                {/* Price breakdown toggle */}
-                <div className="flex items-center justify-end gap-2 mt-0.5">
-                  <PriceBreakdownTooltip
-                    priceBreakdown={priceBreakdown}
-                    currency={config.currency}
-                    config={config}
-                    isOpen={showPriceBreakdown}
-                    onToggle={() => setShowPriceBreakdown(!showPriceBreakdown)}
-                  />
-                </div>
-
-                {/* Service plan indicator */}
-                <motion.div
-                  key={`service-${config.servicePlan}-${config.currency}-${currentStep}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center justify-end gap-1.5 mt-0.5"
-                >
-                  {currentStep >= 7 && config.servicePlan === "premium" ? (
-                    <>
-                      <span className="text-xs text-stone-500">{tService("plans.premium.name")}:</span>
-                      <span className="text-xs text-stone-400 line-through">
-                        {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
-                      </span>
-                      <span className="text-xs font-semibold text-emerald-600">
-                        {formatPrice(0, config.currency)} {tCommon("firstYear")}
-                      </span>
-                    </>
-                  ) : currentStep >= 7 && config.servicePlan === "standard" ? (
-                    <span className="text-xs text-stone-500">
-                      {tService("plans.standard.name")}: {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
-                    </span>
-                  ) : (
-                    <span className="text-xs text-stone-400">
-                      — {config.currency === "EUR" ? "€" : "kr."}/yr
-                    </span>
-                  )}
-                </motion.div>
-
-                {/* Auto-save indicator */}
-                <AnimatePresence>
-                  {lastSavedTime && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="flex items-center justify-end gap-1 mt-1"
+              {/* Currency Toggle - Only shown in partner mode */}
+              {showPrices && (
+                <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Currency">
+                  {(["EUR", "DKK"] as Currency[]).map((curr) => (
+                    <button
+                      key={curr}
+                      onClick={() => updateConfig({ currency: curr })}
+                      role="radio"
+                      aria-checked={config.currency === curr}
+                      className={`px-2 md:px-3 py-1 md:py-1.5 text-xs md:text-sm font-medium rounded-md transition-all ${
+                        config.currency === curr
+                          ? "bg-white text-stone-900 shadow-sm"
+                          : "text-stone-500 hover:text-stone-700"
+                      }`}
                     >
-                      <Save className="h-3 w-3 text-emerald-500" aria-hidden="true" />
-                      <span className="text-[10px] text-stone-400">{tCommon("autoSaved")}</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                      {curr}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Price with breakdown - Only shown in partner mode */}
+              {showPrices && (
+                <div className="text-right min-w-[140px] md:min-w-[200px]">
+                  {/* Live region for price announcements */}
+                  <div aria-live="polite" aria-atomic="true" className="sr-only">
+                    Total price: {formatPrice(priceBreakdown.total, config.currency)}
+                  </div>
+
+                  <motion.p
+                    key={`${priceBreakdown.total}-${config.currency}`}
+                    initial={{ scale: 1.08, opacity: 0.8 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className="text-lg md:text-2xl font-semibold text-stone-900 tracking-tight"
+                  >
+                    {formatPrice(priceBreakdown.total, config.currency)}
+                  </motion.p>
+
+                  {/* Price breakdown toggle */}
+                  <div className="flex items-center justify-end gap-2 mt-0.5">
+                    <PriceBreakdownTooltip
+                      priceBreakdown={priceBreakdown}
+                      currency={config.currency}
+                      config={config}
+                      isOpen={showPriceBreakdown}
+                      onToggle={() => setShowPriceBreakdown(!showPriceBreakdown)}
+                    />
+                  </div>
+
+                  {/* Service plan indicator */}
+                  <motion.div
+                    key={`service-${config.servicePlan}-${config.currency}-${currentStep}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center justify-end gap-1.5 mt-0.5"
+                  >
+                    {currentStep >= 7 && config.servicePlan === "premium" ? (
+                      <>
+                        <span className="text-xs text-stone-500">{tService("plans.premium.name")}:</span>
+                        <span className="text-xs text-stone-400 line-through">
+                          {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                        </span>
+                        <span className="text-xs font-semibold text-emerald-600">
+                          {formatPrice(0, config.currency)} {tCommon("firstYear")}
+                        </span>
+                      </>
+                    ) : currentStep >= 7 && config.servicePlan === "standard" ? (
+                      <span className="text-xs text-stone-500">
+                        {tService("plans.standard.name")}: {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
+                      </span>
+                    ) : (
+                      <span className="text-xs text-stone-400">
+                        — {config.currency === "EUR" ? "€" : "kr."}/yr
+                      </span>
+                    )}
+                  </motion.div>
+
+                  {/* Auto-save indicator */}
+                  <AnimatePresence>
+                    {lastSavedTime && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center justify-end gap-1 mt-1"
+                      >
+                        <Save className="h-3 w-3 text-emerald-500" aria-hidden="true" />
+                        <span className="text-[10px] text-stone-400">{tCommon("autoSaved")}</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
             </div>
           </div>
         </div>

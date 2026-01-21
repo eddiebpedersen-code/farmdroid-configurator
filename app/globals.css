@@ -121,7 +121,7 @@
 
 /* Selection card styles */
 .selection-card {
-  @apply relative overflow-hidden transition-all duration-200 ease-out;
+  @apply relative transition-all duration-200 ease-out;
 }
 
 .selection-card::before {

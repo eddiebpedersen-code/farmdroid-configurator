@@ -13,6 +13,7 @@ import {
   getWeedCuttingDiscVariant,
   WeedingTool,
 } from "@/lib/configurator-data";
+import { useMode } from "@/contexts/ModeContext";
 
 // Subtle gray blur placeholder for smooth image loading
 const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
@@ -195,12 +196,21 @@ function CombiToolAnimation() {
 function WeedConfigInfoModal({
   isOpen,
   onClose,
+  initialOption = "standardWeeding",
 }: {
   isOpen: boolean;
   onClose: () => void;
+  initialOption?: WeedOptionId;
 }) {
   const t = useTranslations("spraySystem.infoModal");
-  const [activeOption, setActiveOption] = useState<WeedOptionId>("standardWeeding");
+  const [activeOption, setActiveOption] = useState<WeedOptionId>(initialOption);
+
+  // Update active option when modal opens with different initial option
+  React.useEffect(() => {
+    if (isOpen) {
+      setActiveOption(initialOption);
+    }
+  }, [isOpen, initialOption]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const weedOptions: WeedOptionId[] = ["standardWeeding", "combiTool", "weedCuttingDisc", "spraySystem"];
@@ -434,6 +444,13 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
   const t = useTranslations("spraySystem");
   const tCommon = useTranslations("common");
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [infoModalOption, setInfoModalOption] = useState<WeedOptionId>("standardWeeding");
+  const { showPrices } = useMode();
+
+  const openInfoModal = (option: WeedOptionId) => {
+    setInfoModalOption(option);
+    setShowInfoModal(true);
+  };
 
   const sprayPrice = PRICES.spraySystem.base + (config.activeRows * PRICES.spraySystem.perRow);
   const combiToolPrice = config.activeRows * PRICES.accessories.combiToolPerRow;
@@ -603,24 +620,22 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
         {/* Title */}
         <div>
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
-            <button
-              onClick={() => setShowInfoModal(true)}
-              className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-700 transition-colors group"
-            >
-              <span className="flex items-center justify-center h-4 w-4 rounded-full border border-stone-300 group-hover:border-stone-400 group-hover:bg-stone-100 transition-colors">
-                <Info className="h-2.5 w-2.5" />
-              </span>
-              <span className="underline underline-offset-2">{t("learnMore")}</span>
-            </button>
-          </div>
+          <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
           <p className="text-sm md:text-base text-stone-500 mt-1.5 md:mt-2">{t("subtitle")}</p>
         </div>
 
         {/* Mechanical Weeding Section */}
         <div className="space-y-3 md:space-y-4">
-          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("mechanicalWeeding")}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("mechanicalWeeding")}</p>
+            <button
+              onClick={() => openInfoModal("standardWeeding")}
+              className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors"
+            >
+              <Info className="h-3 w-3" />
+              <span className="underline underline-offset-2">{t("learnMore")}</span>
+            </button>
+          </div>
 
           {/* Standard +Weed Config - Always included */}
           <div className="selection-card selected p-4 md:p-5 rounded-xl border">
@@ -649,7 +664,16 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
           </div>
 
           {/* Optional Weeding Tool Section Label */}
-          <p className="text-xs text-stone-400 mt-3 ml-2 md:ml-4">{t("optionalWeedingTool")}</p>
+          <div className="flex items-center justify-between mt-3 ml-2 md:ml-4">
+            <p className="text-xs text-stone-400">{t("optionalWeedingTool")}</p>
+            <button
+              onClick={() => openInfoModal("combiTool")}
+              className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors"
+            >
+              <Info className="h-3 w-3" />
+              <span className="underline underline-offset-2">{t("learnMore")}</span>
+            </button>
+          </div>
 
           {/* Combi Tool Option */}
           <button
@@ -685,16 +709,18 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                       </span>
                     ))}
                   </div>
-                  {config.weedingTool === "combiTool" && (
+                  {config.weedingTool === "combiTool" && showPrices && (
                     <p className="text-xs text-stone-400 mt-2">
                       {t("combiTool.pricePerRow", { price: formatPrice(PRICES.accessories.combiToolPerRow, config.currency), count: config.activeRows })}
                     </p>
                   )}
                 </div>
               </div>
-              <span className="text-sm font-semibold text-stone-900 ml-3">
-                +{formatPrice(combiToolPrice, config.currency)}
-              </span>
+              {showPrices && (
+                <span className="text-sm font-semibold text-stone-900 ml-3">
+                  +{formatPrice(combiToolPrice, config.currency)}
+                </span>
+              )}
             </div>
           </button>
 
@@ -734,23 +760,34 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   <p className={`text-xs mt-0.5 ${isWeedCuttingDiscAvailable ? "text-stone-500" : "text-stone-400"}`}>
                     {t("weedCuttingDisc.description")}
                   </p>
-                  {config.weedingTool === "weedCuttingDisc" && isWeedCuttingDiscAvailable && (
+                  {config.weedingTool === "weedCuttingDisc" && isWeedCuttingDiscAvailable && showPrices && (
                     <p className="text-xs text-stone-400 mt-2">
                       {t("weedCuttingDisc.pricePerRow", { price: formatPrice(PRICES.accessories.weedCuttingDiscPerRow, config.currency), count: config.activeRows })}
                     </p>
                   )}
                 </div>
               </div>
-              <span className={`text-sm font-semibold ml-3 ${isWeedCuttingDiscAvailable ? "text-stone-900" : "text-stone-400"}`}>
-                +{formatPrice(weedCuttingDiscPrice, config.currency)}
-              </span>
+              {showPrices && (
+                <span className={`text-sm font-semibold ml-3 ${isWeedCuttingDiscAvailable ? "text-stone-900" : "text-stone-400"}`}>
+                  +{formatPrice(weedCuttingDiscPrice, config.currency)}
+                </span>
+              )}
             </div>
           </button>
         </div>
 
         {/* Spray System Section */}
         <div className="space-y-3 md:space-y-4 pt-3">
-          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("spraySystemSection")}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("spraySystemSection")}</p>
+            <button
+              onClick={() => openInfoModal("spraySystem")}
+              className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors"
+            >
+              <Info className="h-3 w-3" />
+              <span className="underline underline-offset-2">{t("learnMore")}</span>
+            </button>
+          </div>
 
           {/* Spray System Add-on */}
           <button
@@ -787,7 +824,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                       </span>
                     ))}
                   </div>
-                  {config.spraySystem && (
+                  {config.spraySystem && showPrices && (
                     <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1 text-xs text-stone-400">
                       <div className="flex justify-between">
                         <span>{t("spray.baseSystem")}</span>
@@ -801,9 +838,11 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   )}
                 </div>
               </div>
-              <span className="text-sm font-semibold text-stone-900 ml-3">
-                +{formatPrice(sprayPrice, config.currency)}
-              </span>
+              {showPrices && (
+                <span className="text-sm font-semibold text-stone-900 ml-3">
+                  +{formatPrice(sprayPrice, config.currency)}
+                </span>
+              )}
             </div>
           </button>
         </div>
@@ -826,6 +865,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
       <WeedConfigInfoModal
         isOpen={showInfoModal}
         onClose={() => setShowInfoModal(false)}
+        initialOption={infoModalOption}
       />
     </div>
   );
