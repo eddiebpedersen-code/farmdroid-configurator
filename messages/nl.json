@@ -614,6 +614,12 @@
       "saveChanges": "Wijzigingen opslaan",
       "saving": "Opslaan..."
     },
+    "knownContactMode": {
+      "title": "Nieuwe configuratie maken",
+      "subtitle": "Bevestig uw gegevens om deze configuratie op te slaan",
+      "createConfig": "Configuratie maken",
+      "creating": "Maken..."
+    },
     "submitting": {
       "title": "Configuratie wordt opgeslagen...",
       "subtitle": "Even geduld terwijl we uw gegevens verwerken"
@@ -728,6 +734,13 @@
       "description": "Voeg rijen toe om te bepalen hoe uw FarmDroid zal zaaien. U kunt afstand, zaadgrootte en meer aanpassen.",
       "addRows": "Eerste rijen toevoegen"
     },
+    "dragHint": "Sleep rijen om afstand aan te passen",
+    "tutorialTitle": "Interactieve bediening",
+    "tutorialDrag": "Sleep rijen naar links/rechts om afstand aan te passen",
+    "tutorialAdd": "Klik + om rijen tussen bestaande toe te voegen",
+    "tutorialRemove": "Klik op rij om te verwijderen",
+    "tutorialWheels": "Sleep wielen om wielafstand aan te passen",
+    "tutorialGotIt": "Begrepen",
     "seedInfoModal": {
       "trigger": "Welk +Seed Systeem kiezen?",
       "title": "+Seed Systemen verkennen",
@@ -1062,5 +1075,54 @@
       "workingWidth": "Werkbreedte",
       "estimatedCapacity": "Geschatte capaciteit"
     }
+  },
+  "returningUser": {
+    "indicator": {
+      "found": "We vonden {count} eerdere configuratie(s)",
+      "checking": "Controleren...",
+      "viewPrevious": "Bekijk eerdere"
+    },
+    "modal": {
+      "title": "Welkom terug!",
+      "subtitle": "We vonden configuraties gekoppeld aan {email}",
+      "continueNew": "Doorgaan met nieuwe configuratie",
+      "viewPrevious": "Bekijk mijn eerdere configuraties",
+      "verifyTitle": "Verifieer je e-mail",
+      "verifySubtitle": "We hebben een 6-cijferige code naar {email} gestuurd",
+      "codeLabel": "Voer verificatiecode in",
+      "resend": "Code opnieuw versturen",
+      "resendIn": "Code opnieuw versturen over {seconds}s",
+      "verifying": "Verifiëren...",
+      "invalidCode": "Ongeldige code. Probeer het opnieuw.",
+      "expiredCode": "Code verlopen. Vraag een nieuwe aan.",
+      "tooManyAttempts": "Te veel pogingen. Vraag een nieuwe code aan.",
+      "configsTitle": "Uw configuraties",
+      "configsSubtitle": "Selecteer een configuratie om door te gaan",
+      "editConfig": "Bewerken",
+      "useAsTemplate": "Gebruik als sjabloon",
+      "startFresh": "Begin opnieuw",
+      "noConfigs": "Geen configuraties gevonden voor dit e-mailadres"
+    },
+    "configCard": {
+      "created": "Aangemaakt {date}",
+      "updated": "Laatst bijgewerkt {date}",
+      "reference": "Ref: {reference}",
+      "rows": "{count} actieve rijen",
+      "price": "Totaal: {price}"
+    }
+  },
+  "myConfigs": {
+    "title": "Mijn Configuraties",
+    "subtitle": "Bekijk en beheer uw FarmDroid configuraties",
+    "emailLabel": "Voer uw e-mailadres in",
+    "emailPlaceholder": "uw@email.nl",
+    "findButton": "Vind mijn configuraties",
+    "searching": "Zoeken...",
+    "noConfigsFound": "Geen configuraties gevonden voor dit e-mailadres",
+    "noConfigsTitle": "Geen configuraties gevonden",
+    "noConfigsDescription": "We konden geen configuraties vinden voor dit e-mailadres.",
+    "startNew": "Start een nieuwe configuratie",
+    "verificationSent": "Verificatiecode verzonden naar {email}",
+    "checkEmail": "Controleer uw e-mail voor de verificatiecode"
   }
 }

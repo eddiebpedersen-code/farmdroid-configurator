@@ -1,5 +1,44 @@
 import pako from "pako";
 import { ConfigPageData, CONFIG_PAGE_VERSION } from "./config-page-types";
+import { LeadData } from "@/components/configurator/lead-capture-form";
+
+/**
+ * Encode lead data to a URL-safe string (for start fresh with known contact)
+ */
+export function encodeLeadData(lead: LeadData): string {
+  try {
+    const json = JSON.stringify(lead);
+    const compressed = pako.deflate(json);
+    const base64 = btoa(String.fromCharCode(...compressed))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+    return base64;
+  } catch (error) {
+    console.error("Failed to encode lead data:", error);
+    throw new Error("Failed to encode lead data");
+  }
+}
+
+/**
+ * Decode lead data from URL-safe string
+ */
+export function decodeLeadData(encoded: string): LeadData | null {
+  try {
+    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    const binary = atob(padded);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    const json = pako.inflate(bytes, { to: "string" });
+    return JSON.parse(json) as LeadData;
+  } catch (error) {
+    console.error("Failed to decode lead data:", error);
+    return null;
+  }
+}
 
 /**
  * Generate a short, memorable reference code

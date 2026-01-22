@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Info, X } from "lucide-react";
+import { Check, Info, X, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ConfiguratorState,
@@ -241,10 +241,19 @@ const pfwImages = [
 export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
   const [showInfo, setShowInfo] = useState(false);
   const [pfwViewIndex, setPfwViewIndex] = useState(0);
+  const [imageLoading, setImageLoading] = useState(false);
   const t = useTranslations("wheelConfig");
   const tCommon = useTranslations("common");
   const tBaseRobot = useTranslations("baseRobot");
   const { showPrices } = useMode();
+
+  // Track when wheel selection changes to show loading state
+  const handleWheelChange = (wheelId: FrontWheel) => {
+    if (wheelId !== config.frontWheel) {
+      setImageLoading(true);
+      updateConfig({ frontWheel: wheelId });
+    }
+  };
 
   const wheelOptions: WheelOption[] = [
     {
@@ -281,6 +290,19 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
       <div className="lg:col-span-3 flex flex-col">
         {/* Main visualization */}
         <div className="flex-1 flex items-center justify-center py-4 md:py-8 relative">
+          {/* Loading overlay */}
+          <AnimatePresence>
+            {imageLoading && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 flex items-center justify-center bg-white/60 z-10"
+              >
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+              </motion.div>
+            )}
+          </AnimatePresence>
           <AnimatePresence mode="wait">
             <motion.div
               key={config.frontWheel}
@@ -305,6 +327,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                     sizes="(max-width: 768px) 100vw, 60vw"
                     placeholder="blur"
                     blurDataURL={blurDataURL}
+                    onLoad={() => setImageLoading(false)}
                   />
                 </div>
               ) : config.frontWheel === "PFW" ? (
@@ -332,6 +355,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                           sizes="(max-width: 768px) 100vw, 60vw"
                           placeholder="blur"
                           blurDataURL={blurDataURL}
+                          onLoad={() => setImageLoading(false)}
                         />
                       </motion.div>
                     </AnimatePresence>
@@ -376,6 +400,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                     sizes="(max-width: 768px) 100vw, 60vw"
                     placeholder="blur"
                     blurDataURL={blurDataURL}
+                    onLoad={() => setImageLoading(false)}
                   />
                 </div>
               ) : (
@@ -390,14 +415,14 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
         {/* Config type indicator */}
         <div className="flex justify-center gap-6 md:gap-8 pt-4 md:pt-6 border-t border-stone-100">
           <button
-            onClick={() => config.frontWheel === "DFW" && updateConfig({ frontWheel: "PFW" })}
+            onClick={() => config.frontWheel === "DFW" && handleWheelChange("PFW")}
             className={`text-center transition-opacity ${config.frontWheel !== "DFW" ? "opacity-100" : "opacity-40 hover:opacity-60 cursor-pointer"}`}
           >
             <p className="text-base md:text-lg font-semibold text-stone-900">{t("configTypes.threeWheel")}</p>
             <p className="text-xs text-stone-500">{t("configTypes.openField")}</p>
           </button>
           <button
-            onClick={() => config.frontWheel !== "DFW" && updateConfig({ frontWheel: "DFW" })}
+            onClick={() => config.frontWheel !== "DFW" && handleWheelChange("DFW")}
             className={`text-center transition-opacity ${config.frontWheel === "DFW" ? "opacity-100" : "opacity-40 hover:opacity-60 cursor-pointer"}`}
           >
             <p className="text-base md:text-lg font-semibold text-stone-900">{t("configTypes.fourWheel")}</p>
@@ -434,7 +459,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
             return (
               <button
                 key={option.id}
-                onClick={() => updateConfig({ frontWheel: option.id })}
+                onClick={() => handleWheelChange(option.id)}
                 className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ${
                   isSelected
                     ? "selected"

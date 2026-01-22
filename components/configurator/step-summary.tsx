@@ -558,6 +558,51 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
 
   // Check if we're in edit mode (have existing reference and lead data)
   const isEditMode = Boolean(existingReference && initialLead);
+  // Check if we're in "known contact" mode (have lead data but no reference - start fresh scenario)
+  const isKnownContactMode = Boolean(!existingReference && initialLead);
+
+  // Handle creating a new configuration with known contact details
+  const handleKnownContactSubmit = async () => {
+    if (!initialLead) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // Build the updated lead data
+      const updatedLead: LeadData = {
+        ...initialLead,
+        firstName: editFirstName,
+        lastName: editLastName,
+        phone: editPhone,
+        farmSize: editFarmSize,
+        hectaresForFarmDroid: editHectares,
+        crops: editCrops,
+      };
+
+      const response = await fetch("/api/configurations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lead: updatedLead,
+          config,
+          locale,
+          totalPrice: priceBreakdown.total,
+          currency: config.currency,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save configuration");
+      }
+
+      const { reference } = await response.json();
+      router.push(`/${locale}/config/${reference}`);
+    } catch (error) {
+      console.error("Error creating configuration:", error);
+      toast.error("Error", "Failed to save your configuration. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
 
   // Handle restart (for both modes)
   const handleRestart = () => {
@@ -744,7 +789,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
 
         {/* Right: Lead Capture Form or Update Panel - Takes 2 columns */}
         <div className="lg:col-span-2">
-          {isEditMode ? (
+          {(isEditMode || isKnownContactMode) ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -756,16 +801,22 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
                   <Check className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-stone-900">{t("editMode.title")}</h2>
-                  <p className="text-sm text-stone-500">{t("editMode.subtitle")}</p>
+                  <h2 className="text-lg font-semibold text-stone-900">
+                    {isKnownContactMode ? t("knownContactMode.title") : t("editMode.title")}
+                  </h2>
+                  <p className="text-sm text-stone-500">
+                    {isKnownContactMode ? t("knownContactMode.subtitle") : t("editMode.subtitle")}
+                  </p>
                 </div>
               </div>
 
-              {/* Reference */}
-              <div className="flex items-center justify-between text-sm mb-4 pb-4 border-b border-stone-100">
-                <span className="text-stone-500">{t("editMode.reference")}</span>
-                <span className="font-mono text-stone-700">{existingReference}</span>
-              </div>
+              {/* Reference - only show in edit mode */}
+              {isEditMode && (
+                <div className="flex items-center justify-between text-sm mb-4 pb-4 border-b border-stone-100">
+                  <span className="text-stone-500">{t("editMode.reference")}</span>
+                  <span className="font-mono text-stone-700">{existingReference}</span>
+                </div>
+              )}
 
               {/* Locked fields - Email and Company */}
               <div className="space-y-3 mb-4">
@@ -847,19 +898,19 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
 
               {/* Save button */}
               <button
-                onClick={handleUpdateConfig}
+                onClick={isEditMode ? handleUpdateConfig : handleKnownContactSubmit}
                 disabled={isSubmitting || !editFirstName || !editLastName}
                 className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    {t("editMode.saving")}
+                    {isKnownContactMode ? t("knownContactMode.creating") : t("editMode.saving")}
                   </>
                 ) : (
                   <>
                     <Check className="h-5 w-5" />
-                    {t("editMode.saveChanges")}
+                    {isKnownContactMode ? t("knownContactMode.createConfig") : t("editMode.saveChanges")}
                   </>
                 )}
               </button>

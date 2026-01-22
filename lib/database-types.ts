@@ -34,6 +34,11 @@ export interface Database {
         Insert: HubSpotFieldMappingInsert;
         Update: HubSpotFieldMappingUpdate;
       };
+      email_verification_codes: {
+        Row: EmailVerificationCodeRow;
+        Insert: EmailVerificationCodeInsert;
+        Update: EmailVerificationCodeUpdate;
+      };
     };
   };
 }
@@ -165,4 +170,54 @@ export interface ConfigurationViewUpdate {
   viewer_type?: "farmer" | "distributor" | "internal" | null;
   user_agent?: string | null;
   ip_hash?: string | null;
+}
+
+/**
+ * Email verification code row
+ */
+export type EmailVerificationPurpose = "email_lookup" | "my_configs";
+
+export interface EmailVerificationCodeRow {
+  id: string;
+  email: string;
+  code: string;
+  purpose: EmailVerificationPurpose;
+  attempts: number;
+  max_attempts: number;
+  expires_at: string;
+  verified_at: string | null;
+  ip_hash: string | null;
+  created_at: string;
+}
+
+/**
+ * Email verification code insert
+ */
+export interface EmailVerificationCodeInsert {
+  id?: string;
+  email: string;
+  code: string;
+  purpose: EmailVerificationPurpose;
+  attempts?: number;
+  max_attempts?: number;
+  expires_at: string;
+  verified_at?: string | null;
+  ip_hash?: string | null;
+  created_at?: string;
+}
+
+/**
+ * Email verification code update
+ */
+export interface EmailVerificationCodeUpdate {
+  id?: string;
+  email?: string;
+  code?: string;
+  purpose?: EmailVerificationPurpose;
+  attempts?: number;
+  max_attempts?: number;
+  expires_at?: string;
+  verified_at?: string | null;
+  ip_hash?: string | null;
+  created_at?: string;
 }

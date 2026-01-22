@@ -200,3 +200,42 @@ export async function createConfigurationNote(
 
   return response.id;
 }
+
+/**
+ * Creates a simple note on a contact with the configuration link
+ */
+export async function createContactNote(
+  contactId: string,
+  reference: string,
+  configUrl: string
+): Promise<string> {
+  const noteBody = `FarmDroid Configuration: ${reference}\n\nView configuration: ${configUrl}`;
+
+  const response = await hubspotRequest<NoteResponse>(
+    "/crm/v3/objects/notes",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        properties: {
+          hs_note_body: noteBody,
+          hs_timestamp: new Date().toISOString(),
+        },
+        associations: [
+          {
+            to: {
+              id: contactId,
+            },
+            types: [
+              {
+                associationCategory: "HUBSPOT_DEFINED",
+                associationTypeId: 202, // Note to Contact
+              },
+            ],
+          },
+        ],
+      }),
+    }
+  );
+
+  return response.id;
+}

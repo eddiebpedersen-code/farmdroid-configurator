@@ -614,6 +614,12 @@
       "saveChanges": "Enregistrer les modifications",
       "saving": "Enregistrement..."
     },
+    "knownContactMode": {
+      "title": "Créer une nouvelle configuration",
+      "subtitle": "Confirmez vos informations pour enregistrer cette configuration",
+      "createConfig": "Créer la configuration",
+      "creating": "Création..."
+    },
     "submitting": {
       "title": "Enregistrement de votre configuration...",
       "subtitle": "Veuillez patienter pendant que nous traitons vos informations"
@@ -728,6 +734,13 @@
       "description": "Ajoutez des rangs pour définir comment votre FarmDroid sèmera vos cultures. Vous pouvez ajuster l'espacement, la taille des graines et plus.",
       "addRows": "Ajouter les premiers rangs"
     },
+    "dragHint": "Glissez les rangs pour ajuster l'espacement",
+    "tutorialTitle": "Contrôles interactifs",
+    "tutorialDrag": "Glissez les rangs à gauche/droite pour ajuster l'espacement",
+    "tutorialAdd": "Cliquez + pour ajouter des rangs entre les existants",
+    "tutorialRemove": "Cliquez sur un rang pour le supprimer",
+    "tutorialWheels": "Glissez les roues pour ajuster l'espacement des roues",
+    "tutorialGotIt": "Compris",
     "seedInfoModal": {
       "trigger": "Quel système +Seed choisir ?",
       "title": "Explorer les systèmes +Seed",
@@ -1062,5 +1075,54 @@
       "workingWidth": "Largeur de travail",
       "estimatedCapacity": "Capacité estimée"
     }
+  },
+  "returningUser": {
+    "indicator": {
+      "found": "Nous avons trouvé {count} configuration(s) précédente(s)",
+      "checking": "Vérification...",
+      "viewPrevious": "Voir précédentes"
+    },
+    "modal": {
+      "title": "Bon retour !",
+      "subtitle": "Nous avons trouvé des configurations associées à {email}",
+      "continueNew": "Continuer avec une nouvelle configuration",
+      "viewPrevious": "Voir mes configurations précédentes",
+      "verifyTitle": "Vérifiez votre email",
+      "verifySubtitle": "Nous avons envoyé un code à 6 chiffres à {email}",
+      "codeLabel": "Entrez le code de vérification",
+      "resend": "Renvoyer le code",
+      "resendIn": "Renvoyer le code dans {seconds}s",
+      "verifying": "Vérification...",
+      "invalidCode": "Code invalide. Veuillez réessayer.",
+      "expiredCode": "Code expiré. Veuillez en demander un nouveau.",
+      "tooManyAttempts": "Trop de tentatives. Veuillez demander un nouveau code.",
+      "configsTitle": "Vos configurations",
+      "configsSubtitle": "Sélectionnez une configuration pour continuer",
+      "editConfig": "Modifier",
+      "useAsTemplate": "Utiliser comme modèle",
+      "startFresh": "Recommencer à zéro",
+      "noConfigs": "Aucune configuration trouvée pour cet email"
+    },
+    "configCard": {
+      "created": "Créé le {date}",
+      "updated": "Dernière mise à jour {date}",
+      "reference": "Réf: {reference}",
+      "rows": "{count} rangs actifs",
+      "price": "Total: {price}"
+    }
+  },
+  "myConfigs": {
+    "title": "Mes Configurations",
+    "subtitle": "Consultez et gérez vos configurations FarmDroid",
+    "emailLabel": "Entrez votre adresse email",
+    "emailPlaceholder": "votre@email.fr",
+    "findButton": "Trouver mes configurations",
+    "searching": "Recherche...",
+    "noConfigsFound": "Aucune configuration trouvée pour cette adresse email",
+    "noConfigsTitle": "Aucune configuration trouvée",
+    "noConfigsDescription": "Nous n'avons pas trouvé de configuration pour cette adresse email.",
+    "startNew": "Démarrer une nouvelle configuration",
+    "verificationSent": "Code de vérification envoyé à {email}",
+    "checkEmail": "Veuillez vérifier votre email pour le code de vérification"
   }
 }

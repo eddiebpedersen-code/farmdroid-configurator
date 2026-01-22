@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InlineMappingEditor } from "@/components/admin/InlineMappingEditor";
-import { AlertCircle, Loader2, User, Building, Handshake } from "lucide-react";
+import { AlertCircle, Loader2, User, Building } from "lucide-react";
 import type { HubSpotFieldMappingRow, HubSpotObject, SourceCategory, TransformType } from "@/lib/admin/types";
 
 export default function MappingsPage() {
@@ -86,6 +86,34 @@ export default function MappingsPage() {
     setMappings((prev) => prev.filter((m) => m.id !== id));
   };
 
+  const handleUpdateMapping = async (
+    id: string,
+    data: {
+      source_field?: string;
+      source_category?: SourceCategory;
+      hubspot_property?: string;
+      hubspot_property_label?: string;
+      transform_type?: TransformType;
+      transform_config?: Record<string, unknown>;
+    }
+  ) => {
+    const response = await fetch(`/api/admin/mappings/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to update mapping");
+    }
+
+    const updatedMapping = await response.json();
+    setMappings((prev) =>
+      prev.map((m) => (m.id === id ? updatedMapping : m))
+    );
+  };
+
   const getMappingsForObject = (objectType: HubSpotObject) =>
     mappings.filter((m) => m.hubspot_object === objectType);
 
@@ -117,8 +145,8 @@ export default function MappingsPage() {
         <CardHeader>
           <CardTitle>HubSpot Field Mappings</CardTitle>
           <CardDescription>
-            Map fields from the lead form and robot configuration to HubSpot.
-            You can also set default values for properties like pipeline and deal stage.
+            Map fields from the lead form and robot configuration to HubSpot contacts and companies.
+            You can also set default values for properties like lifecycle stage.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -126,7 +154,7 @@ export default function MappingsPage() {
             value={activeTab}
             onValueChange={(v) => setActiveTab(v as HubSpotObject)}
           >
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="contact" className="flex items-center gap-2">
                 <User className="w-4 h-4" />
                 Contact
@@ -141,13 +169,6 @@ export default function MappingsPage() {
                   {getMappingsForObject("company").length}
                 </span>
               </TabsTrigger>
-              <TabsTrigger value="deal" className="flex items-center gap-2">
-                <Handshake className="w-4 h-4" />
-                Deal
-                <span className="bg-stone-200 text-stone-600 px-2 py-0.5 rounded text-xs">
-                  {getMappingsForObject("deal").length}
-                </span>
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="contact">
@@ -157,6 +178,7 @@ export default function MappingsPage() {
                 onCreateMapping={handleCreateMapping}
                 onToggleActive={handleToggleActive}
                 onDeleteMapping={handleDeleteMapping}
+                onUpdateMapping={handleUpdateMapping}
               />
             </TabsContent>
 
@@ -167,16 +189,7 @@ export default function MappingsPage() {
                 onCreateMapping={handleCreateMapping}
                 onToggleActive={handleToggleActive}
                 onDeleteMapping={handleDeleteMapping}
-              />
-            </TabsContent>
-
-            <TabsContent value="deal">
-              <InlineMappingEditor
-                hubspotObject="deal"
-                mappings={getMappingsForObject("deal")}
-                onCreateMapping={handleCreateMapping}
-                onToggleActive={handleToggleActive}
-                onDeleteMapping={handleDeleteMapping}
+                onUpdateMapping={handleUpdateMapping}
               />
             </TabsContent>
           </Tabs>
@@ -195,12 +208,12 @@ export default function MappingsPage() {
           </p>
           <p>
             <strong>Default Values:</strong> Set fixed values for HubSpot properties.
-            Useful for setting pipeline, deal stage, or lifecycle stage automatically.
+            Useful for setting lifecycle stage or lead status automatically.
             If the property has predefined options (like a dropdown), you'll see those options.
           </p>
           <p>
             <strong>Derived Fields:</strong> Special computed values like the configuration URL,
-            reference number, price, and configuration summary.
+            reference number, and price.
           </p>
           <p>
             <strong>Transform Types:</strong>
@@ -210,6 +223,9 @@ export default function MappingsPage() {
             <li><strong>Yes/No:</strong> Converts true/false to Yes/No text</li>
             <li><strong>Join:</strong> Joins array values with commas</li>
           </ul>
+          <p className="pt-2 text-stone-500">
+            <strong>Note:</strong> A note with the configuration link is automatically added to each contact.
+          </p>
         </CardContent>
       </Card>
     </div>

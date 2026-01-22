@@ -614,6 +614,12 @@
       "saveChanges": "Gem ændringer",
       "saving": "Gemmer..."
     },
+    "knownContactMode": {
+      "title": "Opret ny konfiguration",
+      "subtitle": "Bekræft dine oplysninger for at gemme denne konfiguration",
+      "createConfig": "Opret konfiguration",
+      "creating": "Opretter..."
+    },
     "submitting": {
       "title": "Gemmer din konfiguration...",
       "subtitle": "Vent venligst mens vi behandler dine oplysninger"
@@ -728,6 +734,13 @@
       "description": "Tilføj rækker for at definere hvordan din FarmDroid vil så dine afgrøder. Du kan justere afstand, frøstørrelse og mere.",
       "addRows": "Tilføj første rækker"
     },
+    "dragHint": "Træk rækker for at justere afstand",
+    "tutorialTitle": "Interaktive kontroller",
+    "tutorialDrag": "Træk rækker til venstre/højre for at justere afstand",
+    "tutorialAdd": "Klik + for at tilføje rækker mellem eksisterende",
+    "tutorialRemove": "Klik på række for at fjerne den",
+    "tutorialWheels": "Træk hjul for at justere hjulafstand",
+    "tutorialGotIt": "Forstået",
     "seedInfoModal": {
       "trigger": "Hvilket +Seed System skal jeg vælge?",
       "title": "Udforsk +Seed Systemer",
@@ -1062,5 +1075,54 @@
       "workingWidth": "Arbejdsbredde",
       "estimatedCapacity": "Estimeret kapacitet"
     }
+  },
+  "returningUser": {
+    "indicator": {
+      "found": "Vi fandt {count} tidligere konfiguration(er)",
+      "checking": "Tjekker...",
+      "viewPrevious": "Se tidligere"
+    },
+    "modal": {
+      "title": "Velkommen tilbage!",
+      "subtitle": "Vi fandt konfigurationer tilknyttet {email}",
+      "continueNew": "Fortsæt med ny konfiguration",
+      "viewPrevious": "Se mine tidligere konfigurationer",
+      "verifyTitle": "Bekræft din email",
+      "verifySubtitle": "Vi har sendt en 6-cifret kode til {email}",
+      "codeLabel": "Indtast bekræftelseskode",
+      "resend": "Send kode igen",
+      "resendIn": "Send kode igen om {seconds}s",
+      "verifying": "Bekræfter...",
+      "invalidCode": "Ugyldig kode. Prøv igen.",
+      "expiredCode": "Koden er udløbet. Anmod om en ny.",
+      "tooManyAttempts": "For mange forsøg. Anmod om en ny kode.",
+      "configsTitle": "Dine konfigurationer",
+      "configsSubtitle": "Vælg en konfiguration for at fortsætte",
+      "editConfig": "Rediger",
+      "useAsTemplate": "Brug som skabelon",
+      "startFresh": "Start forfra i stedet",
+      "noConfigs": "Ingen konfigurationer fundet for denne email"
+    },
+    "configCard": {
+      "created": "Oprettet {date}",
+      "updated": "Sidst opdateret {date}",
+      "reference": "Ref: {reference}",
+      "rows": "{count} aktive rækker",
+      "price": "Total: {price}"
+    }
+  },
+  "myConfigs": {
+    "title": "Mine Konfigurationer",
+    "subtitle": "Se og administrer dine FarmDroid konfigurationer",
+    "emailLabel": "Indtast din emailadresse",
+    "emailPlaceholder": "din@email.dk",
+    "findButton": "Find mine konfigurationer",
+    "searching": "Søger...",
+    "noConfigsFound": "Ingen konfigurationer fundet for denne emailadresse",
+    "noConfigsTitle": "Ingen konfigurationer fundet",
+    "noConfigsDescription": "Vi kunne ikke finde nogen konfigurationer for denne emailadresse.",
+    "startNew": "Start en ny konfiguration",
+    "verificationSent": "Bekræftelseskode sendt til {email}",
+    "checkEmail": "Tjek venligst din email for bekræftelseskoden"
   }
 }

@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create HubSpot entities (Contact, Company, Deal) and Note
+    // Create HubSpot entities (Contact, Company) and Note with config link
     let hubspotResult = null;
     try {
       // Get base URL for config link
@@ -106,7 +106,6 @@ export async function POST(request: NextRequest) {
         .update({
           hubspot_contact_id: hubspotResult.contactId,
           hubspot_company_id: hubspotResult.companyId,
-          hubspot_deal_id: hubspotResult.dealId,
         })
         .eq("reference", reference);
     } catch (hubspotError) {

@@ -83,7 +83,7 @@
     },
     "features": {
       "solarPower": "1.6 kW solar power system",
-      "batteries": "Lithium batteries 5.7 kWh capacity",
+      "batteries": "Lithium batteries 6.0 kWh capacity",
       "gps": "Dual GPS navigation system",
       "autonomous": "Autonomous operation",
       "remoteMonitoring": "Remote monitoring via app",
@@ -140,9 +140,9 @@
       "footer": "With these configuration options, you can fine-tune your FarmDroid to match your terrain, crops, and working style. Our robot specialists are always ready to help you design the setup that fits your farm best."
     },
     "selectionInfo": {
-      "dfw": "4-wheel configuration provides maximum stability. All wheels run outside the rows, ideal for bed cultivation.",
+      "dfw": "4-wheel configuration provides maximum flexibility. Ideal for bed configurations.",
       "afw": "Active front wheel provides better traction in fields with slopes and inclines.",
-      "pfw": "Passive front wheel runs between rows, allowing for wider working width in open field cultivation."
+      "pfw": "Passive front wheel runs between rows. This is the standard and 'original' FarmDroid FD20 front wheel configuration. Typically used for crops with row spacings 45-50 cm"
     }
   },
   "powerSource": {
@@ -161,10 +161,10 @@
     },
     "powerBank": {
       "name": "+ Power Bank",
-      "description": "Extended: Adds ~10h daily operation",
+      "description": "Extended: Adds ~10h daily operation on cloudy days",
       "features": {
-        "extraCapacity": "5.7 kWh extra capacity",
-        "totalCapacity": "11.4 kWh total",
+        "extraCapacity": "6.0 kWh extra capacity",
+        "totalCapacity": "12.0 kWh total",
         "chargedExternally": "Charged externally",
         "smartCharging": "Smart Solar Charging"
       }
@@ -181,7 +181,7 @@
     },
     "info": {
       "hybrid": "Hybrid configuration adds generator backup for maximum uptime in all conditions.",
-      "powerBank": "Extended electric operation with double battery capacity - stays fully emission-free.",
+      "powerBank": "Extended electric operation with double battery capacity - the Power bank can be charged externally at your farm and connected to your FarmDroid.",
       "solar": "Pure solar power provides clean, quiet operation ideal for most farming conditions."
     },
     "learnMore": "Learn more",
@@ -192,31 +192,31 @@
       "options": {
         "solar": {
           "name": "Solar Power",
-          "description": "The standard FarmDroid power configuration uses a 1.6 kW solar panel array combined with a 5.7 kWh lithium battery pack. This setup provides 12-24 hours of daily operation depending on weather conditions and season, making it ideal for most farming operations.",
+          "description": "The standard FarmDroid power configuration uses a 1.6 kW solar panel array combined with a 6.0 kWh lithium battery pack. This setup provides 12-24 hours of daily operation depending on weather conditions and season, making it ideal for most farming operations.",
           "specs": [
             "1.6 kW peak solar panel output",
-            "5.7 kWh lithium battery capacity",
+            "6.0 kWh lithium battery capacity",
             "12-24 hours daily operation",
             "Zero emissions",
             "Silent operation",
             "Minimal maintenance required"
           ],
           "tipLabel": "Best for:",
-          "tipText": "Standard field sizes and typical growing seasons. Perfect for organic farms where zero emissions and quiet operation are priorities."
+          "tipText": "If capacity is not an issue on cloudy days."
         },
         "powerBank": {
           "name": "Power Bank",
-          "description": "The FarmDroid Power Bank is an additional battery unit that doubles your robot's energy capacity. It provides an extra 5.7 kWh of power, enabling extended operation times of approximately 10 additional hours per day while maintaining zero emissions.",
+          "description": "The FarmDroid Power Bank is an additional battery unit that doubles your robot's energy capacity. It provides an extra 6.0 kWh of power, enabling extended operation times of approximately 10 additional hours per day while maintaining zero emissions.",
           "specs": [
-            "5.7 kWh extra lithium battery capacity",
-            "Doubles total capacity to 11.4 kWh",
+            "6.0 kWh extra lithium battery capacity",
+            "Doubles total capacity to 12.0 kWh",
             "Quick-connect system for easy attachment",
             "External charging via standard outlet",
             "Smart charging with solar integration",
             "Weather-resistant enclosure (IP65 rated)"
           ],
           "tipLabel": "Best for:",
-          "tipText": "Large fields, long working days, or northern regions with limited sunlight. Ensures your FarmDroid can complete its tasks even on cloudy days."
+          "tipText": "If capacity is a priority also on cloudy days. Especially in March and April pure solar power can be limitied by the amount of energy produced from solar. With the Power bank, if charged externally, the robot can run 20-24 hours, even on cloudy days."
         },
         "hybrid": {
           "name": "Hybrid (Solar + Generator)",
@@ -615,6 +615,12 @@
       "saveChanges": "Save Changes",
       "saving": "Saving..."
     },
+    "knownContactMode": {
+      "title": "Create New Configuration",
+      "subtitle": "Confirm your details to save this configuration",
+      "createConfig": "Create Configuration",
+      "creating": "Creating..."
+    },
     "submitting": {
       "title": "Saving your configuration...",
       "subtitle": "Please wait while we process your details"
@@ -731,6 +737,13 @@
       "description": "Add rows to define how your FarmDroid will seed your crops. You can adjust spacing, seed size, and more.",
       "addRows": "Add First Rows"
     },
+    "dragHint": "Drag rows to adjust spacing",
+    "tutorialTitle": "Interactive Controls",
+    "tutorialDrag": "Drag rows left/right to adjust spacing",
+    "tutorialAdd": "Click + to add rows between existing ones",
+    "tutorialRemove": "Click row to remove it",
+    "tutorialWheels": "Drag wheels to adjust wheel spacing",
+    "tutorialGotIt": "Got it",
     "seedInfoModal": {
       "trigger": "What +Seed System to choose?",
       "title": "Explore +Seed Systems",
@@ -1066,5 +1079,54 @@
       "workingWidth": "Working width",
       "estimatedCapacity": "Estimated capacity"
     }
+  },
+  "returningUser": {
+    "indicator": {
+      "found": "We found {count} previous configuration(s)",
+      "checking": "Checking...",
+      "viewPrevious": "View previous"
+    },
+    "modal": {
+      "title": "Welcome back!",
+      "subtitle": "We found configurations associated with {email}",
+      "continueNew": "Continue with new configuration",
+      "viewPrevious": "View my previous configurations",
+      "verifyTitle": "Verify your email",
+      "verifySubtitle": "We've sent a 6-digit code to {email}",
+      "codeLabel": "Enter verification code",
+      "resend": "Resend code",
+      "resendIn": "Resend code in {seconds}s",
+      "verifying": "Verifying...",
+      "invalidCode": "Invalid code. Please try again.",
+      "expiredCode": "Code expired. Please request a new one.",
+      "tooManyAttempts": "Too many attempts. Please request a new code.",
+      "configsTitle": "Your configurations",
+      "configsSubtitle": "Select a configuration to continue",
+      "editConfig": "Edit",
+      "useAsTemplate": "Use as template",
+      "startFresh": "Start fresh instead",
+      "noConfigs": "No configurations found for this email"
+    },
+    "configCard": {
+      "created": "Created {date}",
+      "updated": "Last updated {date}",
+      "reference": "Ref: {reference}",
+      "rows": "{count} active rows",
+      "price": "Total: {price}"
+    }
+  },
+  "myConfigs": {
+    "title": "My Configurations",
+    "subtitle": "View and manage your FarmDroid configurations",
+    "emailLabel": "Enter your email address",
+    "emailPlaceholder": "your@email.com",
+    "findButton": "Find my configurations",
+    "searching": "Searching...",
+    "noConfigsFound": "No configurations found for this email address",
+    "noConfigsTitle": "No configurations found",
+    "noConfigsDescription": "We couldn't find any configurations for this email address.",
+    "startNew": "Start a new configuration",
+    "verificationSent": "Verification code sent to {email}",
+    "checkEmail": "Please check your email for the verification code"
   }
 }

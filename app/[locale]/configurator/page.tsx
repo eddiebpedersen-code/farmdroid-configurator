@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, RotateCcw, Globe, Check, ChevronDown, Save, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { decodeConfigPageData } from "@/lib/config-page-utils";
+import { decodeConfigPageData, decodeLeadData } from "@/lib/config-page-utils";
 import { useToastActions } from "@/components/ui/toast";
 import { useKeyboardShortcuts, useFocusTrap } from "@/hooks/use-focus-trap";
 import { useMode } from "@/contexts/ModeContext";
@@ -341,6 +341,32 @@ function ConfiguratorContent() {
       }
     }
   }, [searchParams, configPreFilled]);
+
+  // Check for lead parameter (start fresh with known contact details)
+  useEffect(() => {
+    const leadParam = searchParams.get("lead");
+    if (leadParam && !preFilledLead) {
+      try {
+        const decoded = decodeLeadData(leadParam);
+        if (decoded) {
+          setPreFilledLead({
+            ...decoded,
+            hectaresForFarmDroid: decoded.hectaresForFarmDroid ?? "",
+          });
+          // Skip the resume modal since we're starting fresh
+          setShowResumeModal(false);
+          // Clear saved configuration since we're starting fresh
+          clearConfiguration();
+          // Clear the URL parameter
+          const url = new URL(window.location.href);
+          url.searchParams.delete("lead");
+          window.history.replaceState({}, "", url.toString());
+        }
+      } catch (error) {
+        console.error("Failed to decode lead from URL:", error);
+      }
+    }
+  }, [searchParams, preFilledLead]);
 
   // Check for saved configuration on mount
   useEffect(() => {

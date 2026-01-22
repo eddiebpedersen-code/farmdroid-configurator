@@ -158,6 +158,7 @@ function AccessoriesInfoModal({
 
   const items = getGroupItems(group);
   const [activeItem, setActiveItem] = useState(items[0]);
+  const [bundleImageIndex, setBundleImageIndex] = useState(0);
 
   // Items included in Starter Kit
   const starterKitItems = ["fstFieldSetupTool", "baseStationV3", "essentialCarePackage", "fieldBracket"];
@@ -166,12 +167,13 @@ function AccessoriesInfoModal({
   // Reset active item when group changes
   useEffect(() => {
     setActiveItem(getGroupItems(group)[0]);
+    setBundleImageIndex(0);
   }, [group]);
 
   // Image paths for each product
   const itemImages: Record<string, string> = {
     starterKit: "/accessories/starter-kit.jpg",
-    fstFieldSetupTool: "/accessories/fst-field-setup-tool.jpg",
+    fstFieldSetupTool: "/accessories/fst-field-setup-tool.png",
     baseStationV3: "/accessories/base-station-v3.jpg",
     essentialCarePackage: "/accessories/essential-care-package.jpg",
     fieldBracket: "/accessories/field-bracket.jpg",
@@ -180,8 +182,19 @@ function AccessoriesInfoModal({
     toolbox: "/accessories/toolbox.jpg",
   };
 
-  // For bundles, use the starter kit image
-  const bundleImage = "/accessories/starter-kit.jpg";
+  // For bundles, dynamically get images from included items
+  const bundleImages = starterKitItems.map(item => ({
+    src: itemImages[item],
+    itemKey: item
+  }));
+
+  const nextBundleImage = () => {
+    setBundleImageIndex((prev) => (prev + 1) % bundleImages.length);
+  };
+
+  const prevBundleImage = () => {
+    setBundleImageIndex((prev) => (prev - 1 + bundleImages.length) % bundleImages.length);
+  };
 
   return (
     <AnimatePresence>
@@ -207,7 +220,7 @@ function AccessoriesInfoModal({
             <div className="relative flex-1 bg-stone-100 min-h-[200px] lg:min-h-0">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={group === "bundles" ? "bundle" : activeItem}
+                  key={group === "bundles" ? `bundle-${bundleImageIndex}` : activeItem}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -215,10 +228,10 @@ function AccessoriesInfoModal({
                   className="absolute inset-0"
                 >
                   <Image
-                    src={group === "bundles" ? bundleImage : itemImages[activeItem]}
-                    alt={group === "bundles" ? t("bundles.title") : t(`items.${activeItem}.name`)}
+                    src={group === "bundles" ? bundleImages[bundleImageIndex].src : itemImages[activeItem]}
+                    alt={group === "bundles" ? t(`items.${bundleImages[bundleImageIndex].itemKey}.name`) : t(`items.${activeItem}.name`)}
                     fill
-                    className="object-cover"
+                    className="object-contain bg-stone-50"
                     sizes="(max-width: 1024px) 100vw, 60vw"
                     placeholder="blur"
                     blurDataURL={blurDataURL}
@@ -228,11 +241,51 @@ function AccessoriesInfoModal({
                 </motion.div>
               </AnimatePresence>
 
+              {/* Navigation arrows for bundles */}
+              {group === "bundles" && bundleImages.length > 1 && (
+                <>
+                  <button
+                    onClick={prevBundleImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={nextBundleImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
+
+              {/* Image indicators for bundles */}
+              {group === "bundles" && bundleImages.length > 1 && (
+                <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
+                  {bundleImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setBundleImageIndex(idx)}
+                      className={`h-2 w-2 rounded-full transition-colors ${
+                        idx === bundleImageIndex
+                          ? "bg-white"
+                          : "bg-white/50 hover:bg-white/75"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+
               {/* Caption at bottom of image */}
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                 <p className="text-lg md:text-xl font-medium">
-                  {group === "bundles" ? t("bundles.title") : t(`items.${activeItem}.name`)}
+                  {group === "bundles" ? t(`items.${bundleImages[bundleImageIndex].itemKey}.name`) : t(`items.${activeItem}.name`)}
                 </p>
+                {group === "bundles" && (
+                  <p className="text-sm text-white/70 mt-1">
+                    {bundleImageIndex + 1} / {bundleImages.length}
+                  </p>
+                )}
               </div>
             </div>
 

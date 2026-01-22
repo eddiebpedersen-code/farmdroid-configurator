@@ -22,7 +22,7 @@ interface StepPowerSourceProps {
   priceBreakdown: PriceBreakdown;
 }
 
-type PowerOptionId = "solar" | "powerBank" | "hybrid";
+type PowerOptionId = "solar" | "powerBank";
 
 // Power Source Info Modal Component
 function PowerSourceInfoModal({
@@ -36,13 +36,12 @@ function PowerSourceInfoModal({
   const [activeOption, setActiveOption] = useState<PowerOptionId>("solar");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const powerOptions: PowerOptionId[] = ["solar", "powerBank", "hybrid"];
+  const powerOptions: PowerOptionId[] = ["solar", "powerBank"];
 
   // Image paths for each power option
   const optionImages: Record<PowerOptionId, string[]> = {
-    solar: ["/farmdroid-fd20.png"],
+    solar: ["/accessories/solar-power.jpg"],
     powerBank: ["/accessories/power-bank-1.jpg", "/accessories/power-bank-2.jpg"],
-    hybrid: ["/farmdroid-fd20.png"],
   };
 
   const images = optionImages[activeOption];
@@ -246,105 +245,197 @@ function PowerSourceInfoModal({
 }
 
 export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) {
-  const hasGenerator = config.powerSource === "hybrid";
-  const hasPowerBank = config.powerBank && !hasGenerator;
+  const hasPowerBank = config.powerBank;
   const t = useTranslations("powerSource");
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
   const { showPrices } = useMode();
 
   const solarFeatureKeys = ["solarPanels", "battery", "zeroEmission"] as const;
   const powerBankFeatureKeys = ["extraCapacity", "totalCapacity", "chargedExternally", "smartCharging"] as const;
-  const hybridFeatureKeys = ["solarPanels", "battery", "generatorBackup", "allWeather"] as const;
+
+  // Get robot image based on front wheel configuration
+  const getRobotImage = () => {
+    switch (config.frontWheel) {
+      case "AFW":
+        return "/farmdroid-afw.png";
+      case "DFW":
+        return "/images/wheels/dfw.png";
+      case "PFW":
+      default:
+        return "/farmdroid-pfw.png";
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
       {/* Left: Product Image - Takes 3 columns */}
-      <div className="lg:col-span-3 flex items-center justify-center">
+      <div className="lg:col-span-3 flex flex-col items-center justify-center py-6 md:py-8">
         <motion.div
-          key={`${config.powerSource}-${config.powerBank}`}
+          key={`${config.frontWheel}-${config.powerBank}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="w-full max-w-lg py-6 md:py-12"
+          className="w-full max-w-2xl mx-auto relative"
         >
-          <svg viewBox="0 0 200 140" className="w-full h-auto">
-            {/* Sun rays */}
-            <motion.g
-              animate={{ rotate: 360 }}
-              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              style={{ transformOrigin: "100px 25px" }}
-            >
-              {[...Array(8)].map((_, i) => (
-                <line
+          {/* FarmDroid top-down view - clean */}
+          <svg viewBox="0 0 400 320" className="w-full h-auto">
+            {/* Sun in corner */}
+            <g transform="translate(330, 55)">
+              <motion.g
+                animate={{ rotate: 360 }}
+                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+              >
+                {[...Array(8)].map((_, i) => (
+                  <rect
+                    key={i}
+                    x="-5"
+                    y="-48"
+                    width="10"
+                    height="16"
+                    rx="5"
+                    fill="#fbbf24"
+                    transform={`rotate(${i * 45})`}
+                  />
+                ))}
+              </motion.g>
+              <circle r="26" fill="#fbbf24" />
+            </g>
+
+            {/* Robot - top down view, larger */}
+            <g transform="translate(200, 165)">
+              {/* GPS/Antenna at top - touching the frame */}
+              <rect x="-3" y="-90" width="6" height="18" fill="#374151" />
+              <circle cx="0" cy="-93" r="6" fill="#6b7280" />
+
+              {/* Main frame - green border */}
+              <rect x="-75" y="-72" width="150" height="130" rx="5" fill="#10b981" />
+
+              {/* Solar panel - dark with grid */}
+              <rect x="-68" y="-65" width="136" height="116" rx="3" fill="#1e3a5f" />
+
+              {/* Panel grid - 2x2 sections */}
+              <line x1="0" y1="-65" x2="0" y2="51" stroke="#10b981" strokeWidth="4" />
+              <line x1="-68" y1="-7" x2="68" y2="-7" stroke="#10b981" strokeWidth="4" />
+
+              {/* Solar cell grid lines */}
+              <g stroke="#2d4a6f" strokeWidth="0.75" opacity="0.5">
+                {/* Vertical lines */}
+                {[-56, -44, -32, -20, 20, 32, 44, 56].map((x) => (
+                  <line key={x} x1={x} y1="-65" x2={x} y2="51" />
+                ))}
+                {/* Horizontal lines */}
+                {[-52, -39, -26, 6, 19, 32, 45].map((y) => (
+                  <line key={y} x1="-68" y1={y} x2="68" y2={y} />
+                ))}
+              </g>
+
+              {/* Wheels at bottom */}
+              <rect x="-55" y="58" width="20" height="30" rx="3" fill="#374151" />
+              <rect x="35" y="58" width="20" height="30" rx="3" fill="#374151" />
+
+              {/* Animated solar shimmer */}
+              {[0, 1, 2, 3].map((i) => (
+                <motion.rect
                   key={i}
-                  x1="100"
-                  y1="5"
-                  x2="100"
-                  y2="12"
-                  stroke="#fbbf24"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  transform={`rotate(${i * 45} 100 25)`}
+                  x={i < 2 ? -65 : 4}
+                  y={i % 2 === 0 ? -62 : -3}
+                  width="61"
+                  height="52"
+                  rx="2"
+                  fill="#3b82f6"
+                  opacity="0"
+                  animate={{ opacity: [0, 0.12, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.6 }}
                 />
               ))}
-            </motion.g>
-            <circle cx="100" cy="25" r="12" fill="#fbbf24" />
+            </g>
 
-            {/* Generator if hybrid */}
-            {hasGenerator && (
-              <motion.g
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
-                <rect x="8" y="70" width="30" height="35" rx="3" fill="#6b7280" />
-                <rect x="11" y="74" width="24" height="7" rx="1" fill="#374151" />
-                <motion.rect
-                  x="14"
-                  y="84"
-                  width="5"
-                  height="5"
-                  fill="#22c55e"
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                />
-                <path d="M38 87 L50 87 L50 70" stroke="#f59e0b" strokeWidth="2" fill="none" />
-              </motion.g>
-            )}
+            {/* Power Bank - appears next to robot */}
+            <AnimatePresence>
+              {hasPowerBank && (
+                <motion.g
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  {/* Power bank */}
+                  <g transform="translate(45, 165)">
+                    <rect x="-18" y="-40" width="36" height="80" rx="6" fill="#2563eb" stroke="#1d4ed8" strokeWidth="2" />
 
-            {/* Power Bank if selected */}
-            {hasPowerBank && (
-              <motion.g
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-              >
-                <rect x="8" y="70" width="30" height="35" rx="3" fill="#3b82f6" />
-                <rect x="12" y="76" width="22" height="12" rx="2" fill="#1d4ed8" />
-                <motion.rect
-                  x="15"
-                  y="79"
-                  width="16"
-                  height="6"
-                  rx="1"
-                  fill="#60a5fa"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <path d="M38 87 L50 87 L50 70" stroke="#3b82f6" strokeWidth="2" fill="none" />
-              </motion.g>
-            )}
+                    {/* Battery indicator bars */}
+                    {[0, 1, 2, 3].map((i) => (
+                      <motion.rect
+                        key={i}
+                        x="-12"
+                        y={-32 + i * 17}
+                        width="24"
+                        height="12"
+                        rx="2"
+                        fill="#60a5fa"
+                        animate={{ opacity: [0.4, 1, 0.4] }}
+                        transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                      />
+                    ))}
 
-            {/* Robot */}
-            <rect x="40" y="50" width="120" height="60" rx="6" fill="#059669" />
-            <rect x="32" y="35" width="136" height="15" rx="3" fill="#10b981" />
-            {[0, 1, 2, 3].map((i) => (
-              <line key={i} x1={48 + i * 32} y1="35" x2={48 + i * 32} y2="50" stroke="#047857" strokeWidth="1" />
-            ))}
-            <circle cx="60" cy="120" r="14" fill="#374151" />
-            <circle cx="60" cy="120" r="8" fill="#6b7280" />
-            <circle cx="140" cy="120" r="14" fill="#374151" />
-            <circle cx="140" cy="120" r="8" fill="#6b7280" />
-            <circle cx="100" cy="128" r="9" fill="#374151" />
-            <circle cx="100" cy="128" r="5" fill="#6b7280" />
+                    {/* External charging cord */}
+                    <path
+                      d="M -18 20 Q -35 20 -40 35 Q -45 50 -40 65"
+                      stroke="#374151"
+                      strokeWidth="4"
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                    {/* Plug at end of cord */}
+                    <rect x="-48" y="62" width="16" height="10" rx="2" fill="#374151" />
+                    <rect x="-44" y="72" width="3" height="6" fill="#6b7280" />
+                    <rect x="-37" y="72" width="3" height="6" fill="#6b7280" />
+                  </g>
+
+                  {/* Connection cable */}
+                  <path
+                    d="M 63 165 L 125 165"
+                    stroke="#374151"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                  />
+
+                  {/* Energy flow */}
+                  {[0, 1, 2].map((i) => (
+                    <motion.circle
+                      key={i}
+                      r="4"
+                      fill="#60a5fa"
+                      cy="165"
+                      animate={{
+                        cx: [63, 94, 125],
+                        opacity: [0, 1, 0],
+                      }}
+                      transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        delay: i * 0.23,
+                        ease: "linear",
+                      }}
+                    />
+                  ))}
+
+                  {/* Connection glow */}
+                  <motion.circle
+                    cx="125"
+                    cy="165"
+                    r="6"
+                    fill="#22c55e"
+                    animate={{ opacity: [0.4, 1, 0.4] }}
+                    transition={{ duration: 0.8, repeat: Infinity }}
+                  />
+
+                  {/* +6 kWh label */}
+                  <text x="45" y="235" textAnchor="middle" fontSize="12" fontWeight="600" fill="#1d4ed8">+6 kWh</text>
+                </motion.g>
+              )}
+            </AnimatePresence>
           </svg>
         </motion.div>
       </div>
@@ -451,67 +542,9 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
           </button>
         </div>
 
-        {/* Hybrid Power Section */}
-        <div className="space-y-3 md:space-y-4 pt-3">
-          <p className="text-xs md:text-sm font-medium text-stone-500 uppercase tracking-wide">{t("hybridPower")}</p>
-
-          {/* Generator Add-on */}
-          <button
-            onClick={() => {
-              if (hasGenerator) {
-                updateConfig({ powerSource: "solar" });
-              } else {
-                updateConfig({ powerSource: "hybrid", powerBank: false });
-              }
-            }}
-            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ${
-              hasGenerator
-                ? "selected"
-                : "border-stone-200 hover:border-stone-300 bg-white"
-            }`}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-2.5 md:gap-3">
-                <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
-                  hasGenerator
-                    ? "bg-emerald-500"
-                    : "border-2 border-stone-300"
-                }`}>
-                  {hasGenerator && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-stone-900 text-sm md:text-base">{t("hybrid.name")}</p>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-0.5">{t("hybrid.description")}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {hybridFeatureKeys.map((key) => (
-                      <span
-                        key={key}
-                        className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          hasGenerator ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
-                        }`}
-                      >
-                        {t(`hybrid.features.${key}`)}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              {showPrices && (
-                <span className="text-sm font-semibold text-stone-900 ml-3">
-                  +{formatPrice(PRICES.powerSource.hybrid, config.currency)}
-                </span>
-              )}
-            </div>
-          </button>
-        </div>
-
         {/* Info text */}
         <p className="text-sm text-stone-500 pt-4 border-t border-stone-100">
-          {hasGenerator
-            ? t("info.hybrid")
-            : hasPowerBank
+          {hasPowerBank
             ? t("info.powerBank")
             : t("info.solar")}
         </p>

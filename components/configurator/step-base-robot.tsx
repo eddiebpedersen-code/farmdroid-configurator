@@ -36,7 +36,7 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
     { value: "12", unit: t("specs.rows"), label: t("specs.upTo") },
     { value: "12-24", unit: "h", label: t("specs.runtime") },
     { value: "1.6", unit: "kW", label: t("specs.solarPeakPower") },
-    { value: "5.7", unit: "kWh", label: t("specs.lithiumBatteries") },
+    { value: "6.0", unit: "kWh", label: t("specs.lithiumBatteries") },
   ];
 
   const featureKeys = [

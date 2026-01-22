@@ -140,6 +140,25 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [viewMode, setViewMode] = useState<"2d" | "3d">("2d");
   const [showSeedInfoModal, setShowSeedInfoModal] = useState(false);
 
+  // Drag hint state - shows animated hint every time step is opened
+  const [showDragHint, setShowDragHint] = useState(false);
+
+  // Show drag hint every time the step is opened (with multiple rows)
+  useEffect(() => {
+    if (config.activeRows > 1) {
+      // Small delay to let the page render first
+      const timer = setTimeout(() => {
+        setShowDragHint(true);
+        // Hide hint after animation completes
+        const hideTimer = setTimeout(() => {
+          setShowDragHint(false);
+        }, 6000); // 6 seconds for animation + tooltip
+        return () => clearTimeout(hideTimer);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // Sync seeding parameters to config when they change
   useEffect(() => {
     updateConfig({
@@ -826,6 +845,73 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             </div>
           )}
 
+          {/* Interactive tutorial overlay - shows every time step is opened */}
+          <AnimatePresence>
+            {showDragHint && config.activeRows > 0 && viewMode === "2d" && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="absolute inset-0 z-30 flex items-center justify-center pointer-events-auto cursor-pointer"
+                style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+                onClick={() => setShowDragHint(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                  className="rounded-2xl shadow-2xl p-6 max-w-sm mx-4"
+                  style={{ backgroundColor: '#1c1917' }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="text-white font-semibold text-lg mb-4 text-center">{t("tutorialTitle")}</h3>
+                  <div className="space-y-3">
+                    {/* Drag rows */}
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                        </svg>
+                      </div>
+                      <span className="text-sm">{t("tutorialDrag")}</span>
+                    </div>
+                    {/* Add rows */}
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                        <Plus className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <span className="text-sm">{t("tutorialAdd")}</span>
+                    </div>
+                    {/* Remove rows */}
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0">
+                        <Minus className="w-5 h-5 text-red-400" />
+                      </div>
+                      <span className="text-sm">{t("tutorialRemove")}</span>
+                    </div>
+                    {/* Drag wheels */}
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+                        </svg>
+                      </div>
+                      <span className="text-sm">{t("tutorialWheels")}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowDragHint(false)}
+                    className="mt-5 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    {t("tutorialGotIt")}
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Daily Capacity Graph */}
           {viewMode === "3d" && (
             <motion.div
@@ -1448,10 +1534,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       <g
                         key={`seeding-unit-${idx}`}
                         transform={`translate(${mmToX(rowMm)}, ${(rowAreaTop + rowAreaBottom) / 2 - 35})`}
-                        className={canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}
+                        className={`${canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"} ${showDragHint && canDrag ? "drag-hint-wiggle" : ""}`}
                         onMouseEnter={() => { setHoveredSeedUnit(idx); setHoveredRow(idx); }}
                         onMouseLeave={() => { if (!isDragging) { setHoveredSeedUnit(null); setHoveredRow(null); } }}
-                        onMouseDown={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); } : undefined}
+                        onMouseDown={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); setShowDragHint(false); } : undefined}
                         style={{ opacity: isHovered || isDragging ? 1 : 0.95 }}
                       >
                         <SeedingUnit seedSize={config.seedSize} />

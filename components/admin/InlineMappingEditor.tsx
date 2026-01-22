@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, ArrowRight, Loader2, Lock, Search } from "lucide-react";
+import { Plus, Trash2, ArrowRight, Loader2, Lock, Search, Pencil, X, Check } from "lucide-react";
 import type {
   HubSpotObject,
   SourceCategory,
@@ -36,6 +36,17 @@ interface InlineMappingEditorProps {
   }) => Promise<void>;
   onToggleActive: (id: string, isActive: boolean) => Promise<void>;
   onDeleteMapping: (id: string) => Promise<void>;
+  onUpdateMapping: (
+    id: string,
+    data: {
+      source_field?: string;
+      source_category?: SourceCategory;
+      hubspot_property?: string;
+      hubspot_property_label?: string;
+      transform_type?: TransformType;
+      transform_config?: Record<string, unknown>;
+    }
+  ) => Promise<void>;
 }
 
 interface NewMappingRow {
@@ -57,12 +68,26 @@ interface PipelineOption {
   label: string;
 }
 
+interface EditingMapping {
+  id: string;
+  mappingType: "field" | "default" | "combine";
+  sourceCategory: "lead" | "config" | "derived";
+  sourceField: string;
+  hubspotProperty: string;
+  defaultValue: string;
+  transformType: TransformType;
+  isSubmitting: boolean;
+  templateFields: Array<{ category: "lead" | "config" | "derived"; field: string }>;
+  templateSeparator: string;
+}
+
 export function InlineMappingEditor({
   hubspotObject,
   mappings,
   onCreateMapping,
   onToggleActive,
   onDeleteMapping,
+  onUpdateMapping,
 }: InlineMappingEditorProps) {
   const [hubspotProperties, setHubspotProperties] = useState<HubSpotProperty[]>([]);
   const [propertiesLoading, setPropertiesLoading] = useState(true);
@@ -70,6 +95,7 @@ export function InlineMappingEditor({
   const [propertySearch, setPropertySearch] = useState("");
   const [pipelines, setPipelines] = useState<PipelineOption[]>([]);
   const [dealStages, setDealStages] = useState<PipelineOption[]>([]);
+  const [editingMapping, setEditingMapping] = useState<EditingMapping | null>(null);
 
   useEffect(() => {
     fetchHubspotProperties();
@@ -278,21 +304,437 @@ export function InlineMappingEditor({
     }
   };
 
+  // Edit existing mapping functions
+  const startEditing = (mapping: HubSpotFieldMappingRow) => {
+    const isStatic = mapping.source_category === "static";
+    const transformConfig = mapping.transform_config as { value?: string; type?: string; fields?: Array<{ category: "lead" | "config" | "derived"; field: string }>; separator?: string } | null;
+    const isTemplate = transformConfig?.type === "template";
+
+    setEditingMapping({
+      id: mapping.id,
+      mappingType: isTemplate ? "combine" : isStatic ? "default" : "field",
+      sourceCategory: isStatic ? "lead" : (mapping.source_category as "lead" | "config" | "derived"),
+      sourceField: isStatic ? "" : mapping.source_field,
+      hubspotProperty: mapping.hubspot_property,
+      defaultValue: isStatic && !isTemplate ? (transformConfig?.value || "") : "",
+      transformType: mapping.transform_type,
+      isSubmitting: false,
+      templateFields: isTemplate ? (transformConfig?.fields || []) : [],
+      templateSeparator: isTemplate ? (transformConfig?.separator || " ") : " ",
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingMapping(null);
+  };
+
+  const updateEditingMapping = (updates: Partial<EditingMapping>) => {
+    if (editingMapping) {
+      setEditingMapping({ ...editingMapping, ...updates });
+    }
+  };
+
+  const submitEdit = async () => {
+    if (!editingMapping) return;
+
+    setEditingMapping({ ...editingMapping, isSubmitting: true });
+
+    try {
+      const selectedProperty = hubspotProperties.find(
+        (p) => p.name === editingMapping.hubspotProperty
+      );
+
+      if (editingMapping.mappingType === "default") {
+        await onUpdateMapping(editingMapping.id, {
+          source_field: `static_${editingMapping.hubspotProperty}`,
+          source_category: "static",
+          hubspot_property: editingMapping.hubspotProperty,
+          hubspot_property_label: selectedProperty?.label || editingMapping.hubspotProperty,
+          transform_type: "direct",
+          transform_config: { value: editingMapping.defaultValue },
+        });
+      } else if (editingMapping.mappingType === "combine") {
+        await onUpdateMapping(editingMapping.id, {
+          source_field: `template_${editingMapping.hubspotProperty}`,
+          source_category: "static",
+          hubspot_property: editingMapping.hubspotProperty,
+          hubspot_property_label: selectedProperty?.label || editingMapping.hubspotProperty,
+          transform_type: "custom",
+          transform_config: {
+            type: "template",
+            fields: editingMapping.templateFields,
+            separator: editingMapping.templateSeparator,
+          },
+        });
+      } else {
+        await onUpdateMapping(editingMapping.id, {
+          source_field: editingMapping.sourceField,
+          source_category: editingMapping.sourceCategory,
+          hubspot_property: editingMapping.hubspotProperty,
+          hubspot_property_label: selectedProperty?.label || editingMapping.hubspotProperty,
+          transform_type: editingMapping.transformType,
+        });
+      }
+
+      setEditingMapping(null);
+    } catch (err) {
+      setEditingMapping({ ...editingMapping, isSubmitting: false });
+    }
+  };
+
+  const canSubmitEdit = () => {
+    if (!editingMapping || !editingMapping.hubspotProperty) return false;
+    if (editingMapping.mappingType === "default") return !!editingMapping.defaultValue;
+    if (editingMapping.mappingType === "combine") {
+      return editingMapping.templateFields.length > 0 && editingMapping.templateFields.every(f => f.field);
+    }
+    return !!editingMapping.sourceField;
+  };
+
+  const addEditTemplateField = () => {
+    if (editingMapping) {
+      updateEditingMapping({
+        templateFields: [...editingMapping.templateFields, { category: "lead", field: "" }]
+      });
+    }
+  };
+
+  const removeEditTemplateField = (index: number) => {
+    if (editingMapping) {
+      updateEditingMapping({
+        templateFields: editingMapping.templateFields.filter((_, i) => i !== index)
+      });
+    }
+  };
+
+  const updateEditTemplateField = (index: number, category: "lead" | "config" | "derived", field: string) => {
+    if (editingMapping) {
+      const updated = [...editingMapping.templateFields];
+      updated[index] = { category, field };
+      updateEditingMapping({ templateFields: updated });
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Existing Mappings */}
       {mappings.length > 0 && (
         <div className="space-y-2">
           {mappings.map((mapping) => {
+            const isEditing = editingMapping?.id === mapping.id;
             const isStatic = mapping.source_category === "static";
-            const staticValue = isStatic
-              ? (mapping.transform_config as { value?: string } | null)?.value || ""
+            const transformConfig = mapping.transform_config as { value?: string; type?: string } | null;
+            const isTemplate = transformConfig?.type === "template";
+            const staticValue = isStatic && !isTemplate
+              ? (transformConfig?.value || "")
               : null;
             const sourceLabel = getSourceFieldLabel(
               mapping.source_category,
               mapping.source_field
             );
 
+            if (isEditing && editingMapping) {
+              // Editing UI
+              return (
+                <div
+                  key={mapping.id}
+                  className="flex flex-wrap items-start gap-3 p-3 bg-amber-50 border border-amber-300 rounded-lg"
+                >
+                  {/* Row 1: Mapping Type + HubSpot Property */}
+                  <div className="flex items-center gap-3 w-full">
+                    {/* Mapping Type */}
+                    <Select
+                      value={editingMapping.mappingType}
+                      onValueChange={(v) =>
+                        updateEditingMapping({
+                          mappingType: v as "field" | "default" | "combine",
+                          sourceField: "",
+                          defaultValue: "",
+                          templateFields: [],
+                        })
+                      }
+                    >
+                      <SelectTrigger className="w-28">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="field">Field</SelectItem>
+                        <SelectItem value="default">Default</SelectItem>
+                        <SelectItem value="combine">Combine</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <ArrowRight className="w-4 h-4 text-stone-400 shrink-0" />
+
+                    {/* HubSpot Property */}
+                    <Select
+                      value={editingMapping.hubspotProperty}
+                      onValueChange={(v) => {
+                        updateEditingMapping({ hubspotProperty: v, defaultValue: "" });
+                      }}
+                    >
+                      <SelectTrigger className="w-56">
+                        <SelectValue placeholder="Select HubSpot property..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        <div className="px-2 pb-2 sticky top-0 bg-white">
+                          <div className="relative">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-stone-400" />
+                            <Input
+                              placeholder="Search..."
+                              className="pl-8 h-9"
+                              value={propertySearch}
+                              onChange={(e) => setPropertySearch(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          </div>
+                        </div>
+                        {propertiesLoading ? (
+                          <div className="flex items-center justify-center py-4">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          </div>
+                        ) : (
+                          filteredProperties.map((prop) => (
+                            <SelectItem key={prop.name} value={prop.name}>
+                              <span>{prop.label}</span>
+                              {((prop.options && prop.options.length > 0) ||
+                                prop.name === "pipeline" ||
+                                prop.name === "dealstage") && (
+                                <span className="text-stone-400 ml-1 text-xs">
+                                  (dropdown)
+                                </span>
+                              )}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 ml-auto">
+                      <Button
+                        size="sm"
+                        onClick={submitEdit}
+                        disabled={editingMapping.isSubmitting || !canSubmitEdit()}
+                      >
+                        {editingMapping.isSubmitting ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Check className="w-4 h-4 mr-1" />
+                            Save
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={cancelEditing}
+                        disabled={editingMapping.isSubmitting}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Source field, Default value, or Combine fields */}
+                  {editingMapping.hubspotProperty && (
+                    <div className="flex flex-col gap-3 w-full pl-[140px]">
+                      {editingMapping.mappingType === "field" && (
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-stone-500">from</span>
+                          <Select
+                            value={editingMapping.sourceCategory}
+                            onValueChange={(v) =>
+                              updateEditingMapping({
+                                sourceCategory: v as "lead" | "config" | "derived",
+                                sourceField: "",
+                              })
+                            }
+                          >
+                            <SelectTrigger className="w-28">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="lead">Lead</SelectItem>
+                              <SelectItem value="config">Config</SelectItem>
+                              <SelectItem value="derived">Derived</SelectItem>
+                            </SelectContent>
+                          </Select>
+
+                          <Select
+                            value={editingMapping.sourceField}
+                            onValueChange={(v) => updateEditingMapping({ sourceField: v })}
+                          >
+                            <SelectTrigger className="w-48">
+                              <SelectValue placeholder="Select field..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {CONFIGURATOR_FIELDS[editingMapping.sourceCategory].map((field) => (
+                                <SelectItem key={field.key} value={field.key}>
+                                  {field.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          <span className="text-sm text-stone-500">transform</span>
+                          <Select
+                            value={editingMapping.transformType}
+                            onValueChange={(v) =>
+                              updateEditingMapping({ transformType: v as TransformType })
+                            }
+                          >
+                            <SelectTrigger className="w-28">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="direct">Direct</SelectItem>
+                              <SelectItem value="boolean">Yes/No</SelectItem>
+                              <SelectItem value="array_join">Join</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      {editingMapping.mappingType === "default" && (
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-stone-500">value</span>
+                          {hasPropertyOptions(editingMapping.hubspotProperty) ? (
+                            <Select
+                              value={editingMapping.defaultValue}
+                              onValueChange={(v) => updateEditingMapping({ defaultValue: v })}
+                            >
+                              <SelectTrigger className="w-64">
+                                <SelectValue placeholder="Select value..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {getPropertyOptions(editingMapping.hubspotProperty).map((opt) => (
+                                  <SelectItem key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              placeholder="Enter default value..."
+                              className="w-64"
+                              value={editingMapping.defaultValue}
+                              onChange={(e) =>
+                                updateEditingMapping({ defaultValue: e.target.value })
+                              }
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      {editingMapping.mappingType === "combine" && (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-stone-500">separator</span>
+                            <Select
+                              value={editingMapping.templateSeparator}
+                              onValueChange={(v) => updateEditingMapping({ templateSeparator: v })}
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value=" ">Space</SelectItem>
+                                <SelectItem value=", ">Comma</SelectItem>
+                                <SelectItem value=" - ">Dash</SelectItem>
+                                <SelectItem value=" | ">Pipe</SelectItem>
+                                <SelectItem value="\n">New Line</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={addEditTemplateField}
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Add Field
+                            </Button>
+                          </div>
+
+                          {editingMapping.templateFields.length === 0 && (
+                            <p className="text-sm text-stone-400">
+                              Click "Add Field" to start combining fields
+                            </p>
+                          )}
+
+                          {editingMapping.templateFields.map((tf, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <Select
+                                value={tf.category}
+                                onValueChange={(v) =>
+                                  updateEditTemplateField(index, v as "lead" | "config" | "derived", "")
+                                }
+                              >
+                                <SelectTrigger className="w-28">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="lead">Lead</SelectItem>
+                                  <SelectItem value="config">Config</SelectItem>
+                                  <SelectItem value="derived">Derived</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Select
+                                value={tf.field}
+                                onValueChange={(v) =>
+                                  updateEditTemplateField(index, tf.category, v)
+                                }
+                              >
+                                <SelectTrigger className="w-48">
+                                  <SelectValue placeholder="Select field..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {CONFIGURATOR_FIELDS[tf.category].map((field) => (
+                                    <SelectItem key={field.key} value={field.key}>
+                                      {field.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => removeEditTemplateField(index)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+
+                          {editingMapping.templateFields.length > 0 && editingMapping.templateFields.every(f => f.field) && (
+                            <div className="bg-stone-100 p-2 rounded text-sm">
+                              <span className="text-stone-500">Preview: </span>
+                              {editingMapping.templateFields
+                                .filter((f) => f.field)
+                                .map((f) => {
+                                  const fieldDef = CONFIGURATOR_FIELDS[f.category].find(
+                                    (fd) => fd.key === f.field
+                                  );
+                                  return `{${fieldDef?.label || f.field}}`;
+                                })
+                                .join(editingMapping.templateSeparator === "\n" ? " ↵ " : editingMapping.templateSeparator)}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Normal display (not editing)
             return (
               <div
                 key={mapping.id}
@@ -304,11 +746,18 @@ export function InlineMappingEditor({
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="text-xs shrink-0">
                         <Lock className="w-3 h-3 mr-1" />
-                        default
+                        {isTemplate ? "combine" : "default"}
                       </Badge>
-                      <span className="text-sm font-medium text-stone-700 truncate">
-                        "{staticValue}"
-                      </span>
+                      {!isTemplate && (
+                        <span className="text-sm font-medium text-stone-700 truncate">
+                          "{staticValue}"
+                        </span>
+                      )}
+                      {isTemplate && (
+                        <span className="text-sm font-medium text-stone-700 truncate">
+                          (combined fields)
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
@@ -349,8 +798,18 @@ export function InlineMappingEditor({
                   <Button
                     variant="ghost"
                     size="icon"
+                    className="h-8 w-8 text-stone-400 hover:text-stone-600"
+                    onClick={() => startEditing(mapping)}
+                    disabled={editingMapping !== null}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-8 w-8 text-stone-400 hover:text-red-600"
                     onClick={() => onDeleteMapping(mapping.id)}
+                    disabled={editingMapping !== null}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

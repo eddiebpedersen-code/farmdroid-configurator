@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Settings, ArrowRight, X, Edit3, RefreshCw } from "lucide-react";
 import { ConfigPageData } from "@/lib/config-page-types";
-import { encodeConfigPageData } from "@/lib/config-page-utils";
+import { encodeConfigPageData, encodeLeadData } from "@/lib/config-page-utils";
 
 interface ReconfigureSectionProps {
   data: ConfigPageData;
@@ -24,8 +24,9 @@ export function ReconfigureSection({ data }: ReconfigureSectionProps) {
   };
 
   const handleStartFresh = () => {
-    // Go to configurator without any config param
-    router.push(`/${data.locale}/configurator`);
+    // Go to configurator with lead data (contact details) but no config
+    const encodedLead = encodeLeadData(data.lead);
+    router.push(`/${data.locale}/configurator?lead=${encodedLead}`);
   };
 
   return (
