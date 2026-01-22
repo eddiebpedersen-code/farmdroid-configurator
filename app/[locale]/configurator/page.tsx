@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, RotateCcw, Globe, Check, ChevronDown, Save, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { decodeConfigPageData, decodeLeadData } from "@/lib/config-page-utils";
 import { useToastActions } from "@/components/ui/toast";
 import { useKeyboardShortcuts, useFocusTrap } from "@/hooks/use-focus-trap";
@@ -292,7 +293,7 @@ function ConfiguratorContent() {
   const [previousTotal, setPreviousTotal] = useState<number | null>(null);
   const [lastSavedTime, setLastSavedTime] = useState<number | null>(null);
   const [configPreFilled, setConfigPreFilled] = useState(false);
-  const [preFilledLead, setPreFilledLead] = useState<{ firstName: string; lastName: string; email: string; phone: string; company: string; country: string; countryOther: string; farmSize: string; hectaresForFarmDroid: string; crops: string; contactByPartner: boolean; marketingConsent: boolean } | null>(null);
+  const [preFilledLead, setPreFilledLead] = useState<{ firstName: string; lastName: string; email: string; phone: string; country: string; region: string; company: string; isFarmer: string; farmingType: string; farmSize: string; hectaresForFarmDroid: string; crops: string; otherCrops: string; contactByPartner: boolean; marketingConsent: boolean } | null>(null);
   const [existingReference, setExistingReference] = useState<string | null>(null);
 
   const pathname = usePathname();
@@ -551,7 +552,7 @@ function ConfiguratorContent() {
       <header className="border-b border-stone-100 sticky top-0 z-20 bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-3 md:py-5">
           <div className="flex items-center justify-between">
-            {/* Enhanced Progress Steps - Compact with checkmarks */}
+            {/* Progress Steps */}
             <nav aria-label="Configuration progress" className="flex items-center gap-0.5 md:gap-1">
               {translatedSteps.map((step, index) => {
                 const isCompleted = step.id < currentStep;

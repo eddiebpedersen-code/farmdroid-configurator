@@ -40,6 +40,7 @@ import { useToastActions } from "@/components/ui/toast";
 import { LeadCaptureForm, LeadData } from "./lead-capture-form";
 import { ThankYouScreen } from "./thank-you-screen";
 import { PartnerActions } from "./partner-actions";
+import Image from "next/image";
 
 interface StepSummaryProps {
   config: ConfiguratorState;
@@ -648,117 +649,23 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
         </AnimatePresence>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
-        {/* Left: Robot Visualization - Takes 3 columns */}
+        {/* Left: Logo - Takes 3 columns */}
         <div className="lg:col-span-3 flex flex-col">
-          {/* Robot visualization */}
+          {/* Logo */}
           <div className="flex-1 flex items-center justify-center py-4 md:py-8">
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="w-full max-w-lg"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-full max-w-xs"
             >
-              <svg viewBox="0 0 200 160" className="w-full h-auto">
-                {/* Spray tank if enabled */}
-                {config.spraySystem && (
-                  <motion.g
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <rect x="70" y="8" width="60" height="22" rx="4" fill="#3b82f6" />
-                    <text x="100" y="23" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
-                      110L
-                    </text>
-                  </motion.g>
-                )}
-
-                {/* Solar panels */}
-                <rect x="30" y="30" width="140" height="18" rx="4" fill="#10b981" />
-                {[0, 1, 2, 3].map((i) => (
-                  <line key={i} x1={50 + i * 32} y1="30" x2={50 + i * 32} y2="48" stroke="#047857" strokeWidth="2" />
-                ))}
-
-                {/* Robot body */}
-                <rect x="40" y="48" width="120" height="60" rx="8" fill="#059669" />
-
-                {/* Display */}
-                <rect x="70" y="58" width="60" height="25" rx="4" fill="#1f2937" />
-                <motion.rect
-                  x="75" y="63" width="50" height="15" rx="2" fill="#10b981" opacity="0.5"
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-
-                {/* Generator if hybrid */}
-                {config.powerSource === "hybrid" && (
-                  <motion.g
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <rect x="8" y="68" width="28" height="35" rx="3" fill="#6b7280" />
-                    <rect x="12" y="72" width="20" height="8" rx="1" fill="#374151" />
-                    <motion.rect
-                      x="16" y="84" width="6" height="6" fill="#22c55e"
-                      animate={{ opacity: [1, 0.3, 1] }}
-                      transition={{ duration: 0.8, repeat: Infinity }}
-                    />
-                    <path d="M36 85 L48 85 L48 75" stroke="#f59e0b" strokeWidth="2" fill="none" />
-                  </motion.g>
-                )}
-
-                {/* Spray arms if enabled */}
-                {config.spraySystem && (
-                  <motion.g
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <rect x="42" y="100" width="116" height="4" rx="2" fill="#60a5fa" />
-                    {[0, 1, 2, 3, 4].map((i) => (
-                      <g key={i}>
-                        <circle cx={52 + i * 24} cy="108" r="4" fill="#3b82f6" />
-                        <motion.path
-                          d={`M${52 + i * 24} 112 L${47 + i * 24} 126 L${57 + i * 24} 126 Z`}
-                          fill="#93c5fd"
-                          opacity={0.5}
-                          animate={{ opacity: [0.3, 0.6, 0.3] }}
-                          transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
-                        />
-                      </g>
-                    ))}
-                  </motion.g>
-                )}
-
-                {/* Back Wheels */}
-                <circle cx="60" cy="120" r="16" fill="#374151" />
-                <circle cx="60" cy="120" r="9" fill="#6b7280" />
-                <circle cx="140" cy="120" r="16" fill="#374151" />
-                <circle cx="140" cy="120" r="9" fill="#6b7280" />
-
-                {/* Front wheels based on config */}
-                {config.frontWheel === "DFW" ? (
-                  <>
-                    <circle cx="60" cy="140" r="10" fill="#374151" />
-                    <circle cx="60" cy="140" r="6" fill="#6b7280" />
-                    <circle cx="140" cy="140" r="10" fill="#374151" />
-                    <circle cx="140" cy="140" r="6" fill="#6b7280" />
-                  </>
-                ) : (
-                  <>
-                    <circle cx="100" cy="135" r="12" fill="#374151" />
-                    <circle cx="100" cy="135" r="7" fill="#6b7280" />
-                    {config.frontWheel === "AFW" && (
-                      <motion.circle
-                        cx="100" cy="135" r="4" fill="#f59e0b"
-                        animate={{ opacity: [1, 0.5, 1] }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                      />
-                    )}
-                  </>
-                )}
-              </svg>
+              <Image
+                src="/images/farmdroid-logo.png"
+                alt="FarmDroid"
+                width={300}
+                height={300}
+                className="w-full h-auto"
+              />
             </motion.div>
           </div>
 

@@ -7,7 +7,7 @@ import type { ConfiguratorState } from "@/lib/configurator-data";
 
 export interface HubSpotResult {
   contactId: string;
-  companyId: string;
+  companyId?: string;
   noteId?: string;
   emailSent?: boolean;
 }
@@ -30,31 +30,38 @@ export async function createHubSpotEntities(
   // 1. Create or update contact (pass config for dynamic mappings)
   const contactId = await createOrUpdateContact(lead, reference, country, config);
 
-  // 2. Check if contact already has a company associated (prevents duplicates from misspellings)
-  let companyId = await getContactCompany(contactId);
+  // 2. Only create/associate company if the lead is a farmer
+  let companyId: string | undefined;
 
-  if (!companyId) {
-    // Prepare lead data for company mapping
-    const leadData = {
-      email: lead.email,
-      firstName: lead.firstName,
-      lastName: lead.lastName,
-      phone: lead.phone,
-      company: lead.company,
-      country: country,
-      farmSize: lead.farmSize,
-      hectaresForFarmDroid: lead.hectaresForFarmDroid,
-      crops: lead.crops,
-      contactByPartner: lead.contactByPartner,
-      marketingConsent: lead.marketingConsent,
-    };
+  if (lead.isFarmer !== "no") {
+    // Check if contact already has a company associated (prevents duplicates from misspellings)
+    companyId = await getContactCompany(contactId) || undefined;
 
-    // No existing company - create or find one by name
-    companyId = await createOrUpdateCompany(lead.company, country, leadData, config);
-    // Associate contact to company
-    await associateContactToCompany(contactId, companyId);
+    if (!companyId) {
+      // Prepare lead data for company mapping
+      const leadData = {
+        email: lead.email,
+        firstName: lead.firstName,
+        lastName: lead.lastName,
+        phone: lead.phone,
+        company: lead.company,
+        country: country,
+        farmSize: lead.farmSize,
+        hectaresForFarmDroid: lead.hectaresForFarmDroid,
+        crops: lead.crops,
+        contactByPartner: lead.contactByPartner,
+        marketingConsent: lead.marketingConsent,
+      };
+
+      // No existing company - create or find one by name
+      companyId = await createOrUpdateCompany(lead.company, country, leadData, config);
+      // Associate contact to company
+      await associateContactToCompany(contactId, companyId);
+    } else {
+      console.log(`Contact ${contactId} already associated with company ${companyId}, using existing`);
+    }
   } else {
-    console.log(`Contact ${contactId} already associated with company ${companyId}, using existing`);
+    console.log(`Lead is not a farmer, skipping company creation for contact ${contactId}`);
   }
 
   // 3. Create a note on the contact with the configuration link

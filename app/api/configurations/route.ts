@@ -48,8 +48,7 @@ export async function POST(request: NextRequest) {
       attempts++;
     }
 
-    // Resolve country (use countryOther if "OTHER" selected)
-    const resolvedCountry = lead.country === "OTHER" ? lead.countryOther : lead.country;
+    const resolvedCountry = lead.country;
 
     // Insert into database
     const { data, error } = await supabase
@@ -61,10 +60,14 @@ export async function POST(request: NextRequest) {
         email: lead.email,
         phone: lead.phone || null,
         company: lead.company,
+        is_farmer: lead.isFarmer || null,
+        farming_type: lead.farmingType || null,
         country: resolvedCountry,
+        region: lead.region || null,
         farm_size: lead.farmSize || null,
         hectares_for_farmdroid: lead.hectaresForFarmDroid || null,
         crops: lead.crops || null,
+        other_crops: lead.otherCrops || null,
         contact_by_partner: lead.contactByPartner,
         marketing_consent: lead.marketingConsent,
         config,
