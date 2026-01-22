@@ -60,7 +60,7 @@ export function HeroSection({ data }: HeroSectionProps) {
   };
 
   return (
-    <div className="bg-gradient-to-b from-brand-50 to-white py-8 md:py-12">
+    <div className="bg-gradient-to-b from-emerald-50 to-white py-8 md:py-12">
       <div className="max-w-4xl mx-auto px-4">
         {/* Greeting and Share Actions */}
         <motion.div
@@ -76,8 +76,8 @@ export function HeroSection({ data }: HeroSectionProps) {
           {/* Reference Code - Prominent Display */}
           <div className="mb-4">
             <p className="text-sm text-stone-500 mb-1">{t("referenceLabel")}</p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-100 rounded-lg border border-brand-200">
-              <span className="text-lg font-mono font-semibold text-brand-800">{reference}</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-lg border border-emerald-200">
+              <span className="text-lg font-mono font-semibold text-emerald-800">{reference}</span>
             </div>
             <p className="text-xs text-stone-400 mt-2 max-w-md mx-auto">
               {t("referenceHint")}
@@ -90,7 +90,7 @@ export function HeroSection({ data }: HeroSectionProps) {
                 onClick={handleCopyLink}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors ${
                   copied
-                    ? "bg-brand-100 text-brand-700"
+                    ? "bg-emerald-100 text-emerald-700"
                     : "bg-white border border-stone-200 text-stone-600 hover:bg-stone-50"
                 }`}
                 title={t("share.copyLink")}

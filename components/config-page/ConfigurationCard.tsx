@@ -122,11 +122,11 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
         {/* Base Robot Section */}
         <SectionHeader title={t("sections.robot")} />
         <ConfigItem
-          icon={<Cpu className="h-5 w-5 text-brand-600" />}
+          icon={<Cpu className="h-5 w-5 text-emerald-600" />}
           label="FD20 Robot V2.6"
         />
         <ConfigItem
-          icon={<Circle className="h-5 w-5 text-brand-600" />}
+          icon={<Circle className="h-5 w-5 text-emerald-600" />}
           label={t("config.wheelConfig")}
           value={frontWheelLabel}
         />
@@ -136,7 +136,7 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
           <SectionHeader title={t("sections.seedConfig")} />
         </div>
         <ConfigItem
-          icon={<Rows3 className="h-5 w-5 text-brand-600" />}
+          icon={<Rows3 className="h-5 w-5 text-emerald-600" />}
           label={t("config.activeRowsLabel")}
           value={`${config.activeRows} ${t("config.rows")}`}
           description={config.seedSize === "6mm" ? t("config.seedSize6mm") : t("config.seedSize14mm")}
@@ -149,12 +149,12 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
           />
         )}
         <ConfigItem
-          icon={<div className="h-5 w-5 flex items-center justify-center text-brand-600 text-xs font-bold">↔</div>}
+          icon={<div className="h-5 w-5 flex items-center justify-center text-emerald-600 text-xs font-bold">↔</div>}
           label={t("config.rowSpacing")}
           value={rowSpacingDisplay}
         />
         <ConfigItem
-          icon={<div className="h-5 w-5 flex items-center justify-center text-brand-600 text-xs font-bold">⟷</div>}
+          icon={<div className="h-5 w-5 flex items-center justify-center text-emerald-600 text-xs font-bold">⟷</div>}
           label={t("config.workingWidthLabel")}
           value={`${(workingWidth / 10).toFixed(0)} cm`}
         />
@@ -174,7 +174,7 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
             )}
             {config.weedingTool !== "none" && (
               <ConfigItem
-                icon={<Scissors className="h-5 w-5 text-brand-600" />}
+                icon={<Scissors className="h-5 w-5 text-emerald-600" />}
                 label={t("config.weedingToolLabel")}
                 value={
                   config.weedingTool === "combiTool"
@@ -200,7 +200,7 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
         />
         {config.powerBank && (
           <ConfigItem
-            icon={<Battery className="h-5 w-5 text-brand-600" />}
+            icon={<Battery className="h-5 w-5 text-emerald-600" />}
             label={t("config.accessories.powerBank")}
             description={t("config.powerBankDesc")}
           />
@@ -215,7 +215,7 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
             {accessories.map((accessory) => (
               <ConfigItem
                 key={accessory.key}
-                icon={<Package className="h-5 w-5 text-brand-600" />}
+                icon={<Package className="h-5 w-5 text-emerald-600" />}
                 label={accessory.name}
               />
             ))}
@@ -230,7 +230,7 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
             </div>
             {config.servicePlan !== "none" && (
               <ConfigItem
-                icon={<Shield className="h-5 w-5 text-brand-600" />}
+                icon={<Shield className="h-5 w-5 text-emerald-600" />}
                 label={
                   config.servicePlan === "premium"
                     ? t("config.servicePlan.premium")

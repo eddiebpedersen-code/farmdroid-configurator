@@ -44,7 +44,7 @@ export function NextStepsSection({ data, className = "" }: NextStepsSectionProps
                 href="https://farmdroid.com/the-team/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-brand-600 hover:text-brand-700 hover:underline"
+                className="flex items-center gap-1 text-emerald-600 hover:text-emerald-700 hover:underline"
               >
                 {t("nextSteps.reachOut.teamLink")}
                 <ExternalLink className="w-3 h-3" />
@@ -54,7 +54,7 @@ export function NextStepsSection({ data, className = "" }: NextStepsSectionProps
                 href="https://farmdroid.com/get-started/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-brand-600 hover:text-brand-700 hover:underline"
+                className="flex items-center gap-1 text-emerald-600 hover:text-emerald-700 hover:underline"
               >
                 {t("nextSteps.reachOut.partnerLink")}
                 <ExternalLink className="w-3 h-3" />
@@ -96,11 +96,11 @@ export function NextStepsSection({ data, className = "" }: NextStepsSectionProps
             >
               {/* Step number with connector line */}
               <div className="flex flex-col items-center">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-brand-600" />
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-emerald-600" />
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="w-0.5 flex-1 bg-brand-100 mt-2" />
+                  <div className="w-0.5 flex-1 bg-emerald-100 mt-2" />
                 )}
               </div>
 
@@ -124,7 +124,7 @@ export function NextStepsSection({ data, className = "" }: NextStepsSectionProps
         <p className="text-sm text-stone-500">{t("nextSteps.contactDescription")}</p>
         <a
           href="mailto:info@farmdroid.dk"
-          className="inline-flex items-center gap-2 mt-3 text-sm text-brand-600 hover:text-brand-700 font-medium"
+          className="inline-flex items-center gap-2 mt-3 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
         >
           <Mail className="w-4 h-4" />
           info@farmdroid.dk

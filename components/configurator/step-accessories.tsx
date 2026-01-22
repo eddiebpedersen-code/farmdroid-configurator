@@ -320,7 +320,7 @@ function AccessoriesInfoModal({
                       >
                         <span className="truncate block">
                           {t(`items.${item}.name`)}
-                          {inStarterKit && <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-brand-500" />}
+                          {inStarterKit && <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />}
                         </span>
                         {isActive && (
                           <motion.div
@@ -349,8 +349,8 @@ function AccessoriesInfoModal({
                       <div className="space-y-3">
                         {items.map((item) => (
                           <div key={item} className="flex items-start gap-3 p-3 bg-stone-50 rounded-lg">
-                            <div className="h-6 w-6 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <Check className="h-3.5 w-3.5 text-brand-600" />
+                            <div className="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <Check className="h-3.5 w-3.5 text-emerald-600" />
                             </div>
                             <div>
                               <p className="text-sm font-medium text-stone-900">{t(`items.${item}.name`)}</p>
@@ -386,7 +386,7 @@ function AccessoriesInfoModal({
                         <div className="flex items-start justify-between gap-3">
                           <h3 className="text-base font-semibold text-stone-900">{t(`items.${activeItem}.name`)}</h3>
                           {isInStarterKit(activeItem) && (
-                            <span className="flex-shrink-0 inline-flex items-center gap-1 text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">
+                            <span className="flex-shrink-0 inline-flex items-center gap-1 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
                               <Package className="h-3 w-3" />
                               {t("starterKitBadge")}
                             </span>
@@ -404,7 +404,7 @@ function AccessoriesInfoModal({
                           <ul className="space-y-2">
                             {(t.raw(`items.${activeItem}.features`) as string[])?.map((feature: string, idx: number) => (
                               <li key={idx} className="flex items-start gap-2 text-sm text-stone-600">
-                                <Check className="h-4 w-4 text-brand-600 flex-shrink-0 mt-0.5" />
+                                <Check className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                                 <span>{feature}</span>
                               </li>
                             ))}
@@ -644,7 +644,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         isIncludedOrDisabled
                           ? "border-stone-200 bg-stone-100 opacity-60 cursor-not-allowed"
                           : isSelected
-                          ? "border-brand-500 bg-brand-50/50"
+                          ? "border-emerald-500 bg-emerald-50/50"
                           : "border-stone-200 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-sm"
                       }`}
                     >
@@ -653,7 +653,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                           isIncludedOrDisabled
                             ? "bg-stone-200"
                             : isSelected
-                            ? "bg-brand-500"
+                            ? "bg-emerald-500"
                             : "bg-stone-100"
                         }`}>
                           <Icon className={`h-4 w-4 md:h-5 md:w-5 ${
@@ -676,7 +676,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         <div
                           className={`h-4 w-4 md:h-5 md:w-5 rounded-full flex items-center justify-center transition-opacity ${
                             (isSelected || isIncludedOrDisabled) ? "opacity-100" : "opacity-0"
-                          } ${isIncludedOrDisabled ? "bg-stone-400" : "bg-brand-500"}`}
+                          } ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500"}`}
                         >
                           <Check className="h-2.5 w-2.5 md:h-3 md:w-3 text-white" strokeWidth={3} />
                         </div>
@@ -832,7 +832,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2.5 md:gap-3 flex-wrap">
                       {isSelected && (
-                        <div className="h-5 w-5 rounded-full bg-brand-500 flex items-center justify-center checkmark-animated">
+                        <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
                           <Check className="h-3 w-3 text-white" strokeWidth={3} />
                         </div>
                       )}
@@ -845,7 +845,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       )}
                     </div>
                     <p className="text-xs md:text-sm text-stone-500 mt-1">{t(`items.${accessory.translationKey}.description`)}</p>
-                    <p className="text-xs text-brand-600 mt-2">{t("starterKitIncludes")}</p>
+                    <p className="text-xs text-emerald-600 mt-2">{t("starterKitIncludes")}</p>
                   </div>
                   {showPrices && (
                     <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
@@ -889,7 +889,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2.5 md:gap-3">
                         {(isSelected || isIncludedOrDisabled) && (
-                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-brand-500 checkmark-animated"}`}>
+                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500 checkmark-animated"}`}>
                             <Check className="h-3 w-3 text-white" strokeWidth={3} />
                           </div>
                         )}
@@ -898,7 +898,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         </p>
                       </div>
                       {accessory.includedInStarterKit && (
-                        <span className="inline-block text-[10px] md:text-xs bg-brand-100 text-brand-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedInStarterKit")}
                         </span>
                       )}
@@ -947,7 +947,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2.5 md:gap-3">
                         {(isSelected || isIncludedOrDisabled) && (
-                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-brand-500 checkmark-animated"}`}>
+                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500 checkmark-animated"}`}>
                             <Check className="h-3 w-3 text-white" strokeWidth={3} />
                           </div>
                         )}
@@ -956,7 +956,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         </p>
                       </div>
                       {accessory.includedInStarterKit && (
-                        <span className="inline-block text-[10px] md:text-xs bg-brand-100 text-brand-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedInStarterKit")}
                         </span>
                       )}
@@ -1005,7 +1005,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2.5 md:gap-3">
                         {(isSelected || isIncludedOrDisabled) && (
-                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-brand-500 checkmark-animated"}`}>
+                          <div className={`h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0 ${isIncludedOrDisabled ? "bg-stone-400" : "bg-emerald-500 checkmark-animated"}`}>
                             <Check className="h-3 w-3 text-white" strokeWidth={3} />
                           </div>
                         )}
@@ -1014,12 +1014,12 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         </p>
                       </div>
                       {accessory.includedInStarterKit && (
-                        <span className="inline-block text-[10px] md:text-xs bg-brand-100 text-brand-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedInStarterKit")}
                         </span>
                       )}
                       {accessory.requiresSpraySystem && (
-                        <span className="inline-block text-[10px] md:text-xs bg-brand-100 text-brand-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
+                        <span className="inline-block text-[10px] md:text-xs bg-emerald-100 text-emerald-700 px-1.5 md:px-2 py-0.5 rounded-full mt-1.5">
                           {t("includedWithCare")}
                         </span>
                       )}

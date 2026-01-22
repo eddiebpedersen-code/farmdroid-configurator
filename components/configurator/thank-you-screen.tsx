@@ -52,7 +52,7 @@ export function ThankYouScreen({ lead, config, onRestart }: ThankYouScreenProps)
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="h-24 w-24 rounded-full bg-brand-500 flex items-center justify-center"
+            className="h-24 w-24 rounded-full bg-emerald-500 flex items-center justify-center"
           >
             <motion.div
               initial={{ pathLength: 0, opacity: 0 }}
@@ -67,7 +67,7 @@ export function ThankYouScreen({ lead, config, onRestart }: ThankYouScreenProps)
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1.3, opacity: [0, 0.4, 0] }}
             transition={{ delay: 0.5, duration: 1, repeat: 2 }}
-            className="absolute inset-0 rounded-full bg-brand-500"
+            className="absolute inset-0 rounded-full bg-emerald-500"
           />
         </div>
       </motion.div>
@@ -108,7 +108,7 @@ export function ThankYouScreen({ lead, config, onRestart }: ThankYouScreenProps)
                 className="flex items-start gap-4"
               >
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-white border border-stone-200 flex items-center justify-center">
-                  <Icon className="h-5 w-5 text-brand-600" />
+                  <Icon className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
                   <h3 className="font-medium text-stone-900">{step.title}</h3>

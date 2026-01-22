@@ -405,7 +405,7 @@ function WeedConfigInfoModal({
                       <ul className="space-y-2">
                         {(t.raw(`options.${activeOption}.specs`) as string[])?.map((spec: string, idx: number) => (
                           <li key={idx} className="flex items-start gap-2 text-sm text-stone-600">
-                            <Check className="h-4 w-4 text-brand-600 flex-shrink-0 mt-0.5" />
+                            <Check className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>{spec}</span>
                           </li>
                         ))}
@@ -641,7 +641,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
           <div className="selection-card selected p-4 md:p-5 rounded-xl border">
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-start gap-2.5 md:gap-3">
-                <div className="h-5 w-5 rounded-full bg-brand-500 flex items-center justify-center mt-0.5 flex-shrink-0">
+                <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5 flex-shrink-0">
                   <Check className="h-3 w-3 text-white" strokeWidth={3} />
                 </div>
                 <div>
@@ -651,7 +651,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                     {standardWeedFeatureKeys.map((key) => (
                       <span
                         key={key}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-brand-100 text-brand-700"
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"
                       >
                         {t(`standardWeedConfig.features.${key}`)}
                       </span>
@@ -689,7 +689,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
               <div className="flex items-start gap-2.5 md:gap-3">
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   config.weedingTool === "combiTool"
-                    ? "bg-brand-500"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
                   {config.weedingTool === "combiTool" && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
@@ -702,7 +702,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                       <span
                         key={key}
                         className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          config.weedingTool === "combiTool" ? "bg-brand-100 text-brand-700" : "bg-stone-100 text-stone-500"
+                          config.weedingTool === "combiTool" ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
                         }`}
                       >
                         {t(`combiTool.features.${key}`)}
@@ -741,7 +741,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
               <div className="flex items-start gap-2.5 md:gap-3">
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   config.weedingTool === "weedCuttingDisc"
-                    ? "bg-brand-500"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
                   {config.weedingTool === "weedCuttingDisc" && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
@@ -802,7 +802,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
               <div className="flex items-start gap-2.5 md:gap-3">
                 <div className={`h-5 w-5 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
                   config.spraySystem
-                    ? "bg-brand-500"
+                    ? "bg-emerald-500"
                     : "border-2 border-stone-300"
                 }`}>
                   {config.spraySystem && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
@@ -817,7 +817,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                       <span
                         key={key}
                         className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          config.spraySystem ? "bg-brand-100 text-brand-700" : "bg-stone-100 text-stone-500"
+                          config.spraySystem ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
                         }`}
                       >
                         {t(`spray.features.${key}`)}
@@ -825,7 +825,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                     ))}
                   </div>
                   {config.spraySystem && showPrices && (
-                    <div className="mt-3 pt-3 border-t border-brand-200 space-y-1 text-xs text-stone-400">
+                    <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1 text-xs text-stone-400">
                       <div className="flex justify-between">
                         <span>{t("spray.baseSystem")}</span>
                         <span>{formatPrice(PRICES.spraySystem.base, config.currency)}</span>

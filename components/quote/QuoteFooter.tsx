@@ -17,13 +17,13 @@ export function QuoteFooter() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-stone-600">
               <Mail className="w-4 h-4 text-stone-400" />
-              <a href="mailto:sales@farmdroid.dk" className="hover:text-brand-600">
+              <a href="mailto:sales@farmdroid.dk" className="hover:text-emerald-600">
                 sales@farmdroid.dk
               </a>
             </div>
             <div className="flex items-center gap-2 text-sm text-stone-600">
               <Phone className="w-4 h-4 text-stone-400" />
-              <a href="tel:+4570707172" className="hover:text-brand-600">
+              <a href="tel:+4570707172" className="hover:text-emerald-600">
                 +45 70 70 71 72
               </a>
             </div>
@@ -33,7 +33,7 @@ export function QuoteFooter() {
                 href="https://farmdroid.dk"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-brand-600"
+                className="hover:text-emerald-600"
               >
                 farmdroid.dk
               </a>

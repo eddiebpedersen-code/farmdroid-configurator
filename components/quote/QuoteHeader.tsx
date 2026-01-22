@@ -15,7 +15,7 @@ export function QuoteHeader({ quoteReference, quoteDate, validUntil }: QuoteHead
     <div className="flex items-start justify-between pb-8 border-b border-stone-200">
       {/* Logo */}
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-brand-500 rounded-xl flex items-center justify-center">
+        <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -45,7 +45,7 @@ export function QuoteHeader({ quoteReference, quoteDate, validUntil }: QuoteHead
         {validUntil && (
           <>
             <div className="mt-2 text-sm text-stone-500">{t("validUntil")}</div>
-            <div className="text-sm font-medium text-brand-600">{validUntil}</div>
+            <div className="text-sm font-medium text-emerald-600">{validUntil}</div>
           </>
         )}
       </div>

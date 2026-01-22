@@ -160,19 +160,19 @@ export function ReturningUserModal({
           <DialogTitle className="flex items-center gap-2">
             {step === "welcome" && (
               <>
-                <History className="h-5 w-5 text-brand-500" />
+                <History className="h-5 w-5 text-emerald-500" />
                 {t("title")}
               </>
             )}
             {step === "verification" && (
               <>
-                <Mail className="h-5 w-5 text-brand-500" />
+                <Mail className="h-5 w-5 text-emerald-500" />
                 {t("verifyTitle")}
               </>
             )}
             {step === "configurations" && (
               <>
-                <CheckCircle className="h-5 w-5 text-brand-500" />
+                <CheckCircle className="h-5 w-5 text-emerald-500" />
                 {t("configsTitle")}
               </>
             )}
@@ -198,7 +198,7 @@ export function ReturningUserModal({
                 <button
                   type="button"
                   onClick={handleViewPrevious}
-                  className="w-full p-4 rounded-xl border-2 border-brand-200 bg-brand-50/50 hover:bg-brand-50 hover:border-brand-300 transition-all text-left group"
+                  className="w-full p-4 rounded-xl border-2 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 hover:border-emerald-300 transition-all text-left group"
                 >
                   <div className="flex items-center justify-between">
                     <div>
@@ -207,7 +207,7 @@ export function ReturningUserModal({
                         {configCount} {configCount === 1 ? "configuration" : "configurations"} found
                       </p>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-brand-500 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-5 w-5 text-emerald-500 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </button>
 
@@ -238,8 +238,8 @@ export function ReturningUserModal({
                 exit={{ opacity: 0, x: 20 }}
               >
                 {codeSent && (
-                  <div className="mb-6 p-3 bg-brand-50 rounded-lg border border-brand-100">
-                    <p className="text-sm text-brand-700 text-center">
+                  <div className="mb-6 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+                    <p className="text-sm text-emerald-700 text-center">
                       A verification code has been sent to <strong>{email}</strong>
                     </p>
                   </div>

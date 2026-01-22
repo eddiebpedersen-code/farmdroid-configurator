@@ -104,7 +104,7 @@ export function VerificationCodeInput({
               error
                 ? "border-red-400 bg-red-50 text-red-600"
                 : digit
-                ? "border-brand-500 bg-brand-50 text-brand-600"
+                ? "border-emerald-500 bg-emerald-50 text-emerald-600"
                 : "border-stone-200 focus:border-stone-400"
             } disabled:opacity-50`}
             initial={{ scale: 1 }}
@@ -140,7 +140,7 @@ export function VerificationCodeInput({
             type="button"
             onClick={onResend}
             disabled={isLoading}
-            className="text-sm text-brand-600 hover:text-brand-700 underline transition-colors disabled:opacity-50"
+            className="text-sm text-emerald-600 hover:text-emerald-700 underline transition-colors disabled:opacity-50"
           >
             {t("resend")}
           </button>

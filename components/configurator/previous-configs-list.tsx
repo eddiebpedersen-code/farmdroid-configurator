@@ -106,7 +106,7 @@ export function PreviousConfigsList({
               <button
                 type="button"
                 onClick={() => onSelect(config.reference, "edit")}
-                className="flex-1 flex items-center justify-center gap-2 h-9 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium rounded-lg transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 h-9 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors"
               >
                 <Edit3 className="h-4 w-4" />
                 {t("modal.editConfig")}

@@ -64,7 +64,7 @@ export function FarmFitSection({ data, className = "" }: FarmFitSectionProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.5 }}
-      className={`bg-brand-50 rounded-xl p-6 ${className}`}
+      className={`bg-emerald-50 rounded-xl p-6 ${className}`}
     >
       <h2 className="text-lg font-semibold text-stone-900 mb-4">{t("farmFit.title")}</h2>
 
@@ -80,7 +80,7 @@ export function FarmFitSection({ data, className = "" }: FarmFitSectionProps) {
               className="flex gap-3"
             >
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                <Icon className="w-5 h-5 text-brand-600" />
+                <Icon className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
                 <h3 className="text-sm font-medium text-stone-900">{benefit.title}</h3>

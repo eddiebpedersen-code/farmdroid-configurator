@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Loader2, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ConfiguratorState, PriceBreakdown, calculatePrice } from "@/lib/configurator-data";
+import { EmailLookupIndicator } from "./email-lookup-indicator";
+import { ReturningUserModal } from "./returning-user-modal";
 
 // Countries list for FarmDroid market
 const COUNTRIES = [
@@ -65,6 +67,23 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
   const [errors, setErrors] = useState<Partial<Record<keyof LeadData, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<keyof LeadData, boolean>>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  // Returning user state
+  const [showReturningUserModal, setShowReturningUserModal] = useState(false);
+  const [recognizedConfigCount, setRecognizedConfigCount] = useState(0);
+
+  const handleEmailRecognized = useCallback((count: number) => {
+    setRecognizedConfigCount(count);
+  }, []);
+
+  const handleReturningUserClick = () => {
+    setShowReturningUserModal(true);
+  };
+
+  const handleContinueNew = () => {
+    // User chose to continue with new configuration - just close modal
+    setShowReturningUserModal(false);
+  };
 
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -210,6 +229,15 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
           placeholder="john.doe@farm.com"
         />
         {errors.email && touched.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+
+        {/* Email lookup indicator for returning users */}
+        {!initialLead && (
+          <EmailLookupIndicator
+            email={formData.email}
+            onRecognized={handleEmailRecognized}
+            onClick={handleReturningUserClick}
+          />
+        )}
       </div>
 
       {/* Phone */}
@@ -358,7 +386,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       <button
         type="submit"
         disabled={submitting}
-        className="w-full h-12 mt-4 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
+        className="w-full h-12 mt-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
       >
         {submitting ? (
           <>
@@ -376,6 +404,15 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       <p className="text-xs text-stone-400 text-center">
         By submitting this form, you agree to our privacy policy.
       </p>
+
+      {/* Returning User Modal */}
+      <ReturningUserModal
+        isOpen={showReturningUserModal}
+        onClose={() => setShowReturningUserModal(false)}
+        email={formData.email}
+        configCount={recognizedConfigCount}
+        onContinueNew={handleContinueNew}
+      />
     </form>
   );
 }

@@ -164,7 +164,7 @@ function EmailQuoteModal({
                   className={`mt-1 w-full h-11 px-4 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:border-transparent ${
                     emailError
                       ? "border-red-400 focus:ring-red-500"
-                      : "border-stone-200 focus:ring-brand-500"
+                      : "border-stone-200 focus:ring-emerald-500"
                   }`}
                   placeholder={tForms("placeholders.email")}
                 />
@@ -632,10 +632,10 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
               <div className="text-center">
                 <div className="relative mx-auto w-16 h-16 mb-4">
                   <motion.div
-                    className="absolute inset-0 rounded-full border-4 border-brand-200"
+                    className="absolute inset-0 rounded-full border-4 border-emerald-200"
                   />
                   <motion.div
-                    className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-500"
+                    className="absolute inset-0 rounded-full border-4 border-transparent border-t-emerald-500"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   />
@@ -797,8 +797,8 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
               className="bg-white rounded-2xl border border-stone-200 p-6"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center">
-                  <Check className="h-5 w-5 text-brand-600" />
+                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Check className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-stone-900">
@@ -843,7 +843,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
                       type="text"
                       value={editFirstName}
                       onChange={(e) => setEditFirstName(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                     />
                   </div>
                   <div>
@@ -852,7 +852,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
                       type="text"
                       value={editLastName}
                       onChange={(e) => setEditLastName(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                     />
                   </div>
                 </div>
@@ -862,7 +862,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
                     type="tel"
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
-                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
+                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -872,7 +872,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
                       type="text"
                       value={editFarmSize}
                       onChange={(e) => setEditFarmSize(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                     />
                   </div>
                   <div>
@@ -881,7 +881,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
                       type="text"
                       value={editHectares}
                       onChange={(e) => setEditHectares(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                     />
                   </div>
                 </div>
@@ -891,7 +891,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
                     type="text"
                     value={editCrops}
                     onChange={(e) => setEditCrops(e.target.value)}
-                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
+                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                   />
                 </div>
               </div>
@@ -900,7 +900,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
               <button
                 onClick={isEditMode ? handleUpdateConfig : handleKnownContactSubmit}
                 disabled={isSubmitting || !editFirstName || !editLastName}
-                className="w-full h-12 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:bg-stone-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
+                className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
               >
                 {isSubmitting ? (
                   <>

@@ -151,7 +151,7 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
         <div className="selection-card selected rounded-xl p-4 md:p-5 border relative">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2.5 min-w-0">
-              <div className="h-5 w-5 rounded-full bg-brand-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <Check className="h-3 w-3 text-white" strokeWidth={3} />
               </div>
               <div>
@@ -177,7 +177,7 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 className="flex items-center gap-2.5 text-sm text-stone-600"
               >
-                <Check className="h-4 w-4 text-brand-500 flex-shrink-0" strokeWidth={2.5} />
+                <Check className="h-4 w-4 text-emerald-500 flex-shrink-0" strokeWidth={2.5} />
                 {t(`features.${key}`)}
               </motion.li>
             ))}

@@ -9,7 +9,6 @@ import { FarmFitSection } from "./FarmFitSection";
 import { CapacityGraphWidget } from "./CapacityGraphWidget";
 import { NextStepsSection } from "./NextStepsSection";
 import { ReconfigureSection } from "./ReconfigureSection";
-import { OtherConfigurationsWidget } from "./OtherConfigurationsWidget";
 
 interface ConfigPageContentProps {
   data: ConfigPageData;
@@ -51,11 +50,6 @@ export function ConfigPageContent({ data }: ConfigPageContentProps) {
         {/* Reconfigure Section - Full Width */}
         <div className="mt-6">
           <ReconfigureSection data={data} />
-        </div>
-
-        {/* Other Configurations Widget - shows if user has other configs */}
-        <div className="mt-6">
-          <OtherConfigurationsWidget data={data} />
         </div>
       </div>
 
