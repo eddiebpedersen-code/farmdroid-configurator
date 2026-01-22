@@ -7,7 +7,53 @@
     "banner": "Configurez votre FarmDroid et découvrez son prix",
     "formHeading": "Votre FarmDroid est configuré !",
     "formSubheading": "Entrez vos coordonnées pour voir le prix et recevoir votre aperçu de configuration.",
-    "submitButton": "Voir le prix"
+    "submitButton": "Voir le prix",
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "company": "Entreprise / Nom de ferme",
+      "country": "Pays",
+      "selectCountry": "Sélectionnez un pays",
+      "specifyCountry": "Veuillez préciser votre pays",
+      "farmSize": "Taille de la ferme (hectares)",
+      "farmSizePlaceholder": "ex. 50",
+      "hectaresForFarmDroid": "Hectares pertinents pour votre FarmDroid",
+      "hectaresPlaceholder": "ex. 20",
+      "hectaresHint": "Combien d'hectares prévoyez-vous d'utiliser avec FarmDroid ?",
+      "crops": "Quelles cultures cultivez-vous ?",
+      "cropsPlaceholder": "ex. Betteraves sucrières, carottes, oignons",
+      "contactByPartner": "Je souhaite être contacté par un partenaire FarmDroid local",
+      "marketingConsent": "J'accepte de recevoir des communications de FarmDroid sur les produits et mises à jour",
+      "sending": "Envoi en cours...",
+      "privacyNote": "En soumettant ce formulaire, vous acceptez notre politique de confidentialité.",
+      "required": "obligatoire",
+      "errors": {
+        "firstNameRequired": "Le prénom est requis",
+        "lastNameRequired": "Le nom est requis",
+        "emailRequired": "L'e-mail est requis",
+        "emailInvalid": "Veuillez entrer un e-mail valide",
+        "companyRequired": "Entreprise / Nom de ferme est requis",
+        "countryRequired": "Veuillez sélectionner un pays",
+        "countryOtherRequired": "Veuillez préciser votre pays"
+      },
+      "countries": {
+        "DK": "Danemark",
+        "DE": "Allemagne",
+        "NL": "Pays-Bas",
+        "SE": "Suède",
+        "NO": "Norvège",
+        "FI": "Finlande",
+        "FR": "France",
+        "GB": "Royaume-Uni",
+        "PL": "Pologne",
+        "AT": "Autriche",
+        "CH": "Suisse",
+        "BE": "Belgique",
+        "OTHER": "Autre"
+      }
+    }
   },
   "navigation": {
     "back": "Retour",
@@ -336,17 +382,20 @@
         },
         "spraySystem": {
           "name": "Système +Spray",
-          "description": "Le système +SPRAY ajoute une capacité de pulvérisation de précision à votre FarmDroid. Avec un réservoir de 110L et des buses guidées par GPS, il permet une application ciblée d'herbicides, d'engrais ou d'autres liquides avec une réduction allant jusqu'à 90% de l'utilisation de produits chimiques par rapport à la pulvérisation en plein.",
+          "description": "Le système +SPRAY ajoute une capacité de pulvérisation de précision à votre FarmDroid. Atteignez jusqu'à 94% d'économies sur les produits chimiques (88% moyenne de la flotte en 2024) avec un contrôle hybride des mauvaises herbes pour une efficacité optimale. Également compatible avec les engrais liquides et bio-stimulants.",
           "specs": [
-            "Capacité de réservoir de 110L",
-            "Buses de précision guidées par GPS",
-            "Contrôle de débit variable",
-            "Coupure individuelle par rang",
-            "Réduction des produits chimiques jusqu'à 90%",
-            "Compatible avec la plupart des intrants liquides"
+            "Jusqu'à 94% d'économies de produits chimiques (88% moyenne flotte 2024)",
+            "Contrôle hybride des mauvaises herbes pour une efficacité optimale",
+            "Compatible avec engrais liquides & bio-stimulants",
+            "Nettoyage automatique pour un entretien sans souci",
+            "Capacité de 24 heures pour pulvérisation ponctuelle, 12 heures pour bande",
+            "Faible consommation électrique : seulement 30-50W",
+            "Hauteur de pulvérisation réglable de 15-22 cm (bande de 5-10 cm)",
+            "Classe de réduction de dérive 90% (TCT) certifiée",
+            "Compatible avec les modèles de robots à partir de 2023"
           ],
           "tipLabel": "Idéal pour :",
-          "tipText": "Fermes conventionnelles cherchant à réduire l'utilisation de produits chimiques, ou opérations nécessitant une application ciblée d'engrais liquides ou de produits phytosanitaires."
+          "tipText": "Fermes conventionnelles cherchant à maximiser les économies de produits chimiques, ou opérations nécessitant une application ciblée d'engrais liquides, bio-stimulants ou produits phytosanitaires."
         }
       }
     }
@@ -727,6 +776,10 @@
       "label": "Conseil :",
       "text": "6mm convient aux petites graines comme les carottes, oignons et épinards. 14mm gère les graines plus grosses comme les betteraves, haricots et maïs.",
       "learnMore": "En savoir plus"
+    },
+    "didYouKnow": {
+      "label": "Le saviez-vous ?",
+      "gpsSeeding": "FarmDroid enregistre la position GPS exacte de chaque graine. Cela signifie qu'il n'a pas besoin de caméras pour la gestion des mauvaises herbes — il sait précisément où se trouvent vos cultures."
     },
     "optimalWheelSpacing": "Écartement de roues optimal pour cette config de rangs",
     "suggestedSpacing": "Suggéré : {spacing}cm — roues centrées entre les rangs",

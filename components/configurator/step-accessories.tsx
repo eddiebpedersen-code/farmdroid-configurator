@@ -214,7 +214,7 @@ function AccessoriesInfoModal({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
+            className="fixed inset-2 sm:inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
           >
             {/* Left: Image area */}
             <div className="relative flex-1 bg-stone-100 min-h-[200px] lg:min-h-0">
@@ -246,13 +246,13 @@ function AccessoriesInfoModal({
                 <>
                   <button
                     onClick={prevBundleImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
                     onClick={nextBundleImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
                   >
                     <ChevronRight className="h-5 w-5" />
                   </button>
@@ -727,13 +727,13 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                         <>
                           <button
                             onClick={prevPhoto}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
                           >
                             <ChevronLeft className="h-5 w-5" />
                           </button>
                           <button
                             onClick={nextPhoto}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
                           >
                             <ChevronRight className="h-5 w-5" />
                           </button>

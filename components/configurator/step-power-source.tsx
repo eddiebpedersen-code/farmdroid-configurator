@@ -78,7 +78,7 @@ function PowerSourceInfoModal({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
+            className="fixed inset-2 sm:inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
           >
             {/* Left: Image area with gallery */}
             <div className="relative flex-1 bg-stone-100 min-h-[250px] lg:min-h-0">
@@ -96,9 +96,9 @@ function PowerSourceInfoModal({
                     alt={t(`options.${activeOption}.name`)}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 60vw"
-                    placeholder="blur"
-                    blurDataURL={blurDataURL}
+                    sizes="100vw"
+                    quality={100}
+                    unoptimized
                   />
                   {/* Gradient overlay for text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -110,13 +110,13 @@ function PowerSourceInfoModal({
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
                   >
                     <ChevronRight className="h-5 w-5" />
                   </button>
@@ -378,19 +378,6 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
                         transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
                       />
                     ))}
-
-                    {/* External charging cord */}
-                    <path
-                      d="M -18 20 Q -35 20 -40 35 Q -45 50 -40 65"
-                      stroke="#374151"
-                      strokeWidth="4"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                    {/* Plug at end of cord */}
-                    <rect x="-48" y="62" width="16" height="10" rx="2" fill="#374151" />
-                    <rect x="-44" y="72" width="3" height="6" fill="#6b7280" />
-                    <rect x="-37" y="72" width="3" height="6" fill="#6b7280" />
                   </g>
 
                   {/* Connection cable */}

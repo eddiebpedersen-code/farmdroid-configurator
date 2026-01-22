@@ -57,30 +57,30 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
         >
           {/* Header row */}
           <div className="grid grid-cols-3 border-b border-stone-200">
-            <div className="p-4 bg-stone-50">
-              <span className="text-sm font-medium text-stone-500">{t("features")}</span>
+            <div className="p-2 sm:p-4 bg-stone-50">
+              <span className="text-xs sm:text-sm font-medium text-stone-500">{t("features")}</span>
             </div>
             <div
-              className={`p-4 text-center transition-colors ${
+              className={`p-2 sm:p-4 text-center transition-colors ${
                 config.servicePlan === "standard"
                   ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500"
                   : "bg-stone-50"
               }`}
             >
-              <div className="text-sm font-semibold text-stone-900">{t("plans.standard.name")}</div>
-              <div className="text-xs mt-0.5 text-stone-500">
+              <div className="text-xs sm:text-sm font-semibold text-stone-900">{t("plans.standard.name")}</div>
+              <div className="text-[10px] sm:text-xs mt-0.5 text-stone-500">
                 {formatPrice(PRICES.servicePlan.standard, config.currency)}{t("perYear")}
               </div>
             </div>
             <div
-              className={`p-4 text-center transition-colors relative ${
+              className={`p-2 sm:p-4 text-center transition-colors relative ${
                 config.servicePlan === "premium"
                   ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500 rounded-tr-xl"
                   : "bg-stone-50"
               }`}
             >
-              <div className="text-sm font-semibold text-stone-900">{t("plans.premium.name")}</div>
-              <div className="text-xs mt-0.5 text-stone-500">
+              <div className="text-xs sm:text-sm font-semibold text-stone-900">{t("plans.premium.name")}</div>
+              <div className="text-[10px] sm:text-xs mt-0.5 text-stone-500">
                 {formatPrice(PRICES.servicePlan.premium, config.currency)}{t("perYear")}
               </div>
             </div>
@@ -96,30 +96,30 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   index < featureConfigs.length - 1 ? "border-b border-stone-100" : ""
                 }`}
               >
-                <div className="p-3 flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-stone-400 flex-shrink-0" />
-                  <span className="text-sm text-stone-700">{t(`featuresList.${feature.translationKey}`)}</span>
+                <div className="p-2 sm:p-3 flex items-center gap-1.5 sm:gap-2">
+                  <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-stone-400 flex-shrink-0" />
+                  <span className="text-[11px] sm:text-sm text-stone-700 leading-tight">{t(`featuresList.${feature.translationKey}`)}</span>
                 </div>
                 <div
-                  className={`p-3 flex items-center justify-center ${
+                  className={`p-2 sm:p-3 flex items-center justify-center ${
                     config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                   }`}
                 >
                   {feature.standard ? (
-                    <Check className="h-5 w-5 text-emerald-600" />
+                    <Check className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
                   ) : (
-                    <X className="h-5 w-5 text-stone-300" />
+                    <X className="h-4 w-4 sm:h-5 sm:w-5 text-stone-300" />
                   )}
                 </div>
                 <div
-                  className={`p-3 flex items-center justify-center ${
+                  className={`p-2 sm:p-3 flex items-center justify-center ${
                     config.servicePlan === "premium" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
                   }`}
                 >
                   {feature.premium ? (
-                    <Check className="h-5 w-5 text-emerald-600" />
+                    <Check className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
                   ) : (
-                    <X className="h-5 w-5 text-stone-300" />
+                    <X className="h-4 w-4 sm:h-5 sm:w-5 text-stone-300" />
                   )}
                 </div>
               </div>
@@ -128,12 +128,12 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
 
           {/* Billing note */}
           <div className="grid grid-cols-3 border-t border-stone-200 bg-stone-50">
-            <div className="p-3" />
-            <div className={`p-3 text-center ${config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500" : ""}`}>
-              <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
+            <div className="p-2 sm:p-3" />
+            <div className={`p-2 sm:p-3 text-center ${config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500" : ""}`}>
+              <span className="text-[10px] sm:text-xs text-stone-500 italic">{t("billedAnnually")}</span>
             </div>
-            <div className={`p-3 text-center ${config.servicePlan === "premium" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500 rounded-br-xl" : ""}`}>
-              <span className="text-xs text-emerald-600 italic font-medium">
+            <div className={`p-2 sm:p-3 text-center ${config.servicePlan === "premium" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500 rounded-br-xl" : ""}`}>
+              <span className="text-[10px] sm:text-xs text-emerald-600 italic font-medium">
                 {t("firstYearIncluded")}
               </span>
             </div>

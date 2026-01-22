@@ -439,7 +439,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
             <h1 className="text-2xl md:text-3xl font-semibold text-stone-900 tracking-tight">{t("title")}</h1>
             <button
               onClick={() => setShowInfo(true)}
-              className="p-1.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
+              className="p-2.5 rounded-full text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"
               aria-label={t("learnMore")}
             >
               <Info className="h-5 w-5" />

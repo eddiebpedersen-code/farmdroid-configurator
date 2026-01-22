@@ -15,8 +15,6 @@ import {
 } from "@/lib/configurator-data";
 import { useMode } from "@/contexts/ModeContext";
 
-// Subtle gray blur placeholder for smooth image loading
-const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
 
 interface StepSpraySystemProps {
   config: ConfiguratorState;
@@ -25,172 +23,6 @@ interface StepSpraySystemProps {
 }
 
 type WeedOptionId = "standardWeeding" | "combiTool" | "weedCuttingDisc" | "spraySystem";
-
-// Combi Tool Animation Component
-function CombiToolAnimation() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-amber-50 to-amber-100">
-      <svg viewBox="0 0 400 300" className="w-full h-full max-w-[500px]">
-        {/* Background soil */}
-        <rect x="0" y="150" width="400" height="150" fill="#8B7355" />
-
-        {/* Soil texture lines */}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-          <line
-            key={`soil-${i}`}
-            x1={i * 50 + 10}
-            y1="160"
-            x2={i * 50 + 30}
-            y2="280"
-            stroke="#6B5344"
-            strokeWidth="2"
-            opacity="0.3"
-          />
-        ))}
-
-        {/* Crop row - center line of plants */}
-        <g>
-          {/* Soil ridge for crop row */}
-          <ellipse cx="200" cy="180" rx="25" ry="8" fill="#9B8365" />
-
-          {/* Plants in the row */}
-          {[-80, -40, 0, 40, 80].map((offset, i) => (
-            <g key={`plant-${i}`} transform={`translate(${200 + offset}, 160)`}>
-              {/* Plant stem */}
-              <line x1="0" y1="0" x2="0" y2="-30" stroke="#22c55e" strokeWidth="3" />
-              {/* Leaves */}
-              <ellipse cx="-8" cy="-20" rx="10" ry="5" fill="#22c55e" transform="rotate(-30)" />
-              <ellipse cx="8" cy="-20" rx="10" ry="5" fill="#22c55e" transform="rotate(30)" />
-              <ellipse cx="-6" cy="-35" rx="8" ry="4" fill="#16a34a" transform="rotate(-20)" />
-              <ellipse cx="6" cy="-35" rx="8" ry="4" fill="#16a34a" transform="rotate(20)" />
-            </g>
-          ))}
-        </g>
-
-        {/* Left disc assembly */}
-        <g transform="translate(120, 175)">
-          {/* Disc arm */}
-          <rect x="-5" y="-60" width="10" height="60" fill="#374151" rx="2" />
-
-          {/* Rotating notched disc */}
-          <g>
-            <motion.g
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              {/* Main disc */}
-              <circle cx="0" cy="0" r="35" fill="#6b7280" stroke="#374151" strokeWidth="3" />
-              {/* Notches */}
-              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
-                <g key={`left-notch-${angle}`} transform={`rotate(${angle})`}>
-                  <path
-                    d="M 30 -8 L 40 0 L 30 8 Z"
-                    fill="#374151"
-                  />
-                </g>
-              ))}
-              {/* Center hub */}
-              <circle cx="0" cy="0" r="10" fill="#1f2937" />
-              <circle cx="0" cy="0" r="5" fill="#4b5563" />
-            </motion.g>
-          </g>
-
-          {/* Soil spray particles - left side throws soil outward */}
-          {[0, 1, 2, 3, 4].map((i) => (
-            <motion.circle
-              key={`left-particle-${i}`}
-              cx={-20 - i * 5}
-              cy={10 + i * 3}
-              r={3 - i * 0.4}
-              fill="#8B7355"
-              animate={{
-                x: [-10, -40 - i * 10],
-                y: [0, -20 + i * 8, 30],
-                opacity: [0.8, 0.6, 0],
-              }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                delay: i * 0.15,
-                ease: "easeOut",
-              }}
-            />
-          ))}
-        </g>
-
-        {/* Right disc assembly */}
-        <g transform="translate(280, 175)">
-          {/* Disc arm */}
-          <rect x="-5" y="-60" width="10" height="60" fill="#374151" rx="2" />
-
-          {/* Rotating notched disc - opposite direction */}
-          <g>
-            <motion.g
-              animate={{ rotate: -360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              {/* Main disc */}
-              <circle cx="0" cy="0" r="35" fill="#6b7280" stroke="#374151" strokeWidth="3" />
-              {/* Notches */}
-              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
-                <g key={`right-notch-${angle}`} transform={`rotate(${angle})`}>
-                  <path
-                    d="M 30 -8 L 40 0 L 30 8 Z"
-                    fill="#374151"
-                  />
-                </g>
-              ))}
-              {/* Center hub */}
-              <circle cx="0" cy="0" r="10" fill="#1f2937" />
-              <circle cx="0" cy="0" r="5" fill="#4b5563" />
-            </motion.g>
-          </g>
-
-          {/* Soil spray particles - right side throws soil outward */}
-          {[0, 1, 2, 3, 4].map((i) => (
-            <motion.circle
-              key={`right-particle-${i}`}
-              cx={20 + i * 5}
-              cy={10 + i * 3}
-              r={3 - i * 0.4}
-              fill="#8B7355"
-              animate={{
-                x: [10, 40 + i * 10],
-                y: [0, -20 + i * 8, 30],
-                opacity: [0.8, 0.6, 0],
-              }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                delay: i * 0.15,
-                ease: "easeOut",
-              }}
-            />
-          ))}
-        </g>
-
-        {/* Direction arrow */}
-        <g transform="translate(200, 40)">
-          <motion.g
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <path
-              d="M 0 0 L -15 -20 L -8 -20 L -8 -40 L 8 -40 L 8 -20 L 15 -20 Z"
-              fill="#059669"
-              opacity="0.8"
-            />
-          </motion.g>
-        </g>
-
-        {/* Labels */}
-        <text x="200" y="290" textAnchor="middle" fill="#1f2937" fontSize="14" fontWeight="500">
-          Notched discs cut weeds on both sides of the crop row
-        </text>
-      </svg>
-    </div>
-  );
-}
 
 // Weed Config Info Modal Component
 function WeedConfigInfoModal({
@@ -205,39 +37,35 @@ function WeedConfigInfoModal({
   const t = useTranslations("spraySystem.infoModal");
   const [activeOption, setActiveOption] = useState<WeedOptionId>(initialOption);
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   // Update active option when modal opens with different initial option
   React.useEffect(() => {
     if (isOpen) {
       setActiveOption(initialOption);
+      setCurrentImageIndex(0);
     }
   }, [isOpen, initialOption]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Reset image index when switching options
+  React.useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [activeOption]);
 
   const weedOptions: WeedOptionId[] = ["standardWeeding", "combiTool", "weedCuttingDisc", "spraySystem"];
 
-  // Image paths for each weed option (placeholder for now - user can add real images)
-  const optionImages: Record<WeedOptionId, string[]> = {
-    standardWeeding: ["/farmdroid-fd20.png"],
-    combiTool: ["/farmdroid-fd20.png"],
-    weedCuttingDisc: ["/farmdroid-fd20.png"],
-    spraySystem: ["/farmdroid-fd20.png"],
-  };
+  // Images for combi tool
+  const combiToolImages = [
+    "/accessories/combi-tool/combi-tool-1.jpg",
+    "/accessories/combi-tool/combi-tool-2.jpg",
+    "/accessories/combi-tool/combi-tool-3.jpg",
+  ];
 
-  const images = optionImages[activeOption];
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  // Reset image index when switching options
-  const handleOptionChange = (option: WeedOptionId) => {
-    setActiveOption(option);
-    setCurrentImageIndex(0);
-  };
+  // Images for weed cutting disc
+  const weedCuttingDiscImages = [
+    "/accessories/weed-cutting-disc/weed-cutting-disc-1.jpg",
+    "/accessories/weed-cutting-disc/weed-cutting-disc-2.jpg",
+  ];
 
   return (
     <AnimatePresence>
@@ -257,87 +85,120 @@ function WeedConfigInfoModal({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
+            className="fixed inset-2 sm:inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
           >
-            {/* Left: Image/Animation area */}
+            {/* Left: Image/Video area */}
             <div className="relative flex-1 bg-stone-100 min-h-[250px] lg:min-h-0">
-              <AnimatePresence mode="wait">
-                {activeOption === "combiTool" ? (
-                  /* Show animation for Combi Tool */
-                  <motion.div
-                    key="combiTool-animation"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute inset-0"
+              {activeOption === "standardWeeding" ? (
+                /* Video for standard weeding */
+                <div className="absolute inset-0">
+                  <video
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
                   >
-                    <CombiToolAnimation />
-                  </motion.div>
-                ) : (
-                  /* Show image for other options */
-                  <motion.div
-                    key={`${activeOption}-${currentImageIndex}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute inset-0"
-                  >
-                    <Image
-                      src={images[currentImageIndex]}
-                      alt={t(`options.${activeOption}.name`)}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 60vw"
-                      placeholder="blur"
-                      blurDataURL={blurDataURL}
-                    />
-                    {/* Gradient overlay for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Navigation arrows - only show for image galleries, not animations */}
-              {activeOption !== "combiTool" && images.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </>
-              )}
-
-              {/* Image indicators - only show for image galleries */}
-              {activeOption !== "combiTool" && images.length > 1 && (
-                <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
-                      className={`h-2 w-2 rounded-full transition-colors ${
-                        idx === currentImageIndex
-                          ? "bg-white"
-                          : "bg-white/50 hover:bg-white/75"
-                      }`}
-                    />
-                  ))}
+                    <source src="/videos/weeding-sequences.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <p className="text-lg md:text-xl font-medium">{t(`options.standardWeeding.name`)}</p>
+                  </div>
                 </div>
-              )}
+              ) : activeOption === "spraySystem" ? (
+                /* Video for spray system */
+                <div className="absolute inset-0">
+                  <video
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  >
+                    <source src="/videos/spray-system.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <p className="text-lg md:text-xl font-medium">{t(`options.spraySystem.name`)}</p>
+                  </div>
+                </div>
+              ) : (activeOption === "combiTool" || activeOption === "weedCuttingDisc") ? (
+                <>
+                  {(() => {
+                    const images = activeOption === "combiTool"
+                      ? combiToolImages
+                      : weedCuttingDiscImages;
+                    return (
+                      <>
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={`${activeOption}-${currentImageIndex}`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="absolute inset-0"
+                          >
+                            <Image
+                              src={images[currentImageIndex]}
+                              alt={t(`options.${activeOption}.name`)}
+                              fill
+                              className="object-cover"
+                              sizes="100vw"
+                              quality={100}
+                              unoptimized
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          </motion.div>
+                        </AnimatePresence>
 
-              {/* Caption at bottom - only show for image galleries */}
-              {activeOption !== "combiTool" && (
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <p className="text-lg md:text-xl font-medium">{t(`options.${activeOption}.name`)}</p>
+                        {/* Navigation arrows */}
+                        {images.length > 1 && (
+                          <>
+                            <button
+                              onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+                              className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                            >
+                              <ChevronLeft className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-700 transition-colors shadow-lg"
+                            >
+                              <ChevronRight className="h-5 w-5" />
+                            </button>
+                          </>
+                        )}
+
+                        {/* Image indicators */}
+                        {images.length > 1 && (
+                          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2">
+                            {images.map((_, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => setCurrentImageIndex(idx)}
+                                className={`h-2 rounded-full transition-all ${
+                                  idx === currentImageIndex
+                                    ? "bg-white w-6"
+                                    : "bg-white/50 hover:bg-white/75 w-2"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Caption */}
+                        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                          <p className="text-lg md:text-xl font-medium">{t(`options.${activeOption}.name`)}</p>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
+              ) : (
+                <div className="flex items-center justify-center h-full text-stone-400 text-sm">
+                  {/* Placeholder for other options */}
                 </div>
               )}
             </div>
@@ -362,7 +223,7 @@ function WeedConfigInfoModal({
                   return (
                     <button
                       key={option}
-                      onClick={() => handleOptionChange(option)}
+                      onClick={() => setActiveOption(option)}
                       className={`flex-1 min-w-0 py-3 px-2 text-[11px] font-medium transition-colors relative whitespace-nowrap ${
                         isActive
                           ? "text-stone-900"
@@ -489,150 +350,25 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
-      {/* Left: Product Image - Takes 3 columns */}
+      {/* Left: Video Background - Takes 3 columns */}
       <div className="lg:col-span-3 flex items-center justify-center">
-        <motion.div
-          key={`${config.spraySystem}-${config.weedingTool}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="w-full max-w-lg py-6 md:py-12"
-        >
-          <svg viewBox="0 0 200 160" className="w-full h-auto">
-            {/* Robot body */}
-            <rect x="40" y="50" width="120" height="60" rx="6" fill="#059669" />
-            <rect x="32" y="35" width="136" height="15" rx="3" fill="#10b981" />
-            {[0, 1, 2, 3].map((i) => (
-              <line key={i} x1={48 + i * 32} y1="35" x2={48 + i * 32} y2="50" stroke="#047857" strokeWidth="1" />
-            ))}
+        <div className="w-full max-w-2xl py-6 md:py-12">
+          <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-900 shadow-lg">
+            {/* Video */}
+            <video
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+            >
+              <source src="/videos/weeding-sequences.mp4" type="video/mp4" />
+            </video>
 
-            {/* Wheels */}
-            <circle cx="60" cy="120" r="14" fill="#374151" />
-            <circle cx="60" cy="120" r="8" fill="#6b7280" />
-            <circle cx="140" cy="120" r="14" fill="#374151" />
-            <circle cx="140" cy="120" r="8" fill="#6b7280" />
-            <circle cx="100" cy="128" r="9" fill="#374151" />
-            <circle cx="100" cy="128" r="5" fill="#6b7280" />
-
-            {/* Standard weeding tools - always visible */}
-            <g>
-              {/* Weeding wires (horizontal lines below robot) */}
-              {[0, 1, 2, 3, 4].map((i) => (
-                <line
-                  key={`wire-${i}`}
-                  x1={50 + i * 25}
-                  y1="115"
-                  x2={50 + i * 25}
-                  y2="135"
-                  stroke="#f59e0b"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              ))}
-              {/* Knife for inrow (small blade shapes) */}
-              {[0, 1, 2, 3, 4].map((i) => (
-                <path
-                  key={`knife-${i}`}
-                  d={`M${47 + i * 25} 140 L${50 + i * 25} 148 L${53 + i * 25} 140 Z`}
-                  fill="#d97706"
-                />
-              ))}
-            </g>
-
-            {/* Combi Tool if selected */}
-            {config.weedingTool === "combiTool" && (
-              <motion.g
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {/* Combi tool attachments (disc-like shapes) */}
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <g key={`combi-${i}`}>
-                    <ellipse
-                      cx={50 + i * 25}
-                      cy="152"
-                      rx="8"
-                      ry="3"
-                      fill="#7c3aed"
-                    />
-                    <line
-                      x1={50 + i * 25}
-                      y1="148"
-                      x2={50 + i * 25}
-                      y2="152"
-                      stroke="#7c3aed"
-                      strokeWidth="2"
-                    />
-                  </g>
-                ))}
-              </motion.g>
-            )}
-
-            {/* Weed Cutting Disc if selected */}
-            {config.weedingTool === "weedCuttingDisc" && (
-              <motion.g
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                {/* Weed cutting disc attachments (circular discs) */}
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <g key={`disc-${i}`}>
-                    <circle
-                      cx={50 + i * 25}
-                      cy="150"
-                      r="6"
-                      fill="none"
-                      stroke="#dc2626"
-                      strokeWidth="2"
-                    />
-                    <line
-                      x1={50 + i * 25}
-                      y1="144"
-                      x2={50 + i * 25}
-                      y2="148"
-                      stroke="#dc2626"
-                      strokeWidth="2"
-                    />
-                  </g>
-                ))}
-              </motion.g>
-            )}
-
-            {/* Spray system if selected */}
-            {config.spraySystem && (
-              <motion.g
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                {/* Tank */}
-                <rect x="70" y="8" width="60" height="22" rx="4" fill="#3b82f6" />
-                <text x="100" y="23" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
-                  110L
-                </text>
-
-                {/* Spray arms */}
-                <rect x="42" y="100" width="116" height="4" rx="2" fill="#60a5fa" />
-
-                {/* Nozzles with spray */}
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <g key={i}>
-                    <circle cx={52 + i * 24} cy="108" r="4" fill="#3b82f6" />
-                    <motion.path
-                      d={`M${52 + i * 24} 112 L${47 + i * 24} 126 L${57 + i * 24} 126 Z`}
-                      fill="#93c5fd"
-                      opacity={0.6}
-                      animate={{ opacity: [0.3, 0.7, 0.3] }}
-                      transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
-                    />
-                  </g>
-                ))}
-              </motion.g>
-            )}
-          </svg>
-        </motion.div>
+            {/* Subtle overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-black/20" />
+          </div>
+        </div>
       </div>
 
       {/* Right: Configuration - Takes 2 columns */}

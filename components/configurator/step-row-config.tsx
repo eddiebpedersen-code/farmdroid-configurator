@@ -2858,6 +2858,14 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             </div>
           </div>
 
+          {/* Did you know - GPS seeding highlight */}
+          <div className="mt-4 p-3 bg-sky-50 border border-sky-200 rounded-lg max-w-sm mx-auto">
+            <p className="text-xs text-sky-800">
+              <span className="font-medium">{t("didYouKnow.label")}</span>{" "}
+              {t("didYouKnow.gpsSeeding")}
+            </p>
+          </div>
+
       </div>
 
       {/* Right: Configuration - Takes 2 columns (narrower) */}

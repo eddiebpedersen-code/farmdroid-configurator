@@ -6,22 +6,8 @@ import { Loader2, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ConfiguratorState, PriceBreakdown, calculatePrice } from "@/lib/configurator-data";
 
-// Countries list for FarmDroid market
-const COUNTRIES = [
-  { value: "DK", label: "Denmark" },
-  { value: "DE", label: "Germany" },
-  { value: "NL", label: "Netherlands" },
-  { value: "SE", label: "Sweden" },
-  { value: "NO", label: "Norway" },
-  { value: "FI", label: "Finland" },
-  { value: "FR", label: "France" },
-  { value: "GB", label: "United Kingdom" },
-  { value: "PL", label: "Poland" },
-  { value: "AT", label: "Austria" },
-  { value: "CH", label: "Switzerland" },
-  { value: "BE", label: "Belgium" },
-  { value: "OTHER", label: "Other" },
-];
+// Country codes for FarmDroid market
+const COUNTRY_CODES = ["DK", "DE", "NL", "SE", "NO", "FI", "FR", "GB", "PL", "AT", "CH", "BE", "OTHER"] as const;
 
 export interface LeadData {
   firstName: string;
@@ -47,6 +33,7 @@ interface LeadCaptureFormProps {
 
 export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead }: LeadCaptureFormProps) {
   const tPublic = useTranslations("publicMode");
+  const t = useTranslations("publicMode.form");
   const [formData, setFormData] = useState<LeadData>(initialLead || {
     firstName: "",
     lastName: "",
@@ -71,20 +58,20 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
   const validateField = (field: keyof LeadData, value: string | boolean) => {
     switch (field) {
       case "firstName":
-        return typeof value === "string" && value.trim() === "" ? "First name is required" : "";
+        return typeof value === "string" && value.trim() === "" ? t("errors.firstNameRequired") : "";
       case "lastName":
-        return typeof value === "string" && value.trim() === "" ? "Last name is required" : "";
+        return typeof value === "string" && value.trim() === "" ? t("errors.lastNameRequired") : "";
       case "email":
-        if (typeof value !== "string" || value.trim() === "") return "Email is required";
-        if (!isValidEmail(value)) return "Please enter a valid email";
+        if (typeof value !== "string" || value.trim() === "") return t("errors.emailRequired");
+        if (!isValidEmail(value)) return t("errors.emailInvalid");
         return "";
       case "company":
-        return typeof value === "string" && value.trim() === "" ? "Company / Farm name is required" : "";
+        return typeof value === "string" && value.trim() === "" ? t("errors.companyRequired") : "";
       case "country":
-        return typeof value === "string" && value === "" ? "Please select a country" : "";
+        return typeof value === "string" && value === "" ? t("errors.countryRequired") : "";
       case "countryOther":
         if (formData.country === "OTHER" && typeof value === "string" && value.trim() === "") {
-          return "Please specify your country";
+          return t("errors.countryOtherRequired");
         }
         return "";
       default:
@@ -164,7 +151,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium text-stone-700">
-            First Name <span className="text-red-500">*</span>
+            {t("firstName")} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -172,7 +159,6 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
             onChange={(e) => handleChange("firstName", e.target.value)}
             onBlur={() => handleBlur("firstName")}
             className={inputClasses("firstName")}
-            placeholder="John"
           />
           {errors.firstName && touched.firstName && (
             <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>
@@ -180,7 +166,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
         </div>
         <div>
           <label className="text-sm font-medium text-stone-700">
-            Last Name <span className="text-red-500">*</span>
+            {t("lastName")} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -188,7 +174,6 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
             onChange={(e) => handleChange("lastName", e.target.value)}
             onBlur={() => handleBlur("lastName")}
             className={inputClasses("lastName")}
-            placeholder="Doe"
           />
           {errors.lastName && touched.lastName && (
             <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>
@@ -199,7 +184,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       {/* Email */}
       <div>
         <label className="text-sm font-medium text-stone-700">
-          Email <span className="text-red-500">*</span>
+          {t("email")} <span className="text-red-500">*</span>
         </label>
         <input
           type="email"
@@ -207,27 +192,25 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
           onChange={(e) => handleChange("email", e.target.value)}
           onBlur={() => handleBlur("email")}
           className={inputClasses("email")}
-          placeholder="john.doe@farm.com"
         />
         {errors.email && touched.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
       </div>
 
       {/* Phone */}
       <div>
-        <label className="text-sm font-medium text-stone-700">Phone</label>
+        <label className="text-sm font-medium text-stone-700">{t("phone")}</label>
         <input
           type="tel"
           value={formData.phone}
           onChange={(e) => handleChange("phone", e.target.value)}
           className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-          placeholder="+45 12 34 56 78"
         />
       </div>
 
       {/* Company / Farm Name */}
       <div>
         <label className="text-sm font-medium text-stone-700">
-          Company / Farm Name <span className="text-red-500">*</span>
+          {t("company")} <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -235,7 +218,6 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
           onChange={(e) => handleChange("company", e.target.value)}
           onBlur={() => handleBlur("company")}
           className={inputClasses("company")}
-          placeholder="Green Valley Farm"
         />
         {errors.company && touched.company && (
           <p className="mt-1 text-xs text-red-500">{errors.company}</p>
@@ -245,7 +227,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       {/* Country */}
       <div>
         <label className="text-sm font-medium text-stone-700">
-          Country <span className="text-red-500">*</span>
+          {t("country")} <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <select
@@ -254,10 +236,10 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
             onBlur={() => handleBlur("country")}
             className={`${inputClasses("country")} appearance-none cursor-pointer`}
           >
-            <option value="">Select a country</option>
-            {COUNTRIES.map((country) => (
-              <option key={country.value} value={country.value}>
-                {country.label}
+            <option value="">{t("selectCountry")}</option>
+            {COUNTRY_CODES.map((code) => (
+              <option key={code} value={code}>
+                {t(`countries.${code}`)}
               </option>
             ))}
           </select>
@@ -272,7 +254,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       {formData.country === "OTHER" && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
           <label className="text-sm font-medium text-stone-700">
-            Please specify your country <span className="text-red-500">*</span>
+            {t("specifyCountry")} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -280,7 +262,6 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
             onChange={(e) => handleChange("countryOther", e.target.value)}
             onBlur={() => handleBlur("countryOther")}
             className={inputClasses("countryOther")}
-            placeholder="Your country"
           />
           {errors.countryOther && touched.countryOther && (
             <p className="mt-1 text-xs text-red-500">{errors.countryOther}</p>
@@ -290,39 +271,39 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
 
       {/* Farm Size */}
       <div>
-        <label className="text-sm font-medium text-stone-700">Farm Size (hectares)</label>
+        <label className="text-sm font-medium text-stone-700">{t("farmSize")}</label>
         <input
           type="number"
           value={formData.farmSize}
           onChange={(e) => handleChange("farmSize", e.target.value)}
           className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-          placeholder="e.g., 50"
+          placeholder={t("farmSizePlaceholder")}
           min="0"
         />
       </div>
 
       {/* Hectares relevant for FarmDroid */}
       <div>
-        <label className="text-sm font-medium text-stone-700">Hectares relevant for your FarmDroid</label>
+        <label className="text-sm font-medium text-stone-700">{t("hectaresForFarmDroid")}</label>
         <input
           type="number"
           value={formData.hectaresForFarmDroid}
           onChange={(e) => handleChange("hectaresForFarmDroid", e.target.value)}
           className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-          placeholder="e.g., 20"
+          placeholder={t("hectaresPlaceholder")}
           min="0"
         />
-        <p className="mt-1 text-xs text-stone-400">How many hectares do you plan to use with FarmDroid?</p>
+        <p className="mt-1 text-xs text-stone-400">{t("hectaresHint")}</p>
       </div>
 
       {/* Crops */}
       <div>
-        <label className="text-sm font-medium text-stone-700">What crops do you grow?</label>
+        <label className="text-sm font-medium text-stone-700">{t("crops")}</label>
         <textarea
           value={formData.crops}
           onChange={(e) => handleChange("crops", e.target.value)}
           className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent resize-none"
-          placeholder="e.g., Sugar beet, carrots, onions"
+          placeholder={t("cropsPlaceholder")}
           rows={2}
         />
       </div>
@@ -337,7 +318,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
             className="mt-0.5 h-5 w-5 rounded border-stone-300 text-stone-900 focus:ring-stone-900 cursor-pointer"
           />
           <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-            I&apos;d like to be contacted by a local FarmDroid partner
+            {t("contactByPartner")}
           </span>
         </label>
 
@@ -349,7 +330,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
             className="mt-0.5 h-5 w-5 rounded border-stone-300 text-stone-900 focus:ring-stone-900 cursor-pointer"
           />
           <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-            I agree to receive communications from FarmDroid about products and updates
+            {t("marketingConsent")}
           </span>
         </label>
       </div>
@@ -363,7 +344,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
         {submitting ? (
           <>
             <Loader2 className="h-5 w-5 animate-spin" />
-            Sending...
+            {t("sending")}
           </>
         ) : (
           <>
@@ -374,7 +355,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       </button>
 
       <p className="text-xs text-stone-400 text-center">
-        By submitting this form, you agree to our privacy policy.
+        {t("privacyNote")}
       </p>
     </form>
   );

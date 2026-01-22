@@ -77,7 +77,7 @@ export function SeedInfoModal({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
+            className="fixed inset-2 sm:inset-4 md:inset-8 lg:inset-16 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col lg:flex-row"
           >
             {/* Left: Image area with gallery */}
             <div className="relative flex-1 bg-stone-100 min-h-[200px] lg:min-h-0">
@@ -108,7 +108,7 @@ export function SeedInfoModal({
               {/* Image navigation arrows */}
               <button
                 onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? seedImages.length - 1 : prev - 1))}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-stone-700 shadow-lg transition-colors"
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/90 hover:bg-white text-stone-700 shadow-lg transition-colors"
                 aria-label="Previous image"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -117,7 +117,7 @@ export function SeedInfoModal({
               </button>
               <button
                 onClick={() => setCurrentImageIndex((prev) => (prev === seedImages.length - 1 ? 0 : prev + 1))}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-stone-700 shadow-lg transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/90 hover:bg-white text-stone-700 shadow-lg transition-colors"
                 aria-label="Next image"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -151,7 +151,7 @@ export function SeedInfoModal({
             <div className="w-full lg:w-[400px] xl:w-[450px] flex flex-col bg-white">
               {/* Header with close button */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
-                <h2 className="text-lg font-semibold text-stone-900">{t("title")}</h2>
+                <h2 className="text-lg font-semibold text-stone-900">+Seed</h2>
                 <button
                   onClick={onClose}
                   className="p-2 -mr-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-colors"

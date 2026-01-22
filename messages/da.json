@@ -7,7 +7,53 @@
     "banner": "Konfigurer din FarmDroid og se hvad den koster",
     "formHeading": "Din FarmDroid er konfigureret!",
     "formSubheading": "Indtast dine oplysninger for at se prisen og modtage din konfigurationsoversigt.",
-    "submitButton": "Se hvad den koster"
+    "submitButton": "Se hvad den koster",
+    "form": {
+      "firstName": "Fornavn",
+      "lastName": "Efternavn",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "company": "Virksomhed / Gårdnavn",
+      "country": "Land",
+      "selectCountry": "Vælg et land",
+      "specifyCountry": "Angiv venligst dit land",
+      "farmSize": "Gårdstørrelse (hektar)",
+      "farmSizePlaceholder": "f.eks. 50",
+      "hectaresForFarmDroid": "Hektar relevant for din FarmDroid",
+      "hectaresPlaceholder": "f.eks. 20",
+      "hectaresHint": "Hvor mange hektar planlægger du at bruge med FarmDroid?",
+      "crops": "Hvilke afgrøder dyrker du?",
+      "cropsPlaceholder": "f.eks. Sukkerroer, gulerødder, løg",
+      "contactByPartner": "Jeg vil gerne kontaktes af en lokal FarmDroid partner",
+      "marketingConsent": "Jeg accepterer at modtage kommunikation fra FarmDroid om produkter og opdateringer",
+      "sending": "Sender...",
+      "privacyNote": "Ved at indsende denne formular accepterer du vores privatlivspolitik.",
+      "required": "påkrævet",
+      "errors": {
+        "firstNameRequired": "Fornavn er påkrævet",
+        "lastNameRequired": "Efternavn er påkrævet",
+        "emailRequired": "E-mail er påkrævet",
+        "emailInvalid": "Indtast venligst en gyldig e-mail",
+        "companyRequired": "Virksomhed / Gårdnavn er påkrævet",
+        "countryRequired": "Vælg venligst et land",
+        "countryOtherRequired": "Angiv venligst dit land"
+      },
+      "countries": {
+        "DK": "Danmark",
+        "DE": "Tyskland",
+        "NL": "Holland",
+        "SE": "Sverige",
+        "NO": "Norge",
+        "FI": "Finland",
+        "FR": "Frankrig",
+        "GB": "Storbritannien",
+        "PL": "Polen",
+        "AT": "Østrig",
+        "CH": "Schweiz",
+        "BE": "Belgien",
+        "OTHER": "Andet"
+      }
+    }
   },
   "navigation": {
     "back": "Tilbage",
@@ -336,17 +382,20 @@
         },
         "spraySystem": {
           "name": "+Spray System",
-          "description": "+SPRAY-systemet tilføjer præcisionssprøjtning til din FarmDroid. Med en 110L tank og GPS-styrede dyser muliggør det målrettet påføring af herbicider, gødning eller andre væsker med op til 90% reduktion i kemikalieforbrug sammenlignet med bredsprøjtning.",
+          "description": "+SPRAY-systemet tilføjer præcisionssprøjtning til din FarmDroid. Opnå op til 94% besparelse på kemikalieforbrug (88% flådegennemsnit i 2024) med hybrid ukrudtsbekæmpelse for optimal effektivitet. Også kompatibel med flydende gødning og bio-stimulanter.",
           "specs": [
-            "110L tankkapacitet",
-            "GPS-styrede præcisionsdyser",
-            "Variabel doseringskontrol",
-            "Individuel rækkelukining",
-            "Op til 90% kemikaliereduktion",
-            "Kompatibel med de fleste flydende input"
+            "Op til 94% kemikaliebesparelse (88% flådegennemsnit i 2024)",
+            "Hybrid ukrudtsbekæmpelse for optimal effektivitet",
+            "Kompatibel med flydende gødning & bio-stimulanter",
+            "Automatisk rengøring for problemfri vedligeholdelse",
+            "24-timers kapacitet til punktsprøjtning, 12 timer til båndsprøjtning",
+            "Lavt strømforbrug: kun 30-50W",
+            "Sprøjtehøjde justerbar fra 15-22 cm (5-10 cm bånd)",
+            "Afdriftsreduktionsklasse 90% (TCT) certificeret",
+            "Kompatibel med robotmodeller fra 2023"
           ],
           "tipLabel": "Bedst til:",
-          "tipText": "Konventionelle landbrug, der ønsker at reducere kemikalieforbrug, eller operationer, der kræver målrettet påføring af flydende gødning eller plantebeskyttelsesprodukter."
+          "tipText": "Konventionelle landbrug, der ønsker at maksimere kemikaliebesparelser, eller operationer, der kræver målrettet påføring af flydende gødning, bio-stimulanter eller plantebeskyttelsesprodukter."
         }
       }
     }
@@ -727,6 +776,10 @@
       "label": "Tip:",
       "text": "6mm fungerer til små frø som gulerødder, løg og spinat. 14mm håndterer større frø som roer, bønner og majs.",
       "learnMore": "Læs mere"
+    },
+    "didYouKnow": {
+      "label": "Vidste du?",
+      "gpsSeeding": "FarmDroid registrerer den præcise GPS-position for hvert frø. Det betyder, at den ikke har brug for kameraer til ukrudtshåndtering — den ved præcis, hvor dine afgrøder er."
     },
     "optimalWheelSpacing": "Optimal hjulafstand for denne rækkekonfiguration",
     "suggestedSpacing": "Foreslået: {spacing}cm — hjul centreret mellem rækker",

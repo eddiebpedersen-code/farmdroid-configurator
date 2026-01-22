@@ -7,7 +7,53 @@
     "banner": "Konfigurieren Sie Ihren FarmDroid und sehen Sie, was er kostet",
     "formHeading": "Ihr FarmDroid ist konfiguriert!",
     "formSubheading": "Geben Sie Ihre Daten ein, um den Preis zu sehen und Ihre Konfigurationsübersicht zu erhalten.",
-    "submitButton": "Preis anzeigen"
+    "submitButton": "Preis anzeigen",
+    "form": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "company": "Unternehmen / Hofname",
+      "country": "Land",
+      "selectCountry": "Land auswählen",
+      "specifyCountry": "Bitte geben Sie Ihr Land an",
+      "farmSize": "Hofgröße (Hektar)",
+      "farmSizePlaceholder": "z.B. 50",
+      "hectaresForFarmDroid": "Für FarmDroid relevante Hektar",
+      "hectaresPlaceholder": "z.B. 20",
+      "hectaresHint": "Wie viele Hektar planen Sie mit FarmDroid zu bearbeiten?",
+      "crops": "Welche Kulturen bauen Sie an?",
+      "cropsPlaceholder": "z.B. Zuckerrüben, Karotten, Zwiebeln",
+      "contactByPartner": "Ich möchte von einem lokalen FarmDroid Partner kontaktiert werden",
+      "marketingConsent": "Ich stimme zu, Mitteilungen von FarmDroid über Produkte und Updates zu erhalten",
+      "sending": "Wird gesendet...",
+      "privacyNote": "Mit dem Absenden dieses Formulars stimmen Sie unserer Datenschutzrichtlinie zu.",
+      "required": "erforderlich",
+      "errors": {
+        "firstNameRequired": "Vorname ist erforderlich",
+        "lastNameRequired": "Nachname ist erforderlich",
+        "emailRequired": "E-Mail ist erforderlich",
+        "emailInvalid": "Bitte geben Sie eine gültige E-Mail ein",
+        "companyRequired": "Unternehmen / Hofname ist erforderlich",
+        "countryRequired": "Bitte wählen Sie ein Land",
+        "countryOtherRequired": "Bitte geben Sie Ihr Land an"
+      },
+      "countries": {
+        "DK": "Dänemark",
+        "DE": "Deutschland",
+        "NL": "Niederlande",
+        "SE": "Schweden",
+        "NO": "Norwegen",
+        "FI": "Finnland",
+        "FR": "Frankreich",
+        "GB": "Vereinigtes Königreich",
+        "PL": "Polen",
+        "AT": "Österreich",
+        "CH": "Schweiz",
+        "BE": "Belgien",
+        "OTHER": "Andere"
+      }
+    }
   },
   "navigation": {
     "back": "Zurück",
@@ -336,17 +382,20 @@
         },
         "spraySystem": {
           "name": "+Spray System",
-          "description": "Das +SPRAY-System fügt Präzisionssprühfähigkeit zu Ihrem FarmDroid hinzu. Mit einem 110L Tank und GPS-gesteuerten Düsen ermöglicht es gezielte Ausbringung von Herbiziden, Düngemitteln oder anderen Flüssigkeiten mit bis zu 90% Reduzierung des Chemikalieneinsatzes im Vergleich zur Breitspritzung.",
+          "description": "Das +SPRAY-System fügt Präzisionssprühfähigkeit zu Ihrem FarmDroid hinzu. Erreichen Sie bis zu 94% Einsparungen beim Chemikalieneinsatz (88% Flottendurchschnitt 2024) mit hybrider Unkrautbekämpfung für optimale Effizienz. Auch kompatibel mit Flüssigdünger und Bio-Stimulanzien.",
           "specs": [
-            "110L Tankkapazität",
-            "GPS-gesteuerte Präzisionsdüsen",
-            "Variable Dosierungskontrolle",
-            "Individuelle Reihenabschaltung",
-            "Bis zu 90% Chemikalienreduzierung",
-            "Kompatibel mit den meisten Flüssiginputs"
+            "Bis zu 94% Chemikalieneinsparung (88% Flottendurchschnitt 2024)",
+            "Hybride Unkrautbekämpfung für optimale Effizienz",
+            "Kompatibel mit Flüssigdünger & Bio-Stimulanzien",
+            "Automatische Reinigung für problemlose Wartung",
+            "24-Stunden-Kapazität für Punktspritzung, 12 Stunden für Bandspritzung",
+            "Niedriger Stromverbrauch: nur 30-50W",
+            "Sprühhöhe einstellbar von 15-22 cm (5-10 cm Band)",
+            "Abdriftminderungsklasse 90% (TCT) zertifiziert",
+            "Kompatibel mit Robotermodellen ab 2023"
           ],
           "tipLabel": "Am besten für:",
-          "tipText": "Konventionelle Betriebe, die den Chemikalieneinsatz reduzieren möchten, oder Operationen, die gezielte Ausbringung von Flüssigdünger oder Pflanzenschutzmitteln erfordern."
+          "tipText": "Konventionelle Betriebe, die Chemikalieneinsparungen maximieren möchten, oder Operationen, die gezielte Ausbringung von Flüssigdünger, Bio-Stimulanzien oder Pflanzenschutzmitteln erfordern."
         }
       }
     }
@@ -727,6 +776,10 @@
       "label": "Tipp:",
       "text": "6mm funktioniert für kleine Samen wie Karotten, Zwiebeln und Spinat. 14mm eignet sich für größere Samen wie Rüben, Bohnen und Mais.",
       "learnMore": "Mehr erfahren"
+    },
+    "didYouKnow": {
+      "label": "Wussten Sie?",
+      "gpsSeeding": "FarmDroid erfasst die exakte GPS-Position jedes Samens. Das bedeutet, dass keine Kameras für die Unkrautbekämpfung benötigt werden — er weiß genau, wo Ihre Pflanzen sind."
     },
     "optimalWheelSpacing": "Optimaler Radabstand für diese Reihenkonfiguration",
     "suggestedSpacing": "Empfohlen: {spacing}cm — Räder zentriert zwischen Reihen",

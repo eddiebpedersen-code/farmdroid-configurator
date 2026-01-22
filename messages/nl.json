@@ -7,7 +7,53 @@
     "banner": "Configureer uw FarmDroid en zie wat het kost",
     "formHeading": "Uw FarmDroid is geconfigureerd!",
     "formSubheading": "Vul uw gegevens in om de prijs te zien en uw configuratieoverzicht te ontvangen.",
-    "submitButton": "Bekijk de prijs"
+    "submitButton": "Bekijk de prijs",
+    "form": {
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "company": "Bedrijf / Boerderijnaam",
+      "country": "Land",
+      "selectCountry": "Selecteer een land",
+      "specifyCountry": "Geef uw land op",
+      "farmSize": "Bedrijfsgrootte (hectare)",
+      "farmSizePlaceholder": "bijv. 50",
+      "hectaresForFarmDroid": "Hectare relevant voor uw FarmDroid",
+      "hectaresPlaceholder": "bijv. 20",
+      "hectaresHint": "Hoeveel hectare bent u van plan te gebruiken met FarmDroid?",
+      "crops": "Welke gewassen verbouwt u?",
+      "cropsPlaceholder": "bijv. Suikerbieten, wortelen, uien",
+      "contactByPartner": "Ik wil graag gecontacteerd worden door een lokale FarmDroid partner",
+      "marketingConsent": "Ik ga akkoord met het ontvangen van communicatie van FarmDroid over producten en updates",
+      "sending": "Verzenden...",
+      "privacyNote": "Door dit formulier in te dienen, gaat u akkoord met ons privacybeleid.",
+      "required": "verplicht",
+      "errors": {
+        "firstNameRequired": "Voornaam is verplicht",
+        "lastNameRequired": "Achternaam is verplicht",
+        "emailRequired": "E-mail is verplicht",
+        "emailInvalid": "Voer een geldig e-mailadres in",
+        "companyRequired": "Bedrijf / Boerderijnaam is verplicht",
+        "countryRequired": "Selecteer een land",
+        "countryOtherRequired": "Geef uw land op"
+      },
+      "countries": {
+        "DK": "Denemarken",
+        "DE": "Duitsland",
+        "NL": "Nederland",
+        "SE": "Zweden",
+        "NO": "Noorwegen",
+        "FI": "Finland",
+        "FR": "Frankrijk",
+        "GB": "Verenigd Koninkrijk",
+        "PL": "Polen",
+        "AT": "Oostenrijk",
+        "CH": "Zwitserland",
+        "BE": "België",
+        "OTHER": "Anders"
+      }
+    }
   },
   "navigation": {
     "back": "Terug",
@@ -336,17 +382,20 @@
         },
         "spraySystem": {
           "name": "+Spray Systeem",
-          "description": "Het +SPRAY systeem voegt precisie spuitcapaciteit toe aan uw FarmDroid. Met een 110L tank en GPS-geleide spuitkoppen maakt het gerichte toepassing van herbiciden, meststoffen of andere vloeistoffen mogelijk met tot 90% reductie in chemicaliëngebruik vergeleken met breedwerpig spuiten.",
+          "description": "Het +SPRAY systeem voegt precisie spuitcapaciteit toe aan uw FarmDroid. Bereik tot 94% besparing op chemicaliën (88% vlootgemiddelde in 2024) met hybride onkruidbestrijding voor optimale efficiëntie. Ook compatibel met vloeibare meststoffen en bio-stimulanten.",
           "specs": [
-            "110L tankinhoud",
-            "GPS-geleide precisie spuitkoppen",
-            "Variabele dosering controle",
-            "Individuele rij afsluiting",
-            "Tot 90% chemicaliënreductie",
-            "Compatibel met de meeste vloeibare inputs"
+            "Tot 94% chemicaliënbesparing (88% vlootgemiddelde 2024)",
+            "Hybride onkruidbestrijding voor optimale efficiëntie",
+            "Compatibel met vloeibare meststoffen & bio-stimulanten",
+            "Automatische reiniging voor probleemloze onderhoud",
+            "24-uurs capaciteit voor pleksgewijs spuiten, 12 uur voor bandspuiten",
+            "Laag stroomverbruik: slechts 30-50W",
+            "Spuithoogte instelbaar van 15-22 cm (5-10 cm band)",
+            "Driftreductieklasse 90% (TCT) gecertificeerd",
+            "Compatibel met robotmodellen vanaf 2023"
           ],
           "tipLabel": "Ideaal voor:",
-          "tipText": "Conventionele boerderijen die chemicaliëngebruik willen verminderen, of operaties die gerichte toepassing van vloeibare meststoffen of gewasbeschermingsmiddelen vereisen."
+          "tipText": "Conventionele boerderijen die chemicaliënbesparingen willen maximaliseren, of operaties die gerichte toepassing van vloeibare meststoffen, bio-stimulanten of gewasbeschermingsmiddelen vereisen."
         }
       }
     }
@@ -727,6 +776,10 @@
       "label": "Tip:",
       "text": "6mm werkt voor kleine zaden zoals wortels, uien en spinazie. 14mm is geschikt voor grotere zaden zoals bieten, bonen en maïs.",
       "learnMore": "Meer informatie"
+    },
+    "didYouKnow": {
+      "label": "Wist je dat?",
+      "gpsSeeding": "FarmDroid registreert de exacte GPS-positie van elk zaad. Dit betekent dat er geen camera's nodig zijn voor onkruidbestrijding — hij weet precies waar uw gewassen zijn."
     },
     "optimalWheelSpacing": "Optimale wielafstand voor deze rijconfiguratie",
     "suggestedSpacing": "Voorgesteld: {spacing}cm — wielen gecentreerd tussen rijen",

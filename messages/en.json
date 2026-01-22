@@ -7,7 +7,53 @@
     "banner": "Configure your FarmDroid and see what it costs",
     "formHeading": "Your FarmDroid is configured!",
     "formSubheading": "Enter your details to see the price and receive your configuration overview.",
-    "submitButton": "See What It Costs"
+    "submitButton": "See What It Costs",
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company / Farm Name",
+      "country": "Country",
+      "selectCountry": "Select a country",
+      "specifyCountry": "Please specify your country",
+      "farmSize": "Farm Size (hectares)",
+      "farmSizePlaceholder": "e.g., 50",
+      "hectaresForFarmDroid": "Hectares relevant for your FarmDroid",
+      "hectaresPlaceholder": "e.g., 20",
+      "hectaresHint": "How many hectares do you plan to use with FarmDroid?",
+      "crops": "What crops do you grow?",
+      "cropsPlaceholder": "e.g., Sugar beet, carrots, onions",
+      "contactByPartner": "I'd like to be contacted by a local FarmDroid partner",
+      "marketingConsent": "I agree to receive communications from FarmDroid about products and updates",
+      "sending": "Sending...",
+      "privacyNote": "By submitting this form, you agree to our privacy policy.",
+      "required": "required",
+      "errors": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email",
+        "companyRequired": "Company / Farm name is required",
+        "countryRequired": "Please select a country",
+        "countryOtherRequired": "Please specify your country"
+      },
+      "countries": {
+        "DK": "Denmark",
+        "DE": "Germany",
+        "NL": "Netherlands",
+        "SE": "Sweden",
+        "NO": "Norway",
+        "FI": "Finland",
+        "FR": "France",
+        "GB": "United Kingdom",
+        "PL": "Poland",
+        "AT": "Austria",
+        "CH": "Switzerland",
+        "BE": "Belgium",
+        "OTHER": "Other"
+      }
+    }
   },
   "navigation": {
     "back": "Back",
@@ -340,17 +386,20 @@
         },
         "spraySystem": {
           "name": "+Spray System",
-          "description": "The +SPRAY system adds precision spraying capability to your FarmDroid. With a 110L tank and GPS-guided nozzles, it enables targeted application of herbicides, fertilizers, or other liquids with up to 90% reduction in chemical usage compared to broadcast spraying.",
+          "description": "The +SPRAY system adds precision spraying capability to your FarmDroid. Achieve up to 94% savings on chemical usage (88% fleet average in 2024) with hybrid weed control for optimal efficiency. Also compatible with liquid fertilizers and bio-stimulants.",
           "specs": [
-            "110L tank capacity",
-            "GPS-guided precision nozzles",
-            "Variable rate control",
-            "Individual row shutoff",
-            "Up to 90% chemical reduction",
-            "Compatible with most liquid inputs"
+            "Up to 94% chemical savings (88% fleet average in 2024)",
+            "Hybrid weed control for optimal efficiency",
+            "Compatible with liquid fertilizers & bio-stimulants",
+            "Automated cleaning for hassle-free maintenance",
+            "24-hour capacity for spot spraying, 12-hour for band spraying",
+            "Low power consumption: only 30-50W",
+            "Spray height adjustable from 15-22 cm (5-10 cm band)",
+            "Drift reduction class 90% (TCT) certified",
+            "Compatible with robot models from 2023"
           ],
           "tipLabel": "Best for:",
-          "tipText": "Conventional farms looking to reduce chemical usage, or operations requiring targeted application of liquid fertilizers or crop protection products."
+          "tipText": "Conventional farms looking to maximize chemical savings, or operations requiring targeted application of liquid fertilizers, bio-stimulants, or crop protection products."
         }
       }
     }
@@ -734,6 +783,10 @@
       "label": "Tip:",
       "text": "6mm works for small seeds like carrots, onions, and spinach. 14mm handles larger seeds like beets, beans, and corn.",
       "learnMore": "Learn more"
+    },
+    "didYouKnow": {
+      "label": "Did you know?",
+      "gpsSeeding": "FarmDroid plans the exact GPS position of every seed. This means it doesn't need cameras for weed management - it knows precisely where your crops are."
     },
     "optimalWheelSpacing": "Optimal wheel spacing for this row config",
     "suggestedSpacing": "Suggested: {spacing}cm — wheels centered between rows",
