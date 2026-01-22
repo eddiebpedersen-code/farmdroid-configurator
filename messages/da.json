@@ -613,6 +613,10 @@
       "crops": "Afgrøder",
       "saveChanges": "Gem ændringer",
       "saving": "Gemmer..."
+    },
+    "submitting": {
+      "title": "Gemmer din konfiguration...",
+      "subtitle": "Vent venligst mens vi behandler dine oplysninger"
     }
   },
   "forms": {

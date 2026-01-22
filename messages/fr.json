@@ -613,6 +613,10 @@
       "crops": "Cultures",
       "saveChanges": "Enregistrer les modifications",
       "saving": "Enregistrement..."
+    },
+    "submitting": {
+      "title": "Enregistrement de votre configuration...",
+      "subtitle": "Veuillez patienter pendant que nous traitons vos informations"
     }
   },
   "forms": {

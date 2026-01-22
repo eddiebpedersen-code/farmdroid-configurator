@@ -613,6 +613,10 @@
       "crops": "Gewassen",
       "saveChanges": "Wijzigingen opslaan",
       "saving": "Opslaan..."
+    },
+    "submitting": {
+      "title": "Configuratie wordt opgeslagen...",
+      "subtitle": "Even geduld terwijl we uw gegevens verwerken"
     }
   },
   "forms": {

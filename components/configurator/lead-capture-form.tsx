@@ -135,45 +135,15 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
 
     setSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Create submission object
-    const submission = {
-      lead: {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        company: formData.company,
-        country: formData.country === "OTHER" ? formData.countryOther : formData.country,
-        farmSize: formData.farmSize,
-        hectaresForFarmDroid: formData.hectaresForFarmDroid,
-        crops: formData.crops,
-        contactByPartner: formData.contactByPartner,
-        marketingConsent: formData.marketingConsent,
-      },
-      configuration: {
-        model: "FD20",
-        seedSize: config.seedSize,
-        activeRows: config.activeRows,
-        rowDistance: config.rowDistance,
-        frontWheel: config.frontWheel,
-        powerSource: config.powerSource,
-        spraySystem: config.spraySystem,
-        weedingTool: config.weedingTool,
-        servicePlan: config.servicePlan,
-        warrantyExtension: config.warrantyExtension,
-      },
-      calculatedPrice: priceBreakdown.total,
-      submittedAt: new Date().toISOString(),
-      source: "website-configurator",
+    // Create final lead data with resolved country
+    const finalLead: LeadData = {
+      ...formData,
+      country: formData.country === "OTHER" ? formData.countryOther : formData.country,
     };
 
-    console.log("Lead submission:", submission);
-
-    setSubmitting(false);
-    onSubmit(formData);
+    // Call parent handler - parent will handle loading state and API call
+    onSubmit(finalLead);
+    // Note: We don't setSubmitting(false) here - the parent controls the flow now
   };
 
   const inputClasses = (field: keyof LeadData) =>

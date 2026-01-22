@@ -574,7 +574,35 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
   // Public mode: Show lead capture form or update UI
   if (mode === "public") {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
+      <>
+        {/* Full-screen loading overlay */}
+        <AnimatePresence>
+          {isSubmitting && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-sm"
+            >
+              <div className="text-center">
+                <div className="relative mx-auto w-16 h-16 mb-4">
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-4 border-emerald-200"
+                  />
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-4 border-transparent border-t-emerald-500"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
+                </div>
+                <p className="text-lg font-medium text-stone-900">{t("submitting.title")}</p>
+                <p className="text-sm text-stone-500 mt-1">{t("submitting.subtitle")}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
         {/* Left: Robot Visualization - Takes 3 columns */}
         <div className="lg:col-span-3 flex flex-col">
           {/* Robot visualization */}
@@ -846,6 +874,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
           )}
         </div>
       </div>
+      </>
     );
   }
 

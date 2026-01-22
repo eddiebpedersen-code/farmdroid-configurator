@@ -614,6 +614,10 @@
       "crops": "Crops",
       "saveChanges": "Save Changes",
       "saving": "Saving..."
+    },
+    "submitting": {
+      "title": "Saving your configuration...",
+      "subtitle": "Please wait while we process your details"
     }
   },
   "forms": {
