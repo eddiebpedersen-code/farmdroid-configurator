@@ -2,7 +2,7 @@ import { createOrUpdateContact } from "./contacts";
 import { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
 import { createOrUpdateDeal, associateDealToContact, associateDealToCompany } from "./deals";
 import { createConfigurationNote, generateConfigSummary } from "./notes";
-import { sendConfigurationEmail } from "./emails";
+import { sendConfigurationEmail } from "@/lib/emails/sendgrid";
 import type { LeadData } from "@/components/configurator/lead-capture-form";
 import type { ConfiguratorState } from "@/lib/configurator-data";
 
@@ -11,7 +11,7 @@ export interface HubSpotResult {
   companyId: string;
   dealId: string;
   noteId?: string;
-  emailId?: string;
+  emailSent?: boolean;
 }
 
 /**
@@ -104,18 +104,16 @@ export async function createHubSpotEntities(
     console.error("Failed to create HubSpot note:", error);
   }
 
-  // 7. Send configuration email to the contact
-  let emailId: string | undefined;
+  // 7. Send configuration email to the contact via SendGrid
+  let emailSent = false;
   try {
-    const result = await sendConfigurationEmail(
-      contactId,
+    emailSent = await sendConfigurationEmail(
       lead.email,
       lead.firstName,
       reference,
       configUrl,
       locale
     );
-    emailId = result || undefined;
   } catch (error) {
     // Email is non-critical, log and continue
     console.error("Failed to send configuration email:", error);
@@ -126,7 +124,7 @@ export async function createHubSpotEntities(
     companyId,
     dealId,
     noteId,
-    emailId,
+    emailSent,
   };
 }
 
@@ -134,4 +132,4 @@ export { createOrUpdateContact } from "./contacts";
 export { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
 export { createOrUpdateDeal, createDeal, associateDealToContact, associateDealToCompany } from "./deals";
 export { createConfigurationNote, createDealNote, generateConfigSummary } from "./notes";
-export { sendConfigurationEmail } from "./emails";
+export { sendConfigurationEmail } from "@/lib/emails/sendgrid";
