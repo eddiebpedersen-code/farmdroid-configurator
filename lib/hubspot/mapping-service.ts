@@ -9,9 +9,13 @@ interface LeadData {
   phone?: string;
   company: string;
   country: string;
+  region?: string;
+  isFarmer?: string;
+  farmingType?: string;
   farmSize?: string;
   hectaresForFarmDroid?: string;
   crops?: string;
+  otherCrops?: string;
   contactByPartner?: boolean;
   marketingConsent?: boolean;
 }
@@ -228,9 +232,13 @@ export function getDefaultContactProperties(
   };
 
   if (lead.phone) properties.phone = lead.phone;
+  if (lead.region) properties.state = lead.region;
+  if (lead.isFarmer) properties.is_farmer = lead.isFarmer;
+  if (lead.farmingType) properties.farming_type = lead.farmingType;
   if (lead.farmSize) properties.farm_size = lead.farmSize;
   if (lead.hectaresForFarmDroid) properties.hectares_for_farmdroid = lead.hectaresForFarmDroid;
   if (lead.crops) properties.crops = lead.crops;
+  if (lead.otherCrops) properties.other_crops = lead.otherCrops;
   if (reference) properties.configurator_reference = reference;
   if (lead.marketingConsent) {
     properties.hs_legal_basis = "Freely given consent from contact";
