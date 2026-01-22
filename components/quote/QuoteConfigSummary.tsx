@@ -83,7 +83,7 @@ export function QuoteConfigSummary({ config }: QuoteConfigSummaryProps) {
             key={index}
             className="flex items-start gap-3 p-3 bg-stone-50 rounded-lg"
           >
-            <feature.icon className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+            <feature.icon className="w-5 h-5 text-brand-600 mt-0.5 flex-shrink-0" />
             <div>
               <div className="text-xs text-stone-500">{feature.label}</div>
               <div className="text-sm font-medium text-stone-900">{feature.value}</div>

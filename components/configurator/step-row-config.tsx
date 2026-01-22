@@ -825,8 +825,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-lg border border-stone-200 text-center max-w-sm mx-4 pointer-events-auto"
               >
-                <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                  <Plus className="h-6 w-6 text-emerald-600" />
+                <div className="h-12 w-12 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-4">
+                  <Plus className="h-6 w-6 text-brand-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-stone-900 mb-2">
                   {t("emptyState.title")}
@@ -836,7 +836,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </p>
                 <button
                   onClick={() => handleSetRowCount(is3Wheel ? 2 : 1)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   {t("emptyState.addRows")}
@@ -879,8 +879,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     </div>
                     {/* Add rows */}
                     <div className="flex items-center gap-3 text-white">
-                      <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
-                        <Plus className="w-5 h-5 text-emerald-400" />
+                      <div className="w-10 h-10 rounded-lg bg-brand-500/20 flex items-center justify-center shrink-0">
+                        <Plus className="w-5 h-5 text-brand-400" />
                       </div>
                       <span className="text-sm">{t("tutorialAdd")}</span>
                     </div>
@@ -903,7 +903,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   </div>
                   <button
                     onClick={() => setShowDragHint(false)}
-                    className="mt-5 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    className="mt-5 w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors"
                   >
                     {t("tutorialGotIt")}
                   </button>
@@ -1383,7 +1383,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                             }
                           }}
                           autoFocus
-                          className="w-full h-full text-center text-[11px] font-medium text-stone-700 bg-white border border-emerald-400 rounded outline-none"
+                          className="w-full h-full text-center text-[11px] font-medium text-stone-700 bg-white border border-brand-400 rounded outline-none"
                           style={{ fontSize: "11px", padding: "2px" }}
                         />
                       </foreignObject>
@@ -1728,8 +1728,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   transform={`translate(${svgCenterX}, ${(rowAreaTop + rowAreaBottom) / 2})`}
                 >
                   <circle r="24" fill="white" stroke={colors.addBtn} strokeWidth="2" />
-                  <text y="6" textAnchor="middle" className="text-[20px] fill-emerald-600 font-bold select-none">+</text>
-                  <text y="50" textAnchor="middle" className="text-[12px] fill-emerald-600 font-medium">Click to add rows</text>
+                  <text y="6" textAnchor="middle" className="text-[20px] fill-brand-600 font-bold select-none">+</text>
+                  <text y="50" textAnchor="middle" className="text-[12px] fill-brand-600 font-medium">Click to add rows</text>
                 </g>
               )}
 
@@ -1979,7 +1979,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                           y={buttonRadius >= 12 ? 5 : 4}
                           textAnchor="middle"
                           style={{ fontSize }}
-                          className="fill-emerald-600 font-medium select-none"
+                          className="fill-brand-600 font-medium select-none"
                         >+</text>
                       </g>
                     )}
@@ -2440,7 +2440,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       transform={`translate(${mmToX(rowPositionsMm[0]) - 40}, ${buttonY})`}
                     >
                       <circle r={buttonRadius} fill="white" stroke={colors.addBtn} strokeWidth="1.5" />
-                      <text y="5" textAnchor="middle" style={{ fontSize: "16px" }} className="fill-emerald-600 font-medium select-none">+</text>
+                      <text y="5" textAnchor="middle" style={{ fontSize: "16px" }} className="fill-brand-600 font-medium select-none">+</text>
                     </g>
                     <g
                       className="cursor-pointer"
@@ -2449,7 +2449,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       transform={`translate(${mmToX(rowPositionsMm[rowPositionsMm.length - 1]) + 40}, ${buttonY})`}
                     >
                       <circle r={buttonRadius} fill="white" stroke={colors.addBtn} strokeWidth="1.5" />
-                      <text y="5" textAnchor="middle" style={{ fontSize: "16px" }} className="fill-emerald-600 font-medium select-none">+</text>
+                      <text y="5" textAnchor="middle" style={{ fontSize: "16px" }} className="fill-brand-600 font-medium select-none">+</text>
                     </g>
                   </>
                 );
@@ -2685,7 +2685,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   <button
                     onClick={() => setSeedsPerGroup(Math.max(2, seedsPerGroup - 1))}
                     disabled={seedsPerGroup <= 2 || seedingMode !== "group"}
-                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -2693,7 +2693,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   <button
                     onClick={() => setSeedsPerGroup(Math.min(15, seedsPerGroup + 1))}
                     disabled={seedsPerGroup >= 15 || seedingMode !== "group"}
-                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -2740,7 +2740,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       setPlantSpacing(Math.max(3, Math.round((plantSpacing - step) * 10) / 10));
                     }}
                     disabled={plantSpacing <= 3 || seedingMode === "line"}
-                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -2759,12 +2759,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         }
                       }}
                       autoFocus
-                      className="w-14 h-9 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-14 h-9 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     />
                   ) : (
                     <span
                       onClick={handleStartEditPlantSpacing}
-                      className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-emerald-100 ${
+                      className={`text-sm font-semibold cursor-pointer px-1.5 py-0.5 rounded transition-colors hover:bg-brand-100 ${
                         plantSpacing < 10 && seedingMode !== "line" ? "text-red-600" : "text-stone-900"
                       }`}
                     >
@@ -2777,7 +2777,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       setPlantSpacing(Math.min(40, Math.round((plantSpacing + step) * 10) / 10));
                     }}
                     disabled={plantSpacing >= 40 || seedingMode === "line"}
-                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                    className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -2863,7 +2863,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               >
                 <div className="flex items-center gap-2">
                   {isSelected && (
-                    <div className="h-4 w-4 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                    <div className="h-4 w-4 rounded-full bg-brand-500 flex items-center justify-center checkmark-animated">
                       <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
                     </div>
                   )}
@@ -2912,18 +2912,18 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
         {/* Cost display */}
         {config.activeRows > 0 && (
-          <div className="py-2 px-3 rounded-lg bg-emerald-50 border border-emerald-100">
+          <div className="py-2 px-3 rounded-lg bg-brand-50 border border-brand-100">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-emerald-700">{config.activeRows} active rows</span>
+              <span className="text-sm text-brand-700">{config.activeRows} active rows</span>
               {showPrices && (
-                <span className="text-sm font-semibold text-emerald-700">
+                <span className="text-sm font-semibold text-brand-700">
                   {formatPrice(config.activeRows * rowPrice, config.currency)}
                 </span>
               )}
             </div>
             <div className="flex justify-between items-center mt-0.5">
-              <span className="text-xs text-emerald-600">{totalPassiveRows} passive rows</span>
-              <span className="text-xs text-emerald-500">{totalPassiveRows > 0 ? "included" : "–"}</span>
+              <span className="text-xs text-brand-600">{totalPassiveRows} passive rows</span>
+              <span className="text-xs text-brand-500">{totalPassiveRows > 0 ? "included" : "–"}</span>
             </div>
           </div>
         )}
@@ -2951,7 +2951,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   handleSetRowCount(config.activeRows - decrement);
                 }}
                 disabled={config.activeRows <= 0}
-                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -2966,7 +2966,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   }
                 }}
                 disabled={!canAddMoreRows}
-                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
               >
                 <Plus className="h-3 w-3" />
               </button>
@@ -3012,7 +3012,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   });
                 }}
                 disabled={config.rowDistance <= minRowDistance}
-                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -3031,12 +3031,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     }
                   }}
                   autoFocus
-                  className="w-12 h-7 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-12 h-7 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                 />
               ) : (
                 <span
                   onClick={handleStartEditRowDistance}
-                  className={`text-sm font-semibold cursor-pointer px-1 py-0.5 rounded transition-colors hover:bg-emerald-100 ${hasFrontWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}
+                  className={`text-sm font-semibold cursor-pointer px-1 py-0.5 rounded transition-colors hover:bg-brand-100 ${hasFrontWheelProximityWarning ? "text-red-600" : "text-stone-900"}`}
                 >
                   {config.rowDistance / 10}cm
                 </span>
@@ -3057,7 +3057,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   });
                 }}
                 disabled={!canIncreaseRowDistance}
-                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
               >
                 <Plus className="h-3 w-3" />
               </button>
@@ -3085,7 +3085,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.max(WHEEL_CONSTRAINTS.minWheelSpacing, config.wheelSpacing - 100) })}
                 disabled={config.wheelSpacing <= WHEEL_CONSTRAINTS.minWheelSpacing}
-                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
               >
                 <Minus className="h-3 w-3" />
               </button>
@@ -3093,7 +3093,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <button
                 onClick={() => updateConfig({ wheelSpacing: Math.min(WHEEL_CONSTRAINTS.maxWheelSpacing, config.wheelSpacing + 100) })}
                 disabled={config.wheelSpacing >= WHEEL_CONSTRAINTS.maxWheelSpacing}
-                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
               >
                 <Plus className="h-3 w-3" />
               </button>
@@ -3112,9 +3112,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
             if (isOptimal) {
               return (
-                <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-emerald-50 border border-emerald-200">
-                  <Check className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
-                  <span className="text-xs text-emerald-700">{t("optimalWheelSpacing")}</span>
+                <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-brand-50 border border-brand-200">
+                  <Check className="h-3.5 w-3.5 text-brand-600 flex-shrink-0" />
+                  <span className="text-xs text-brand-700">{t("optimalWheelSpacing")}</span>
                 </div>
               );
             }
@@ -3148,7 +3148,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
                   }}
                   disabled={workingWidth <= rowSpan + minRowDistance}
-                  className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                  className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
                 >
                   <Minus className="h-3 w-3" />
                 </button>
@@ -3167,12 +3167,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       }
                     }}
                     autoFocus
-                    className="w-12 h-7 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-12 h-7 text-center text-sm font-semibold text-stone-900 bg-white border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   />
                 ) : (
                   <span
                     onClick={handleStartEditWorkingWidth}
-                    className="text-sm font-semibold cursor-pointer px-1 py-0.5 rounded transition-colors hover:bg-emerald-100 text-stone-900"
+                    className="text-sm font-semibold cursor-pointer px-1 py-0.5 rounded transition-colors hover:bg-brand-100 text-stone-900"
                   >
                     {(workingWidth / 10).toFixed(0)}cm
                   </span>
@@ -3185,7 +3185,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
                   }}
                   disabled={workingWidth >= 5000}
-                  className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
+                  className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1"
                 >
                   <Plus className="h-3 w-3" />
                 </button>
@@ -3266,7 +3266,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       !isCompatible
                         ? "bg-stone-50 border-2 border-transparent opacity-40 cursor-not-allowed grayscale"
                         : selectedCrop.id === crop.id
-                          ? "bg-emerald-50 border-2 border-emerald-300 scale-105"
+                          ? "bg-brand-50 border-2 border-brand-300 scale-105"
                           : "bg-stone-100 hover:bg-stone-200 border-2 border-transparent"
                     }`}
                   >
@@ -3306,7 +3306,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             </div>
             <button
               onClick={() => applyCropConfig(selectedCrop)}
-              className="w-full py-1.5 px-3 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition-colors"
+              className="w-full py-1.5 px-3 rounded-md bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition-colors"
             >
               {t("applyCropConfig", { crop: tCrops(selectedCrop.nameKey) })}
             </button>

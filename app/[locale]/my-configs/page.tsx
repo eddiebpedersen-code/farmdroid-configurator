@@ -185,7 +185,7 @@ export default function MyConfigsPage() {
       <div className="max-w-lg mx-auto px-4 py-12 sm:py-20">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-100 text-brand-600 mb-4">
             <History className="w-8 h-8" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-stone-900">{t("title")}</h1>
@@ -225,7 +225,7 @@ export default function MyConfigsPage() {
                       className={`w-full h-12 pl-10 pr-4 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:border-transparent ${
                         emailError
                           ? "border-red-400 focus:ring-red-500"
-                          : "border-stone-200 focus:ring-emerald-500"
+                          : "border-stone-200 focus:ring-brand-500"
                       }`}
                       placeholder={t("emailPlaceholder")}
                       autoFocus
@@ -239,7 +239,7 @@ export default function MyConfigsPage() {
                 <button
                   type="submit"
                   disabled={isSearching}
-                  className="w-full h-12 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
+                  className="w-full h-12 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
                 >
                   {isSearching ? (
                     <>
@@ -284,8 +284,8 @@ export default function MyConfigsPage() {
                   </p>
                 </div>
 
-                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-100 text-center">
-                  <p className="text-sm text-emerald-700">
+                <div className="p-4 bg-brand-50 rounded-lg border border-brand-100 text-center">
+                  <p className="text-sm text-brand-700">
                     {t("checkEmail")}
                   </p>
                 </div>

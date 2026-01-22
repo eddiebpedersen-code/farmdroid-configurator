@@ -97,7 +97,7 @@ export function EmailLookupIndicator({
           <button
             type="button"
             onClick={onClick}
-            className="flex items-center gap-2 text-xs text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="flex items-center gap-2 text-xs text-brand-600 hover:text-brand-700 transition-colors"
           >
             <History className="h-3.5 w-3.5" />
             <span>{t("found", { count: configCount })}</span>

@@ -111,9 +111,9 @@ export const colors = {
   },
   // Success/confirmation
   success: {
-    default: "bg-emerald-500 text-white",
-    hover: "hover:bg-emerald-600",
-    light: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    default: "bg-brand-500 text-white",
+    hover: "hover:bg-brand-600",
+    light: "bg-brand-50 text-brand-700 border border-brand-200",
   },
   // Warning/caution
   warning: {
@@ -156,9 +156,9 @@ export const zIndex = {
 // =============================================================================
 export const focus = {
   // Default focus ring
-  ring: "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
+  ring: "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
   // Focus within for containers
-  within: "focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2",
+  within: "focus-within:ring-2 focus-within:ring-brand-500 focus-within:ring-offset-2",
   // No focus ring (for custom handling)
   none: "focus:outline-none",
 } as const;
@@ -199,17 +199,17 @@ export const components = {
   card: {
     base: "bg-white rounded-xl border border-stone-200 shadow-sm",
     interactive: "bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-md hover:border-stone-300 transition-all duration-200 cursor-pointer",
-    selected: "bg-white rounded-xl border-2 border-emerald-500 shadow-md",
+    selected: "bg-white rounded-xl border-2 border-brand-500 shadow-md",
   },
   // Input styles
   input: {
-    base: "w-full px-4 py-3 rounded-lg border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200",
+    base: "w-full px-4 py-3 rounded-lg border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200",
     error: "border-red-300 focus:ring-red-500 focus:border-red-500",
   },
   // Badge styles
   badge: {
     default: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-    success: "bg-emerald-100 text-emerald-800",
+    success: "bg-brand-100 text-brand-800",
     warning: "bg-amber-100 text-amber-800",
     error: "bg-red-100 text-red-800",
     info: "bg-blue-100 text-blue-800",

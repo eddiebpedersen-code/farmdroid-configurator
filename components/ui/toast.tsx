@@ -62,14 +62,14 @@ export function useToastActions() {
 // TOAST ITEM COMPONENT
 // =============================================================================
 const toastIcons: Record<ToastType, React.ReactNode> = {
-  success: <CheckCircle className="h-5 w-5 text-emerald-500" />,
+  success: <CheckCircle className="h-5 w-5 text-brand-500" />,
   error: <AlertCircle className="h-5 w-5 text-red-500" />,
   warning: <AlertTriangle className="h-5 w-5 text-amber-500" />,
   info: <Info className="h-5 w-5 text-blue-500" />,
 };
 
 const toastStyles: Record<ToastType, string> = {
-  success: "bg-emerald-50 border-emerald-200",
+  success: "bg-brand-50 border-brand-200",
   error: "bg-red-50 border-red-200",
   warning: "bg-amber-50 border-amber-200",
   info: "bg-blue-50 border-blue-200",

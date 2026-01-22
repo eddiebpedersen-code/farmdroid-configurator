@@ -568,7 +568,7 @@ function ConfiguratorContent() {
                     {/* Step indicator */}
                     {isCompleted ? (
                       // Completed step - show checkmark
-                      <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-emerald-500 flex items-center justify-center transition-all">
+                      <div className="h-5 w-5 md:h-6 md:w-6 rounded-full bg-brand-500 flex items-center justify-center transition-all">
                         <Check className="h-3 w-3 md:h-3.5 md:w-3.5 text-white" aria-hidden="true" />
                       </div>
                     ) : isCurrent ? (
@@ -586,7 +586,7 @@ function ConfiguratorContent() {
                     {/* Connector line */}
                     {index < translatedSteps.length - 1 && (
                       <div className={`w-2 md:w-4 h-0.5 transition-colors ${
-                        isCompleted ? "bg-emerald-500" : "bg-stone-200"
+                        isCompleted ? "bg-brand-500" : "bg-stone-200"
                       }`} aria-hidden="true" />
                     )}
 
@@ -631,30 +631,30 @@ function ConfiguratorContent() {
               {!showPrices && (
                 <div className="hidden md:flex items-center gap-2 text-xs text-stone-500">
                   <span className="flex items-center gap-1">
-                    <Check className="h-3 w-3 text-emerald-500" />
+                    <Check className="h-3 w-3 text-brand-500" />
                     FD20
                   </span>
                   {config.activeRows > 0 && (
                     <span className="flex items-center gap-1">
-                      <Check className="h-3 w-3 text-emerald-500" />
+                      <Check className="h-3 w-3 text-brand-500" />
                       {config.activeRows} rows
                     </span>
                   )}
                   {config.frontWheel !== "PFW" && (
                     <span className="flex items-center gap-1">
-                      <Check className="h-3 w-3 text-emerald-500" />
+                      <Check className="h-3 w-3 text-brand-500" />
                       {config.frontWheel}
                     </span>
                   )}
                   {config.spraySystem && (
                     <span className="flex items-center gap-1">
-                      <Check className="h-3 w-3 text-emerald-500" />
+                      <Check className="h-3 w-3 text-brand-500" />
                       +SPRAY
                     </span>
                   )}
                   {config.starterKit && (
                     <span className="flex items-center gap-1">
-                      <Check className="h-3 w-3 text-emerald-500" />
+                      <Check className="h-3 w-3 text-brand-500" />
                       Starter Kit
                     </span>
                   )}
@@ -703,7 +703,7 @@ function ConfiguratorContent() {
                         <span className="text-xs text-stone-400 line-through">
                           {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                         </span>
-                        <span className="text-xs font-semibold text-emerald-600">
+                        <span className="text-xs font-semibold text-brand-600">
                           {formatPrice(0, config.currency)} {tCommon("firstYear")}
                         </span>
                       </>
@@ -727,7 +727,7 @@ function ConfiguratorContent() {
                         exit={{ opacity: 0 }}
                         className="flex items-center justify-end gap-1 mt-1"
                       >
-                        <Save className="h-3 w-3 text-emerald-500" aria-hidden="true" />
+                        <Save className="h-3 w-3 text-brand-500" aria-hidden="true" />
                         <span className="text-[10px] text-stone-400">{tCommon("autoSaved")}</span>
                       </motion.div>
                     )}
@@ -741,7 +741,7 @@ function ConfiguratorContent() {
         {/* Visual progress bar */}
         <div className="h-1 bg-stone-100" aria-hidden="true">
           <motion.div
-            className="h-full bg-emerald-500"
+            className="h-full bg-brand-500"
             initial={false}
             animate={{ width: `${((currentStep - 1) / (translatedSteps.length - 1)) * 100}%` }}
             transition={{ duration: 0.4, ease: "easeOut" }}
@@ -758,9 +758,9 @@ function ConfiguratorContent() {
 
       {/* Public Mode Banner - Only shown when prices are hidden */}
       {!showPrices && (
-        <div className="bg-emerald-50 border-b border-emerald-100">
+        <div className="bg-brand-50 border-b border-brand-100">
           <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-2.5">
-            <p className="text-sm text-emerald-800 text-center">
+            <p className="text-sm text-brand-800 text-center">
               <span className="inline-flex items-center gap-2">
                 <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

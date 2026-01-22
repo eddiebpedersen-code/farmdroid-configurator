@@ -287,7 +287,7 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
         <div className="pt-3 mt-3 border-t border-stone-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-emerald-600" />
+              <Star className="h-4 w-4 text-brand-600" />
               <span className="text-sm text-stone-700">
                 {config.servicePlan === "standard" ? "Standard" : "Premium"} Care Plan
               </span>
@@ -298,7 +298,7 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
                   <span className="text-sm text-stone-400 line-through">
                     {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                   </span>
-                  <span className="text-sm font-semibold text-emerald-600">FREE first year</span>
+                  <span className="text-sm font-semibold text-brand-600">FREE first year</span>
                 </div>
               ) : (
                 <span className="text-sm font-semibold text-stone-900">
@@ -315,7 +315,7 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
         {/* Share Quote - Primary action */}
         <button
           onClick={onShareQuote}
-          className="w-full h-12 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium flex items-center justify-center gap-2 transition-colors"
+          className="w-full h-12 rounded-lg bg-brand-500 hover:bg-brand-600 text-white font-medium flex items-center justify-center gap-2 transition-colors"
         >
           <Share2 className="h-5 w-5" />
           Share Quote

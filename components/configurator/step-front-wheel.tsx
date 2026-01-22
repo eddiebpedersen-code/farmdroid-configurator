@@ -200,7 +200,7 @@ function WheelInfoPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               {/* Dual Front Wheel */}
               <div className="border-t border-stone-100 pt-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="h-2 w-2 rounded-full bg-brand-500" />
                   <h3 className="font-semibold text-stone-900">{t("infoPanel.dualFrontWheel")}</h3>
                 </div>
                 <p className="text-sm text-stone-600 leading-relaxed">
@@ -299,7 +299,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 flex items-center justify-center bg-white/60 z-10"
               >
-                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -470,7 +470,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2.5 flex-wrap">
                       {isSelected && (
-                        <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                        <div className="h-5 w-5 rounded-full bg-brand-500 flex items-center justify-center checkmark-animated">
                           <Check className="h-3 w-3 text-white" strokeWidth={3} />
                         </div>
                       )}

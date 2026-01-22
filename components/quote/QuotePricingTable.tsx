@@ -36,14 +36,14 @@ export function QuotePricingTable({ lineItems, total, currency }: QuotePricingTa
             <div
               key={item.id}
               className={`grid grid-cols-[1fr_auto] gap-4 px-4 py-3 ${
-                item.isCustom ? "bg-emerald-50/50" : ""
+                item.isCustom ? "bg-brand-50/50" : ""
               }`}
             >
               <div>
                 <div className="text-sm font-medium text-stone-900">
                   {item.label}
                   {item.isCustom && (
-                    <span className="ml-2 text-xs text-emerald-600 font-normal">
+                    <span className="ml-2 text-xs text-brand-600 font-normal">
                       {t("custom")}
                     </span>
                   )}
@@ -61,7 +61,7 @@ export function QuotePricingTable({ lineItems, total, currency }: QuotePricingTa
               </div>
               <div className="text-sm font-medium text-stone-900 text-right">
                 {item.isIncluded ? (
-                  <span className="text-emerald-600">{t("included")}</span>
+                  <span className="text-brand-600">{t("included")}</span>
                 ) : (
                   formatPrice(item.price, currency)
                 )}

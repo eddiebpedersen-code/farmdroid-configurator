@@ -52,7 +52,7 @@ export function ShareActions({ data }: ShareActionsProps) {
           onClick={handleCopyLink}
           className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
             copied
-              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+              ? "bg-brand-50 border-brand-200 text-brand-700"
               : "border-stone-200 text-stone-700 hover:bg-stone-50"
           }`}
         >

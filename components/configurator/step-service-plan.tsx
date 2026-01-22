@@ -63,7 +63,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             <div
               className={`p-4 text-center transition-colors ${
                 config.servicePlan === "standard"
-                  ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500"
+                  ? "bg-brand-50 border-l-2 border-r-2 border-t-2 border-brand-500"
                   : "bg-stone-50"
               }`}
             >
@@ -75,7 +75,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             <div
               className={`p-4 text-center transition-colors relative ${
                 config.servicePlan === "premium"
-                  ? "bg-emerald-50 border-l-2 border-r-2 border-t-2 border-emerald-500 rounded-tr-xl"
+                  ? "bg-brand-50 border-l-2 border-r-2 border-t-2 border-brand-500 rounded-tr-xl"
                   : "bg-stone-50"
               }`}
             >
@@ -102,22 +102,22 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                 </div>
                 <div
                   className={`p-3 flex items-center justify-center ${
-                    config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
+                    config.servicePlan === "standard" ? "bg-brand-50/50 border-l-2 border-r-2 border-brand-500" : ""
                   }`}
                 >
                   {feature.standard ? (
-                    <Check className="h-5 w-5 text-emerald-600" />
+                    <Check className="h-5 w-5 text-brand-600" />
                   ) : (
                     <X className="h-5 w-5 text-stone-300" />
                   )}
                 </div>
                 <div
                   className={`p-3 flex items-center justify-center ${
-                    config.servicePlan === "premium" ? "bg-emerald-50/50 border-l-2 border-r-2 border-emerald-500" : ""
+                    config.servicePlan === "premium" ? "bg-brand-50/50 border-l-2 border-r-2 border-brand-500" : ""
                   }`}
                 >
                   {feature.premium ? (
-                    <Check className="h-5 w-5 text-emerald-600" />
+                    <Check className="h-5 w-5 text-brand-600" />
                   ) : (
                     <X className="h-5 w-5 text-stone-300" />
                   )}
@@ -129,11 +129,11 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
           {/* Billing note */}
           <div className="grid grid-cols-3 border-t border-stone-200 bg-stone-50">
             <div className="p-3" />
-            <div className={`p-3 text-center ${config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500" : ""}`}>
+            <div className={`p-3 text-center ${config.servicePlan === "standard" ? "bg-brand-50/50 border-l-2 border-r-2 border-b-2 border-brand-500" : ""}`}>
               <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
             </div>
-            <div className={`p-3 text-center ${config.servicePlan === "premium" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500 rounded-br-xl" : ""}`}>
-              <span className="text-xs text-emerald-600 italic font-medium">
+            <div className={`p-3 text-center ${config.servicePlan === "premium" ? "bg-brand-50/50 border-l-2 border-r-2 border-b-2 border-brand-500 rounded-br-xl" : ""}`}>
+              <span className="text-xs text-brand-600 italic font-medium">
                 {t("firstYearIncluded")}
               </span>
             </div>
@@ -162,7 +162,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             onClick={() => selectPlan("premium")}
             className={`selection-card w-full p-4 rounded-xl border-2 transition-all text-left card-hover ${
               config.servicePlan === "premium"
-                ? "selected border-emerald-500"
+                ? "selected border-brand-500"
                 : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
@@ -170,7 +170,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               <div className="flex-1">
                 <div className="flex items-center gap-2.5">
                   {config.servicePlan === "premium" && (
-                    <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                    <div className="h-5 w-5 rounded-full bg-brand-500 flex items-center justify-center checkmark-animated">
                       <Check className="h-3 w-3 text-white" strokeWidth={3} />
                     </div>
                   )}
@@ -187,7 +187,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                 <span className="text-sm text-stone-400 line-through">
                   {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
                 </span>
-                <p className="text-sm font-semibold text-emerald-600">
+                <p className="text-sm font-semibold text-brand-600">
                   {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
                 </p>
               </div>
@@ -199,7 +199,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             onClick={() => selectPlan("standard")}
             className={`selection-card w-full p-4 rounded-xl border-2 transition-all text-left card-hover ${
               config.servicePlan === "standard"
-                ? "selected border-emerald-500"
+                ? "selected border-brand-500"
                 : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
@@ -207,7 +207,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               <div className="flex-1">
                 <div className="flex items-center gap-2.5">
                   {config.servicePlan === "standard" && (
-                    <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                    <div className="h-5 w-5 rounded-full bg-brand-500 flex items-center justify-center checkmark-animated">
                       <Check className="h-3 w-3 text-white" strokeWidth={3} />
                     </div>
                   )}
@@ -254,7 +254,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             onClick={() => updateConfig({ warrantyExtension: !config.warrantyExtension })}
             className={`selection-card w-full p-4 rounded-xl border-2 transition-all text-left card-hover ${
               config.warrantyExtension
-                ? "selected border-emerald-500"
+                ? "selected border-brand-500"
                 : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
           >
@@ -262,7 +262,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               <div className="flex-1">
                 <div className="flex items-center gap-2.5">
                   {config.warrantyExtension && (
-                    <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center checkmark-animated">
+                    <div className="h-5 w-5 rounded-full bg-brand-500 flex items-center justify-center checkmark-animated">
                       <Check className="h-3 w-3 text-white" strokeWidth={3} />
                     </div>
                   )}

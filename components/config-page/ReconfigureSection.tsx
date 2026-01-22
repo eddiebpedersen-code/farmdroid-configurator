@@ -90,10 +90,10 @@ export function ReconfigureSection({ data }: ReconfigureSectionProps) {
                 {/* Modify existing option */}
                 <button
                   onClick={handleModifyExisting}
-                  className="w-full p-4 rounded-xl border-2 border-stone-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all text-left group"
+                  className="w-full p-4 rounded-xl border-2 border-stone-200 hover:border-brand-500 hover:bg-brand-50/50 transition-all text-left group"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 group-hover:bg-emerald-200 transition-colors">
+                    <div className="p-2 rounded-lg bg-brand-100 text-brand-600 group-hover:bg-brand-200 transition-colors">
                       <Edit3 className="w-5 h-5" />
                     </div>
                     <div>

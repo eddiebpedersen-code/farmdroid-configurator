@@ -353,10 +353,10 @@ export function QuoteCustomizationModal({
               {/* Inner content with rounded corners */}
               <div className="bg-white rounded-xl">
                 {/* Header with light green background */}
-                <div className="bg-emerald-50 rounded-t-xl px-8 pt-10 pb-8">
+                <div className="bg-brand-50 rounded-t-xl px-8 pt-10 pb-8">
                   <div className="flex flex-wrap justify-between items-center gap-6">
                     {/* Title */}
-                    <h1 className="text-4xl font-light italic text-emerald-600 tracking-tight">
+                    <h1 className="text-4xl font-light italic text-brand-600 tracking-tight">
                       Quotation
                     </h1>
 
@@ -368,7 +368,7 @@ export function QuoteCustomizationModal({
                         <div className="text-stone-500 text-xs">Aggersundvej 50</div>
                         <div className="text-stone-500 text-xs">9670 Løgstør, Denmark</div>
                       </div>
-                      <div className="w-11 h-11 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <div className="w-11 h-11 bg-brand-500 rounded-xl flex items-center justify-center flex-shrink-0">
                         <span className="text-white font-bold text-base">FD</span>
                       </div>
                     </div>
@@ -381,8 +381,8 @@ export function QuoteCustomizationModal({
                     {/* Configuration */}
                     <div className="flex-1 min-w-[200px]">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-1 h-4 bg-emerald-500 rounded-full" />
-                        <span className="text-[11px] text-emerald-600 font-semibold uppercase tracking-wider">Configuration</span>
+                        <div className="w-1 h-4 bg-brand-500 rounded-full" />
+                        <span className="text-[11px] text-brand-600 font-semibold uppercase tracking-wider">Configuration</span>
                       </div>
                       <div className="font-semibold text-stone-900 text-lg">FD20 Robot</div>
                       <div className="text-sm text-stone-500 mt-1.5 space-y-0.5">
@@ -394,8 +394,8 @@ export function QuoteCustomizationModal({
                     {/* Quote Details */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-1 h-4 bg-emerald-500 rounded-full" />
-                        <span className="text-[11px] text-emerald-600 font-semibold uppercase tracking-wider">Quotation Details</span>
+                        <div className="w-1 h-4 bg-brand-500 rounded-full" />
+                        <span className="text-[11px] text-brand-600 font-semibold uppercase tracking-wider">Quotation Details</span>
                       </div>
                       <div className="space-y-1.5 text-sm">
                         <div className="flex justify-between gap-6">
@@ -416,7 +416,7 @@ export function QuoteCustomizationModal({
                                 validUntil: e.target.value ? new Date(e.target.value).toISOString() : null,
                               })
                             }
-                            className="text-stone-900 bg-transparent border-b border-dashed border-stone-300 focus:border-emerald-500 outline-none text-sm"
+                            className="text-stone-900 bg-transparent border-b border-dashed border-stone-300 focus:border-brand-500 outline-none text-sm"
                           />
                         </div>
                       </div>
@@ -429,7 +429,7 @@ export function QuoteCustomizationModal({
                 <div className="bg-white rounded-lg border border-stone-200 overflow-hidden">
                   <table className="w-full">
                     <thead>
-                      <tr className="bg-emerald-500 text-white">
+                      <tr className="bg-brand-500 text-white">
                         <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide">
                           Item Description
                         </th>
@@ -484,7 +484,7 @@ export function QuoteCustomizationModal({
                                     type="text"
                                     value={item.label}
                                     onChange={(e) => updateCustomItem(item.id, { description: e.target.value })}
-                                    className="flex-1 min-w-0 text-sm text-stone-700 bg-transparent border-b border-dashed border-transparent hover:border-stone-300 focus:border-emerald-500 outline-none"
+                                    className="flex-1 min-w-0 text-sm text-stone-700 bg-transparent border-b border-dashed border-transparent hover:border-stone-300 focus:border-brand-500 outline-none"
                                     placeholder="Item description"
                                   />
                                 ) : (
@@ -552,7 +552,7 @@ export function QuoteCustomizationModal({
                               ) : (
                                 <button
                                   onClick={() => updateDiscount(item.id, 10)}
-                                  className="p-1 text-stone-300 hover:text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity print:hidden"
+                                  className="p-1 text-stone-300 hover:text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity print:hidden"
                                   title="Add discount"
                                 >
                                   <Percent className="w-3.5 h-3.5" />
@@ -563,9 +563,9 @@ export function QuoteCustomizationModal({
                             {/* Amount */}
                             <td className="px-4 py-3 text-sm text-right tabular-nums">
                               {item.isIncluded ? (
-                                <span className="text-emerald-600 font-medium text-xs uppercase tracking-wide">Included</span>
+                                <span className="text-brand-600 font-medium text-xs uppercase tracking-wide">Included</span>
                               ) : (
-                                <span className={`font-semibold ${hasDiscount ? "text-emerald-600" : "text-stone-900"}`}>
+                                <span className={`font-semibold ${hasDiscount ? "text-brand-600" : "text-stone-900"}`}>
                                   {currencySymbol} {itemTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                 </span>
                               )}
@@ -580,7 +580,7 @@ export function QuoteCustomizationModal({
                   <div className="border-t border-dashed border-stone-100 px-4 py-2 print:hidden">
                     <button
                       onClick={addCustomItem}
-                      className="flex items-center gap-1 text-xs text-stone-400 hover:text-emerald-600 transition-colors ml-6"
+                      className="flex items-center gap-1 text-xs text-stone-400 hover:text-brand-600 transition-colors ml-6"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Add line item
@@ -609,7 +609,7 @@ export function QuoteCustomizationModal({
                     </div>
                     <div className="flex justify-between items-center pt-3 mt-3 border-t-2 border-stone-200">
                       <span className="text-base font-semibold text-stone-900">Total</span>
-                      <span className="text-2xl font-bold text-emerald-500 tabular-nums">
+                      <span className="text-2xl font-bold text-brand-500 tabular-nums">
                         {currencySymbol} {total.toLocaleString()}
                       </span>
                     </div>
@@ -644,7 +644,7 @@ export function QuoteCustomizationModal({
                       onChange={(e) => updateCustomizations({ notes: e.target.value })}
                       placeholder="Add any additional notes here..."
                       rows={3}
-                      className="w-full text-sm text-stone-600 bg-stone-50 border-0 rounded-lg p-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 resize-none placeholder:text-stone-400 transition-colors"
+                      className="w-full text-sm text-stone-600 bg-stone-50 border-0 rounded-lg p-3 outline-none focus:bg-white focus:ring-2 focus:ring-brand-500/20 resize-none placeholder:text-stone-400 transition-colors"
                     />
                   </div>
                 </div>
@@ -652,7 +652,7 @@ export function QuoteCustomizationModal({
                 {/* Footer contact */}
                 <div className="mt-6 pt-4 border-t border-stone-100 text-sm text-stone-500 text-center">
                   For any enquiries, email us on{" "}
-                  <span className="text-emerald-600 font-medium">sales@farmdroid.dk</span>
+                  <span className="text-brand-600 font-medium">sales@farmdroid.dk</span>
                   {" "}or call us on{" "}
                   <span className="text-stone-700 font-medium">+45 70 70 71 72</span>
                 </div>
@@ -672,7 +672,7 @@ export function QuoteCustomizationModal({
                 <button
                   onClick={handleDownloadPdf}
                   disabled={isGeneratingPdf}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-emerald-500 text-white text-sm font-semibold rounded-lg hover:bg-emerald-600 transition-colors shadow-md shadow-emerald-500/25 disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-brand-500 text-white text-sm font-semibold rounded-lg hover:bg-brand-600 transition-colors shadow-md shadow-brand-500/25 disabled:opacity-50"
                 >
                   <Download className="w-4 h-4" />
                   {isGeneratingPdf ? "Generating..." : "Download PDF"}

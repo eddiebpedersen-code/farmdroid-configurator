@@ -94,7 +94,7 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
           <div key={index} className="px-6 py-3 flex justify-between items-center">
             <span className="text-sm text-stone-700">{item.label}</span>
             {item.included ? (
-              <span className="text-sm text-emerald-600 font-medium">{t("investment.included")}</span>
+              <span className="text-sm text-brand-600 font-medium">{t("investment.included")}</span>
             ) : (
               <span className="text-sm font-medium text-stone-900">
                 {formatPrice(item.price, config.currency)}
@@ -121,7 +121,7 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
             <div>
               <span className="text-sm text-stone-700">{t("investment.annualSubscription")}</span>
               {config.servicePlan === "premium" && (
-                <span className="ml-2 text-xs text-emerald-600 font-medium">
+                <span className="ml-2 text-xs text-brand-600 font-medium">
                   {t("investment.firstYearIncluded")}
                 </span>
               )}
