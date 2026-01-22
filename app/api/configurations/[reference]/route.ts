@@ -14,6 +14,7 @@ interface LeadUpdates {
   farmSize?: string;
   hectaresForFarmDroid?: string;
   crops?: string;
+  otherCrops?: string;
 }
 
 interface UpdateConfigurationRequest {
