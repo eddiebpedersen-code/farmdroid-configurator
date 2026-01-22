@@ -83,7 +83,7 @@
     },
     "features": {
       "solarPower": "1,6 kW zonne-energiesysteem",
-      "batteries": "Lithiumbatterijen 5,7 kWh capaciteit",
+      "batteries": "Lithiumbatterijen 6,0 kWh capaciteit",
       "gps": "Dubbel GPS-navigatiesysteem",
       "autonomous": "Autonome werking",
       "remoteMonitoring": "Bewaking op afstand via app",
@@ -155,7 +155,7 @@
       "description": "Standaard: 12-24 uur dagelijkse werking",
       "features": {
         "solarPanels": "1,6 kW zonnepanelen",
-        "battery": "5,7 kWh batterij",
+        "battery": "6,0 kWh batterij",
         "zeroEmission": "Nul emissie"
       }
     },
@@ -163,8 +163,8 @@
       "name": "+ Powerbank",
       "description": "Uitgebreid: Voegt ~10 uur dagelijkse werking toe",
       "features": {
-        "extraCapacity": "5,7 kWh extra capaciteit",
-        "totalCapacity": "11,4 kWh totaal",
+        "extraCapacity": "6,0 kWh extra capaciteit",
+        "totalCapacity": "12,0 kWh totaal",
         "chargedExternally": "Extern opgeladen",
         "smartCharging": "Slim Zonne-opladen"
       }
@@ -174,7 +174,7 @@
       "description": "Maximum: 24+ uur continue werking",
       "features": {
         "solarPanels": "1,6 kW zonnepanelen",
-        "battery": "5,7 kWh batterij",
+        "battery": "6,0 kWh batterij",
         "generatorBackup": "Generator back-up",
         "allWeather": "Werking bij alle weersomstandigheden"
       }
@@ -192,10 +192,10 @@
       "options": {
         "solar": {
           "name": "Zonne-energie",
-          "description": "De standaard FarmDroid stroomconfiguratie maakt gebruik van een 1,6 kW zonnepaneelopstelling gecombineerd met een 5,7 kWh lithium-batterijpakket. Deze opstelling biedt 12-24 uur dagelijkse werking afhankelijk van weersomstandigheden en seizoen, waardoor het ideaal is voor de meeste landbouwwerkzaamheden.",
+          "description": "De standaard FarmDroid stroomconfiguratie maakt gebruik van een 1,6 kW zonnepaneelopstelling gecombineerd met een 6,0 kWh lithium-batterijpakket. Deze opstelling biedt 12-24 uur dagelijkse werking afhankelijk van weersomstandigheden en seizoen, waardoor het ideaal is voor de meeste landbouwwerkzaamheden.",
           "specs": [
             "1,6 kW piek zonnepaneel output",
-            "5,7 kWh lithium-batterijcapaciteit",
+            "6,0 kWh lithium-batterijcapaciteit",
             "12-24 uur dagelijkse werking",
             "Nul emissies",
             "Stille werking",
@@ -206,10 +206,10 @@
         },
         "powerBank": {
           "name": "Power Bank",
-          "description": "De FarmDroid Power Bank is een extra batterij-eenheid die de energiecapaciteit van uw robot verdubbelt. Het levert extra 5,7 kWh vermogen, waardoor verlengde gebruikstijden van ongeveer 10 extra uur per dag mogelijk zijn, terwijl het volledig emissievrij blijft.",
+          "description": "De FarmDroid Power Bank is een extra batterij-eenheid die de energiecapaciteit van uw robot verdubbelt. Het levert extra 6,0 kWh vermogen, waardoor verlengde gebruikstijden van ongeveer 10 extra uur per dag mogelijk zijn, terwijl het volledig emissievrij blijft.",
           "specs": [
-            "5,7 kWh extra lithium-batterijcapaciteit",
-            "Verdubbelt de totale capaciteit naar 11,4 kWh",
+            "6,0 kWh extra lithium-batterijcapaciteit",
+            "Verdubbelt de totale capaciteit naar 12,0 kWh",
             "Quick-connect systeem voor eenvoudige bevestiging",
             "Extern opladen via standaard stopcontact",
             "Slim opladen met zonne-integratie",
@@ -223,7 +223,7 @@
           "description": "De hybride stroomconfiguratie combineert zonnepanelen met een generator back-up systeem. Deze opstelling garandeert 24+ uur continue werking ongeacht de weersomstandigheden, waardoor het de meest betrouwbare optie is voor veeleisende landbouwwerkzaamheden.",
           "specs": [
             "1,6 kW zonnepanelen + generator back-up",
-            "5,7 kWh lithium-batterij",
+            "6,0 kWh lithium-batterij",
             "24+ uur continue werking",
             "Betrouwbaarheid bij alle weersomstandigheden",
             "Automatisch schakelen tussen stroombronnen",
@@ -662,6 +662,7 @@
   },
   "common": {
     "included": "Inbegrepen",
+    "standard": "Standaard",
     "switchTo": "Overschakelen naar {label}",
     "firstYear": "eerste jaar",
     "freeFirstYear": "{price} eerste jaar",

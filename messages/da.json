@@ -83,7 +83,7 @@
     },
     "features": {
       "solarPower": "1,6 kW solcelleanlæg",
-      "batteries": "Lithium-batterier 5,7 kWh kapacitet",
+      "batteries": "Lithium-batterier 6,0 kWh kapacitet",
       "gps": "Dobbelt GPS-navigationssystem",
       "autonomous": "Autonom drift",
       "remoteMonitoring": "Fjernovervågning via app",
@@ -155,7 +155,7 @@
       "description": "Standard: 12-24 timers daglig drift",
       "features": {
         "solarPanels": "1,6 kW solpaneler",
-        "battery": "5,7 kWh batteri",
+        "battery": "6,0 kWh batteri",
         "zeroEmission": "Nul emission"
       }
     },
@@ -163,8 +163,8 @@
       "name": "+ Power Bank",
       "description": "Udvidet: Tilføjer ~10 timers daglig drift",
       "features": {
-        "extraCapacity": "5,7 kWh ekstra kapacitet",
-        "totalCapacity": "11,4 kWh total",
+        "extraCapacity": "6,0 kWh ekstra kapacitet",
+        "totalCapacity": "12,0 kWh total",
         "chargedExternally": "Oplades eksternt",
         "smartCharging": "Smart Solar-opladning"
       }
@@ -174,7 +174,7 @@
       "description": "Maksimum: 24+ timers kontinuerlig drift",
       "features": {
         "solarPanels": "1,6 kW solpaneler",
-        "battery": "5,7 kWh batteri",
+        "battery": "6,0 kWh batteri",
         "generatorBackup": "Generator-backup",
         "allWeather": "Drift i al slags vejr"
       }
@@ -192,10 +192,10 @@
       "options": {
         "solar": {
           "name": "Solenergi",
-          "description": "Standard FarmDroid strømkonfiguration bruger et 1,6 kW solpanelarray kombineret med en 5,7 kWh lithiumbatteripakke. Denne opsætning giver 12-24 timers daglig drift afhængigt af vejrforhold og årstid, hvilket gør den ideel til de fleste landbrugsoperationer.",
+          "description": "Standard FarmDroid strømkonfiguration bruger et 1,6 kW solpanelarray kombineret med en 6,0 kWh lithiumbatteripakke. Denne opsætning giver 12-24 timers daglig drift afhængigt af vejrforhold og årstid, hvilket gør den ideel til de fleste landbrugsoperationer.",
           "specs": [
             "1,6 kW peak solpanel output",
-            "5,7 kWh lithiumbatterikapacitet",
+            "6,0 kWh lithiumbatterikapacitet",
             "12-24 timers daglig drift",
             "Nul emissioner",
             "Lydløs drift",
@@ -206,10 +206,10 @@
         },
         "powerBank": {
           "name": "Power Bank",
-          "description": "FarmDroid Power Bank er en ekstra batterienhed, der fordobler din robots energikapacitet. Den giver ekstra 5,7 kWh strøm, hvilket muliggør forlængede driftstider på cirka 10 ekstra timer om dagen, samtidig med at den er helt emissionsfri.",
+          "description": "FarmDroid Power Bank er en ekstra batterienhed, der fordobler din robots energikapacitet. Den giver ekstra 6,0 kWh strøm, hvilket muliggør forlængede driftstider på cirka 10 ekstra timer om dagen, samtidig med at den er helt emissionsfri.",
           "specs": [
-            "5,7 kWh ekstra lithiumbatterikapacitet",
-            "Fordobler den samlede kapacitet til 11,4 kWh",
+            "6,0 kWh ekstra lithiumbatterikapacitet",
+            "Fordobler den samlede kapacitet til 12,0 kWh",
             "Quick-connect system til nem tilslutning",
             "Ekstern opladning via standardstikkontakt",
             "Smart opladning med solintegration",
@@ -223,7 +223,7 @@
           "description": "Hybrid strømkonfigurationen kombinerer solpaneler med et generator backup-system. Denne opsætning sikrer 24+ timers kontinuerlig drift uanset vejrforhold, hvilket gør den til den mest pålidelige mulighed for krævende landbrugsoperationer.",
           "specs": [
             "1,6 kW solpaneler + generator backup",
-            "5,7 kWh lithiumbatteri",
+            "6,0 kWh lithiumbatteri",
             "24+ timers kontinuerlig drift",
             "Pålidelighed i al slags vejr",
             "Automatisk skift mellem strømkilder",
@@ -662,6 +662,7 @@
   },
   "common": {
     "included": "Inkluderet",
+    "standard": "Standard",
     "switchTo": "Skift til {label}",
     "firstYear": "første år",
     "freeFirstYear": "{price} første år",

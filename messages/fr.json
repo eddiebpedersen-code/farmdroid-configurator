@@ -83,7 +83,7 @@
     },
     "features": {
       "solarPower": "Système solaire 1,6 kW",
-      "batteries": "Batteries lithium 5,7 kWh de capacité",
+      "batteries": "Batteries lithium 6,0 kWh de capacité",
       "gps": "Système de navigation GPS double",
       "autonomous": "Fonctionnement autonome",
       "remoteMonitoring": "Surveillance à distance via application",
@@ -155,7 +155,7 @@
       "description": "Standard : 12-24h de fonctionnement quotidien",
       "features": {
         "solarPanels": "Panneaux solaires 1,6 kW",
-        "battery": "Batterie 5,7 kWh",
+        "battery": "Batterie 6,0 kWh",
         "zeroEmission": "Zéro émission"
       }
     },
@@ -163,8 +163,8 @@
       "name": "+ Batterie Externe",
       "description": "Étendu : Ajoute ~10h de fonctionnement quotidien",
       "features": {
-        "extraCapacity": "5,7 kWh de capacité supplémentaire",
-        "totalCapacity": "11,4 kWh au total",
+        "extraCapacity": "6,0 kWh de capacité supplémentaire",
+        "totalCapacity": "12,0 kWh au total",
         "chargedExternally": "Chargée en externe",
         "smartCharging": "Charge Solaire Intelligente"
       }
@@ -174,7 +174,7 @@
       "description": "Maximum : 24h+ de fonctionnement continu",
       "features": {
         "solarPanels": "Panneaux solaires 1,6 kW",
-        "battery": "Batterie 5,7 kWh",
+        "battery": "Batterie 6,0 kWh",
         "generatorBackup": "Générateur de secours",
         "allWeather": "Fonctionnement tous temps"
       }
@@ -192,10 +192,10 @@
       "options": {
         "solar": {
           "name": "Énergie solaire",
-          "description": "La configuration d'alimentation standard FarmDroid utilise un ensemble de panneaux solaires de 1,6 kW combiné à un pack de batteries lithium de 5,7 kWh. Cette configuration offre 12 à 24 heures de fonctionnement quotidien selon les conditions météorologiques et la saison, ce qui la rend idéale pour la plupart des opérations agricoles.",
+          "description": "La configuration d'alimentation standard FarmDroid utilise un ensemble de panneaux solaires de 1,6 kW combiné à un pack de batteries lithium de 6,0 kWh. Cette configuration offre 12 à 24 heures de fonctionnement quotidien selon les conditions météorologiques et la saison, ce qui la rend idéale pour la plupart des opérations agricoles.",
           "specs": [
             "Puissance de crête panneau solaire de 1,6 kW",
-            "Capacité de batterie lithium de 5,7 kWh",
+            "Capacité de batterie lithium de 6,0 kWh",
             "12-24 heures de fonctionnement quotidien",
             "Zéro émission",
             "Fonctionnement silencieux",
@@ -206,10 +206,10 @@
         },
         "powerBank": {
           "name": "Power Bank",
-          "description": "La Power Bank FarmDroid est une unité de batterie supplémentaire qui double la capacité énergétique de votre robot. Elle fournit 5,7 kWh de puissance supplémentaire, permettant des temps de fonctionnement prolongés d'environ 10 heures supplémentaires par jour tout en restant totalement sans émission.",
+          "description": "La Power Bank FarmDroid est une unité de batterie supplémentaire qui double la capacité énergétique de votre robot. Elle fournit 6,0 kWh de puissance supplémentaire, permettant des temps de fonctionnement prolongés d'environ 10 heures supplémentaires par jour tout en restant totalement sans émission.",
           "specs": [
-            "Capacité de batterie lithium supplémentaire de 5,7 kWh",
-            "Double la capacité totale à 11,4 kWh",
+            "Capacité de batterie lithium supplémentaire de 6,0 kWh",
+            "Double la capacité totale à 12,0 kWh",
             "Système de connexion rapide pour un montage facile",
             "Charge externe via prise standard",
             "Charge intelligente avec intégration solaire",
@@ -223,7 +223,7 @@
           "description": "La configuration d'alimentation hybride combine des panneaux solaires avec un système de générateur de secours. Cette configuration assure plus de 24 heures de fonctionnement continu quelles que soient les conditions météorologiques, ce qui en fait l'option la plus fiable pour les opérations agricoles exigeantes.",
           "specs": [
             "Panneaux solaires 1,6 kW + générateur de secours",
-            "Batterie lithium de 5,7 kWh",
+            "Batterie lithium de 6,0 kWh",
             "Plus de 24 heures de fonctionnement continu",
             "Fiabilité tous temps",
             "Commutation automatique entre les sources d'alimentation",
@@ -662,6 +662,7 @@
   },
   "common": {
     "included": "Inclus",
+    "standard": "Standard",
     "switchTo": "Passer à {label}",
     "firstYear": "première année",
     "freeFirstYear": "{price} première année",

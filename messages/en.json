@@ -155,7 +155,7 @@
       "description": "Standard: 12-24h daily operation",
       "features": {
         "solarPanels": "1.6 kW solar panels",
-        "battery": "5.7 kWh battery",
+        "battery": "6.0 kWh battery",
         "zeroEmission": "Zero emission"
       }
     },
@@ -174,7 +174,7 @@
       "description": "Maximum: 24h+ continuous operation",
       "features": {
         "solarPanels": "1.6 kW solar panels",
-        "battery": "5.7 kWh battery",
+        "battery": "6.0 kWh battery",
         "generatorBackup": "Generator backup",
         "allWeather": "All-weather operation"
       }
@@ -223,7 +223,7 @@
           "description": "The hybrid power configuration combines solar panels with a generator backup system. This setup ensures 24+ hours of continuous operation regardless of weather conditions, making it the most reliable option for demanding agricultural operations.",
           "specs": [
             "1.6 kW solar panels + generator backup",
-            "5.7 kWh lithium battery",
+            "6.0 kWh lithium battery",
             "24+ hours continuous operation",
             "All-weather reliability",
             "Automatic switching between power sources",
@@ -563,7 +563,7 @@
     "warranty": {
       "title": "Warranty Extension",
       "extension": "+2 Year Warranty Extension",
-      "description": "Covers parts and replacement. Requires FD20 to be serviced annually."
+      "description": "Covers parts but not replacement. Requires FD20 to be serviced annually."
     }
   },
   "summary": {

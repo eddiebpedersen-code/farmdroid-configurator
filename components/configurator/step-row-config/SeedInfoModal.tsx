@@ -7,6 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 import { SeedSize } from "@/lib/configurator-data";
 
+// Blur placeholder for faster perceived loading
+const blurDataURL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAMH/8QAIhAAAgIBAwQDAAAAAAAAAAAAAQIDBAAFESESMUFRBhNh/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAZEQACAwEAAAAAAAAAAAAAAAABAgADESH/2gAMAwEAAhEDEEA/AMJGE1GnNIsEjGqJIAd/S/PgZF13bBY//9k=";
+
 // Seed System Info Modal - with tabs like Tesla and card-style consistent with configurator
 export function SeedInfoModal({
   isOpen,
@@ -93,6 +96,9 @@ export function SeedInfoModal({
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 60vw"
+                    placeholder="blur"
+                    blurDataURL={blurDataURL}
+                    priority={currentImageIndex === 0}
                   />
                   {/* Gradient overlay for text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

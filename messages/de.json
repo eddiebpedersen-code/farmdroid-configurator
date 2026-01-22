@@ -83,7 +83,7 @@
     },
     "features": {
       "solarPower": "1,6 kW Solaranlage",
-      "batteries": "Lithium-Batterien 5,7 kWh Kapazität",
+      "batteries": "Lithium-Batterien 6,0 kWh Kapazität",
       "gps": "Doppeltes GPS-Navigationssystem",
       "autonomous": "Autonomer Betrieb",
       "remoteMonitoring": "Fernüberwachung per App",
@@ -155,7 +155,7 @@
       "description": "Standard: 12-24 Stunden täglicher Betrieb",
       "features": {
         "solarPanels": "1,6 kW Solarpanele",
-        "battery": "5,7 kWh Batterie",
+        "battery": "6,0 kWh Batterie",
         "zeroEmission": "Null Emissionen"
       }
     },
@@ -163,8 +163,8 @@
       "name": "+ Power Bank",
       "description": "Erweitert: Fügt ~10 Stunden täglichen Betrieb hinzu",
       "features": {
-        "extraCapacity": "5,7 kWh Zusatzkapazität",
-        "totalCapacity": "11,4 kWh gesamt",
+        "extraCapacity": "6,0 kWh Zusatzkapazität",
+        "totalCapacity": "12,0 kWh gesamt",
         "chargedExternally": "Extern geladen",
         "smartCharging": "Intelligentes Solar-Laden"
       }
@@ -174,7 +174,7 @@
       "description": "Maximum: 24+ Stunden Dauerbetrieb",
       "features": {
         "solarPanels": "1,6 kW Solarpanele",
-        "battery": "5,7 kWh Batterie",
+        "battery": "6,0 kWh Batterie",
         "generatorBackup": "Generator-Backup",
         "allWeather": "Allwetter-Betrieb"
       }
@@ -192,10 +192,10 @@
       "options": {
         "solar": {
           "name": "Solarstrom",
-          "description": "Die Standard-FarmDroid-Stromkonfiguration verwendet ein 1,6 kW Solarpanel-Array in Kombination mit einem 5,7 kWh Lithium-Batteriepaket. Dieses Setup bietet je nach Wetterbedingungen und Jahreszeit 12-24 Stunden täglichen Betrieb und ist damit ideal für die meisten landwirtschaftlichen Betriebe.",
+          "description": "Die Standard-FarmDroid-Stromkonfiguration verwendet ein 1,6 kW Solarpanel-Array in Kombination mit einem 6,0 kWh Lithium-Batteriepaket. Dieses Setup bietet je nach Wetterbedingungen und Jahreszeit 12-24 Stunden täglichen Betrieb und ist damit ideal für die meisten landwirtschaftlichen Betriebe.",
           "specs": [
             "1,6 kW Spitzenleistung Solarpanel",
-            "5,7 kWh Lithium-Batteriekapazität",
+            "6,0 kWh Lithium-Batteriekapazität",
             "12-24 Stunden täglicher Betrieb",
             "Null Emissionen",
             "Geräuschloser Betrieb",
@@ -206,10 +206,10 @@
         },
         "powerBank": {
           "name": "Power Bank",
-          "description": "Die FarmDroid Power Bank ist eine zusätzliche Batterieeinheit, die die Energiekapazität Ihres Roboters verdoppelt. Sie bietet zusätzliche 5,7 kWh Leistung und ermöglicht verlängerte Betriebszeiten von etwa 10 zusätzlichen Stunden pro Tag bei völliger Emissionsfreiheit.",
+          "description": "Die FarmDroid Power Bank ist eine zusätzliche Batterieeinheit, die die Energiekapazität Ihres Roboters verdoppelt. Sie bietet zusätzliche 6,0 kWh Leistung und ermöglicht verlängerte Betriebszeiten von etwa 10 zusätzlichen Stunden pro Tag bei völliger Emissionsfreiheit.",
           "specs": [
-            "5,7 kWh zusätzliche Lithium-Batteriekapazität",
-            "Verdoppelt die Gesamtkapazität auf 11,4 kWh",
+            "6,0 kWh zusätzliche Lithium-Batteriekapazität",
+            "Verdoppelt die Gesamtkapazität auf 12,0 kWh",
             "Schnellverbindungssystem für einfache Montage",
             "Externe Aufladung über Standardsteckdose",
             "Intelligentes Laden mit Solarintegration",
@@ -223,7 +223,7 @@
           "description": "Die Hybrid-Stromkonfiguration kombiniert Solarpanele mit einem Generator-Backup-System. Dieses Setup gewährleistet 24+ Stunden Dauerbetrieb unabhängig von den Wetterbedingungen und ist damit die zuverlässigste Option für anspruchsvolle landwirtschaftliche Betriebe.",
           "specs": [
             "1,6 kW Solarpanele + Generator-Backup",
-            "5,7 kWh Lithium-Batterie",
+            "6,0 kWh Lithium-Batterie",
             "24+ Stunden Dauerbetrieb",
             "Allwetter-Zuverlässigkeit",
             "Automatisches Umschalten zwischen Stromquellen",
@@ -662,6 +662,7 @@
   },
   "common": {
     "included": "Inklusive",
+    "standard": "Standard",
     "switchTo": "Wechseln zu {label}",
     "firstYear": "erstes Jahr",
     "freeFirstYear": "{price} erstes Jahr",
