@@ -3,6 +3,12 @@
     "title": "FarmDroid Configurator",
     "description": "Configureer uw FarmDroid FD20 robot"
   },
+  "publicMode": {
+    "banner": "Configureer uw FarmDroid en zie wat het kost",
+    "formHeading": "Uw FarmDroid is geconfigureerd!",
+    "formSubheading": "Vul uw gegevens in om de prijs te zien en uw configuratieoverzicht te ontvangen.",
+    "submitButton": "Bekijk de prijs"
+  },
   "navigation": {
     "back": "Terug",
     "next": "Volgende",
@@ -571,6 +577,17 @@
       "weedCuttingDisc": "Onkruidsnijschijf {variant} ({count} rijen)",
       "spraySystem": "+SPRAY Systeem",
       "accessories": "Accessoires",
+      "starterKit": "Starterspakket",
+      "starterKitIncludes": "Incl. FST-tool, Basisstation, Verzorgingspakket, Veldbeugel",
+      "roadTransport": "Wegtransportplatform",
+      "powerBank": "Powerbank",
+      "fstTool": "FST Veldinstallatietool",
+      "baseStation": "Basisstation V3",
+      "essentialCare": "Essential Care Pakket",
+      "essentialCareSpray": "Essential Care voor +SPRAY",
+      "fieldBracket": "Veldbeugel",
+      "weightKit": "Extra Gewichtenset",
+      "toolbox": "Gereedschapskist",
       "warrantyExtension": "+2 Jaar Garantieverlenging"
     },
     "configLabels": {
@@ -581,7 +598,22 @@
       "solar": "Zonne-energie",
       "hybrid": "Hybride"
     },
-    "carePlan": "Care {plan}"
+    "carePlan": "Care {plan}",
+    "editMode": {
+      "title": "Configuratie bijwerken",
+      "subtitle": "Controleer uw gegevens en sla wijzigingen op",
+      "reference": "Referentie",
+      "email": "E-mail",
+      "company": "Bedrijf",
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "phone": "Telefoon",
+      "farmSize": "Bedrijfsgrootte (ha)",
+      "hectares": "Hectare voor FarmDroid",
+      "crops": "Gewassen",
+      "saveChanges": "Wijzigingen opslaan",
+      "saving": "Opslaan..."
+    }
   },
   "forms": {
     "name": "Naam",
@@ -736,13 +768,14 @@
     "visualizationAria": "Interactieve rijconfiguratie toont {rows} rijen met {spacing}cm tussenafstand"
   },
   "crops": {
-    "sprout": "Kiemplant",
+    "otherCrop": "Ander gewas",
     "onion": "Ui",
     "sugarBeet": "Suikerbiet",
     "lettuce": "Sla",
     "corn": "Maïs",
     "greenBean": "Sperzieboon",
     "carrot": "Wortel",
+    "flower": "Bloem",
     "cabbage": "Kool",
     "parsnip": "Pastinaak"
   },
@@ -797,6 +830,7 @@
     "custom": "Aangepast",
     "included": "Inbegrepen",
     "vatNote": "Alle prijzen zijn exclusief BTW",
+    "disclaimer": "Prijzen zijn schattingen en kunnen variëren. Dit is geen bindend aanbod.",
     "pricingOnRequest": "Prijzen beschikbaar op aanvraag. Neem contact met ons op voor een gedetailleerde offerte.",
     "contactUs": "Neem Contact Op",
     "generatedWith": "Gegenereerd met FarmDroid Configurator",
@@ -844,5 +878,183 @@
     "accessories.carePkg": "Verzorgingspakket",
     "accessories.weightKit": "Gewichtenset",
     "accessories.toolbox": "Gereedschapskist"
+  },
+  "configPage": {
+    "loading": "Je configuratie wordt geladen...",
+    "greeting": "Hallo {firstName}, hier is je FarmDroid",
+    "configurationTitle": "Jouw Configuratie",
+    "investmentTitle": "Jouw Investering",
+    "stats": {
+      "rows": "rijen",
+      "active": "actief",
+      "workingWidth": "werkbreedte",
+      "power": "stroom",
+      "hybrid": "Hybride",
+      "solar": "Zonne"
+    },
+    "sections": {
+      "robot": "Robot",
+      "seedConfig": "+Seed Configuratie",
+      "weedConfig": "+Weed Configuratie",
+      "power": "Stroombron",
+      "accessories": "Accessoires",
+      "service": "Service & Garantie"
+    },
+    "config": {
+      "activeRows": "actieve rijen",
+      "passiveRows": "passieve rijen",
+      "rows": "rijen",
+      "spacing": "afstand",
+      "workingWidth": "werkbreedte",
+      "wheelConfig": "Wielconfiguratie",
+      "activeRowsLabel": "Actieve Rijen",
+      "passiveRowsLabel": "Passieve Rijen",
+      "seedSize6mm": "6mm zaaikouters (kleine zaden)",
+      "seedSize14mm": "14mm zaaikouters (grote zaden)",
+      "rowSpacing": "Rijafstand",
+      "workingWidthLabel": "Werkbreedte",
+      "frontWheel": {
+        "PFW": "Passief Voorwiel",
+        "AFW": "Actief Voorwiel",
+        "DFW": "Dubbel Voorwiel"
+      },
+      "power": {
+        "solar": "Zonne-energie",
+        "hybrid": "Hybride Energie",
+        "solarDesc": "100% zonne-energie autonome werking",
+        "hybridDesc": "Zonne + generator voor 24u werkingscapaciteit"
+      },
+      "spraySystem": "+SPRAY Systeem",
+      "spraySystemDesc": "Precisiespuiten voor gerichte onkruidbestrijding",
+      "powerBankDesc": "Uitgebreide batterijcapaciteit voor langere werking",
+      "weedingToolLabel": "Wiedgereedschap",
+      "weedingTool": {
+        "combiTool": "Combi Gereedschap",
+        "weedCuttingDisc": "Onkruidsnijschijf ({variant})"
+      },
+      "accessoriesLabel": "Accessoires",
+      "accessories": {
+        "starterKit": "Startpakket",
+        "fstFieldSetupTool": "FST Veld Setup Gereedschap",
+        "baseStationV3": "Basisstation V3",
+        "essentialCarePackage": "Essential Care Pakket",
+        "fieldBracket": "Veldbeugel",
+        "roadTransport": "Wegtransport",
+        "powerBank": "Powerbank",
+        "additionalWeightKit": "Extra Gewichtenset",
+        "toolbox": "Gereedschapskist"
+      },
+      "servicePlan": {
+        "standard": "Standaard Serviceplan",
+        "premium": "Premium Serviceplan"
+      },
+      "warrantyExtension": "+2 Jaar Garantieverlenging"
+    },
+    "investment": {
+      "frontWheel": {
+        "PFW": "Passief Voorwiel",
+        "AFW": "Actief Voorwiel",
+        "DFW": "Dubbel Voorwiel"
+      },
+      "activeRows": "{count}× Actieve Rijen ({size})",
+      "passiveRows": "{count}× Passieve Rijen",
+      "hybrid": "Hybride Stroomsysteem",
+      "spraySystem": "+SPRAY Systeem",
+      "combiTool": "Combi Gereedschap ({count} rijen)",
+      "weedCuttingDisc": "Onkruidsnijschijf ({count} rijen, {variant})",
+      "accessories": "Accessoires",
+      "warrantyExtension": "+2 Jaar Garantieverlenging",
+      "included": "Inbegrepen",
+      "total": "Totale Investering",
+      "annualSubscription": "Jaarlijks Abonnement",
+      "firstYearIncluded": "Eerste jaar inbegrepen",
+      "vatNote": "Alle prijzen zijn exclusief BTW",
+      "disclaimer": "Prijzen zijn schattingen en kunnen variëren op basis van leveringskosten en lokale partnervoorwaarden"
+    },
+    "farmFit": {
+      "title": "Jouw Boerderij Profiel",
+      "workingWidth": "Werkbreedte",
+      "workingWidthDesc": "Met {rows} actieve rijen bij {spacing}cm afstand dek je {width}cm per doorgang",
+      "dailyCapacity": "Dagelijkse Capaciteit",
+      "dailyCapacityDesc": "Tot {hectares} hectare bij 24 uur werking",
+      "solarPower": "Zonne-energie",
+      "solarPowerDesc": "100% zonne-energie zonder emissies",
+      "hybridPower": "Hybride Energie",
+      "hybridPowerDesc": "24-uurs werkingscapaciteit met generator back-up",
+      "sustainability": "Duurzame Landbouw",
+      "sustainabilityDesc": "Autonome precisiewieden vermindert herbicidegebruik tot 100%"
+    },
+    "nextSteps": {
+      "title": "Wat gebeurt er nu?",
+      "email": {
+        "title": "Controleer je e-mail",
+        "description": "Je configuratiedetails zijn onderweg"
+      },
+      "consultation": {
+        "title": "Expertconsultatie",
+        "description": "Een FarmDroid specialist neemt binnen 48 uur contact met je op"
+      },
+      "reachOut": {
+        "title": "Neem contact op met een FarmDroid specialist",
+        "teamLink": "Ontmoet ons team",
+        "or": "of",
+        "partnerLink": "Vind je lokale FarmDroid partner"
+      },
+      "quote": {
+        "title": "Ontvang je formele offerte",
+        "description": "Gedetailleerde prijsstelling aangepast aan jouw behoeften"
+      },
+      "delivery": {
+        "title": "Plan levering",
+        "description": "Geschat 4-8 weken vanaf orderbevestiging"
+      },
+      "contactTitle": "Vragen?",
+      "contactDescription": "Ons team staat klaar om te helpen"
+    },
+    "share": {
+      "title": "Deel Je Configuratie",
+      "copyLink": "Link Kopiëren",
+      "emailShare": "Delen via E-mail",
+      "print": "Afdrukken",
+      "linkCopied": "Link gekopieerd!"
+    },
+    "reconfigure": {
+      "title": "Wil je wijzigingen aanbrengen?",
+      "description": "Je kunt je configuratie op elk moment aanpassen",
+      "button": "Configuratie Wijzigen",
+      "modal": {
+        "title": "Hoe wil je verder gaan?",
+        "description": "Kies of je je huidige configuratie wilt wijzigen of helemaal opnieuw wilt beginnen.",
+        "modifyTitle": "Deze configuratie wijzigen",
+        "modifyDescription": "Ga verder met je huidige instellingen en maak aanpassingen",
+        "freshTitle": "Een nieuwe configuratie starten",
+        "freshDescription": "Begin vanaf nul met standaardinstellingen"
+      }
+    },
+    "visualizationTitle": "Rijconfiguratie",
+    "workingWidthLabel": "Werkbreedte: {width} cm",
+    "frontLabel": "VOOR",
+    "legend": {
+      "activeRow": "Actieve rij",
+      "passiveRow": "Passieve rij",
+      "previousPass": "Vorige doorgang",
+      "crop": "Gewas"
+    },
+    "notFound": {
+      "title": "Configuratie Niet Gevonden",
+      "description": "We konden deze configuratie niet vinden. De link is mogelijk verlopen of verkeerd ingevoerd.",
+      "descriptionNoData": "Er zijn geen configuratiegegevens verstrekt. Start alstublieft een nieuwe configuratie.",
+      "startNew": "Start Nieuwe Configuratie"
+    },
+    "capacityGraph": {
+      "title": "Dagelijkse Capaciteit",
+      "subtitle": "Geschatte hectares per dag op basis van draaiuren",
+      "yAxis": "Hectare per dag",
+      "xAxis": "Draaiuren per dag",
+      "day": "dag",
+      "at": "bij",
+      "workingWidth": "Werkbreedte",
+      "estimatedCapacity": "Geschatte capaciteit"
+    }
   }
 }

@@ -12,6 +12,7 @@ export type WheelConfig = "3-wheel" | "4-wheel";
 export type RowPlacementMode = "bed" | "field" | "custom"; // bed = inside wheels only, field = inside + outside, custom = manual
 export type ServicePlan = "none" | "standard" | "premium";
 export type WeedingTool = "none" | "combiTool" | "weedCuttingDisc";
+export type SeedingMode = "single" | "group" | "line";
 
 export interface ConfiguratorState {
   // Currency selection
@@ -35,6 +36,13 @@ export interface ConfiguratorState {
   rowSpacings: number[]; // individual spacings between rows
   rowsOutsideLeft: number; // number of rows outside left wheel (field/custom mode)
   rowsOutsideRight: number; // number of rows outside right wheel (field/custom mode)
+
+  // Seeding parameters (for capacity/speed calculation)
+  seedingMode: SeedingMode; // single, group, or line seeding
+  plantSpacing: number; // spacing between plants in cm (affects robot speed)
+  seedsPerGroup: number; // number of seeds per drop point (1 for single, 2-15 for group)
+  workingWidth: number; // actual working width in mm (may be customized)
+  cropEmoji: string; // emoji of the selected crop for visualization
 
   // Step 4: Spray/Weed system
   spraySystem: boolean;
@@ -196,6 +204,11 @@ export const DEFAULT_CONFIG: ConfiguratorState = {
   rowSpacings: [500, 500, 500], // 3 gaps at 50cm for 4 rows
   rowsOutsideLeft: 0,
   rowsOutsideRight: 0,
+  seedingMode: "single", // single seed placement
+  plantSpacing: 18, // 18cm between plants
+  seedsPerGroup: 1, // 1 seed per drop point
+  workingWidth: 2000, // 200cm default working width
+  cropEmoji: "🥕", // default crop emoji (carrot)
   spraySystem: false,
   weedingTool: "none",
   starterKit: false,
@@ -233,6 +246,39 @@ export function getWheelConfig(frontWheel: FrontWheel): WheelConfig {
  */
 export function getFieldConfig(frontWheel: FrontWheel): "open-field" | "bed" {
   return frontWheel === "DFW" ? "bed" : "open-field";
+}
+
+/**
+ * Calculate robot speed based on seeding mode and plant spacing
+ * Line seeding runs at max speed (950 m/h)
+ * Single/Group seeding speed depends on plant spacing (600-950 m/h)
+ */
+export function calculateRobotSpeed(
+  seedingMode: SeedingMode,
+  plantSpacingCm: number
+): number {
+  // Line seeding always runs at max speed
+  if (seedingMode === "line") return 950;
+
+  // Single/Group seeding - speed depends on plant spacing
+  if (plantSpacingCm <= 10) return 600;
+  if (plantSpacingCm >= 18) return 950;
+
+  // Linear interpolation between 10-18cm
+  // 600 m/h at 10cm, 950 m/h at 18cm
+  return Math.round(600 + ((plantSpacingCm - 10) / 8) * 350);
+}
+
+/**
+ * Calculate daily capacity in hectares based on speed, working width, and hours
+ */
+export function calculateDailyCapacity(
+  speedMph: number,
+  workingWidthMm: number,
+  hoursPerDay: number
+): number {
+  const workingWidthM = workingWidthMm / 1000;
+  return (speedMph * workingWidthM * hoursPerDay) / 10000;
 }
 
 /**
@@ -341,13 +387,30 @@ export function syncRowSpacings(
  * Uses the average spacing to determine if passive rows should be added
  * Note: Passive rows are included with active row pricing, not charged separately
  */
-export function calculatePassiveRows(activeRows: number, rowDistance: number): number {
+export function calculatePassiveRows(activeRows: number, rowDistance: number, rowSpacings?: number[]): number {
   if (activeRows <= 1) return 0; // Need at least 2 rows for passive rows between them
-  if (rowDistance < ROW_CONSTRAINTS.passiveRowThreshold) {
-    return 0;
-  }
-  // Passive rows go between active rows
-  return activeRows - 1;
+
+  const passiveMinSpacing = 225; // 22.5cm - same for both 6mm and 14mm
+  const passiveThreshold = 450; // 45cm - passive rows appear at this spacing
+
+  // Calculate passive rows in a single gap
+  const getPassiveRowsInGap = (spacing: number): number => {
+    if (spacing < passiveThreshold) return 0;
+    return Math.floor(spacing / passiveMinSpacing) - 1;
+  };
+
+  // Use individual row spacings if available, otherwise use uniform rowDistance
+  const effectiveSpacings = rowSpacings && rowSpacings.length === activeRows - 1
+    ? rowSpacings
+    : Array(activeRows - 1).fill(rowDistance);
+
+  // Total inner passive = sum of passive rows in each gap
+  const innerPassiveCount = effectiveSpacings.reduce((sum, s) => sum + getPassiveRowsInGap(s), 0);
+
+  // Outer passive: 1 on the right when any gap has passive capability
+  const outerPassiveCount = innerPassiveCount > 0 ? 1 : 0;
+
+  return innerPassiveCount + outerPassiveCount;
 }
 
 /**
@@ -476,31 +539,30 @@ export function calculateRowWorkingWidth(
 }
 
 /**
- * Calculate total working width including rows outside wheels
- * Working width = row span including any rows outside the wheel tracks
+ * Calculate total working width (row span + between-pass spacing)
+ * Working width = the total width covered by one pass, including the gap to the next pass
  */
 export function calculateWorkingWidth(
   config: ConfiguratorState
 ): number {
-  const { activeRows, rowDistance, rowSpacings, rowsOutsideLeft, rowsOutsideRight, wheelSpacing } = config;
+  const { activeRows, rowDistance, rowSpacings, wheelSpacing } = config;
 
   if (activeRows <= 0) return 0;
 
-  // Calculate span of main rows (between wheels or all rows for bed config)
-  const mainRowSpan = rowSpacings.length > 0
-    ? calculateRowSpan(rowSpacings)
-    : (activeRows - 1) * rowDistance;
+  // Calculate span of all rows
+  const effectiveRowSpacings = rowSpacings.length === activeRows - 1
+    ? rowSpacings
+    : generateRowSpacings(activeRows, rowDistance);
+  const rowSpan = calculateRowSpan(effectiveRowSpacings);
 
   // For bed config, working width equals wheel spacing
   if (config.rowPlacementMode === "bed") {
     return wheelSpacing;
   }
 
-  // For field/custom config, add rows outside wheels
-  const leftExtension = rowsOutsideLeft * rowDistance;
-  const rightExtension = rowsOutsideRight * rowDistance;
-
-  return mainRowSpan + leftExtension + rightExtension;
+  // For field/custom config, working width = rowSpan + betweenPassSpacing
+  const betweenPassSpacing = calculateBetweenPassSpacing(effectiveRowSpacings, rowDistance);
+  return rowSpan + betweenPassSpacing;
 }
 
 /**
@@ -587,7 +649,7 @@ export function calculatePrice(config: ConfiguratorState, currentStep?: number):
     ? config.activeRows * activeRowPrice
     : 0;
 
-  const passiveRowCount = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRowCount = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const passiveRows = currentStep === undefined || currentStep >= 3
     ? passiveRowCount * PRICES.passiveRow
     : 0;
@@ -932,7 +994,7 @@ export function generateConfigSummary(config: ConfiguratorState): string[] {
     summary.push(wheelNames[config.frontWheel]);
   }
 
-  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const workingWidth = calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
 
   // Check if variable spacing is used

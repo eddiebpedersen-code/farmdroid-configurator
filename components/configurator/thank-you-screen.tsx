@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, Mail, Phone, Handshake, RotateCcw, Cpu, Rows3, Zap, Circle, Droplets } from "lucide-react";
-import confetti from "canvas-confetti";
 import { ConfiguratorState, calculatePassiveRows, calculateRowWorkingWidth } from "@/lib/configurator-data";
 import { LeadData } from "./lead-capture-form";
 
@@ -14,47 +12,7 @@ interface ThankYouScreenProps {
 }
 
 export function ThankYouScreen({ lead, config, onRestart }: ThankYouScreenProps) {
-  const hasTriggeredConfetti = useRef(false);
-
-  // Trigger celebration confetti on mount
-  useEffect(() => {
-    if (hasTriggeredConfetti.current) return;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return;
-
-    hasTriggeredConfetti.current = true;
-
-    const duration = 2000;
-    const animationEnd = Date.now() + duration;
-    const colors = ["#10b981", "#059669", "#34d399", "#6ee7b7"]; // Emerald colors
-
-    const frame = () => {
-      confetti({
-        particleCount: 3,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0, y: 0.7 },
-        colors: colors,
-        disableForReducedMotion: true,
-      });
-      confetti({
-        particleCount: 3,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1, y: 0.7 },
-        colors: colors,
-        disableForReducedMotion: true,
-      });
-
-      if (Date.now() < animationEnd) {
-        requestAnimationFrame(frame);
-      }
-    };
-
-    setTimeout(frame, 300);
-  }, []);
-
-  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const workingWidth = calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
 
   const steps = [

@@ -79,10 +79,15 @@ export function QuotePricingTable({ lineItems, total, currency }: QuotePricingTa
         </div>
       </div>
 
-      {/* VAT note */}
-      <p className="text-xs text-stone-500 mt-2 text-right">
-        {t("vatNote")}
-      </p>
+      {/* VAT note and disclaimer */}
+      <div className="mt-3 text-right space-y-1">
+        <p className="text-xs text-stone-500">
+          {t("vatNote")}
+        </p>
+        <p className="text-xs text-stone-400">
+          {t("disclaimer")}
+        </p>
+      </div>
     </div>
   );
 }

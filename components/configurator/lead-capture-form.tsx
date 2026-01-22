@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Loader2, ChevronDown } from "lucide-react";
+import { Loader2, ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ConfiguratorState, PriceBreakdown, calculatePrice } from "@/lib/configurator-data";
 
 // Countries list for FarmDroid market
@@ -31,6 +32,7 @@ export interface LeadData {
   country: string;
   countryOther: string;
   farmSize: string;
+  hectaresForFarmDroid: string;
   crops: string;
   contactByPartner: boolean;
   marketingConsent: boolean;
@@ -40,10 +42,12 @@ interface LeadCaptureFormProps {
   config: ConfiguratorState;
   priceBreakdown: PriceBreakdown;
   onSubmit: (lead: LeadData) => void;
+  initialLead?: LeadData | null;
 }
 
-export function LeadCaptureForm({ config, priceBreakdown, onSubmit }: LeadCaptureFormProps) {
-  const [formData, setFormData] = useState<LeadData>({
+export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead }: LeadCaptureFormProps) {
+  const tPublic = useTranslations("publicMode");
+  const [formData, setFormData] = useState<LeadData>(initialLead || {
     firstName: "",
     lastName: "",
     email: "",
@@ -52,6 +56,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit }: LeadCaptur
     country: "",
     countryOther: "",
     farmSize: "",
+    hectaresForFarmDroid: "",
     crops: "",
     contactByPartner: false,
     marketingConsent: false,
@@ -143,6 +148,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit }: LeadCaptur
         company: formData.company,
         country: formData.country === "OTHER" ? formData.countryOther : formData.country,
         farmSize: formData.farmSize,
+        hectaresForFarmDroid: formData.hectaresForFarmDroid,
         crops: formData.crops,
         contactByPartner: formData.contactByPartner,
         marketingConsent: formData.marketingConsent,
@@ -180,10 +186,8 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit }: LeadCaptur
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-stone-900">Get Your Personalized Quote</h2>
-        <p className="text-sm text-stone-500 mt-1">
-          Complete the form below and we&apos;ll send you a detailed quote with pricing.
-        </p>
+        <h2 className="text-xl font-semibold text-stone-900">{tPublic("formHeading")}</h2>
+        <p className="text-sm text-stone-500 mt-1">{tPublic("formSubheading")}</p>
       </div>
 
       {/* Name Row */}
@@ -327,6 +331,20 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit }: LeadCaptur
         />
       </div>
 
+      {/* Hectares relevant for FarmDroid */}
+      <div>
+        <label className="text-sm font-medium text-stone-700">Hectares relevant for your FarmDroid</label>
+        <input
+          type="number"
+          value={formData.hectaresForFarmDroid}
+          onChange={(e) => handleChange("hectaresForFarmDroid", e.target.value)}
+          className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+          placeholder="e.g., 20"
+          min="0"
+        />
+        <p className="mt-1 text-xs text-stone-400">How many hectares do you plan to use with FarmDroid?</p>
+      </div>
+
       {/* Crops */}
       <div>
         <label className="text-sm font-medium text-stone-700">What crops do you grow?</label>
@@ -379,8 +397,8 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit }: LeadCaptur
           </>
         ) : (
           <>
-            <Send className="h-5 w-5" />
-            Send Me My Quote
+            {tPublic("submitButton")}
+            <span className="ml-1">→</span>
           </>
         )}
       </button>

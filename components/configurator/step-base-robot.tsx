@@ -11,6 +11,7 @@ import {
   formatPrice,
   PRICES,
 } from "@/lib/configurator-data";
+import { useMode } from "@/contexts/ModeContext";
 
 // Subtle gray blur placeholder for smooth image loading
 const blurDataURL = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmNWY1ZjQiLz48L3N2Zz4=";
@@ -25,6 +26,7 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
   const [activeView, setActiveView] = useState(0);
   const t = useTranslations("baseRobot");
   const tCommon = useTranslations("common");
+  const { showPrices } = useMode();
 
   const productViews = [
     { id: 1, src: "/farmdroid-fd20.png", label: t("views.sideView") },
@@ -157,7 +159,9 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
                 <p className="text-xs md:text-sm text-stone-500 mt-0.5">{t("baseConfiguration")}</p>
               </div>
             </div>
-            <span className="text-base md:text-lg font-semibold text-stone-900 flex-shrink-0">{formatPrice(PRICES.baseRobot, config.currency)}</span>
+            {showPrices && (
+              <span className="text-base md:text-lg font-semibold text-stone-900 flex-shrink-0">{formatPrice(PRICES.baseRobot, config.currency)}</span>
+            )}
           </div>
         </div>
 

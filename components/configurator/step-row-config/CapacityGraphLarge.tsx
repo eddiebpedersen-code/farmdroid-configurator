@@ -1,23 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-// Calculate robot speed based on seeding mode and plant spacing
-export function calculateRobotSpeed(
-  seedingMode: "single" | "group" | "line",
-  plantSpacingCm: number
-): number {
-  // Line seeding always runs at max speed
-  if (seedingMode === "line") return 950;
-
-  // Single/Group seeding - speed depends on plant spacing
-  if (plantSpacingCm <= 10) return 600;
-  if (plantSpacingCm >= 18) return 950;
-
-  // Linear interpolation between 10-18cm
-  // 600 m/h at 10cm, 950 m/h at 18cm
-  return Math.round(600 + ((plantSpacingCm - 10) / 8) * 350);
-}
+import { SeedingMode, calculateRobotSpeed } from "@/lib/configurator-data";
 
 // Daily Capacity Graph Component - Large version for main view
 export function CapacityGraphLarge({
@@ -25,7 +9,7 @@ export function CapacityGraphLarge({
   plantSpacing,
   workingWidth,
 }: {
-  seedingMode: "single" | "group" | "line";
+  seedingMode: SeedingMode;
   plantSpacing: number;
   workingWidth: number;
 }) {

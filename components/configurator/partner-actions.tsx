@@ -42,7 +42,7 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
   const toast = useToastActions();
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const workingWidth = calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
 
   // Calculate weeding tool price
@@ -101,10 +101,57 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
       value: weedingToolPrice,
       breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.weedCuttingDiscPerRow },
     },
-    priceBreakdown.accessories - weedingToolPrice > 0 && {
+    // Individual accessories
+    config.starterKit && {
       icon: Package,
-      label: "Accessories",
-      value: priceBreakdown.accessories - weedingToolPrice,
+      label: "Starter Kit",
+      sublabel: "Incl. FST Tool, Base Station, Care Pkg, Field Bracket",
+      value: PRICES.accessories.starterKit,
+    },
+    !config.starterKit && config.fstFieldSetupTool && {
+      icon: Package,
+      label: "FST Field Setup Tool",
+      value: PRICES.accessories.fstFieldSetupTool,
+    },
+    !config.starterKit && config.baseStationV3 && {
+      icon: Package,
+      label: "Base Station V3",
+      value: PRICES.accessories.baseStationV3,
+    },
+    !config.starterKit && config.essentialCarePackage && {
+      icon: Package,
+      label: "Essential Care Package",
+      value: PRICES.accessories.essentialCarePackage,
+    },
+    !config.starterKit && config.fieldBracket && {
+      icon: Package,
+      label: "Field Bracket",
+      value: PRICES.accessories.fieldBracket,
+    },
+    config.roadTransport && {
+      icon: Package,
+      label: "Road Transport Platform",
+      value: PRICES.accessories.roadTransport,
+    },
+    config.powerBank && {
+      icon: Package,
+      label: "Power Bank",
+      value: PRICES.accessories.powerBank,
+    },
+    config.spraySystem && (config.starterKit || config.essentialCarePackage) && {
+      icon: Package,
+      label: "Essential Care for +SPRAY",
+      value: PRICES.accessories.essentialCareSpray,
+    },
+    config.additionalWeightKit && {
+      icon: Package,
+      label: "Additional Weight Kit",
+      value: PRICES.accessories.additionalWeightKit,
+    },
+    config.toolbox && {
+      icon: Package,
+      label: "Toolbox",
+      value: PRICES.accessories.toolbox,
     },
     config.warrantyExtension && {
       icon: Shield,
@@ -114,6 +161,7 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
   ].filter(Boolean) as {
     icon: typeof Cpu;
     label: string;
+    sublabel?: string;
     value: number;
     included?: boolean;
     breakdown?: { count: number; unitPrice: number };
@@ -195,6 +243,9 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
                 <Icon className="h-4 w-4 text-stone-400 flex-shrink-0" />
                 <div className="min-w-0">
                   <span className="text-sm md:text-base text-stone-700 truncate block">{item.label}</span>
+                  {item.sublabel && (
+                    <span className="text-xs text-stone-400 block">{item.sublabel}</span>
+                  )}
                   {item.breakdown && item.breakdown.count > 1 && (
                     <span className="text-xs text-stone-400">
                       {item.breakdown.count} x {formatPrice(item.breakdown.unitPrice, config.currency)}

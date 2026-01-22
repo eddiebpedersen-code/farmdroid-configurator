@@ -3,6 +3,12 @@
     "title": "FarmDroid Konfigurator",
     "description": "Konfigurer din FarmDroid FD20 robot"
   },
+  "publicMode": {
+    "banner": "Konfigurer din FarmDroid og se hvad den koster",
+    "formHeading": "Din FarmDroid er konfigureret!",
+    "formSubheading": "Indtast dine oplysninger for at se prisen og modtage din konfigurationsoversigt.",
+    "submitButton": "Se hvad den koster"
+  },
   "navigation": {
     "back": "Tilbage",
     "next": "Næste",
@@ -571,6 +577,17 @@
       "weedCuttingDisc": "Ukrudtsskæreskive {variant} ({count} rækker)",
       "spraySystem": "+SPRAY System",
       "accessories": "Tilbehør",
+      "starterKit": "Startpakke",
+      "starterKitIncludes": "Inkl. FST-værktøj, Basestation, Plejepakke, Markbeslag",
+      "roadTransport": "Vejtransportplatform",
+      "powerBank": "Powerbank",
+      "fstTool": "FST Feltopsætningsværktøj",
+      "baseStation": "Basestation V3",
+      "essentialCare": "Essential Care-pakke",
+      "essentialCareSpray": "Essential Care til +SPRAY",
+      "fieldBracket": "Markbeslag",
+      "weightKit": "Ekstra Vægtkit",
+      "toolbox": "Værktøjskasse",
       "warrantyExtension": "+2 Års Garantiforlængelse"
     },
     "configLabels": {
@@ -581,7 +598,22 @@
       "solar": "Solar",
       "hybrid": "Hybrid"
     },
-    "carePlan": "Care {plan}"
+    "carePlan": "Care {plan}",
+    "editMode": {
+      "title": "Opdater din konfiguration",
+      "subtitle": "Gennemgå dine oplysninger og gem ændringer",
+      "reference": "Reference",
+      "email": "Email",
+      "company": "Virksomhed",
+      "firstName": "Fornavn",
+      "lastName": "Efternavn",
+      "phone": "Telefon",
+      "farmSize": "Bedriftsstørrelse (ha)",
+      "hectares": "Hektar til FarmDroid",
+      "crops": "Afgrøder",
+      "saveChanges": "Gem ændringer",
+      "saving": "Gemmer..."
+    }
   },
   "forms": {
     "name": "Navn",
@@ -736,13 +768,14 @@
     "visualizationAria": "Interaktiv rækkekonfiguration viser {rows} rækker med {spacing}cm afstand"
   },
   "crops": {
-    "sprout": "Spire",
+    "otherCrop": "Anden afgrøde",
     "onion": "Løg",
     "sugarBeet": "Sukkerroe",
     "lettuce": "Salat",
     "corn": "Majs",
     "greenBean": "Grøn Bønne",
     "carrot": "Gulerod",
+    "flower": "Blomst",
     "cabbage": "Kål",
     "parsnip": "Pastinak"
   },
@@ -797,6 +830,7 @@
     "custom": "Tilpasset",
     "included": "Inkluderet",
     "vatNote": "Alle priser er ekskl. moms",
+    "disclaimer": "Priserne er estimater og kan variere. Dette er ikke et bindende tilbud.",
     "pricingOnRequest": "Priser tilgængelige efter forespørgsel. Kontakt os for et detaljeret tilbud.",
     "contactUs": "Kontakt Os",
     "generatedWith": "Genereret med FarmDroid Konfigurator",
@@ -844,5 +878,183 @@
     "accessories.carePkg": "Plejepakke",
     "accessories.weightKit": "Vægtsæt",
     "accessories.toolbox": "Værktøjskasse"
+  },
+  "configPage": {
+    "loading": "Indlæser din konfiguration...",
+    "greeting": "Hej {firstName}, her er din FarmDroid",
+    "configurationTitle": "Din Konfiguration",
+    "investmentTitle": "Din Investering",
+    "stats": {
+      "rows": "rækker",
+      "active": "aktive",
+      "workingWidth": "arbejdsbredde",
+      "power": "strøm",
+      "hybrid": "Hybrid",
+      "solar": "Sol"
+    },
+    "sections": {
+      "robot": "Robot",
+      "seedConfig": "+Seed Konfiguration",
+      "weedConfig": "+Weed Konfiguration",
+      "power": "Strømkilde",
+      "accessories": "Tilbehør",
+      "service": "Service & Garanti"
+    },
+    "config": {
+      "activeRows": "aktive rækker",
+      "passiveRows": "passive rækker",
+      "rows": "rækker",
+      "spacing": "afstand",
+      "workingWidth": "arbejdsbredde",
+      "wheelConfig": "Hjulkonfiguration",
+      "activeRowsLabel": "Aktive Rækker",
+      "passiveRowsLabel": "Passive Rækker",
+      "seedSize6mm": "6mm frøskær (små frø)",
+      "seedSize14mm": "14mm frøskær (store frø)",
+      "rowSpacing": "Rækkeafstand",
+      "workingWidthLabel": "Arbejdsbredde",
+      "frontWheel": {
+        "PFW": "Passivt Forhjul",
+        "AFW": "Aktivt Forhjul",
+        "DFW": "Dobbelt Forhjul"
+      },
+      "power": {
+        "solar": "Soldrevet",
+        "hybrid": "Hybrid Strøm",
+        "solarDesc": "100% soldrevet autonom drift",
+        "hybridDesc": "Sol + generator for 24 timers driftskapacitet"
+      },
+      "spraySystem": "+SPRAY System",
+      "spraySystemDesc": "Præcisionssprøjtning til målrettet ukrudtsbekæmpelse",
+      "powerBankDesc": "Udvidet batterikapacitet for længere drift",
+      "weedingToolLabel": "Lugningsværktøj",
+      "weedingTool": {
+        "combiTool": "Kombiværktøj",
+        "weedCuttingDisc": "Ukrudtsskæreskive ({variant})"
+      },
+      "accessoriesLabel": "Tilbehør",
+      "accessories": {
+        "starterKit": "Startsæt",
+        "fstFieldSetupTool": "FST Mark Opsætningsværktøj",
+        "baseStationV3": "Basestation V3",
+        "essentialCarePackage": "Essential Care Pakke",
+        "fieldBracket": "Feltbeslag",
+        "roadTransport": "Vejtransport",
+        "powerBank": "Powerbank",
+        "additionalWeightKit": "Ekstra Vægtsæt",
+        "toolbox": "Værktøjskasse"
+      },
+      "servicePlan": {
+        "standard": "Standard Serviceplan",
+        "premium": "Premium Serviceplan"
+      },
+      "warrantyExtension": "+2 Års Garantiforlængelse"
+    },
+    "investment": {
+      "frontWheel": {
+        "PFW": "Passivt Forhjul",
+        "AFW": "Aktivt Forhjul",
+        "DFW": "Dobbelt Forhjul"
+      },
+      "activeRows": "{count}× Aktive Rækker ({size})",
+      "passiveRows": "{count}× Passive Rækker",
+      "hybrid": "Hybrid Strømsystem",
+      "spraySystem": "+SPRAY System",
+      "combiTool": "Kombiværktøj ({count} rækker)",
+      "weedCuttingDisc": "Ukrudtsskæreskive ({count} rækker, {variant})",
+      "accessories": "Tilbehør",
+      "warrantyExtension": "+2 Års Garantiforlængelse",
+      "included": "Inkluderet",
+      "total": "Samlet Investering",
+      "annualSubscription": "Årligt Abonnement",
+      "firstYearIncluded": "Første år inkluderet",
+      "vatNote": "Alle priser er ekskl. moms",
+      "disclaimer": "Priser er estimater og kan variere baseret på leveringsomkostninger og lokale partnervilkår"
+    },
+    "farmFit": {
+      "title": "Din Gård Profil",
+      "workingWidth": "Arbejdsbredde",
+      "workingWidthDesc": "Med {rows} aktive rækker ved {spacing}cm afstand dækker du {width}cm pr. passage",
+      "dailyCapacity": "Daglig Kapacitet",
+      "dailyCapacityDesc": "Op til {hectares} hektar med 24 timers drift",
+      "solarPower": "Soldrevet",
+      "solarPowerDesc": "100% soldrevet drift med nul emissioner",
+      "hybridPower": "Hybrid Strøm",
+      "hybridPowerDesc": "24-timers driftskapacitet med generator backup",
+      "sustainability": "Bæredygtigt Landbrug",
+      "sustainabilityDesc": "Autonom præcisionslugning reducerer herbicidbrug med op til 100%"
+    },
+    "nextSteps": {
+      "title": "Hvad Sker Der Nu?",
+      "email": {
+        "title": "Tjek din email",
+        "description": "Dine konfigurationsdetaljer er på vej"
+      },
+      "consultation": {
+        "title": "Ekspertkonsultation",
+        "description": "En FarmDroid specialist kontakter dig inden for 48 timer"
+      },
+      "reachOut": {
+        "title": "Kontakt en FarmDroid specialist",
+        "teamLink": "Mød vores team",
+        "or": "eller",
+        "partnerLink": "Find din lokale FarmDroid partner"
+      },
+      "quote": {
+        "title": "Modtag dit formelle tilbud",
+        "description": "Detaljeret prissætning tilpasset dine behov"
+      },
+      "delivery": {
+        "title": "Planlæg levering",
+        "description": "Estimeret 4-8 uger fra ordrebekræftelse"
+      },
+      "contactTitle": "Spørgsmål?",
+      "contactDescription": "Vores team er klar til at hjælpe"
+    },
+    "share": {
+      "title": "Del Din Konfiguration",
+      "copyLink": "Kopiér Link",
+      "emailShare": "Del via Email",
+      "print": "Print",
+      "linkCopied": "Link kopieret!"
+    },
+    "reconfigure": {
+      "title": "Vil du foretage ændringer?",
+      "description": "Du kan justere din konfiguration når som helst",
+      "button": "Ændr Konfiguration",
+      "modal": {
+        "title": "Hvordan vil du fortsætte?",
+        "description": "Vælg om du vil ændre din nuværende konfiguration eller starte helt forfra.",
+        "modifyTitle": "Ændr denne konfiguration",
+        "modifyDescription": "Fortsæt med dine nuværende indstillinger og foretag justeringer",
+        "freshTitle": "Start en ny konfiguration",
+        "freshDescription": "Begynd forfra med standardindstillinger"
+      }
+    },
+    "visualizationTitle": "Rækkeopsætning",
+    "workingWidthLabel": "Arbejdsbredde: {width} cm",
+    "frontLabel": "FRONT",
+    "legend": {
+      "activeRow": "Aktiv række",
+      "passiveRow": "Passiv række",
+      "previousPass": "Forrige passage",
+      "crop": "Afgrøde"
+    },
+    "notFound": {
+      "title": "Konfiguration Ikke Fundet",
+      "description": "Vi kunne ikke finde denne konfiguration. Linket kan være udløbet eller indtastet forkert.",
+      "descriptionNoData": "Ingen konfigurationsdata blev givet. Start venligst en ny konfiguration.",
+      "startNew": "Start Ny Konfiguration"
+    },
+    "capacityGraph": {
+      "title": "Daglig Kapacitet",
+      "subtitle": "Estimeret hektar pr. dag baseret på driftstimer",
+      "yAxis": "Hektar pr. dag",
+      "xAxis": "Driftstimer pr. dag",
+      "day": "dag",
+      "at": "ved",
+      "workingWidth": "Arbejdsbredde",
+      "estimatedCapacity": "Estimeret kapacitet"
+    }
   }
 }

@@ -68,11 +68,9 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               }`}
             >
               <div className="text-sm font-semibold text-stone-900">{t("plans.standard.name")}</div>
-              {showPrices && (
-                <div className="text-xs text-stone-500 mt-0.5">
-                  {formatPrice(PRICES.servicePlan.standard, config.currency)}{t("perYear")}
-                </div>
-              )}
+              <div className="text-xs mt-0.5 text-stone-500">
+                {formatPrice(PRICES.servicePlan.standard, config.currency)}{t("perYear")}
+              </div>
             </div>
             <div
               className={`p-4 text-center transition-colors relative ${
@@ -82,11 +80,9 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               }`}
             >
               <div className="text-sm font-semibold text-stone-900">{t("plans.premium.name")}</div>
-              {showPrices && (
-                <div className="text-xs text-stone-500 mt-0.5">
-                  {formatPrice(PRICES.servicePlan.premium, config.currency)}{t("perYear")}
-                </div>
-              )}
+              <div className="text-xs mt-0.5 text-stone-500">
+                {formatPrice(PRICES.servicePlan.premium, config.currency)}{t("perYear")}
+              </div>
             </div>
           </div>
 
@@ -132,9 +128,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
 
           {/* Billing note */}
           <div className="grid grid-cols-3 border-t border-stone-200 bg-stone-50">
-            <div className="p-3">
-              <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
-            </div>
+            <div className="p-3" />
             <div className={`p-3 text-center ${config.servicePlan === "standard" ? "bg-emerald-50/50 border-l-2 border-r-2 border-b-2 border-emerald-500" : ""}`}>
               <span className="text-xs text-stone-500 italic">{t("billedAnnually")}</span>
             </div>
@@ -189,16 +183,14 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   {t("plans.premium.description")}
                 </p>
               </div>
-              {showPrices && (
-                <div className="text-right ml-4">
-                  <span className="text-sm text-stone-400 line-through">
-                    {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
-                  </span>
-                  <p className="text-sm font-semibold text-emerald-600">
-                    {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
-                  </p>
-                </div>
-              )}
+              <div className="text-right ml-4">
+                <span className="text-sm text-stone-400 line-through">
+                  {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                </span>
+                <p className="text-sm font-semibold text-emerald-600">
+                  {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
+                </p>
+              </div>
             </div>
           </button>
 
@@ -225,11 +217,9 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   {t("plans.standard.description")}
                 </p>
               </div>
-              {showPrices && (
-                <span className="text-sm font-semibold text-stone-900 ml-4">
-                  {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
-                </span>
-              )}
+              <span className="text-sm font-semibold text-stone-900 ml-4">
+                {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
+              </span>
             </div>
           </button>
 
@@ -284,11 +274,9 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                   {t("warranty.description")}
                 </p>
               </div>
-              {showPrices && (
-                <span className="text-sm font-semibold text-stone-900 ml-4">
-                  {formatPrice(PRICES.warrantyExtension, config.currency)}
-                </span>
-              )}
+              <span className="text-sm font-semibold text-stone-900 ml-4">
+                {formatPrice(PRICES.warrantyExtension, config.currency)}
+              </span>
             </div>
           </button>
         </div>

@@ -130,7 +130,7 @@ export function generateQuoteLineItems(
   }
 
   // Passive Rows (included)
-  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   if (passiveRows > 0) {
     items.push({
       id: "passiveRows",

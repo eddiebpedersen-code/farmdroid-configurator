@@ -454,9 +454,11 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
                     </div>
                     <p className="text-xs text-stone-500 mt-1">{t(option.subtitleKey)}</p>
                   </div>
-                  <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
-                    {option.price === 0 ? tCommon("standard") : showPrices ? `+${formatPrice(option.price, config.currency)}` : ""}
-                  </span>
+                  {(option.price === 0 || showPrices) && (
+                    <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
+                      {option.price === 0 ? tCommon("standard") : `+${formatPrice(option.price, config.currency)}`}
+                    </span>
+                  )}
                 </div>
               </button>
             );

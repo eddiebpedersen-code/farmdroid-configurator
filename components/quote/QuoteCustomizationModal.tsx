@@ -65,7 +65,7 @@ export function QuoteCustomizationModal({
     }
   }, [isOpen]);
 
-  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const currencySymbol = config.currency === "EUR" ? "€" : "DKK ";
 
   // Line item type

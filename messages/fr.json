@@ -3,6 +3,12 @@
     "title": "Configurateur FarmDroid",
     "description": "Configurez votre robot FarmDroid FD20"
   },
+  "publicMode": {
+    "banner": "Configurez votre FarmDroid et découvrez son prix",
+    "formHeading": "Votre FarmDroid est configuré !",
+    "formSubheading": "Entrez vos coordonnées pour voir le prix et recevoir votre aperçu de configuration.",
+    "submitButton": "Voir le prix"
+  },
   "navigation": {
     "back": "Retour",
     "next": "Suivant",
@@ -571,6 +577,17 @@
       "weedCuttingDisc": "Disque de Coupe {variant} ({count} rangs)",
       "spraySystem": "Système +SPRAY",
       "accessories": "Accessoires",
+      "starterKit": "Kit de Démarrage",
+      "starterKitIncludes": "Incl. Outil FST, Station de Base, Pack Entretien, Support Terrain",
+      "roadTransport": "Plateforme de Transport Routier",
+      "powerBank": "Batterie Externe",
+      "fstTool": "Outil de Configuration FST",
+      "baseStation": "Station de Base V3",
+      "essentialCare": "Pack Essential Care",
+      "essentialCareSpray": "Essential Care pour +SPRAY",
+      "fieldBracket": "Support de Terrain",
+      "weightKit": "Kit de Poids Supplémentaire",
+      "toolbox": "Boîte à Outils",
       "warrantyExtension": "+2 Ans d'Extension de Garantie"
     },
     "configLabels": {
@@ -581,7 +598,22 @@
       "solar": "Solaire",
       "hybrid": "Hybride"
     },
-    "carePlan": "Care {plan}"
+    "carePlan": "Care {plan}",
+    "editMode": {
+      "title": "Mettre à jour votre configuration",
+      "subtitle": "Vérifiez vos informations et enregistrez les modifications",
+      "reference": "Référence",
+      "email": "Email",
+      "company": "Entreprise",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "phone": "Téléphone",
+      "farmSize": "Taille de l'exploitation (ha)",
+      "hectares": "Hectares pour FarmDroid",
+      "crops": "Cultures",
+      "saveChanges": "Enregistrer les modifications",
+      "saving": "Enregistrement..."
+    }
   },
   "forms": {
     "name": "Nom",
@@ -736,13 +768,14 @@
     "visualizationAria": "Configuration interactive des rangs montrant {rows} rangs avec {spacing}cm d'espacement"
   },
   "crops": {
-    "sprout": "Pousse",
+    "otherCrop": "Autre culture",
     "onion": "Oignon",
     "sugarBeet": "Betterave Sucrière",
     "lettuce": "Laitue",
     "corn": "Maïs",
     "greenBean": "Haricot Vert",
     "carrot": "Carotte",
+    "flower": "Fleur",
     "cabbage": "Chou",
     "parsnip": "Panais"
   },
@@ -797,6 +830,7 @@
     "custom": "Personnalisé",
     "included": "Inclus",
     "vatNote": "Tous les prix sont hors TVA",
+    "disclaimer": "Les prix sont des estimations et peuvent varier. Ce n'est pas une offre contraignante.",
     "pricingOnRequest": "Prix disponibles sur demande. Contactez-nous pour un devis détaillé.",
     "contactUs": "Contactez-Nous",
     "generatedWith": "Généré avec le Configurateur FarmDroid",
@@ -844,5 +878,183 @@
     "accessories.carePkg": "Pack Entretien",
     "accessories.weightKit": "Kit de Poids",
     "accessories.toolbox": "Boîte à Outils"
+  },
+  "configPage": {
+    "loading": "Chargement de votre configuration...",
+    "greeting": "Bonjour {firstName}, voici votre FarmDroid",
+    "configurationTitle": "Votre Configuration",
+    "investmentTitle": "Votre Investissement",
+    "stats": {
+      "rows": "rangs",
+      "active": "actifs",
+      "workingWidth": "largeur de travail",
+      "power": "énergie",
+      "hybrid": "Hybride",
+      "solar": "Solaire"
+    },
+    "sections": {
+      "robot": "Robot",
+      "seedConfig": "Configuration +Seed",
+      "weedConfig": "Configuration +Weed",
+      "power": "Source d'Énergie",
+      "accessories": "Accessoires",
+      "service": "Service & Garantie"
+    },
+    "config": {
+      "activeRows": "rangs actifs",
+      "passiveRows": "rangs passifs",
+      "rows": "rangs",
+      "spacing": "espacement",
+      "workingWidth": "largeur de travail",
+      "wheelConfig": "Configuration des Roues",
+      "activeRowsLabel": "Rangs Actifs",
+      "passiveRowsLabel": "Rangs Passifs",
+      "seedSize6mm": "Socs 6mm (petites graines)",
+      "seedSize14mm": "Socs 14mm (grosses graines)",
+      "rowSpacing": "Espacement des Rangs",
+      "workingWidthLabel": "Largeur de Travail",
+      "frontWheel": {
+        "PFW": "Roue Avant Passive",
+        "AFW": "Roue Avant Active",
+        "DFW": "Double Roue Avant"
+      },
+      "power": {
+        "solar": "Énergie Solaire",
+        "hybrid": "Énergie Hybride",
+        "solarDesc": "Fonctionnement autonome 100% solaire",
+        "hybridDesc": "Solaire + générateur pour capacité 24h"
+      },
+      "spraySystem": "Système +SPRAY",
+      "spraySystemDesc": "Pulvérisation de précision pour contrôle ciblé des mauvaises herbes",
+      "powerBankDesc": "Capacité de batterie étendue pour un fonctionnement prolongé",
+      "weedingToolLabel": "Outil de Désherbage",
+      "weedingTool": {
+        "combiTool": "Outil Combi",
+        "weedCuttingDisc": "Disque de Coupe ({variant})"
+      },
+      "accessoriesLabel": "Accessoires",
+      "accessories": {
+        "starterKit": "Kit de Démarrage",
+        "fstFieldSetupTool": "Outil de Configuration FST",
+        "baseStationV3": "Station de Base V3",
+        "essentialCarePackage": "Pack Entretien Essentiel",
+        "fieldBracket": "Support de Terrain",
+        "roadTransport": "Transport Routier",
+        "powerBank": "Batterie Externe",
+        "additionalWeightKit": "Kit de Poids Supplémentaire",
+        "toolbox": "Boîte à Outils"
+      },
+      "servicePlan": {
+        "standard": "Plan de Service Standard",
+        "premium": "Plan de Service Premium"
+      },
+      "warrantyExtension": "Extension de Garantie +2 Ans"
+    },
+    "investment": {
+      "frontWheel": {
+        "PFW": "Roue Avant Passive",
+        "AFW": "Roue Avant Active",
+        "DFW": "Double Roue Avant"
+      },
+      "activeRows": "{count}× Rangs Actifs ({size})",
+      "passiveRows": "{count}× Rangs Passifs",
+      "hybrid": "Système Hybride",
+      "spraySystem": "Système +SPRAY",
+      "combiTool": "Outil Combi ({count} rangs)",
+      "weedCuttingDisc": "Disque de Coupe ({count} rangs, {variant})",
+      "accessories": "Accessoires",
+      "warrantyExtension": "Extension de Garantie +2 Ans",
+      "included": "Inclus",
+      "total": "Investissement Total",
+      "annualSubscription": "Abonnement Annuel",
+      "firstYearIncluded": "Première année incluse",
+      "vatNote": "Tous les prix sont hors TVA",
+      "disclaimer": "Les prix sont des estimations et peuvent varier selon les frais de livraison et les conditions du partenaire local"
+    },
+    "farmFit": {
+      "title": "Votre Profil Agricole",
+      "workingWidth": "Largeur de Travail",
+      "workingWidthDesc": "Avec {rows} rangs actifs à {spacing}cm d'espacement, vous couvrez {width}cm par passage",
+      "dailyCapacity": "Capacité Journalière",
+      "dailyCapacityDesc": "Jusqu'à {hectares} hectares en fonctionnement 24h",
+      "solarPower": "Énergie Solaire",
+      "solarPowerDesc": "Fonctionnement 100% solaire sans émissions",
+      "hybridPower": "Énergie Hybride",
+      "hybridPowerDesc": "Capacité de fonctionnement 24h avec générateur de secours",
+      "sustainability": "Agriculture Durable",
+      "sustainabilityDesc": "Le désherbage de précision autonome réduit l'utilisation d'herbicides jusqu'à 100%"
+    },
+    "nextSteps": {
+      "title": "Que se passe-t-il ensuite?",
+      "email": {
+        "title": "Vérifiez votre email",
+        "description": "Les détails de votre configuration sont en route"
+      },
+      "consultation": {
+        "title": "Consultation d'expert",
+        "description": "Un spécialiste FarmDroid vous contactera dans les 48 heures"
+      },
+      "reachOut": {
+        "title": "Contactez un spécialiste FarmDroid",
+        "teamLink": "Rencontrez notre équipe",
+        "or": "ou",
+        "partnerLink": "Trouvez votre partenaire FarmDroid local"
+      },
+      "quote": {
+        "title": "Recevez votre devis formel",
+        "description": "Tarification détaillée adaptée à vos besoins"
+      },
+      "delivery": {
+        "title": "Planifiez la livraison",
+        "description": "Estimé 4-8 semaines à partir de la confirmation de commande"
+      },
+      "contactTitle": "Questions?",
+      "contactDescription": "Notre équipe est là pour vous aider"
+    },
+    "share": {
+      "title": "Partagez Votre Configuration",
+      "copyLink": "Copier le Lien",
+      "emailShare": "Partager par Email",
+      "print": "Imprimer",
+      "linkCopied": "Lien copié!"
+    },
+    "reconfigure": {
+      "title": "Vous voulez faire des modifications?",
+      "description": "Vous pouvez ajuster votre configuration à tout moment",
+      "button": "Modifier la Configuration",
+      "modal": {
+        "title": "Comment souhaitez-vous procéder?",
+        "description": "Choisissez si vous souhaitez modifier votre configuration actuelle ou recommencer à zéro.",
+        "modifyTitle": "Modifier cette configuration",
+        "modifyDescription": "Continuez avec vos paramètres actuels et effectuez des ajustements",
+        "freshTitle": "Commencer une nouvelle configuration",
+        "freshDescription": "Repartir de zéro avec les paramètres par défaut"
+      }
+    },
+    "visualizationTitle": "Configuration des Rangées",
+    "workingWidthLabel": "Largeur de travail: {width} cm",
+    "frontLabel": "AVANT",
+    "legend": {
+      "activeRow": "Rangée active",
+      "passiveRow": "Rangée passive",
+      "previousPass": "Passage précédent",
+      "crop": "Culture"
+    },
+    "notFound": {
+      "title": "Configuration Non Trouvée",
+      "description": "Nous n'avons pas pu trouver cette configuration. Le lien a peut-être expiré ou a été saisi incorrectement.",
+      "descriptionNoData": "Aucune donnée de configuration n'a été fournie. Veuillez démarrer une nouvelle configuration.",
+      "startNew": "Démarrer une Nouvelle Configuration"
+    },
+    "capacityGraph": {
+      "title": "Capacité Journalière",
+      "subtitle": "Hectares estimés par jour selon les heures de fonctionnement",
+      "yAxis": "Hectares par jour",
+      "xAxis": "Heures de fonctionnement par jour",
+      "day": "jour",
+      "at": "à",
+      "workingWidth": "Largeur de travail",
+      "estimatedCapacity": "Capacité estimée"
+    }
   }
 }

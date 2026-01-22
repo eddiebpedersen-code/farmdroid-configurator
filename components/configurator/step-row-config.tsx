@@ -8,6 +8,7 @@ import {
   ConfiguratorState,
   PriceBreakdown,
   SeedSize,
+  SeedingMode,
   formatPrice,
   PRICES,
   ROW_CONSTRAINTS,
@@ -17,6 +18,7 @@ import {
   getWheelConfig,
   calculateOptimalWheelSpacing,
   calculateBetweenPassSpacing,
+  calculateRobotSpeed,
 } from "@/lib/configurator-data";
 import {
   CropIcon,
@@ -25,8 +27,8 @@ import {
   WheelTrack,
   SeedInfoModal,
   CapacityGraphLarge,
-  calculateRobotSpeed,
 } from "./step-row-config/index";
+import { useMode } from "@/contexts/ModeContext";
 
 interface StepRowConfigProps {
   config: ConfiguratorState;
@@ -37,6 +39,7 @@ interface StepRowConfigProps {
 export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const t = useTranslations("rowConfig");
   const tCrops = useTranslations("crops");
+  const { showPrices } = useMode();
 
   // Working width state - must be declared before calculations that use it
   // followWheelSpacing: true = Beds mode (follows wheel spacing), false = Pattern mode or custom
@@ -130,15 +133,29 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   // Animation state - now using CSS animations for smooth performance
   const [isAnimating, setIsAnimating] = useState(true);
   const [isDiamondPattern, setIsDiamondPattern] = useState(false);
-  const [plantSpacing, setPlantSpacing] = useState(18); // cm between plants in row
-  const [seedingMode, setSeedingMode] = useState<"single" | "group" | "line">("single");
-  const [seedsPerGroup, setSeedsPerGroup] = useState(1); // seeds per group (1 for single, 2-15 for group)
+  // Seeding parameters - initialized from config with fallbacks
+  const [plantSpacing, setPlantSpacing] = useState(config.plantSpacing ?? 18);
+  const [seedingMode, setSeedingMode] = useState<SeedingMode>(config.seedingMode ?? "single");
+  const [seedsPerGroup, setSeedsPerGroup] = useState(config.seedsPerGroup ?? 1);
   const [viewMode, setViewMode] = useState<"2d" | "3d">("2d");
   const [showSeedInfoModal, setShowSeedInfoModal] = useState(false);
 
+  // Sync seeding parameters to config when they change
+  useEffect(() => {
+    updateConfig({
+      seedingMode,
+      plantSpacing,
+      seedsPerGroup,
+    });
+  }, [seedingMode, plantSpacing, seedsPerGroup, updateConfig]);
+
+  // Sync working width to config when it changes
+  useEffect(() => {
+    updateConfig({ workingWidth });
+  }, [workingWidth, updateConfig]);
+
   // Crop type selection with recommended configurations and seed size compatibility
   const cropTypes = [
-    { id: "sprout", emoji: "🌱", nameKey: "sprout" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 450, plantSpacing: 15, supports6mm: true, supports14mm: true },
     { id: "carrot", emoji: "🥕", nameKey: "carrot" as const, seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 5, supports6mm: true, supports14mm: false },
     { id: "flower", emoji: "🌸", nameKey: "flower" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 20, supports6mm: true, supports14mm: false },
     { id: "onion", emoji: "🧅", nameKey: "onion" as const, seedSize: "14mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 12, supports6mm: true, supports14mm: true },
@@ -146,8 +163,14 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     { id: "lettuce", emoji: "🥬", nameKey: "lettuce" as const, seedSize: "14mm" as SeedSize, rows: 6, rowDistance: 400, plantSpacing: 30, supports6mm: true, supports14mm: true },
     { id: "corn", emoji: "🌽", nameKey: "corn" as const, seedSize: "14mm" as SeedSize, rows: 4, rowDistance: 750, plantSpacing: 20, supports6mm: false, supports14mm: true },
     { id: "greenbean", emoji: "🫛", nameKey: "greenBean" as const, seedSize: "6mm" as SeedSize, rows: 8, rowDistance: 300, plantSpacing: 10, supports6mm: false, supports14mm: true },
+    { id: "other", emoji: "🌱", nameKey: "otherCrop" as const, seedSize: "6mm" as SeedSize, rows: 6, rowDistance: 450, plantSpacing: 15, supports6mm: true, supports14mm: true },
   ];
   const [selectedCrop, setSelectedCrop] = useState(cropTypes[0]);
+
+  // Sync crop emoji to config when selected crop changes
+  useEffect(() => {
+    updateConfig({ cropEmoji: selectedCrop.emoji });
+  }, [selectedCrop, updateConfig]);
 
   // Optimize wheel spacing when first entering this step
   useEffect(() => {
@@ -2474,10 +2497,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           {(() => {
             const speed = calculateRobotSpeed(seedingMode, plantSpacing);
             const workingWidthM = workingWidth / 1000;
-            const capacityAt20h = (speed * workingWidthM * 20) / 10000;
+            const maxCapacity = (speed * workingWidthM * 24) / 10000;
             return (
               <div className="absolute bottom-4 right-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs text-stone-600 shadow-sm border border-stone-100">
-                {speed} m/h · {capacityAt20h.toFixed(2)} ha/day
+                {speed} m/h · up to {maxCapacity.toFixed(2)} ha/day
               </div>
             );
           })()}
@@ -2760,7 +2783,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                   )}
                   <span className="text-sm font-medium text-stone-900">+Seed {size}</span>
                 </div>
-                <p className="text-xs text-stone-400 mt-0.5">{formatPrice(PRICES.activeRow[size], config.currency)}/row</p>
+                {showPrices && (
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    {formatPrice(PRICES.activeRow[size], config.currency)}/row
+                  </p>
+                )}
               </button>
             );
           })}
@@ -2802,7 +2829,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           <div className="py-2 px-3 rounded-lg bg-emerald-50 border border-emerald-100">
             <div className="flex justify-between items-center">
               <span className="text-sm text-emerald-700">{config.activeRows} active rows</span>
-              <span className="text-sm font-semibold text-emerald-700">{formatPrice(config.activeRows * rowPrice, config.currency)}</span>
+              {showPrices && (
+                <span className="text-sm font-semibold text-emerald-700">
+                  {formatPrice(config.activeRows * rowPrice, config.currency)}
+                </span>
+              )}
             </div>
             <div className="flex justify-between items-center mt-0.5">
               <span className="text-xs text-emerald-600">{totalPassiveRows} passive rows</span>
@@ -2883,7 +2914,11 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               <button
                 onClick={(e) => {
                   const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                  const decreased = config.rowDistance - step;
+                  // If value is not a whole cm (not multiple of 10), round down first
+                  const hasDecimal = config.rowDistance % 10 !== 0;
+                  const decreased = hasDecimal && !e.shiftKey
+                    ? Math.floor(config.rowDistance / 10) * 10
+                    : config.rowDistance - step;
                   const newDistance = decreased < minRowDistance ? minRowDistance : decreased;
                   updateConfig({
                     rowDistance: newDistance,
@@ -2924,7 +2959,12 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 onClick={(e) => {
                   const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
                   const maxDistance = Math.min(800, maxRowDistanceForCurrentRows);
-                  const newDistance = Math.min(maxDistance, config.rowDistance + step);
+                  // If value is not a whole cm (not multiple of 10), round up first
+                  const hasDecimal = config.rowDistance % 10 !== 0;
+                  const increased = hasDecimal && !e.shiftKey
+                    ? Math.ceil(config.rowDistance / 10) * 10
+                    : config.rowDistance + step;
+                  const newDistance = Math.min(maxDistance, increased);
                   updateConfig({
                     rowDistance: newDistance,
                     rowSpacings: generateRowSpacings(config.activeRows, newDistance)

@@ -11,7 +11,7 @@ interface QuoteConfigSummaryProps {
 export function QuoteConfigSummary({ config }: QuoteConfigSummaryProps) {
   const t = useTranslations("quote");
 
-  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const totalRows = config.activeRows + passiveRows;
   const workingWidth = config.rowSpacings
     ? config.rowSpacings.reduce((sum, s) => sum + s, 0)

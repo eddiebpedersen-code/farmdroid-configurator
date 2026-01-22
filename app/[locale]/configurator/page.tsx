@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw, Globe, Check, ChevronDown, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Globe, Check, ChevronDown, Save, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { decodeConfigPageData } from "@/lib/config-page-utils";
 import { useToastActions } from "@/components/ui/toast";
 import { useKeyboardShortcuts, useFocusTrap } from "@/hooks/use-focus-trap";
 import { useMode } from "@/contexts/ModeContext";
@@ -141,7 +142,7 @@ function PriceBreakdownTooltip({
     setMounted(true);
   }, []);
 
-  const passiveRowCount = calculatePassiveRows(config.activeRows, config.rowDistance);
+  const passiveRowCount = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
 
   const items = [
     { key: "baseRobot", value: priceBreakdown.baseRobot, label: t("baseRobot") },
@@ -280,7 +281,7 @@ function ResumeConfigurationModal({
   );
 }
 
-export default function ConfiguratorPage() {
+function ConfiguratorContent() {
   const [currentStep, setCurrentStep] = useState(1);
   const [highestStepReached, setHighestStepReached] = useState(1);
   const [direction, setDirection] = useState(0);
@@ -290,8 +291,12 @@ export default function ConfiguratorPage() {
   const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
   const [previousTotal, setPreviousTotal] = useState<number | null>(null);
   const [lastSavedTime, setLastSavedTime] = useState<number | null>(null);
+  const [configPreFilled, setConfigPreFilled] = useState(false);
+  const [preFilledLead, setPreFilledLead] = useState<{ firstName: string; lastName: string; email: string; phone: string; company: string; country: string; countryOther: string; farmSize: string; hectaresForFarmDroid: string; crops: string; contactByPartner: boolean; marketingConsent: boolean } | null>(null);
+  const [existingReference, setExistingReference] = useState<string | null>(null);
 
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const currentLocale = pathname.split("/")[1] as Locale;
   const toast = useToastActions();
   const { showPrices } = useMode();
@@ -300,11 +305,50 @@ export default function ConfiguratorPage() {
   const tSteps = useTranslations("steps");
   const tService = useTranslations("servicePlan");
   const tCommon = useTranslations("common");
+  const tPublic = useTranslations("publicMode");
 
   const priceBreakdown = calculatePrice(config, highestStepReached);
 
+  // Check for config parameter to pre-fill from personal config page
+  useEffect(() => {
+    const configParam = searchParams.get("config");
+    if (configParam && !configPreFilled) {
+      try {
+        const decoded = decodeConfigPageData(configParam);
+        if (decoded?.config) {
+          setConfig(decoded.config);
+          setConfigPreFilled(true);
+          // Also save lead data if present (add default for hectaresForFarmDroid for backward compatibility)
+          if (decoded.lead) {
+            setPreFilledLead({
+              ...decoded.lead,
+              hectaresForFarmDroid: decoded.lead.hectaresForFarmDroid ?? "",
+            });
+          }
+          // Store the reference if editing an existing configuration
+          if (decoded.reference) {
+            setExistingReference(decoded.reference);
+          }
+          // Skip the resume modal if we have pre-filled config
+          setShowResumeModal(false);
+          // Clear the URL parameter to avoid re-triggering
+          const url = new URL(window.location.href);
+          url.searchParams.delete("config");
+          window.history.replaceState({}, "", url.toString());
+        }
+      } catch (error) {
+        console.error("Failed to decode config from URL:", error);
+      }
+    }
+  }, [searchParams, configPreFilled]);
+
   // Check for saved configuration on mount
   useEffect(() => {
+    // Skip if we pre-filled from URL or if there's a config param in URL
+    if (configPreFilled) return;
+    const hasConfigParam = searchParams.get("config");
+    if (hasConfigParam) return; // Will be handled by config param effect
+
     if (hasSavedConfiguration()) {
       const saved = loadConfiguration();
       if (saved) {
@@ -317,7 +361,7 @@ export default function ConfiguratorPage() {
         setShowResumeModal(true);
       }
     }
-  }, []);
+  }, [configPreFilled, searchParams]);
 
   // Auto-save configuration on changes
   useEffect(() => {
@@ -449,7 +493,7 @@ export default function ConfiguratorPage() {
       case 7:
         return <StepServicePlan {...commonProps} />;
       case 8:
-        return <StepSummary {...commonProps} onReset={resetConfig} />;
+        return <StepSummary {...commonProps} onReset={resetConfig} initialLead={preFilledLead} existingReference={existingReference} />;
       default:
         return null;
     }
@@ -557,6 +601,40 @@ export default function ConfiguratorPage() {
                 </div>
               )}
 
+              {/* Configuration summary - Shown in public mode */}
+              {!showPrices && (
+                <div className="hidden md:flex items-center gap-2 text-xs text-stone-500">
+                  <span className="flex items-center gap-1">
+                    <Check className="h-3 w-3 text-emerald-500" />
+                    FD20
+                  </span>
+                  {config.activeRows > 0 && (
+                    <span className="flex items-center gap-1">
+                      <Check className="h-3 w-3 text-emerald-500" />
+                      {config.activeRows} rows
+                    </span>
+                  )}
+                  {config.frontWheel !== "PFW" && (
+                    <span className="flex items-center gap-1">
+                      <Check className="h-3 w-3 text-emerald-500" />
+                      {config.frontWheel}
+                    </span>
+                  )}
+                  {config.spraySystem && (
+                    <span className="flex items-center gap-1">
+                      <Check className="h-3 w-3 text-emerald-500" />
+                      +SPRAY
+                    </span>
+                  )}
+                  {config.starterKit && (
+                    <span className="flex items-center gap-1">
+                      <Check className="h-3 w-3 text-emerald-500" />
+                      Starter Kit
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Price with breakdown - Only shown in partner mode */}
               {showPrices && (
                 <div className="text-right min-w-[140px] md:min-w-[200px]">
@@ -652,6 +730,22 @@ export default function ConfiguratorPage() {
         </div>
       </header>
 
+      {/* Public Mode Banner - Only shown when prices are hidden */}
+      {!showPrices && (
+        <div className="bg-emerald-50 border-b border-emerald-100">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-2.5">
+            <p className="text-sm text-emerald-800 text-center">
+              <span className="inline-flex items-center gap-2">
+                <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                {tPublic("banner")}
+              </span>
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <main id="main-content" className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pb-24">
         <AnimatePresence mode="wait" custom={direction}>
@@ -722,5 +816,24 @@ export default function ConfiguratorPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function ConfiguratorLoading() {
+  return (
+    <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+      <div className="flex items-center gap-3 text-stone-500">
+        <RefreshCw className="w-5 h-5 animate-spin" />
+        <span>Loading configurator...</span>
+      </div>
+    </div>
+  );
+}
+
+export default function ConfiguratorPage() {
+  return (
+    <Suspense fallback={<ConfiguratorLoading />}>
+      <ConfiguratorContent />
+    </Suspense>
   );
 }

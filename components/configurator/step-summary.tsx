@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import confetti from "canvas-confetti";
 import {
   Mail,
   Building2,
@@ -23,7 +22,9 @@ import {
   Share2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { ConfigPageData, CONFIG_PAGE_VERSION } from "@/lib/config-page-types";
+import { encodeConfigPageData, generateConfigReference } from "@/lib/config-page-utils";
 import {
   ConfiguratorState,
   PriceBreakdown,
@@ -35,6 +36,7 @@ import {
 } from "@/lib/configurator-data";
 import { QuoteCustomizationModal } from "@/components/quote/QuoteCustomizationModal";
 import { useMode } from "@/contexts/ModeContext";
+import { useToastActions } from "@/components/ui/toast";
 import { LeadCaptureForm, LeadData } from "./lead-capture-form";
 import { ThankYouScreen } from "./thank-you-screen";
 import { PartnerActions } from "./partner-actions";
@@ -44,6 +46,8 @@ interface StepSummaryProps {
   updateConfig: (updates: Partial<ConfiguratorState>) => void;
   priceBreakdown: PriceBreakdown;
   onReset: () => void;
+  initialLead?: LeadData | null;
+  existingReference?: string | null;
 }
 
 // Email Quote Modal
@@ -337,12 +341,13 @@ function CreateDealModal({
   );
 }
 
-export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProps) {
+export function StepSummary({ config, priceBreakdown, onReset, initialLead, existingReference }: StepSummaryProps) {
   const t = useTranslations("summary");
   const tCommon = useTranslations("common");
   const tModals = useTranslations("modals");
   const tQuote = useTranslations("quote");
   const pathname = usePathname();
+  const router = useRouter();
   const locale = pathname.split("/")[1] || "en";
   const { mode } = useMode();
 
@@ -351,51 +356,10 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [leadData, setLeadData] = useState<LeadData | null>(null);
-  const hasTriggeredConfetti = useRef(false);
 
-  // Trigger celebration confetti on first mount
-  useEffect(() => {
-    // Only trigger once and respect reduced motion preference
-    if (hasTriggeredConfetti.current) return;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return;
-
-    hasTriggeredConfetti.current = true;
-
-    // Subtle celebration burst
-    const duration = 2000;
-    const animationEnd = Date.now() + duration;
-    const colors = ["#10b981", "#059669", "#34d399", "#6ee7b7"]; // Emerald colors
-
-    const frame = () => {
-      confetti({
-        particleCount: 3,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0, y: 0.7 },
-        colors: colors,
-        disableForReducedMotion: true,
-      });
-      confetti({
-        particleCount: 3,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1, y: 0.7 },
-        colors: colors,
-        disableForReducedMotion: true,
-      });
-
-      if (Date.now() < animationEnd) {
-        requestAnimationFrame(frame);
-      }
-    };
-
-    // Small delay to let the page settle
-    setTimeout(frame, 300);
-  }, []);
-
-  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance);
-  const workingWidth = calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
+  const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
+  // Use saved workingWidth from config (set in step-row-config), with fallback for backward compatibility
+  const workingWidth = config.workingWidth ?? calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
 
   // Calculate weeding tool price
   const weedingToolPrice = config.weedingTool === "combiTool"
@@ -452,23 +416,148 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
       value: weedingToolPrice,
       breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.weedCuttingDiscPerRow },
     },
-    priceBreakdown.accessories > 0 && {
+    // Individual accessories (instead of single "Accessories" line)
+    config.starterKit && {
       icon: Package,
-      label: t("lineItems.accessories"),
-      value: priceBreakdown.accessories - weedingToolPrice, // Subtract weeding tools since they're shown separately
+      label: t("lineItems.starterKit"),
+      sublabel: t("lineItems.starterKitIncludes"),
+      value: PRICES.accessories.starterKit,
+    },
+    // Items included in Starter Kit - only show individually if Starter Kit NOT selected
+    !config.starterKit && config.fstFieldSetupTool && {
+      icon: Package,
+      label: t("lineItems.fstTool"),
+      value: PRICES.accessories.fstFieldSetupTool,
+    },
+    !config.starterKit && config.baseStationV3 && {
+      icon: Package,
+      label: t("lineItems.baseStation"),
+      value: PRICES.accessories.baseStationV3,
+    },
+    !config.starterKit && config.essentialCarePackage && {
+      icon: Package,
+      label: t("lineItems.essentialCare"),
+      value: PRICES.accessories.essentialCarePackage,
+    },
+    !config.starterKit && config.fieldBracket && {
+      icon: Package,
+      label: t("lineItems.fieldBracket"),
+      value: PRICES.accessories.fieldBracket,
+    },
+    // Items NOT in Starter Kit - always show if selected
+    config.roadTransport && {
+      icon: Package,
+      label: t("lineItems.roadTransport"),
+      value: PRICES.accessories.roadTransport,
+    },
+    config.powerBank && {
+      icon: Package,
+      label: t("lineItems.powerBank"),
+      value: PRICES.accessories.powerBank,
+    },
+    config.spraySystem && (config.starterKit || config.essentialCarePackage) && {
+      icon: Package,
+      label: t("lineItems.essentialCareSpray"),
+      value: PRICES.accessories.essentialCareSpray,
+    },
+    config.additionalWeightKit && {
+      icon: Package,
+      label: t("lineItems.weightKit"),
+      value: PRICES.accessories.additionalWeightKit,
+    },
+    config.toolbox && {
+      icon: Package,
+      label: t("lineItems.toolbox"),
+      value: PRICES.accessories.toolbox,
     },
     config.warrantyExtension && {
       icon: Shield,
       label: t("lineItems.warrantyExtension"),
       value: priceBreakdown.warrantyExtension,
     },
-  ].filter(Boolean) as { icon: typeof Cpu; label: string; value: number; included?: boolean; breakdown?: { count: number; unitPrice: number } }[];
+  ].filter(Boolean) as { icon: typeof Cpu; label: string; sublabel?: string; value: number; included?: boolean; breakdown?: { count: number; unitPrice: number } }[];
 
   // Handle lead submission in public mode
-  const handleLeadSubmit = (lead: LeadData) => {
-    setLeadData(lead);
-    setShowThankYou(true);
+  const toast = useToastActions();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Editable lead fields for edit mode (all except email and company)
+  const [editFirstName, setEditFirstName] = useState(initialLead?.firstName || "");
+  const [editLastName, setEditLastName] = useState(initialLead?.lastName || "");
+  const [editPhone, setEditPhone] = useState(initialLead?.phone || "");
+  const [editFarmSize, setEditFarmSize] = useState(initialLead?.farmSize || "");
+  const [editHectares, setEditHectares] = useState(initialLead?.hectaresForFarmDroid || "");
+  const [editCrops, setEditCrops] = useState(initialLead?.crops || "");
+
+  const handleLeadSubmit = async (lead: LeadData) => {
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/configurations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lead,
+          config,
+          locale,
+          totalPrice: priceBreakdown.total,
+          currency: config.currency,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save configuration");
+      }
+
+      const { reference } = await response.json();
+      router.push(`/${locale}/config/${reference}`); // Short URL!
+    } catch (error) {
+      console.error("Error submitting lead:", error);
+      toast.error("Error", "Failed to save your configuration. Please try again.");
+      setIsSubmitting(false);
+    }
   };
+
+  // Handle updating an existing configuration
+  const handleUpdateConfig = async () => {
+    if (!existingReference || !initialLead) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/configurations/${existingReference}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          config,
+          totalPrice: priceBreakdown.total,
+          currency: config.currency,
+          // Include updated lead fields (except email and company which are locked)
+          leadUpdates: {
+            firstName: editFirstName,
+            lastName: editLastName,
+            phone: editPhone,
+            farmSize: editFarmSize,
+            hectaresForFarmDroid: editHectares,
+            crops: editCrops,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update configuration");
+      }
+
+      router.push(`/${locale}/config/${existingReference}`);
+    } catch (error) {
+      console.error("Error updating config:", error);
+      toast.error("Error", "Failed to update your configuration. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
+
+  // Check if we're in edit mode (have existing reference and lead data)
+  const isEditMode = Boolean(existingReference && initialLead);
 
   // Handle restart (for both modes)
   const handleRestart = () => {
@@ -482,7 +571,7 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
     return <ThankYouScreen lead={leadData} config={config} onRestart={handleRestart} />;
   }
 
-  // Public mode: Show lead capture form
+  // Public mode: Show lead capture form or update UI
   if (mode === "public") {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
@@ -625,13 +714,136 @@ export function StepSummary({ config, priceBreakdown, onReset }: StepSummaryProp
           </div>
         </div>
 
-        {/* Right: Lead Capture Form - Takes 2 columns */}
+        {/* Right: Lead Capture Form or Update Panel - Takes 2 columns */}
         <div className="lg:col-span-2">
-          <LeadCaptureForm
-            config={config}
-            priceBreakdown={priceBreakdown}
-            onSubmit={handleLeadSubmit}
-          />
+          {isEditMode ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white rounded-2xl border border-stone-200 p-6"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Check className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-stone-900">{t("editMode.title")}</h2>
+                  <p className="text-sm text-stone-500">{t("editMode.subtitle")}</p>
+                </div>
+              </div>
+
+              {/* Reference */}
+              <div className="flex items-center justify-between text-sm mb-4 pb-4 border-b border-stone-100">
+                <span className="text-stone-500">{t("editMode.reference")}</span>
+                <span className="font-mono text-stone-700">{existingReference}</span>
+              </div>
+
+              {/* Locked fields - Email and Company */}
+              <div className="space-y-3 mb-4">
+                <div>
+                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.email")}</label>
+                  <div className="mt-1 h-10 px-3 rounded-lg bg-stone-100 text-stone-500 flex items-center text-sm">
+                    {initialLead?.email}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.company")}</label>
+                  <div className="mt-1 h-10 px-3 rounded-lg bg-stone-100 text-stone-500 flex items-center text-sm">
+                    {initialLead?.company}
+                  </div>
+                </div>
+              </div>
+
+              {/* Editable fields */}
+              <div className="space-y-3 mb-6">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.firstName")}</label>
+                    <input
+                      type="text"
+                      value={editFirstName}
+                      onChange={(e) => setEditFirstName(e.target.value)}
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.lastName")}</label>
+                    <input
+                      type="text"
+                      value={editLastName}
+                      onChange={(e) => setEditLastName(e.target.value)}
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.phone")}</label>
+                  <input
+                    type="tel"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.farmSize")}</label>
+                    <input
+                      type="text"
+                      value={editFarmSize}
+                      onChange={(e) => setEditFarmSize(e.target.value)}
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.hectares")}</label>
+                    <input
+                      type="text"
+                      value={editHectares}
+                      onChange={(e) => setEditHectares(e.target.value)}
+                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.crops")}</label>
+                  <input
+                    type="text"
+                    value={editCrops}
+                    onChange={(e) => setEditCrops(e.target.value)}
+                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Save button */}
+              <button
+                onClick={handleUpdateConfig}
+                disabled={isSubmitting || !editFirstName || !editLastName}
+                className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    {t("editMode.saving")}
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-5 w-5" />
+                    {t("editMode.saveChanges")}
+                  </>
+                )}
+              </button>
+            </motion.div>
+          ) : (
+            <LeadCaptureForm
+              config={config}
+              priceBreakdown={priceBreakdown}
+              onSubmit={handleLeadSubmit}
+              initialLead={initialLead}
+            />
+          )}
         </div>
       </div>
     );

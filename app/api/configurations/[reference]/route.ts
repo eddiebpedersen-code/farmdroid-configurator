@@ -1,0 +1,217 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createHubSpotEntities } from "@/lib/hubspot";
+import type { ConfiguratorState } from "@/lib/configurator-data";
+
+interface RouteParams {
+  params: Promise<{ reference: string }>;
+}
+
+interface LeadUpdates {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  farmSize?: string;
+  hectaresForFarmDroid?: string;
+  crops?: string;
+}
+
+interface UpdateConfigurationRequest {
+  config: ConfiguratorState;
+  totalPrice: number;
+  currency: string;
+  leadUpdates?: LeadUpdates;
+}
+
+/**
+ * GET /api/configurations/[reference]
+ * Fetches a configuration by its reference code
+ */
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { reference } = await params;
+
+    if (!reference) {
+      return NextResponse.json(
+        { error: "Reference code is required" },
+        { status: 400 }
+      );
+    }
+
+    const supabase = createServerSupabaseClient();
+
+    // Fetch configuration
+    const { data, error } = await supabase
+      .from("configurations")
+      .select("*")
+      .eq("reference", reference.toUpperCase())
+      .single();
+
+    if (error || !data) {
+      return NextResponse.json(
+        { error: "Configuration not found" },
+        { status: 404 }
+      );
+    }
+
+    // Increment view count (fire and forget)
+    void supabase
+      .from("configurations")
+      .update({
+        view_count: (data.view_count ?? 0) + 1,
+        last_viewed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", data.id);
+
+    // Return configuration data in the format expected by the config page
+    return NextResponse.json({
+      reference: data.reference,
+      lead: {
+        firstName: data.first_name,
+        lastName: data.last_name,
+        email: data.email,
+        phone: data.phone || "",
+        company: data.company,
+        country: data.country,
+        countryOther: "",
+        farmSize: data.farm_size || "",
+        hectaresForFarmDroid: data.hectares_for_farmdroid || "",
+        crops: data.crops || "",
+        contactByPartner: data.contact_by_partner,
+        marketingConsent: data.marketing_consent,
+      },
+      config: data.config,
+      locale: data.locale,
+      totalPrice: data.total_price,
+      currency: data.currency,
+      createdAt: data.created_at,
+    });
+  } catch (error) {
+    console.error("Error fetching configuration:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * PUT /api/configurations/[reference]
+ * Updates an existing configuration (config only, not lead data)
+ */
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { reference } = await params;
+    const body: UpdateConfigurationRequest = await request.json();
+    const { config, totalPrice, currency, leadUpdates } = body;
+
+    if (!reference) {
+      return NextResponse.json(
+        { error: "Reference code is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!config || totalPrice === undefined || !currency) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const supabase = createServerSupabaseClient();
+
+    // Fetch existing configuration to get lead data
+    const { data: existing, error: fetchError } = await supabase
+      .from("configurations")
+      .select("*")
+      .eq("reference", reference.toUpperCase())
+      .single();
+
+    if (fetchError || !existing) {
+      return NextResponse.json(
+        { error: "Configuration not found" },
+        { status: 404 }
+      );
+    }
+
+    // Build update object with config and optional lead updates
+    const updateData: Record<string, unknown> = {
+      config,
+      total_price: totalPrice,
+      currency,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Add lead field updates if provided (email and company are not updateable)
+    if (leadUpdates) {
+      if (leadUpdates.firstName) updateData.first_name = leadUpdates.firstName;
+      if (leadUpdates.lastName) updateData.last_name = leadUpdates.lastName;
+      if (leadUpdates.phone !== undefined) updateData.phone = leadUpdates.phone || null;
+      if (leadUpdates.farmSize !== undefined) updateData.farm_size = leadUpdates.farmSize || null;
+      if (leadUpdates.hectaresForFarmDroid !== undefined) updateData.hectares_for_farmdroid = leadUpdates.hectaresForFarmDroid || null;
+      if (leadUpdates.crops !== undefined) updateData.crops = leadUpdates.crops || null;
+    }
+
+    // Update the configuration
+    const { error: updateError } = await supabase
+      .from("configurations")
+      .update(updateData)
+      .eq("reference", reference.toUpperCase());
+
+    if (updateError) {
+      console.error("Supabase update error:", updateError);
+      return NextResponse.json(
+        { error: "Failed to update configuration" },
+        { status: 500 }
+      );
+    }
+
+    // Update HubSpot entities (Contact, Company, Deal will be updated/deduplicated)
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${request.headers.get("host")}`;
+
+      // Use updated lead values if provided, otherwise use existing values
+      const lead = {
+        firstName: leadUpdates?.firstName || existing.first_name,
+        lastName: leadUpdates?.lastName || existing.last_name,
+        email: existing.email, // Never changes
+        phone: leadUpdates?.phone !== undefined ? leadUpdates.phone : (existing.phone || ""),
+        company: existing.company, // Never changes
+        country: existing.country,
+        countryOther: "",
+        farmSize: leadUpdates?.farmSize !== undefined ? leadUpdates.farmSize : (existing.farm_size || ""),
+        hectaresForFarmDroid: leadUpdates?.hectaresForFarmDroid !== undefined ? leadUpdates.hectaresForFarmDroid : (existing.hectares_for_farmdroid || ""),
+        crops: leadUpdates?.crops !== undefined ? leadUpdates.crops : (existing.crops || ""),
+        contactByPartner: existing.contact_by_partner,
+        marketingConsent: existing.marketing_consent,
+      };
+
+      await createHubSpotEntities(
+        lead,
+        config,
+        reference.toUpperCase(),
+        totalPrice,
+        currency,
+        existing.country || "",
+        existing.locale,
+        baseUrl
+      );
+    } catch (hubspotError) {
+      // Log but don't fail - config is already updated
+      console.error("HubSpot update error:", hubspotError);
+    }
+
+    return NextResponse.json({
+      success: true,
+      reference: reference.toUpperCase(),
+    });
+  } catch (error) {
+    console.error("Error updating configuration:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

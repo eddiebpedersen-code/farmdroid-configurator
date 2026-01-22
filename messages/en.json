@@ -3,6 +3,12 @@
     "title": "FarmDroid Configurator",
     "description": "Configure your FarmDroid FD20 robot"
   },
+  "publicMode": {
+    "banner": "Configure your FarmDroid and see what it costs",
+    "formHeading": "Your FarmDroid is configured!",
+    "formSubheading": "Enter your details to see the price and receive your configuration overview.",
+    "submitButton": "See What It Costs"
+  },
   "navigation": {
     "back": "Back",
     "next": "Next",
@@ -572,6 +578,17 @@
       "weedCuttingDisc": "Weed Cutting Disc {variant} ({count} rows)",
       "spraySystem": "+SPRAY System",
       "accessories": "Accessories",
+      "starterKit": "Starter Kit",
+      "starterKitIncludes": "Incl. FST Tool, Base Station, Care Pkg, Field Bracket",
+      "roadTransport": "Road Transport Platform",
+      "powerBank": "Power Bank",
+      "fstTool": "FST Field Setup Tool",
+      "baseStation": "Base Station V3",
+      "essentialCare": "Essential Care Package",
+      "essentialCareSpray": "Essential Care for +SPRAY",
+      "fieldBracket": "Field Bracket",
+      "weightKit": "Additional Weight Kit",
+      "toolbox": "Toolbox",
       "warrantyExtension": "+2 Year Warranty Extension"
     },
     "configLabels": {
@@ -582,7 +599,22 @@
       "solar": "Solar",
       "hybrid": "Hybrid"
     },
-    "carePlan": "Care {plan}"
+    "carePlan": "Care {plan}",
+    "editMode": {
+      "title": "Update Your Configuration",
+      "subtitle": "Review your details and save changes",
+      "reference": "Reference",
+      "email": "Email",
+      "company": "Company",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phone": "Phone",
+      "farmSize": "Farm Size (ha)",
+      "hectares": "Hectares for FarmDroid",
+      "crops": "Crops",
+      "saveChanges": "Save Changes",
+      "saving": "Saving..."
+    }
   },
   "forms": {
     "name": "Name",
@@ -740,7 +772,7 @@
     "visualizationAria": "Interactive row configuration showing {rows} rows at {spacing}cm spacing"
   },
   "crops": {
-    "sprout": "Herbs",
+    "otherCrop": "Other crop",
     "onion": "Onion",
     "sugarBeet": "Sugar Beet",
     "lettuce": "Lettuce",
@@ -802,6 +834,7 @@
     "custom": "Custom",
     "included": "Included",
     "vatNote": "All prices exclude VAT",
+    "disclaimer": "Prices are estimates and may vary. This is not a binding offer.",
     "pricingOnRequest": "Pricing available on request. Contact us for a detailed quote.",
     "contactUs": "Contact Us",
     "generatedWith": "Generated with FarmDroid Configurator",
@@ -841,7 +874,7 @@
     "config.extended": "3 Years",
     "config.accessories": "Accessories",
     "accessories.starterKit": "Starter Kit",
-    "accessories.roadTransport": "Road Transport",
+    "accessories.roadTransport": "Road Transport Platform",
     "accessories.fieldBracket": "Field Bracket",
     "accessories.powerBank": "Power Bank",
     "accessories.fstTool": "FST Tool",
@@ -849,5 +882,183 @@
     "accessories.carePkg": "Care Package",
     "accessories.weightKit": "Weight Kit",
     "accessories.toolbox": "Toolbox"
+  },
+  "configPage": {
+    "loading": "Loading your configuration...",
+    "greeting": "Hi {firstName}, here's your FarmDroid",
+    "configurationTitle": "Your Configuration",
+    "investmentTitle": "Your Investment",
+    "stats": {
+      "rows": "rows",
+      "active": "active",
+      "workingWidth": "working width",
+      "power": "power",
+      "hybrid": "Hybrid",
+      "solar": "Solar"
+    },
+    "sections": {
+      "robot": "Robot",
+      "seedConfig": "+Seed Configuration",
+      "weedConfig": "+Weed Configuration",
+      "power": "Power Source",
+      "accessories": "Accessories",
+      "service": "Service & Warranty"
+    },
+    "config": {
+      "activeRows": "active rows",
+      "passiveRows": "passive rows",
+      "rows": "rows",
+      "spacing": "spacing",
+      "workingWidth": "working width",
+      "wheelConfig": "Wheel Configuration",
+      "activeRowsLabel": "Active Rows",
+      "passiveRowsLabel": "Passive Rows",
+      "seedSize6mm": "6mm seed coulters (small seeds)",
+      "seedSize14mm": "14mm seed coulters (large seeds)",
+      "rowSpacing": "Row Spacing",
+      "workingWidthLabel": "Working Width",
+      "frontWheel": {
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
+      },
+      "power": {
+        "solar": "Solar Powered",
+        "hybrid": "Hybrid Power",
+        "solarDesc": "100% solar-powered autonomous operation",
+        "hybridDesc": "Solar + generator for 24h operation capability"
+      },
+      "spraySystem": "+SPRAY System",
+      "spraySystemDesc": "Precision spot spraying for targeted weed control",
+      "powerBankDesc": "Extended battery capacity for longer operation",
+      "weedingToolLabel": "Weeding Tool",
+      "weedingTool": {
+        "combiTool": "Combi Tool",
+        "weedCuttingDisc": "Weed Cutting Disc ({variant})"
+      },
+      "accessoriesLabel": "Accessories",
+      "accessories": {
+        "starterKit": "Starter Kit",
+        "fstFieldSetupTool": "FST Field Setup Tool",
+        "baseStationV3": "Base Station V3",
+        "essentialCarePackage": "Essential Care Package",
+        "fieldBracket": "Field Bracket",
+        "roadTransport": "Road Transport",
+        "powerBank": "Power Bank",
+        "additionalWeightKit": "Additional Weight Kit",
+        "toolbox": "Toolbox"
+      },
+      "servicePlan": {
+        "standard": "Standard Service Plan",
+        "premium": "Premium Service Plan"
+      },
+      "warrantyExtension": "+2 Year Warranty Extension"
+    },
+    "investment": {
+      "frontWheel": {
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
+      },
+      "activeRows": "{count}× Active Rows ({size})",
+      "passiveRows": "{count}× Passive Rows",
+      "hybrid": "Hybrid Power System",
+      "spraySystem": "+SPRAY System",
+      "combiTool": "Combi Tool ({count} rows)",
+      "weedCuttingDisc": "Weed Cutting Disc ({count} rows, {variant})",
+      "accessories": "Accessories",
+      "warrantyExtension": "+2 Year Warranty Extension",
+      "included": "Included",
+      "total": "Total Investment",
+      "annualSubscription": "Annual Subscription",
+      "firstYearIncluded": "First year included",
+      "vatNote": "All prices exclude VAT",
+      "disclaimer": "Prices are estimates and may vary based on delivery costs and local partner conditions"
+    },
+    "farmFit": {
+      "title": "Your Farm Fit",
+      "workingWidth": "Working Width",
+      "workingWidthDesc": "With {rows} active rows at {spacing}cm spacing, you cover {width}cm per pass",
+      "dailyCapacity": "Daily Capacity",
+      "dailyCapacityDesc": "Up to {hectares} hectares with 24h operation",
+      "solarPower": "Solar Powered",
+      "solarPowerDesc": "100% solar-powered operation with zero emissions",
+      "hybridPower": "Hybrid Power",
+      "hybridPowerDesc": "24-hour operation capability with generator backup",
+      "sustainability": "Sustainable Farming",
+      "sustainabilityDesc": "Autonomous precision weeding reduces herbicide use by up to 100%"
+    },
+    "nextSteps": {
+      "title": "What Happens Next?",
+      "email": {
+        "title": "Check your email",
+        "description": "Your configuration details are on their way"
+      },
+      "consultation": {
+        "title": "Expert consultation",
+        "description": "A FarmDroid specialist will contact you within 48 hours"
+      },
+      "reachOut": {
+        "title": "Reach out to a FarmDroid specialist",
+        "teamLink": "Meet our team",
+        "or": "or",
+        "partnerLink": "Find your local FarmDroid partner"
+      },
+      "quote": {
+        "title": "Receive your formal quote",
+        "description": "Detailed pricing tailored to your needs"
+      },
+      "delivery": {
+        "title": "Schedule delivery",
+        "description": "Estimated 4-8 weeks from order confirmation"
+      },
+      "contactTitle": "Questions?",
+      "contactDescription": "Our team is here to help"
+    },
+    "share": {
+      "title": "Share Your Configuration",
+      "copyLink": "Copy Link",
+      "emailShare": "Share via Email",
+      "print": "Print",
+      "linkCopied": "Link copied!"
+    },
+    "reconfigure": {
+      "title": "Want to make changes?",
+      "description": "You can adjust your configuration anytime",
+      "button": "Modify Configuration",
+      "modal": {
+        "title": "How would you like to proceed?",
+        "description": "Choose whether to modify your current configuration or start completely fresh.",
+        "modifyTitle": "Modify this configuration",
+        "modifyDescription": "Continue with your current settings and make adjustments",
+        "freshTitle": "Start a new configuration",
+        "freshDescription": "Begin from scratch with default settings"
+      }
+    },
+    "visualizationTitle": "Row Configuration Preview",
+    "workingWidthLabel": "Working Width: {width} cm",
+    "frontLabel": "FRONT",
+    "legend": {
+      "activeRow": "Active row",
+      "passiveRow": "Passive row",
+      "previousPass": "Previous pass",
+      "crop": "Crop"
+    },
+    "notFound": {
+      "title": "Configuration Not Found",
+      "description": "We couldn't find this configuration. The link may have expired or been entered incorrectly.",
+      "descriptionNoData": "No configuration data was provided. Please start a new configuration.",
+      "startNew": "Start New Configuration"
+    },
+    "capacityGraph": {
+      "title": "Daily Capacity",
+      "subtitle": "Estimated hectares per day based on running hours",
+      "yAxis": "Hectares per day",
+      "xAxis": "Running hours per day",
+      "day": "day",
+      "at": "at",
+      "workingWidth": "Working width",
+      "estimatedCapacity": "Estimated capacity"
+    }
   }
 }
