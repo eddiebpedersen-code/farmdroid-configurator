@@ -317,7 +317,7 @@
       "name": "Système +SPRAY",
       "description": "Pulvérisation de précision avec guidage GPS",
       "features": {
-        "tankCapacity": "Capacité de réservoir 110L",
+        "chemicalReduction": "Jusqu'à 94% de réduction des produits chimiques",
         "precisionNozzles": "Buses de précision par rang",
         "gpsGuided": "Application guidée GPS",
         "variableRate": "Contrôle de débit variable"

@@ -317,7 +317,7 @@
       "name": "+SPRAY Systeem",
       "description": "Precisiespuiten met GPS-geleiding",
       "features": {
-        "tankCapacity": "110L tankinhoud",
+        "chemicalReduction": "Tot 94% chemicaliënreductie",
         "precisionNozzles": "Precisie spuitkoppen per rij",
         "gpsGuided": "GPS-geleide toepassing",
         "variableRate": "Variabele dosering"

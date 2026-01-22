@@ -319,7 +319,7 @@
       "name": "+SPRAY System",
       "description": "Precision spraying with GPS guidance",
       "features": {
-        "tankCapacity": "110L tank capacity",
+        "chemicalReduction": "Up to 94% chemical reduction",
         "precisionNozzles": "Precision nozzles per row",
         "gpsGuided": "GPS-guided application",
         "variableRate": "Variable rate control"

@@ -317,7 +317,7 @@
       "name": "+SPRAY System",
       "description": "Præcisionssprøjtning med GPS-styring",
       "features": {
-        "tankCapacity": "110L tankkapacitet",
+        "chemicalReduction": "Op til 94% kemikaliereduktion",
         "precisionNozzles": "Præcisionsdyser per række",
         "gpsGuided": "GPS-styret påføring",
         "variableRate": "Variabel dosering"

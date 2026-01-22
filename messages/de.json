@@ -317,7 +317,7 @@
       "name": "+SPRAY System",
       "description": "Präzisionsspritzen mit GPS-Führung",
       "features": {
-        "tankCapacity": "110L Tankkapazität",
+        "chemicalReduction": "Bis zu 94% Chemikalienreduzierung",
         "precisionNozzles": "Präzisionsdüsen pro Reihe",
         "gpsGuided": "GPS-geführte Ausbringung",
         "variableRate": "Variable Dosierung"

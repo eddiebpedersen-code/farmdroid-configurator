@@ -98,6 +98,8 @@ function WeedConfigInfoModal({
                     loop
                     muted
                     playsInline
+                    poster="/videos/weeding-poster.jpg"
+                    preload="metadata"
                   >
                     <source src="/videos/weeding-sequences.mp4" type="video/mp4" />
                   </video>
@@ -115,6 +117,8 @@ function WeedConfigInfoModal({
                     loop
                     muted
                     playsInline
+                    poster="/videos/spray-poster.jpg"
+                    preload="metadata"
                   >
                     <source src="/videos/spray-system.mp4" type="video/mp4" />
                   </video>
@@ -145,9 +149,9 @@ function WeedConfigInfoModal({
                               alt={t(`options.${activeOption}.name`)}
                               fill
                               className="object-cover"
-                              sizes="100vw"
-                              quality={100}
-                              unoptimized
+                              sizes="(max-width: 1024px) 100vw, 50vw"
+                              quality={85}
+                              loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                           </motion.div>
@@ -346,7 +350,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
 
   const standardWeedFeatureKeys = ["weedingWires", "knifeInrow"] as const;
   const combiToolFeatureKeys = ["notchedDiscs", "lShares"] as const;
-  const sprayFeatureKeys = ["tankCapacity", "precisionNozzles", "gpsGuided", "variableRate"] as const;
+  const sprayFeatureKeys = ["chemicalReduction", "precisionNozzles", "gpsGuided", "variableRate"] as const;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
@@ -361,6 +365,8 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
               loop
               muted
               playsInline
+              poster="/videos/weeding-poster.jpg"
+              preload="metadata"
             >
               <source src="/videos/weeding-sequences.mp4" type="video/mp4" />
             </video>
