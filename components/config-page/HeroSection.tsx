@@ -72,13 +72,20 @@ export function HeroSection({ data }: HeroSectionProps) {
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-stone-900 mb-2">
             {t("greeting", { firstName: lead.firstName })}
           </h1>
-          <div className="flex items-center justify-center gap-3 flex-wrap">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-100 rounded-full">
-              <span className="text-sm text-emerald-700 font-medium">{reference}</span>
-            </div>
 
-            {/* Share Buttons */}
-            <div className="flex items-center gap-2 print:hidden">
+          {/* Reference Code - Prominent Display */}
+          <div className="mb-4">
+            <p className="text-sm text-stone-500 mb-1">{t("referenceLabel")}</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-lg border border-emerald-200">
+              <span className="text-lg font-mono font-semibold text-emerald-800">{reference}</span>
+            </div>
+            <p className="text-xs text-stone-400 mt-2 max-w-md mx-auto">
+              {t("referenceHint")}
+            </p>
+          </div>
+
+          {/* Share Buttons */}
+          <div className="flex items-center justify-center gap-2 print:hidden">
               <button
                 onClick={handleCopyLink}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors ${
@@ -108,7 +115,6 @@ export function HeroSection({ data }: HeroSectionProps) {
                 <span className="hidden sm:inline">{t("share.print")}</span>
               </button>
             </div>
-          </div>
         </motion.div>
 
         {/* Product Image */}

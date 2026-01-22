@@ -95,6 +95,27 @@ export async function createOrUpdateCompany(
 }
 
 /**
+ * Get the company associated with a contact (if any)
+ * Returns the company ID or null if no company is associated
+ */
+export async function getContactCompany(contactId: string): Promise<string | null> {
+  try {
+    const response = await hubspotRequest<{ results: Array<{ id: string }> }>(
+      `/crm/v3/objects/contacts/${contactId}/associations/companies`,
+      { method: "GET" }
+    );
+
+    if (response.results && response.results.length > 0) {
+      return response.results[0].id;
+    }
+    return null;
+  } catch (error) {
+    console.log("No company associated with contact or error fetching:", error);
+    return null;
+  }
+}
+
+/**
  * Associate a contact with a company
  */
 export async function associateContactToCompany(

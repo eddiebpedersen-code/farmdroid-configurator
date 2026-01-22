@@ -1,7 +1,8 @@
 import { createOrUpdateContact } from "./contacts";
-import { createOrUpdateCompany, associateContactToCompany } from "./companies";
+import { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
 import { createOrUpdateDeal, associateDealToContact, associateDealToCompany } from "./deals";
 import { createConfigurationNote, generateConfigSummary } from "./notes";
+import { sendConfigurationEmail } from "./emails";
 import type { LeadData } from "@/components/configurator/lead-capture-form";
 import type { ConfiguratorState } from "@/lib/configurator-data";
 
@@ -10,6 +11,7 @@ export interface HubSpotResult {
   companyId: string;
   dealId: string;
   noteId?: string;
+  emailId?: string;
 }
 
 /**
@@ -45,11 +47,17 @@ export async function createHubSpotEntities(
   // 1. Create or update contact (pass config for dynamic mappings)
   const contactId = await createOrUpdateContact(lead, reference, country, config);
 
-  // 2. Create or update company (pass lead and config for dynamic mappings)
-  const companyId = await createOrUpdateCompany(lead.company, country, leadData, config);
+  // 2. Check if contact already has a company associated (prevents duplicates from misspellings)
+  let companyId = await getContactCompany(contactId);
 
-  // 3. Associate contact to company
-  await associateContactToCompany(contactId, companyId);
+  if (!companyId) {
+    // No existing company - create or find one by name
+    companyId = await createOrUpdateCompany(lead.company, country, leadData, config);
+    // Associate contact to company
+    await associateContactToCompany(contactId, companyId);
+  } else {
+    console.log(`Contact ${contactId} already associated with company ${companyId}, using existing`);
+  }
 
   // Prepare derived data for field mapping
   const configUrl = `${baseUrl}/${locale}/config/${reference}`;
@@ -96,15 +104,34 @@ export async function createHubSpotEntities(
     console.error("Failed to create HubSpot note:", error);
   }
 
+  // 7. Send configuration email to the contact
+  let emailId: string | undefined;
+  try {
+    const result = await sendConfigurationEmail(
+      contactId,
+      lead.email,
+      lead.firstName,
+      reference,
+      configUrl,
+      locale
+    );
+    emailId = result || undefined;
+  } catch (error) {
+    // Email is non-critical, log and continue
+    console.error("Failed to send configuration email:", error);
+  }
+
   return {
     contactId,
     companyId,
     dealId,
     noteId,
+    emailId,
   };
 }
 
 export { createOrUpdateContact } from "./contacts";
-export { createOrUpdateCompany, associateContactToCompany } from "./companies";
+export { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
 export { createOrUpdateDeal, createDeal, associateDealToContact, associateDealToCompany } from "./deals";
 export { createConfigurationNote, createDealNote, generateConfigSummary } from "./notes";
+export { sendConfigurationEmail } from "./emails";

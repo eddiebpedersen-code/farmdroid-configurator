@@ -882,6 +882,8 @@
   "configPage": {
     "loading": "Lade deine Konfiguration...",
     "greeting": "Hallo {firstName}, hier ist dein FarmDroid",
+    "referenceLabel": "Dein einzigartiger Konfigurationscode",
+    "referenceHint": "Speichere diesen Code - du kannst jederzeit zurückkehren, um deine Konfiguration anzusehen oder zu ändern. Wir haben ihn auch an deine E-Mail gesendet.",
     "configurationTitle": "Deine Konfiguration",
     "investmentTitle": "Deine Investition",
     "stats": {

@@ -882,6 +882,8 @@
   "configPage": {
     "loading": "Je configuratie wordt geladen...",
     "greeting": "Hallo {firstName}, hier is je FarmDroid",
+    "referenceLabel": "Je unieke configuratiecode",
+    "referenceHint": "Bewaar deze code - je kunt altijd terugkeren om je configuratie te bekijken of aan te passen. We hebben deze ook naar je e-mail gestuurd.",
     "configurationTitle": "Jouw Configuratie",
     "investmentTitle": "Jouw Investering",
     "stats": {

@@ -882,6 +882,8 @@
   "configPage": {
     "loading": "Indlæser din konfiguration...",
     "greeting": "Hej {firstName}, her er din FarmDroid",
+    "referenceLabel": "Din unikke konfigurationskode",
+    "referenceHint": "Gem denne kode - du kan altid vende tilbage for at se eller ændre din konfiguration. Vi har også sendt den til din email.",
     "configurationTitle": "Din Konfiguration",
     "investmentTitle": "Din Investering",
     "stats": {
