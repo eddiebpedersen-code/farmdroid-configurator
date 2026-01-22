@@ -46,9 +46,13 @@ export async function createHubSpotEntities(
         phone: lead.phone,
         company: lead.company,
         country: country,
+        region: lead.region,
+        isFarmer: lead.isFarmer,
+        farmingType: lead.farmingType,
         farmSize: lead.farmSize,
         hectaresForFarmDroid: lead.hectaresForFarmDroid,
         crops: lead.crops,
+        otherCrops: lead.otherCrops,
         contactByPartner: lead.contactByPartner,
         marketingConsent: lead.marketingConsent,
       };
