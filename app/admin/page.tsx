@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/auth-server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Users, GitBranch, Clock } from "lucide-react";
+import { FileText, Users, GitBranch, Clock, CheckCircle2, XCircle, Building2, User } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminDashboard() {
@@ -25,12 +25,23 @@ export default async function AdminDashboard() {
     .select("*", { count: "exact", head: true })
     .eq("is_active", true);
 
+  // Get HubSpot sync stats
+  const { count: hubspotSynced } = await supabase
+    .from("configurations")
+    .select("*", { count: "exact", head: true })
+    .not("hubspot_contact_id", "is", null);
+
+  const { count: hubspotFailed } = await supabase
+    .from("configurations")
+    .select("*", { count: "exact", head: true })
+    .is("hubspot_contact_id", null);
+
   // Get recent configurations
   const { data: recentSubmissions } = await supabase
     .from("configurations")
-    .select("reference, company, email, created_at, status")
+    .select("reference, company, email, created_at, status, hubspot_contact_id, hubspot_company_id")
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(10);
 
   return (
     <div className="space-y-8">
@@ -72,6 +83,21 @@ export default async function AdminDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-stone-600">
+              HubSpot Synced
+            </CardTitle>
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-600">{hubspotSynced || 0}</div>
+            <p className="text-xs text-stone-500 mt-1">
+              {hubspotFailed || 0} not synced
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-stone-600">
               Field Mappings
             </CardTitle>
             <GitBranch className="h-4 w-4 text-stone-400" />
@@ -83,62 +109,76 @@ export default async function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-stone-600">
-              Quick Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Link
-              href="/admin/mappings"
-              className="block text-sm text-green-600 hover:text-green-700 hover:underline"
-            >
-              Configure HubSpot mappings
-            </Link>
-            <Link
-              href="/admin/users"
-              className="block text-sm text-green-600 hover:text-green-700 hover:underline"
-            >
-              Manage admin users
-            </Link>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Recent Submissions */}
       <Card>
         <CardHeader>
           <CardTitle>Recent Configurations</CardTitle>
-          <CardDescription>
-            Latest configuration submissions from the configurator
+          <CardDescription className="flex items-center justify-between">
+            <span>Latest configuration submissions from the configurator</span>
+            <span className="flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1">
+                <User className="h-3 w-3 text-green-500" /> Contact
+              </span>
+              <span className="flex items-center gap-1">
+                <Building2 className="h-3 w-3 text-green-500" /> Company
+              </span>
+              <span className="flex items-center gap-1">
+                <XCircle className="h-3 w-3 text-red-400" /> Not synced
+              </span>
+            </span>
           </CardDescription>
         </CardHeader>
         <CardContent>
           {recentSubmissions && recentSubmissions.length > 0 ? (
             <div className="space-y-4">
-              {recentSubmissions.map((config) => (
-                <div
-                  key={config.reference}
-                  className="flex items-center justify-between py-3 border-b border-stone-100 last:border-0"
-                >
-                  <div>
-                    <p className="font-medium text-stone-900">
-                      {config.company}
-                    </p>
-                    <p className="text-sm text-stone-500">{config.email}</p>
+              {recentSubmissions.map((config) => {
+                const hasContact = !!config.hubspot_contact_id;
+                const hasCompany = !!config.hubspot_company_id;
+                const hubspotConnected = hasContact || hasCompany;
+
+                return (
+                  <div
+                    key={config.reference}
+                    className="flex items-center justify-between py-3 border-b border-stone-100 last:border-0"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-stone-900">
+                        {config.company}
+                      </p>
+                      <p className="text-sm text-stone-500">{config.email}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {/* HubSpot Status */}
+                      <div className="flex items-center gap-2">
+                        {hubspotConnected ? (
+                          <>
+                            <div className="flex items-center gap-1" title={hasContact ? `Contact ID: ${config.hubspot_contact_id}` : "No contact created"}>
+                              <User className={`h-4 w-4 ${hasContact ? "text-green-500" : "text-stone-300"}`} />
+                            </div>
+                            <div className="flex items-center gap-1" title={hasCompany ? `Company ID: ${config.hubspot_company_id}` : "No company created"}>
+                              <Building2 className={`h-4 w-4 ${hasCompany ? "text-green-500" : "text-stone-300"}`} />
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-1" title="Not synced to HubSpot">
+                            <XCircle className="h-4 w-4 text-red-400" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-mono text-stone-600">
+                          {config.reference}
+                        </p>
+                        <p className="text-xs text-stone-400">
+                          {new Date(config.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-mono text-stone-600">
-                      {config.reference}
-                    </p>
-                    <p className="text-xs text-stone-400">
-                      {new Date(config.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className="text-stone-500 text-center py-8">
