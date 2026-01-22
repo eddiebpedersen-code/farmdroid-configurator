@@ -91,8 +91,9 @@ function WeedConfigInfoModal({
             <div className="relative flex-1 bg-stone-100 min-h-[250px] lg:min-h-0">
               {activeOption === "standardWeeding" ? (
                 /* Video for standard weeding */
-                <div className="absolute inset-0">
+                <div key="standardWeeding-video" className="absolute inset-0">
                   <video
+                    key="weeding-video"
                     className="w-full h-full object-cover"
                     autoPlay
                     loop
@@ -110,8 +111,9 @@ function WeedConfigInfoModal({
                 </div>
               ) : activeOption === "spraySystem" ? (
                 /* Video for spray system */
-                <div className="absolute inset-0">
+                <div key="spraySystem-video" className="absolute inset-0">
                   <video
+                    key="spray-video"
                     className="w-full h-full object-cover"
                     autoPlay
                     loop
