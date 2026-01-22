@@ -40,6 +40,8 @@ export async function createOrUpdateContact(
 
   // Check if we have dynamic mappings configured
   const useDynamicMappings = await hasMappings("contact");
+  console.log("[HubSpot] Creating/updating contact for:", lead.email);
+  console.log("[HubSpot] Using dynamic mappings:", useDynamicMappings);
 
   if (useDynamicMappings && config) {
     // Use dynamic mappings from database
@@ -65,6 +67,8 @@ export async function createOrUpdateContact(
       "contact"
     );
 
+    console.log("[HubSpot] Mapped properties:", JSON.stringify(properties, null, 2));
+
     // Always ensure email is set (required for contact)
     if (!properties.email) {
       properties.email = lead.email;
@@ -74,9 +78,12 @@ export async function createOrUpdateContact(
     properties = getDefaultContactProperties(lead, reference, country);
   }
 
+  console.log("[HubSpot] Search result - existing contacts found:", searchResult.results.length);
+
   if (searchResult.results.length > 0) {
     // Update existing contact
     const existingId = searchResult.results[0].id;
+    console.log("[HubSpot] Updating existing contact:", existingId);
     await hubspotRequest<HubSpotContact>(
       `/crm/v3/objects/contacts/${existingId}`,
       {
@@ -84,9 +91,11 @@ export async function createOrUpdateContact(
         body: JSON.stringify({ properties }),
       }
     );
+    console.log("[HubSpot] Contact updated successfully:", existingId);
     return existingId;
   } else {
     // Create new contact
+    console.log("[HubSpot] Creating new contact...");
     const result = await hubspotRequest<HubSpotContact>(
       "/crm/v3/objects/contacts",
       {
@@ -94,6 +103,7 @@ export async function createOrUpdateContact(
         body: JSON.stringify({ properties }),
       }
     );
+    console.log("[HubSpot] Contact created successfully:", result.id);
     return result.id;
   }
 }

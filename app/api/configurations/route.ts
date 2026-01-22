@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
     // Create HubSpot entities (Contact, Company) and Note with config link
     let hubspotResult = null;
     try {
+      console.log("[API] Starting HubSpot integration for reference:", reference);
       // Get base URL for config link
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${request.headers.get("host")}`;
 
@@ -111,9 +112,11 @@ export async function POST(request: NextRequest) {
           hubspot_company_id: hubspotResult.companyId,
         })
         .eq("reference", reference);
+      console.log("[API] HubSpot integration completed successfully:", hubspotResult);
     } catch (hubspotError) {
       // Log but don't fail the request - config is already saved
-      console.error("HubSpot integration error:", hubspotError);
+      console.error("[API] HubSpot integration error:", hubspotError);
+      console.error("[API] Error details:", hubspotError instanceof Error ? hubspotError.stack : hubspotError);
     }
 
     return NextResponse.json({

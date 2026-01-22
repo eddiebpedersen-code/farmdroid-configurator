@@ -50,9 +50,11 @@ async function getActiveMappings(): Promise<HubSpotFieldMappingRow[]> {
     .eq("is_active", true);
 
   if (error) {
-    console.error("Error fetching mappings:", error);
+    console.error("[Mappings] Error fetching mappings:", error);
     return [];
   }
+
+  console.log("[Mappings] Fetched", data?.length || 0, "active mappings from database");
 
   mappingsCache = {
     data: data || [],
@@ -113,7 +115,11 @@ function transformValue(
       if (typeof value === "boolean") {
         return value ? "true" : "false";
       }
-      return String(value);
+      // Normalize common yes/no values to match HubSpot's expected format
+      const strValue = String(value);
+      if (strValue.toLowerCase() === "yes") return "Yes";
+      if (strValue.toLowerCase() === "no") return "No";
+      return strValue;
 
     case "boolean":
       // Convert boolean to specified format

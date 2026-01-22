@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Loader2, ChevronDown } from "lucide-react";
+import { Loader2, ChevronDown, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ConfiguratorState, PriceBreakdown, calculatePrice } from "@/lib/configurator-data";
 
@@ -55,6 +55,54 @@ const ALL_COUNTRIES = [
 
 // Other countries (all except primary, for "Other countries" section)
 const OTHER_COUNTRIES = ALL_COUNTRIES.filter(c => !PRIMARY_COUNTRIES.includes(c as typeof PRIMARY_COUNTRIES[number]));
+
+// Country dial codes
+const COUNTRY_DIAL_CODES: Record<string, string> = {
+  "Afghanistan": "+93", "Albania": "+355", "Algeria": "+213", "Andorra": "+376", "Angola": "+244",
+  "Argentina": "+54", "Armenia": "+374", "Australia": "+61", "Austria": "+43", "Azerbaijan": "+994",
+  "Bahamas": "+1-242", "Bahrain": "+973", "Bangladesh": "+880", "Barbados": "+1-246", "Belarus": "+375",
+  "Belgium": "+32", "Belize": "+501", "Benin": "+229", "Bhutan": "+975", "Bolivia": "+591",
+  "Bosnia and Herzegovina": "+387", "Botswana": "+267", "Brazil": "+55", "Brunei": "+673",
+  "Bulgaria": "+359", "Burkina Faso": "+226", "Burundi": "+257", "Cambodia": "+855", "Cameroon": "+237",
+  "Canada": "+1", "Cape Verde": "+238", "Central African Republic": "+236", "Chad": "+235",
+  "Chile": "+56", "China": "+86", "Colombia": "+57", "Comoros": "+269", "Congo": "+242",
+  "Costa Rica": "+506", "Cote d'Ivoire": "+225", "Croatia": "+385", "Cuba": "+53", "Cyprus": "+357",
+  "Czech Republic": "+420", "Democratic Republic of the Congo": "+243", "Denmark": "+45",
+  "Djibouti": "+253", "Dominica": "+1-767", "Dominican Republic": "+1-809", "East Timor": "+670",
+  "Ecuador": "+593", "Egypt": "+20", "El Salvador": "+503", "Equatorial Guinea": "+240",
+  "Eritrea": "+291", "Estonia": "+372", "Ethiopia": "+251", "Fiji": "+679", "Finland": "+358",
+  "France": "+33", "Gabon": "+241", "Gambia": "+220", "Georgia": "+995", "Germany": "+49",
+  "Ghana": "+233", "Greece": "+30", "Grenada": "+1-473", "Guatemala": "+502", "Guinea": "+224",
+  "Guinea-Bissau": "+245", "Guyana": "+592", "Haiti": "+509", "Honduras": "+504", "Hong Kong": "+852",
+  "Hungary": "+36", "Iceland": "+354", "India": "+91", "Indonesia": "+62", "Iran": "+98",
+  "Iraq": "+964", "Ireland": "+353", "Israel": "+972", "Italy": "+39", "Jamaica": "+1-876",
+  "Japan": "+81", "Jordan": "+962", "Kazakhstan": "+7", "Kenya": "+254", "Kiribati": "+686",
+  "Kosovo": "+383", "Kuwait": "+965", "Kyrgyzstan": "+996", "Laos": "+856", "Latvia": "+371",
+  "Lebanon": "+961", "Lesotho": "+266", "Liberia": "+231", "Libya": "+218", "Liechtenstein": "+423",
+  "Lithuania": "+370", "Luxembourg": "+352", "Macau": "+853", "Macedonia (FYROM)": "+389",
+  "Madagascar": "+261", "Malawi": "+265", "Malaysia": "+60", "Maldives": "+960", "Mali": "+223",
+  "Malta": "+356", "Marshall Islands": "+692", "Mauritania": "+222", "Mauritius": "+230",
+  "Mexico": "+52", "Micronesia": "+691", "Moldova": "+373", "Monaco": "+377", "Mongolia": "+976",
+  "Montenegro": "+382", "Morocco": "+212", "Mozambique": "+258", "Myanmar (Burma)": "+95",
+  "Namibia": "+264", "Nauru": "+674", "Nepal": "+977", "Netherlands": "+31", "New Zealand": "+64",
+  "Nicaragua": "+505", "Niger": "+227", "Nigeria": "+234", "North Korea": "+850", "Norway": "+47",
+  "Oman": "+968", "Pakistan": "+92", "Palau": "+680", "Palestine": "+970", "Panama": "+507",
+  "Papua New Guinea": "+675", "Paraguay": "+595", "Peru": "+51", "Philippines": "+63",
+  "Poland": "+48", "Portugal": "+351", "Qatar": "+974", "Romania": "+40", "Russia": "+7",
+  "Rwanda": "+250", "Saint Kitts and Nevis": "+1-869", "Saint Lucia": "+1-758",
+  "Saint Vincent and the Grenadines": "+1-784", "Samoa": "+685", "San Marino": "+378",
+  "Sao Tome and Principe": "+239", "Saudi Arabia": "+966", "Senegal": "+221", "Serbia": "+381",
+  "Seychelles": "+248", "Sierra Leone": "+232", "Singapore": "+65", "Slovakia": "+421",
+  "Slovenia": "+386", "Solomon Islands": "+677", "Somalia": "+252", "South Africa": "+27",
+  "South Korea": "+82", "South Sudan": "+211", "Spain": "+34", "Sri Lanka": "+94", "Sudan": "+249",
+  "Suriname": "+597", "Swaziland": "+268", "Sweden": "+46", "Switzerland": "+41", "Syria": "+963",
+  "Taiwan": "+886", "Tajikistan": "+992", "Tanzania": "+255", "Thailand": "+66", "Togo": "+228",
+  "Tonga": "+676", "Trinidad and Tobago": "+1-868", "Tunisia": "+216", "Turkey": "+90",
+  "Turkmenistan": "+993", "Tuvalu": "+688", "Uganda": "+256", "Ukraine": "+380",
+  "United Arab Emirates": "+971", "United Kingdom": "+44", "United States": "+1", "Uruguay": "+598",
+  "Uzbekistan": "+998", "Vanuatu": "+678", "Vatican City": "+379", "Venezuela": "+58",
+  "Vietnam": "+84", "Yemen": "+967", "Zambia": "+260", "Zimbabwe": "+263"
+};
 
 // Crop types: key for translations, value for HubSpot internal name
 const CROP_TYPES: Record<string, string> = {
@@ -133,18 +181,47 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
   const [touched, setTouched] = useState<Partial<Record<keyof LeadData, boolean>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [cropsDropdownOpen, setCropsDropdownOpen] = useState(false);
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
   const cropsDropdownRef = useRef<HTMLDivElement>(null);
+  const countryDropdownRef = useRef<HTMLDivElement>(null);
+  const countrySearchRef = useRef<HTMLInputElement>(null);
 
-  // Close crops dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (cropsDropdownRef.current && !cropsDropdownRef.current.contains(event.target as Node)) {
         setCropsDropdownOpen(false);
       }
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target as Node)) {
+        setCountryDropdownOpen(false);
+        setCountrySearch("");
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Focus search input when country dropdown opens
+  useEffect(() => {
+    if (countryDropdownOpen && countrySearchRef.current) {
+      countrySearchRef.current.focus();
+    }
+  }, [countryDropdownOpen]);
+
+  // Filter countries based on search (searches anywhere in the name)
+  const filteredCountries = useMemo(() => {
+    if (!countrySearch.trim()) return ALL_COUNTRIES;
+    const search = countrySearch.toLowerCase();
+    return ALL_COUNTRIES.filter(country =>
+      country.toLowerCase().includes(search)
+    );
+  }, [countrySearch]);
+
+  // Get country dial code
+  const getDialCode = (country: string): string => {
+    return COUNTRY_DIAL_CODES[country] || "";
+  };
 
   // Get selected crops as array (HubSpot internal values)
   const selectedCropsHubspot = formData.crops ? formData.crops.split(";").map(s => s.trim()).filter(Boolean) : [];
@@ -348,34 +425,78 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       {/* Phone */}
       <div>
         <label className="text-sm font-medium text-stone-700">{t("phone")}</label>
-        <input
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => handleChange("phone", e.target.value)}
-          className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-        />
+        <div className="flex">
+          <div className="flex items-center px-3 bg-stone-100 border border-r-0 border-stone-200 rounded-l-lg text-sm text-stone-600 min-w-[70px] justify-center">
+            {formData.country ? getDialCode(formData.country) || "—" : "—"}
+          </div>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => handleChange("phone", e.target.value)}
+            className="flex-1 h-11 px-4 rounded-r-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+            placeholder={t("phonePlaceholder")}
+          />
+        </div>
       </div>
 
       {/* Country */}
-      <div>
+      <div ref={countryDropdownRef}>
         <label className="text-sm font-medium text-stone-700">
           {t("country")} <span className="text-red-500">*</span>
         </label>
         <div className="relative">
-          <select
-            value={formData.country}
-            onChange={(e) => handleChange("country", e.target.value)}
-            onBlur={() => handleBlur("country")}
-            className={`${inputClasses("country")} appearance-none cursor-pointer`}
+          <button
+            type="button"
+            onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
+            onBlur={() => !countryDropdownOpen && handleBlur("country")}
+            className={`${inputClasses("country")} appearance-none cursor-pointer text-left flex items-center justify-between`}
           >
-            <option value="">{t("selectCountry")}</option>
-            {ALL_COUNTRIES.map((country) => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400 pointer-events-none" />
+            <span className={formData.country ? "text-stone-900" : "text-stone-400"}>
+              {formData.country || t("selectCountry")}
+            </span>
+            <ChevronDown className={`h-5 w-5 text-stone-400 transition-transform ${countryDropdownOpen ? "rotate-180" : ""}`} />
+          </button>
+          {countryDropdownOpen && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg">
+              <div className="p-2 border-b border-stone-100">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+                  <input
+                    ref={countrySearchRef}
+                    type="text"
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    placeholder={t("searchCountry")}
+                    className="w-full h-9 pl-9 pr-3 rounded-md border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <div className="max-h-60 overflow-y-auto">
+                {filteredCountries.length === 0 ? (
+                  <div className="px-4 py-3 text-sm text-stone-400">{t("noCountriesFound")}</div>
+                ) : (
+                  filteredCountries.map((country) => (
+                    <button
+                      key={country}
+                      type="button"
+                      onClick={() => {
+                        handleChange("country", country);
+                        setCountryDropdownOpen(false);
+                        setCountrySearch("");
+                        handleBlur("country");
+                      }}
+                      className={`w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center justify-between ${
+                        formData.country === country ? "bg-stone-100 font-medium" : ""
+                      }`}
+                    >
+                      <span>{country}</span>
+                      <span className="text-stone-400 text-xs">{getDialCode(country)}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
         {errors.country && touched.country && (
           <p className="mt-1 text-xs text-red-500">{errors.country}</p>
