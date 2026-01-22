@@ -128,6 +128,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const dragStartSpacings = useRef<number[]>([]);
   const dragStartValue = useRef<number>(0);
   const dragStartWorkingWidth = useRef<number>(0);
+  const dragStartBetweenPassSpacing = useRef<number>(0);
   const svgRef = useRef<SVGSVGElement>(null);
 
   // Animation state - now using CSS animations for smooth performance
@@ -368,7 +369,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     setDraggingRowIdx(idx);
     dragStartX.current = clientX;
     dragStartSpacings.current = [...rowSpacings];
-  }, [rowSpacings]);
+    // Capture current between-pass spacing to maintain it during drag
+    dragStartBetweenPassSpacing.current = betweenPassSpacing;
+  }, [rowSpacings, betweenPassSpacing]);
 
   const handleRowDragMove = useCallback((clientX: number) => {
     if (draggingRowIdx === null || !svgRef.current) return;
@@ -383,8 +386,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     const isFirstRow = draggingRowIdx === 0;
     const isLastRow = draggingRowIdx === config.activeRows - 1;
 
-    // Calculate max row span (working width = rowSpan + betweenPassSpacing)
-    const maxRowSpan = maxWorkingWidth - minRowDistance;
+    // Calculate max row span - use captured between-pass spacing to keep it constant
+    // Working width = rowSpan + betweenPassSpacing, and working width <= maxWorkingWidth
+    const capturedBetweenPassSpacing = dragStartBetweenPassSpacing.current;
+    const maxRowSpan = maxWorkingWidth - capturedBetweenPassSpacing;
 
     // Helper to update a spacing and its mirror with max constraint
     const updateSpacingWithMirror = (spacingIdx: number, newValue: number) => {
@@ -438,6 +443,18 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
       }
     }
 
+    // Calculate new row span and clamp working width to max
+    const newRowSpan = newSpacings.reduce((sum, s) => sum + s, 0);
+    let newWorkingWidth = newRowSpan + capturedBetweenPassSpacing;
+
+    // Ensure working width doesn't exceed maximum (340cm)
+    if (newWorkingWidth > maxWorkingWidth) {
+      newWorkingWidth = maxWorkingWidth;
+    }
+
+    // Update both row spacings and working width override together
+    setFollowWheelSpacing(false);
+    setWorkingWidthOverride(newWorkingWidth);
     updateConfig({ rowSpacings: newSpacings });
   }, [config.activeRows, draggingRowIdx, minRowDistance, maxWorkingWidth, updateConfig, getMirrorSpacingIndex]);
 
@@ -871,8 +888,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     {/* Drag rows */}
                     <div className="flex items-center gap-3 text-white">
                       <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4 4-4m10 8l4-4-4-4" />
                         </svg>
                       </div>
                       <span className="text-sm">{t("tutorialDrag")}</span>
@@ -880,22 +897,34 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     {/* Add rows */}
                     <div className="flex items-center gap-3 text-white">
                       <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
-                        <Plus className="w-5 h-5 text-emerald-400" />
+                        <svg className="w-6 h-6" viewBox="0 0 24 24">
+                          <circle cx="12" cy="12" r="10" fill="none" stroke="#34d399" strokeWidth="2" />
+                          <text x="12" y="16" textAnchor="middle" fill="#34d399" fontSize="14" fontWeight="bold">+</text>
+                        </svg>
                       </div>
                       <span className="text-sm">{t("tutorialAdd")}</span>
                     </div>
                     {/* Remove rows */}
                     <div className="flex items-center gap-3 text-white">
                       <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0">
-                        <Minus className="w-5 h-5 text-red-400" />
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round">
+                          <line x1="7" y1="7" x2="17" y2="17" />
+                          <line x1="17" y1="7" x2="7" y2="17" />
+                        </svg>
                       </div>
                       <span className="text-sm">{t("tutorialRemove")}</span>
                     </div>
                     {/* Drag wheels */}
                     <div className="flex items-center gap-3 text-white">
                       <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+                        <svg className="w-8 h-6" viewBox="0 0 32 24" fill="none">
+                          {/* Left arrow */}
+                          <path d="M6 12L2 12M2 12L5 9M2 12L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          {/* Wheel circle */}
+                          <circle cx="16" cy="12" r="7" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                          <circle cx="16" cy="12" r="2" fill="currentColor" />
+                          {/* Right arrow */}
+                          <path d="M26 12L30 12M30 12L27 9M30 12L27 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </div>
                       <span className="text-sm">{t("tutorialWheels")}</span>
@@ -934,7 +963,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="w-full h-full"
+            className="w-full h-full overflow-hidden"
             onMouseMove={handleMouseMove}
             onMouseUp={handleDragEnd}
             onMouseLeave={() => {
@@ -946,7 +975,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             <svg
               ref={svgRef}
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              className="w-full h-full"
+              className="w-full h-full overflow-hidden"
               role="img"
               aria-label={t("visualizationAria", { rows: config.activeRows, spacing: config.rowDistance / 10 })}
             >
@@ -1100,9 +1129,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
                       return (
                         <>
-                          {/* Previous pass - fully seeded field (entire height) */}
+                          {/* Previous pass - fully seeded field (entire height) - clipped to field area */}
                           {visiblePrevPassRows.length > 0 && (
-                            <g>
+                            <g clipPath="url(#rowAreaClip)">
                               <g
                                 style={{
                                   animation: isAnimating ? `lineScroll ${lineAnimDuration}s linear infinite` : "none",
@@ -1158,8 +1187,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     return (
                       <>
                         {/* Previous pass - fully seeded field (entire height) */}
+                        {/* Previous pass - clipped to field area */}
                         {visiblePrevPassRows.length > 0 && (
-                          <g>
+                          <g clipPath="url(#rowAreaClip)">
                             <g
                               style={{
                                 animation: isAnimating ? `cropScroll ${animDuration}s linear infinite` : "none",
@@ -3180,17 +3210,29 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 <button
                   onClick={(e) => {
                     const step = e.shiftKey ? 1 : 10; // Normal = 1cm, Shift = 0.1cm
-                    const newWidth = Math.min(5000, workingWidth + step); // Max 500cm
+                    const newWidth = Math.min(maxWorkingWidth, workingWidth + step);
                     setFollowWheelSpacing(false); // Manual adjustment exits Beds mode
                     setWorkingWidthOverride(newWidth === calculatedWorkingWidth ? null : newWidth);
                   }}
-                  disabled={workingWidth >= 5000}
+                  disabled={workingWidth >= maxWorkingWidth}
                   className="h-8 w-8 rounded-lg bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 active:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white text-stone-500 transition-all flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
                 >
                   <Plus className="h-3 w-3" />
                 </button>
               </div>
             </div>
+
+            {/* Max working width warning */}
+            {workingWidth >= maxWorkingWidth && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200"
+              >
+                <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0" />
+                <span className="text-xs text-amber-700">{t("maxWorkingWidthWarning")}</span>
+              </motion.div>
+            )}
 
             {/* Mode toggle - only shown when wheels are outside rows */}
             {rowSpan <= config.wheelSpacing && config.wheelSpacing !== calculatedWorkingWidth && (

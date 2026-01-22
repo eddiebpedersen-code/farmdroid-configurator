@@ -9,6 +9,7 @@ import { FarmFitSection } from "./FarmFitSection";
 import { CapacityGraphWidget } from "./CapacityGraphWidget";
 import { NextStepsSection } from "./NextStepsSection";
 import { ReconfigureSection } from "./ReconfigureSection";
+import { OtherConfigurationsWidget } from "./OtherConfigurationsWidget";
 
 interface ConfigPageContentProps {
   data: ConfigPageData;
@@ -22,6 +23,11 @@ export function ConfigPageContent({ data }: ConfigPageContentProps) {
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
+        {/* Other Configurations Widget - shows if user has other configs */}
+        <div className="mb-6">
+          <OtherConfigurationsWidget data={data} />
+        </div>
+
         {/* Two Column Layout - Row 1: Configuration and Investment/Capacity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column - Configuration (stretch to fill) */}

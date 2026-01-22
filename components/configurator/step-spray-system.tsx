@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Info, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -456,9 +456,28 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
   const combiToolPrice = config.activeRows * PRICES.accessories.combiToolPerRow;
   const weedCuttingDiscPrice = config.activeRows * PRICES.accessories.weedCuttingDiscPerRow;
 
+  // Check if combi tool is available - requires minimum row spacing of 30cm (300mm)
+  const minRowSpacing = config.rowSpacings && config.rowSpacings.length > 0
+    ? Math.min(...config.rowSpacings)
+    : config.rowDistance;
+  const isCombiToolAvailable = minRowSpacing >= 300;
+
+  // Check if spray system is available - only up to 10 rows
+  const isSpraySystemAvailable = config.activeRows <= 10;
+
   // Check if weed cutting disc is available for current row distance
   const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
   const isWeedCuttingDiscAvailable = weedCuttingDiscVariant !== null;
+
+  // Auto-deselect options if they become unavailable due to config changes
+  useEffect(() => {
+    if (config.weedingTool === "combiTool" && !isCombiToolAvailable) {
+      updateConfig({ weedingTool: "none" });
+    }
+    if (config.spraySystem && !isSpraySystemAvailable) {
+      updateConfig({ spraySystem: false });
+    }
+  }, [config.weedingTool, config.spraySystem, isCombiToolAvailable, isSpraySystemAvailable, updateConfig]);
 
   const handleWeedingToolChange = (tool: WeedingTool) => {
     updateConfig({ weedingTool: tool });
@@ -677,9 +696,12 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
 
           {/* Combi Tool Option */}
           <button
-            onClick={() => handleWeedingToolChange(config.weedingTool === "combiTool" ? "none" : "combiTool")}
-            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ml-3 md:ml-5 ${
-              config.weedingTool === "combiTool"
+            onClick={() => isCombiToolAvailable && handleWeedingToolChange(config.weedingTool === "combiTool" ? "none" : "combiTool")}
+            disabled={!isCombiToolAvailable}
+            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border ${isCombiToolAvailable && "card-hover"} ml-3 md:ml-5 ${
+              !isCombiToolAvailable
+                ? "border-stone-200 bg-stone-50 opacity-60 cursor-not-allowed"
+                : config.weedingTool === "combiTool"
                 ? "selected"
                 : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
@@ -695,20 +717,33 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   {config.weedingTool === "combiTool" && <Check className="h-3 w-3 text-white checkmark-animated" strokeWidth={3} />}
                 </div>
                 <div>
-                  <p className="font-medium text-stone-900 text-sm md:text-base">{t("combiTool.name")}</p>
-                  <p className="text-xs text-stone-500 mt-0.5">{t("combiTool.description")}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {combiToolFeatureKeys.map((key) => (
-                      <span
-                        key={key}
-                        className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          config.weedingTool === "combiTool" ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
-                        }`}
-                      >
-                        {t(`combiTool.features.${key}`)}
+                  <div className="flex items-center gap-2">
+                    <p className={`font-medium text-sm md:text-base ${isCombiToolAvailable ? "text-stone-900" : "text-stone-400"}`}>
+                      {t("combiTool.name")}
+                    </p>
+                    {!isCombiToolAvailable && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-200 text-stone-500">
+                        {t("combiTool.notAvailable")}
                       </span>
-                    ))}
+                    )}
                   </div>
+                  <p className={`text-xs mt-0.5 ${isCombiToolAvailable ? "text-stone-500" : "text-stone-400"}`}>
+                    {!isCombiToolAvailable ? t("combiTool.requiresMinSpacing") : t("combiTool.description")}
+                  </p>
+                  {isCombiToolAvailable && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {combiToolFeatureKeys.map((key) => (
+                        <span
+                          key={key}
+                          className={`text-[10px] px-2 py-0.5 rounded-full ${
+                            config.weedingTool === "combiTool" ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
+                          }`}
+                        >
+                          {t(`combiTool.features.${key}`)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   {config.weedingTool === "combiTool" && showPrices && (
                     <p className="text-xs text-stone-400 mt-2">
                       {t("combiTool.pricePerRow", { price: formatPrice(PRICES.accessories.combiToolPerRow, config.currency), count: config.activeRows })}
@@ -717,7 +752,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                 </div>
               </div>
               {showPrices && (
-                <span className="text-sm font-semibold text-stone-900 ml-3">
+                <span className={`text-sm font-semibold ml-3 ${isCombiToolAvailable ? "text-stone-900" : "text-stone-400"}`}>
                   +{formatPrice(combiToolPrice, config.currency)}
                 </span>
               )}
@@ -791,9 +826,12 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
 
           {/* Spray System Add-on */}
           <button
-            onClick={() => updateConfig({ spraySystem: !config.spraySystem })}
-            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border card-hover ${
-              config.spraySystem
+            onClick={() => isSpraySystemAvailable && updateConfig({ spraySystem: !config.spraySystem })}
+            disabled={!isSpraySystemAvailable}
+            className={`selection-card w-full text-left p-4 md:p-5 rounded-xl border ${isSpraySystemAvailable && "card-hover"} ${
+              !isSpraySystemAvailable
+                ? "border-stone-200 bg-stone-50 opacity-60 cursor-not-allowed"
+                : config.spraySystem
                 ? "selected"
                 : "border-stone-200 hover:border-stone-300 bg-white"
             }`}
@@ -809,22 +847,33 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-stone-900 text-sm md:text-base">{t("spray.name")}</p>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-0.5">{t("spray.description")}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {sprayFeatureKeys.map((key) => (
-                      <span
-                        key={key}
-                        className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          config.spraySystem ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
-                        }`}
-                      >
-                        {t(`spray.features.${key}`)}
+                    <p className={`font-medium text-sm md:text-base ${isSpraySystemAvailable ? "text-stone-900" : "text-stone-400"}`}>
+                      {t("spray.name")}
+                    </p>
+                    {!isSpraySystemAvailable && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-200 text-stone-500">
+                        {t("spray.notAvailable")}
                       </span>
-                    ))}
+                    )}
                   </div>
-                  {config.spraySystem && showPrices && (
+                  <p className={`text-xs mt-0.5 ${isSpraySystemAvailable ? "text-stone-500" : "text-stone-400"}`}>
+                    {!isSpraySystemAvailable ? t("spray.maxRowsExceeded") : t("spray.description")}
+                  </p>
+                  {isSpraySystemAvailable && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {sprayFeatureKeys.map((key) => (
+                        <span
+                          key={key}
+                          className={`text-[10px] px-2 py-0.5 rounded-full ${
+                            config.spraySystem ? "bg-emerald-100 text-emerald-700" : "bg-stone-100 text-stone-500"
+                          }`}
+                        >
+                          {t(`spray.features.${key}`)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {config.spraySystem && showPrices && isSpraySystemAvailable && (
                     <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1 text-xs text-stone-400">
                       <div className="flex justify-between">
                         <span>{t("spray.baseSystem")}</span>
@@ -839,7 +888,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                 </div>
               </div>
               {showPrices && (
-                <span className="text-sm font-semibold text-stone-900 ml-3">
+                <span className={`text-sm font-semibold ml-3 ${isSpraySystemAvailable ? "text-stone-900" : "text-stone-400"}`}>
                   +{formatPrice(sprayPrice, config.currency)}
                 </span>
               )}

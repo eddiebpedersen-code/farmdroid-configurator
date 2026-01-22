@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Leaf, Sun, Zap, Ruler, Clock } from "lucide-react";
+import { Leaf, Sun, Zap, Ruler, Clock, Battery, Droplets } from "lucide-react";
 import { ConfigPageData } from "@/lib/config-page-types";
 import { calculateRobotSpeed, calculateDailyCapacity } from "@/lib/configurator-data";
 
@@ -29,8 +29,6 @@ export function FarmFitSection({ data, className = "" }: FarmFitSectionProps) {
       icon: Ruler,
       title: t("farmFit.workingWidth"),
       description: t("farmFit.workingWidthDesc", {
-        rows: config.activeRows,
-        spacing: (config.rowDistance / 10).toFixed(1),
         width: (workingWidth / 10).toFixed(0),
       }),
     },
@@ -52,12 +50,22 @@ export function FarmFitSection({ data, className = "" }: FarmFitSectionProps) {
           title: t("farmFit.hybridPower"),
           description: t("farmFit.hybridPowerDesc"),
         },
+    config.powerBank && {
+      icon: Battery,
+      title: t("farmFit.powerBank"),
+      description: t("farmFit.powerBankDesc"),
+    },
+    config.spraySystem && {
+      icon: Droplets,
+      title: t("farmFit.spraySystem"),
+      description: t("farmFit.spraySystemDesc"),
+    },
     {
       icon: Leaf,
       title: t("farmFit.sustainability"),
       description: t("farmFit.sustainabilityDesc"),
     },
-  ];
+  ].filter(Boolean) as { icon: typeof Ruler; title: string; description: string }[];
 
   return (
     <motion.div

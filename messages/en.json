@@ -258,7 +258,9 @@
         "lShares": "L-shares",
         "perActiveRow": "Per active row"
       },
-      "pricePerRow": "{price} × {count} rows"
+      "pricePerRow": "{price} × {count} rows",
+      "notAvailable": "Not available",
+      "requiresMinSpacing": "Requires minimum row spacing of 30cm. Adjust your row configuration to enable this option."
     },
     "weedCuttingDisc": {
       "name": "Weed Cutting Disc",
@@ -277,7 +279,9 @@
         "variableRate": "Variable rate control"
       },
       "baseSystem": "Base system",
-      "rowNozzles": "{count} row nozzles"
+      "rowNozzles": "{count} row nozzles",
+      "notAvailable": "Not available",
+      "maxRowsExceeded": "Available for configurations with up to 10 rows. Your current setup has too many rows."
     },
     "info": {
       "both": "Full weeding setup with mechanical tools and precision spraying for maximum weed control.",
@@ -680,6 +684,7 @@
     "rowSpacing": "Row Spacing",
     "wheelSpacing": "Wheel Spacing",
     "workingWidth": "Working Width",
+    "maxWorkingWidthWarning": "Maximum working width of 340cm reached. This is the limit of the toolbeam.",
     "passiveRows": "Passive Rows",
     "rowPlacement": "Row Placement",
     "bedMode": "Bed",
@@ -986,6 +991,16 @@
       "combiTool": "Combi Tool ({count} rows)",
       "weedCuttingDisc": "Weed Cutting Disc ({count} rows, {variant})",
       "accessories": "Accessories",
+      "starterKit": "Starter Kit",
+      "fstFieldSetupTool": "FST Field Setup Tool",
+      "baseStationV3": "Base Station V3",
+      "essentialCarePackage": "Essential Care Package",
+      "fieldBracket": "Field Bracket",
+      "roadTransport": "Road Transport Kit",
+      "powerBank": "Power Bank",
+      "essentialCareSpray": "Essential Care for +Spray",
+      "additionalWeightKit": "Additional Weight Kit",
+      "toolbox": "Toolbox",
       "warrantyExtension": "+2 Year Warranty Extension",
       "included": "Included",
       "total": "Total Investment",
@@ -997,13 +1012,17 @@
     "farmFit": {
       "title": "Your Farm Fit",
       "workingWidth": "Working Width",
-      "workingWidthDesc": "With {rows} active rows at {spacing}cm spacing, you cover {width}cm per pass",
+      "workingWidthDesc": "Your FarmDroid covers {width}cm per pass",
       "dailyCapacity": "Daily Capacity",
       "dailyCapacityDesc": "Up to {hectares} hectares with 24h operation",
       "solarPower": "Solar Powered",
       "solarPowerDesc": "100% solar-powered operation with zero emissions",
       "hybridPower": "Hybrid Power",
       "hybridPowerDesc": "24-hour operation capability with generator backup",
+      "powerBank": "Power Bank",
+      "powerBankDesc": "Extends daily capacity with 10+ hours of additional operation",
+      "spraySystem": "Precision Spraying",
+      "spraySystemDesc": "+Spray reduces chemical inputs by up to 94%",
       "sustainability": "Sustainable Farming",
       "sustainabilityDesc": "Autonomous precision weeding reduces herbicide use by up to 100%"
     },

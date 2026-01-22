@@ -143,9 +143,11 @@ export function RowConfigAnimation({
   const animDuration = cropSpacingPx / (robotSpeed / 20);
   const soilDuration = 800 / robotSpeed;
 
-  // Visible previous pass rows
-  const visibleMinMm = -svgWidth / 2 / pxPerMm;
-  const visiblePrevPassRows = previousPassRowsMm.filter(mm => mm >= visibleMinMm);
+  // Visible previous pass rows - only show rows that would be visible within the field area
+  // Field extends from x=0 to x=svgWidth, so minimum visible mm is calculated from leftmost pixel
+  const visibleMinMm = (margin.left - svgCenterX) / pxPerMm;
+  const visibleMaxMm = (svgWidth - margin.right - svgCenterX) / pxPerMm;
+  const visiblePrevPassRows = previousPassRowsMm.filter(mm => mm >= visibleMinMm && mm <= visibleMaxMm);
 
   // Group patterns
   const groupPatterns: Record<number, { dx: number; dy: number }[]> = {
@@ -170,10 +172,11 @@ export function RowConfigAnimation({
   const viewBoxHeight = isStatic ? svgHeight - 85 : svgHeight;
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} style={{ overflow: "hidden" }}>
       <svg
         viewBox={`0 ${viewBoxY} ${svgWidth} ${viewBoxHeight}`}
         className="w-full h-full"
+        style={{ overflow: "hidden" }}
       >
         {/* Background */}
         <rect
@@ -192,6 +195,10 @@ export function RowConfigAnimation({
           </clipPath>
           <clipPath id="animCropsClip">
             <rect x={margin.left} y={(rowAreaTop + rowAreaBottom) / 2 + 38} width={svgWidth - margin.left - margin.right} height={(rowAreaBottom - rowAreaTop) / 2 - 15} rx="6" />
+          </clipPath>
+          {/* Strict clip for previous pass elements - ensures nothing renders outside field */}
+          <clipPath id="animFieldClip">
+            <rect x={margin.left} y={rowAreaTop} width={svgWidth - margin.left - margin.right} height={rowAreaBottom - rowAreaTop} />
           </clipPath>
         </defs>
 

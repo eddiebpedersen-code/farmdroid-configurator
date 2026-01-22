@@ -32,6 +32,42 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
 
   const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
 
+  // Build accessory line items
+  const accessoryItems: { label: string; price: number }[] = [];
+
+  if (config.starterKit) {
+    accessoryItems.push({ label: t("investment.starterKit"), price: PRICES.accessories.starterKit });
+  } else {
+    if (config.fstFieldSetupTool) {
+      accessoryItems.push({ label: t("investment.fstFieldSetupTool"), price: PRICES.accessories.fstFieldSetupTool });
+    }
+    if (config.baseStationV3) {
+      accessoryItems.push({ label: t("investment.baseStationV3"), price: PRICES.accessories.baseStationV3 });
+    }
+    if (config.essentialCarePackage) {
+      accessoryItems.push({ label: t("investment.essentialCarePackage"), price: PRICES.accessories.essentialCarePackage });
+    }
+    if (config.fieldBracket) {
+      accessoryItems.push({ label: t("investment.fieldBracket"), price: PRICES.accessories.fieldBracket });
+    }
+  }
+  if (config.roadTransport) {
+    accessoryItems.push({ label: t("investment.roadTransport"), price: PRICES.accessories.roadTransport });
+  }
+  if (config.powerBank) {
+    accessoryItems.push({ label: t("investment.powerBank"), price: PRICES.accessories.powerBank });
+  }
+  const hasEssentialCare = config.starterKit || config.essentialCarePackage;
+  if (config.spraySystem && hasEssentialCare) {
+    accessoryItems.push({ label: t("investment.essentialCareSpray"), price: PRICES.accessories.essentialCareSpray });
+  }
+  if (config.additionalWeightKit) {
+    accessoryItems.push({ label: t("investment.additionalWeightKit"), price: PRICES.accessories.additionalWeightKit });
+  }
+  if (config.toolbox) {
+    accessoryItems.push({ label: t("investment.toolbox"), price: PRICES.accessories.toolbox });
+  }
+
   // Build line items
   const lineItems = [
     {
@@ -67,10 +103,8 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
       label: t("investment.weedCuttingDisc", { count: config.activeRows, variant: weedCuttingDiscVariant || "" }),
       price: weedingToolPrice,
     },
-    (priceBreakdown.accessories - weedingToolPrice) > 0 && {
-      label: t("investment.accessories"),
-      price: priceBreakdown.accessories - weedingToolPrice,
-    },
+    // Add individual accessory items
+    ...accessoryItems,
     priceBreakdown.warrantyExtension > 0 && {
       label: t("investment.warrantyExtension"),
       price: priceBreakdown.warrantyExtension,

@@ -19,7 +19,7 @@ function getProductImage(frontWheel: string): string {
     case "AFW":
       return "/farmdroid-afw.png";
     case "DFW":
-      return "/farmdroid-fd20.png"; // DFW uses the general FD20 image
+      return "/images/wheels/dfw.png";
     case "PFW":
     default:
       return "/farmdroid-pfw-side.png";
