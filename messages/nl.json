@@ -760,7 +760,7 @@
     "autoSaved": "Automatisch opgeslagen"
   },
   "rowConfig": {
-    "title": "+Zaai-Configuratie",
+    "title": "+Seed Configuratie",
     "subtitle": "Configureer uw zaai-instellingen",
     "seedSize": "Zaadgrootte",
     "small": "Klein (6mm)",
@@ -784,7 +784,7 @@
     "applyCropConfig": "{crop} configuratie toepassen",
     "plantSpacing": "Plantafstand",
     "seedSizeLabel": "Zaadgrootte",
-    "seed": "+Zaad",
+    "seed": "+Seed",
     "perRow": "/rij",
     "activeRow": "Actieve rij",
     "passiveRow": "Passieve rij",

@@ -760,7 +760,7 @@
     "autoSaved": "Sauvegardé automatiquement"
   },
   "rowConfig": {
-    "title": "+Configuration Semis",
+    "title": "Configuration +Seed",
     "subtitle": "Configurez votre système de semis",
     "seedSize": "Taille des Graines",
     "small": "Petite (6mm)",
@@ -784,7 +784,7 @@
     "applyCropConfig": "Appliquer config {crop}",
     "plantSpacing": "Espacement des plantes",
     "seedSizeLabel": "Taille des graines",
-    "seed": "+Semis",
+    "seed": "+Seed",
     "perRow": "/rang",
     "activeRow": "Rang actif",
     "passiveRow": "Rang passif",

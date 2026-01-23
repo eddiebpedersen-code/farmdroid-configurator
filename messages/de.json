@@ -760,7 +760,7 @@
     "autoSaved": "Automatisch gespeichert"
   },
   "rowConfig": {
-    "title": "+Saat-Konfiguration",
+    "title": "+Seed Konfiguration",
     "subtitle": "Konfigurieren Sie Ihre Aussaat",
     "seedSize": "Saatgutgröße",
     "small": "Klein (6mm)",
@@ -784,7 +784,7 @@
     "applyCropConfig": "{crop} Konfiguration anwenden",
     "plantSpacing": "Pflanzenabstand",
     "seedSizeLabel": "Saatgutgröße",
-    "seed": "+Saat",
+    "seed": "+Seed",
     "perRow": "/Reihe",
     "activeRow": "Aktive Reihe",
     "passiveRow": "Passive Reihe",
