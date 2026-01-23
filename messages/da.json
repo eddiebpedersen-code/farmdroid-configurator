@@ -820,7 +820,7 @@
     },
     "didYouKnow": {
       "label": "Vidste du?",
-      "gpsSeeding": "FarmDroid registrerer den præcise GPS-position for hvert frø. Det betyder, at den ikke har brug for kameraer til ukrudtshåndtering — den ved præcis, hvor dine afgrøder er."
+      "gpsSeeding": "FarmDroid planlægger den præcise GPS-position for hvert frø. Det betyder, at den ikke har brug for kameraer til ukrudtshåndtering — den ved præcis, hvor dine afgrøder er."
     },
     "optimalWheelSpacing": "Optimal hjulafstand for denne rækkekonfiguration",
     "suggestedSpacing": "Foreslået: {spacing}cm — hjul centreret mellem rækker",

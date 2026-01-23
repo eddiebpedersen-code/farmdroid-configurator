@@ -820,7 +820,7 @@
     },
     "didYouKnow": {
       "label": "Wussten Sie?",
-      "gpsSeeding": "FarmDroid erfasst die exakte GPS-Position jedes Samens. Das bedeutet, dass keine Kameras für die Unkrautbekämpfung benötigt werden — er weiß genau, wo Ihre Pflanzen sind."
+      "gpsSeeding": "FarmDroid plant die exakte GPS-Position jedes Samens. Das bedeutet, dass keine Kameras für die Unkrautbekämpfung benötigt werden — er weiß genau, wo Ihre Pflanzen sind."
     },
     "optimalWheelSpacing": "Optimaler Radabstand für diese Reihenkonfiguration",
     "suggestedSpacing": "Empfohlen: {spacing}cm — Räder zentriert zwischen Reihen",

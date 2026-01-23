@@ -820,7 +820,7 @@
     },
     "didYouKnow": {
       "label": "Wist je dat?",
-      "gpsSeeding": "FarmDroid registreert de exacte GPS-positie van elk zaad. Dit betekent dat er geen camera's nodig zijn voor onkruidbestrijding — hij weet precies waar uw gewassen zijn."
+      "gpsSeeding": "FarmDroid plant de exacte GPS-positie van elk zaad. Dit betekent dat er geen camera's nodig zijn voor onkruidbestrijding — hij weet precies waar uw gewassen zijn."
     },
     "optimalWheelSpacing": "Optimale wielafstand voor deze rijconfiguratie",
     "suggestedSpacing": "Voorgesteld: {spacing}cm — wielen gecentreerd tussen rijen",

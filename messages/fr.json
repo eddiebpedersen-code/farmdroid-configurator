@@ -820,7 +820,7 @@
     },
     "didYouKnow": {
       "label": "Le saviez-vous ?",
-      "gpsSeeding": "FarmDroid enregistre la position GPS exacte de chaque graine. Cela signifie qu'il n'a pas besoin de caméras pour la gestion des mauvaises herbes — il sait précisément où se trouvent vos cultures."
+      "gpsSeeding": "FarmDroid planifie la position GPS exacte de chaque graine. Cela signifie qu'il n'a pas besoin de caméras pour la gestion des mauvaises herbes — il sait précisément où se trouvent vos cultures."
     },
     "optimalWheelSpacing": "Écartement de roues optimal pour cette config de rangs",
     "suggestedSpacing": "Suggéré : {spacing}cm — roues centrées entre les rangs",
