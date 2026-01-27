@@ -3,6 +3,9 @@ import sgMail from "@sendgrid/mail";
 // Initialize SendGrid with API key
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log("[SendGrid] Initialized with API key:", process.env.SENDGRID_API_KEY.substring(0, 10) + "...");
+} else {
+  console.warn("[SendGrid] No API key found in environment variables");
 }
 
 interface EmailContent {
@@ -42,8 +45,15 @@ export async function sendConfigurationEmail(
 
     console.log(`Configuration email sent to ${email} for reference ${reference}`);
     return true;
-  } catch (error) {
-    console.error("Failed to send configuration email:", error);
+  } catch (error: unknown) {
+    console.error("[SendGrid] Failed to send configuration email:");
+    if (error && typeof error === "object" && "response" in error) {
+      const sgError = error as { response: { statusCode: number; body: unknown } };
+      console.error("[SendGrid] Status:", sgError.response.statusCode);
+      console.error("[SendGrid] Body:", JSON.stringify(sgError.response.body));
+    } else {
+      console.error("[SendGrid] Error:", error);
+    }
     return false;
   }
 }
@@ -289,8 +299,15 @@ export async function sendVerificationCodeEmail(
 
     console.log(`Verification code email sent to ${email}`);
     return true;
-  } catch (error) {
-    console.error("Failed to send verification code email:", error);
+  } catch (error: unknown) {
+    console.error("[SendGrid] Failed to send verification code email:");
+    if (error && typeof error === "object" && "response" in error) {
+      const sgError = error as { response: { statusCode: number; body: unknown } };
+      console.error("[SendGrid] Status:", sgError.response.statusCode);
+      console.error("[SendGrid] Body:", JSON.stringify(sgError.response.body));
+    } else {
+      console.error("[SendGrid] Error:", error);
+    }
     return false;
   }
 }

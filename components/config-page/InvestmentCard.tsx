@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { ConfigPageData } from "@/lib/config-page-types";
@@ -7,8 +8,9 @@ import {
   calculatePrice,
   calculatePassiveRows,
   formatPrice,
-  PRICES,
+  getPrices,
   getWeedCuttingDiscVariant,
+  Currency,
 } from "@/lib/configurator-data";
 
 interface InvestmentCardProps {
@@ -19,15 +21,18 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
   const t = useTranslations("configPage");
   const { config } = data;
 
-  const priceBreakdown = calculatePrice(config);
+  const [currency, setCurrency] = useState<Currency>(config.currency);
+
+  const prices = getPrices(currency);
+  const priceBreakdown = calculatePrice(config, undefined, currency);
   const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
 
   // Calculate weeding tool price separately for display
   let weedingToolPrice = 0;
   if (config.weedingTool === "combiTool") {
-    weedingToolPrice = config.activeRows * PRICES.accessories.combiToolPerRow;
+    weedingToolPrice = config.activeRows * prices.accessories.combiToolPerRow;
   } else if (config.weedingTool === "weedCuttingDisc") {
-    weedingToolPrice = config.activeRows * PRICES.accessories.weedCuttingDiscPerRow;
+    weedingToolPrice = config.activeRows * prices.accessories.weedCuttingDiscPerRow;
   }
 
   const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
@@ -36,36 +41,36 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
   const accessoryItems: { label: string; price: number }[] = [];
 
   if (config.starterKit) {
-    accessoryItems.push({ label: t("investment.starterKit"), price: PRICES.accessories.starterKit });
+    accessoryItems.push({ label: t("investment.starterKit"), price: prices.accessories.starterKit });
   } else {
     if (config.fstFieldSetupTool) {
-      accessoryItems.push({ label: t("investment.fstFieldSetupTool"), price: PRICES.accessories.fstFieldSetupTool });
+      accessoryItems.push({ label: t("investment.fstFieldSetupTool"), price: prices.accessories.fstFieldSetupTool });
     }
     if (config.baseStationV3) {
-      accessoryItems.push({ label: t("investment.baseStationV3"), price: PRICES.accessories.baseStationV3 });
+      accessoryItems.push({ label: t("investment.baseStationV3"), price: prices.accessories.baseStationV3 });
     }
     if (config.essentialCarePackage) {
-      accessoryItems.push({ label: t("investment.essentialCarePackage"), price: PRICES.accessories.essentialCarePackage });
+      accessoryItems.push({ label: t("investment.essentialCarePackage"), price: prices.accessories.essentialCarePackage });
     }
     if (config.fieldBracket) {
-      accessoryItems.push({ label: t("investment.fieldBracket"), price: PRICES.accessories.fieldBracket });
+      accessoryItems.push({ label: t("investment.fieldBracket"), price: prices.accessories.fieldBracket });
     }
   }
   if (config.roadTransport) {
-    accessoryItems.push({ label: t("investment.roadTransport"), price: PRICES.accessories.roadTransport });
+    accessoryItems.push({ label: t("investment.roadTransport"), price: prices.accessories.roadTransport });
   }
   if (config.powerBank) {
-    accessoryItems.push({ label: t("investment.powerBank"), price: PRICES.accessories.powerBank });
+    accessoryItems.push({ label: t("investment.powerBank"), price: prices.accessories.powerBank });
   }
   const hasEssentialCare = config.starterKit || config.essentialCarePackage;
   if (config.spraySystem && hasEssentialCare) {
-    accessoryItems.push({ label: t("investment.essentialCareSpray"), price: PRICES.accessories.essentialCareSpray });
+    accessoryItems.push({ label: t("investment.essentialCareSpray"), price: prices.accessories.essentialCareSpray });
   }
   if (config.additionalWeightKit) {
-    accessoryItems.push({ label: t("investment.additionalWeightKit"), price: PRICES.accessories.additionalWeightKit });
+    accessoryItems.push({ label: t("investment.additionalWeightKit"), price: prices.accessories.additionalWeightKit });
   }
   if (config.toolbox) {
-    accessoryItems.push({ label: t("investment.toolbox"), price: PRICES.accessories.toolbox });
+    accessoryItems.push({ label: t("investment.toolbox"), price: prices.accessories.toolbox });
   }
 
   // Build line items
@@ -118,8 +123,25 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
       transition={{ duration: 0.4, delay: 0.4 }}
       className="bg-white rounded-xl border border-stone-200 overflow-hidden"
     >
-      <div className="px-6 py-4 border-b border-stone-100">
+      <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-stone-900">{t("investmentTitle")}</h2>
+        <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Currency">
+          {(["EUR", "DKK"] as Currency[]).map((curr) => (
+            <button
+              key={curr}
+              onClick={() => setCurrency(curr)}
+              role="radio"
+              aria-checked={currency === curr}
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                currency === curr
+                  ? "bg-white text-stone-900 shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+              }`}
+            >
+              {curr}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Line Items */}
@@ -131,11 +153,19 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
               <span className="text-sm text-emerald-600 font-medium">{t("investment.included")}</span>
             ) : (
               <span className="text-sm font-medium text-stone-900">
-                {formatPrice(item.price, config.currency)}
+                {formatPrice(item.price, currency)}
               </span>
             )}
           </div>
         ))}
+      </div>
+
+      {/* Delivery & Setup */}
+      <div className="px-6 py-3 border-t border-stone-200">
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-stone-700">{t("investment.deliverySetup")}</span>
+          <span className="text-sm text-stone-500 italic">{t("investment.contactPartner")}</span>
+        </div>
       </div>
 
       {/* Total */}
@@ -143,7 +173,7 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
         <div className="flex justify-between items-center">
           <span className="text-white font-medium">{t("investment.total")}</span>
           <span className="text-xl font-bold text-white">
-            {formatPrice(priceBreakdown.total, config.currency)}
+            {formatPrice(priceBreakdown.total, currency)}
           </span>
         </div>
       </div>
@@ -161,7 +191,7 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
               )}
             </div>
             <span className="text-sm font-medium text-stone-900">
-              {formatPrice(PRICES.servicePlan[config.servicePlan], config.currency)}/yr
+              {formatPrice(prices.servicePlan[config.servicePlan], currency)}/yr
             </span>
           </div>
         </div>

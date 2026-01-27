@@ -9,7 +9,7 @@ import {
   ConfiguratorState,
   PriceBreakdown,
   formatPrice,
-  PRICES,
+  getPrices,
 } from "@/lib/configurator-data";
 import { useMode } from "@/contexts/ModeContext";
 
@@ -23,6 +23,7 @@ interface StepBaseRobotProps {
 }
 
 export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
+  const prices = getPrices(config.currency);
   const [activeView, setActiveView] = useState(0);
   const t = useTranslations("baseRobot");
   const tCommon = useTranslations("common");
@@ -160,7 +161,7 @@ export function StepBaseRobot({ config, priceBreakdown }: StepBaseRobotProps) {
               </div>
             </div>
             {showPrices && (
-              <span className="text-base md:text-lg font-semibold text-stone-900 flex-shrink-0">{formatPrice(PRICES.baseRobot, config.currency)}</span>
+              <span className="text-base md:text-lg font-semibold text-stone-900 flex-shrink-0">{formatPrice(prices.baseRobot, config.currency)}</span>
             )}
           </div>
         </div>

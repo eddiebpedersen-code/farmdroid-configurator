@@ -19,7 +19,7 @@ import {
   calculatePassiveRows,
   formatPrice,
   Currency,
-  PRICES,
+  getPrices,
 } from "@/lib/configurator-data";
 import {
   saveConfiguration,
@@ -309,6 +309,7 @@ function ConfiguratorContent() {
   const tPublic = useTranslations("publicMode");
 
   const priceBreakdown = calculatePrice(config, highestStepReached);
+  const prices = getPrices(config.currency);
 
   // Check for config parameter to pre-fill from personal config page
   useEffect(() => {
@@ -702,7 +703,7 @@ function ConfiguratorContent() {
                       <>
                         <span className="text-xs text-stone-500">{tService("plans.premium.name")}:</span>
                         <span className="text-xs text-stone-400 line-through">
-                          {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                          {formatPrice(prices.servicePlan.premium, config.currency)}/yr
                         </span>
                         <span className="text-xs font-semibold text-emerald-600">
                           {formatPrice(0, config.currency)} {tCommon("firstYear")}
@@ -710,7 +711,7 @@ function ConfiguratorContent() {
                       </>
                     ) : currentStep >= 7 && config.servicePlan === "standard" ? (
                       <span className="text-xs text-stone-500">
-                        {tService("plans.standard.name")}: {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
+                        {tService("plans.standard.name")}: {formatPrice(prices.servicePlan.standard, config.currency)}/yr
                       </span>
                     ) : (
                       <span className="text-xs text-stone-400">

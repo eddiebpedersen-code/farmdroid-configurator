@@ -3,14 +3,14 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Layers, Lightbulb, TrendingUp, ChevronDown } from "lucide-react";
+import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Layers, Lightbulb, TrendingUp, ChevronDown, HelpCircle } from "lucide-react";
 import {
   ConfiguratorState,
   PriceBreakdown,
   SeedSize,
   SeedingMode,
   formatPrice,
-  PRICES,
+  getPrices,
   ROW_CONSTRAINTS,
   WHEEL_CONSTRAINTS,
   validateRowConfig,
@@ -40,6 +40,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const t = useTranslations("rowConfig");
   const tCrops = useTranslations("crops");
   const { showPrices } = useMode();
+  const prices = getPrices(config.currency);
 
   // Working width state - must be declared before calculations that use it
   // followWheelSpacing: true = Beds mode (follows wheel spacing), false = Pattern mode or custom
@@ -100,7 +101,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
 
   const validation = validateRowConfig(config.activeRows, config.rowDistance, config.seedSize, config.frontWheel, rowSpacings);
 
-  const rowPrice = PRICES.activeRow[config.seedSize];
+  const rowPrice = prices.activeRow[config.seedSize];
   const totalRowCost = config.activeRows * rowPrice; // Passive rows are included with active rows
 
   // Interaction state
@@ -141,24 +142,45 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
   const [viewMode, setViewMode] = useState<"2d" | "3d">("2d");
   const [showSeedInfoModal, setShowSeedInfoModal] = useState(false);
 
-  // Drag hint state - shows animated hint every time step is opened
+  // Tutorial overlay state
   const [showDragHint, setShowDragHint] = useState(false);
+  const [hasSeenTutorial, setHasSeenTutorial] = useState(false);
 
-  // Show drag hint every time the step is opened (with multiple rows)
+  // Check localStorage on mount, then show tutorial accordingly
   useEffect(() => {
+    const seen = localStorage.getItem("farmdroid_tutorial_seen") === "true";
+    setHasSeenTutorial(seen);
+
+    let showTimer: ReturnType<typeof setTimeout>;
+    let hideTimer: ReturnType<typeof setTimeout>;
+
     if (config.activeRows > 1) {
-      // Small delay to let the page render first
-      const timer = setTimeout(() => {
+      showTimer = setTimeout(() => {
         setShowDragHint(true);
-        // Hide hint after animation completes
-        const hideTimer = setTimeout(() => {
-          setShowDragHint(false);
-        }, 6000); // 6 seconds for animation + tooltip
-        return () => clearTimeout(hideTimer);
+        // Returning user: auto-hide after 4 seconds
+        if (seen) {
+          hideTimer = setTimeout(() => {
+            setShowDragHint(false);
+          }, 4000);
+        }
+        // First-time user: stays until "Got it" is pressed
       }, 800);
-      return () => clearTimeout(timer);
     }
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
   }, []);
+
+  // Dismiss tutorial and remember in localStorage
+  const dismissTutorial = useCallback(() => {
+    setShowDragHint(false);
+    if (!hasSeenTutorial) {
+      localStorage.setItem("farmdroid_tutorial_seen", "true");
+      setHasSeenTutorial(true);
+    }
+  }, [hasSeenTutorial]);
 
   // Sync seeding parameters to config when they change
   useEffect(() => {
@@ -862,7 +884,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
             </div>
           )}
 
-          {/* Interactive tutorial overlay - shows every time step is opened */}
+          {/* Interactive tutorial overlay */}
           <AnimatePresence>
             {showDragHint && config.activeRows > 0 && viewMode === "2d" && (
               <motion.div
@@ -872,7 +894,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 transition={{ duration: 0.4 }}
                 className="absolute inset-0 z-30 flex items-center justify-center pointer-events-auto cursor-pointer"
                 style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-                onClick={() => setShowDragHint(false)}
+                onClick={dismissTutorial}
               >
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -931,7 +953,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     </div>
                   </div>
                   <button
-                    onClick={() => setShowDragHint(false)}
+                    onClick={dismissTutorial}
                     className="mt-5 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
                   >
                     {t("tutorialGotIt")}
@@ -940,6 +962,17 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Help button to re-show tutorial */}
+          {!showDragHint && config.activeRows > 0 && viewMode === "2d" && (
+            <button
+              onClick={() => setShowDragHint(true)}
+              className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-white/90 hover:bg-white border border-stone-200 shadow-sm flex items-center justify-center transition-colors"
+              title={t("tutorialTitle")}
+            >
+              <HelpCircle className="h-4 w-4 text-stone-500" />
+            </button>
+          )}
 
           {/* Daily Capacity Graph */}
           {viewMode === "3d" && (
@@ -1564,7 +1597,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       <g
                         key={`seeding-unit-${idx}`}
                         transform={`translate(${mmToX(rowMm)}, ${(rowAreaTop + rowAreaBottom) / 2 - 35})`}
-                        className={`${canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"} ${showDragHint && canDrag ? "drag-hint-wiggle" : ""}`}
+                        className={`${canDrag ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"}`}
                         onMouseEnter={() => { setHoveredSeedUnit(idx); setHoveredRow(idx); }}
                         onMouseLeave={() => { if (!isDragging) { setHoveredSeedUnit(null); setHoveredRow(null); } }}
                         onMouseDown={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); setShowDragHint(false); } : undefined}
@@ -2909,7 +2942,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 </div>
                 {showPrices && (
                   <p className="text-xs text-stone-400 mt-0.5">
-                    {formatPrice(PRICES.activeRow[size], config.currency)}/row
+                    {formatPrice(prices.activeRow[size], config.currency)}/row
                   </p>
                 )}
               </button>

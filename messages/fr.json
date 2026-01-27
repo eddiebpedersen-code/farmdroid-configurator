@@ -628,6 +628,7 @@
     "billedAnnually": "Facturé annuellement",
     "firstYearIncluded": "1ère année incluse",
     "perYear": "/an",
+    "clickToDeselect": "Cliquez à nouveau sur le plan sélectionné pour le désélectionner",
     "plans": {
       "none": "Pas de plan de service",
       "standard": {
@@ -1086,7 +1087,7 @@
         "AFW": "Active Front Wheel",
         "DFW": "Dual Front Wheel"
       },
-      "activeRows": "{count}× Rangs Actifs ({size})",
+      "activeRows": "{count}× Rangs Actifs (+Seed, +Weed) ({size})",
       "passiveRows": "{count}× Rangs Passifs",
       "hybrid": "Système Hybride",
       "spraySystem": "+SPRAY System",
@@ -1094,6 +1095,8 @@
       "weedCuttingDisc": "Weed Cutting Disc ({count} rangs, {variant})",
       "accessories": "Accessoires",
       "warrantyExtension": "+2 Year Warranty Extension",
+      "deliverySetup": "Livraison & Installation",
+      "contactPartner": "Contactez le partenaire local",
       "included": "Inclus",
       "total": "Investissement Total",
       "annualSubscription": "Abonnement Annuel",

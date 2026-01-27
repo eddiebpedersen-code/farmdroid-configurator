@@ -628,6 +628,7 @@
     "billedAnnually": "Faktureres årligt",
     "firstYearIncluded": "1. år inkluderet",
     "perYear": "/år",
+    "clickToDeselect": "Klik på den valgte plan igen for at fravælge",
     "plans": {
       "none": "Ingen serviceplan",
       "standard": {
@@ -1086,7 +1087,7 @@
         "AFW": "Active Front Wheel",
         "DFW": "Dual Front Wheel"
       },
-      "activeRows": "{count}× Aktive Rækker ({size})",
+      "activeRows": "{count}× Aktive Rækker (+Seed, +Weed) ({size})",
       "passiveRows": "{count}× Passive Rækker",
       "hybrid": "Hybrid Strømsystem",
       "spraySystem": "+SPRAY System",
@@ -1094,6 +1095,8 @@
       "weedCuttingDisc": "Weed Cutting Disc ({count} rækker, {variant})",
       "accessories": "Tilbehør",
       "warrantyExtension": "+2 Year Warranty Extension",
+      "deliverySetup": "Levering & Opsætning",
+      "contactPartner": "Kontakt lokal partner",
       "included": "Inkluderet",
       "total": "Samlet Investering",
       "annualSubscription": "Årligt Abonnement",

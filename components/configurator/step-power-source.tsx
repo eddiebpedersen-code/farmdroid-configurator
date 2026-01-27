@@ -9,7 +9,7 @@ import {
   ConfiguratorState,
   PriceBreakdown,
   formatPrice,
-  PRICES,
+  getPrices,
 } from "@/lib/configurator-data";
 import { useMode } from "@/contexts/ModeContext";
 
@@ -250,6 +250,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const { showPrices } = useMode();
+  const prices = getPrices(config.currency);
 
   const solarFeatureKeys = ["solarPanels", "battery", "zeroEmission"] as const;
   const powerBankFeatureKeys = ["extraCapacity", "totalCapacity", "chargedExternally", "smartCharging"] as const;
@@ -522,7 +523,7 @@ export function StepPowerSource({ config, updateConfig }: StepPowerSourceProps) 
               </div>
               {showPrices && (
                 <span className="text-sm font-semibold text-stone-900 ml-3">
-                  +{formatPrice(PRICES.accessories.powerBank, config.currency)}
+                  +{formatPrice(prices.accessories.powerBank, config.currency)}
                 </span>
               )}
             </div>

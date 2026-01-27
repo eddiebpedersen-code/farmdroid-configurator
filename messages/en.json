@@ -633,6 +633,7 @@
     "billedAnnually": "Billed annually",
     "firstYearIncluded": "1st year included",
     "perYear": "/year",
+    "clickToDeselect": "Click the selected plan again to deselect",
     "plans": {
       "none": "No service plan",
       "standard": {
@@ -1094,7 +1095,7 @@
         "AFW": "Active Front Wheel",
         "DFW": "Dual Front Wheel"
       },
-      "activeRows": "{count}× Active Rows ({size})",
+      "activeRows": "{count}× Active Rows (+Seed, +Weed) ({size})",
       "passiveRows": "{count}× Passive Rows",
       "hybrid": "Hybrid Power System",
       "spraySystem": "+SPRAY System",
@@ -1112,6 +1113,8 @@
       "additionalWeightKit": "Additional Weight Kit",
       "toolbox": "Toolbox",
       "warrantyExtension": "+2 Year Warranty Extension",
+      "deliverySetup": "Delivery & Setup",
+      "contactPartner": "Contact local partner",
       "included": "Included",
       "total": "Total Investment",
       "annualSubscription": "Annual Subscription",

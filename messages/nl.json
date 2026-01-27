@@ -628,6 +628,7 @@
     "billedAnnually": "Jaarlijks gefactureerd",
     "firstYearIncluded": "1e jaar inbegrepen",
     "perYear": "/jaar",
+    "clickToDeselect": "Klik opnieuw op het geselecteerde plan om te deselecteren",
     "plans": {
       "none": "Geen serviceplan",
       "standard": {
@@ -1086,7 +1087,7 @@
         "AFW": "Active Front Wheel",
         "DFW": "Dual Front Wheel"
       },
-      "activeRows": "{count}× Actieve Rijen ({size})",
+      "activeRows": "{count}× Actieve Rijen (+Seed, +Weed) ({size})",
       "passiveRows": "{count}× Passieve Rijen",
       "hybrid": "Hybride Stroomsysteem",
       "spraySystem": "+SPRAY System",
@@ -1094,6 +1095,8 @@
       "weedCuttingDisc": "Weed Cutting Disc ({count} rijen, {variant})",
       "accessories": "Accessoires",
       "warrantyExtension": "+2 Year Warranty Extension",
+      "deliverySetup": "Levering & Installatie",
+      "contactPartner": "Neem contact op met lokale partner",
       "included": "Inbegrepen",
       "total": "Totale Investering",
       "annualSubscription": "Jaarlijks Abonnement",

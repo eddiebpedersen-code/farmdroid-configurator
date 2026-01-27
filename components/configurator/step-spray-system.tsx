@@ -9,7 +9,7 @@ import {
   ConfiguratorState,
   PriceBreakdown,
   formatPrice,
-  PRICES,
+  getPrices,
   getWeedCuttingDiscVariant,
   WeedingTool,
 } from "@/lib/configurator-data";
@@ -313,15 +313,16 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoModalOption, setInfoModalOption] = useState<WeedOptionId>("standardWeeding");
   const { showPrices } = useMode();
+  const prices = getPrices(config.currency);
 
   const openInfoModal = (option: WeedOptionId) => {
     setInfoModalOption(option);
     setShowInfoModal(true);
   };
 
-  const sprayPrice = PRICES.spraySystem.base + (config.activeRows * PRICES.spraySystem.perRow);
-  const combiToolPrice = config.activeRows * PRICES.accessories.combiToolPerRow;
-  const weedCuttingDiscPrice = config.activeRows * PRICES.accessories.weedCuttingDiscPerRow;
+  const sprayPrice = prices.spraySystem.base + (config.activeRows * prices.spraySystem.perRow);
+  const combiToolPrice = config.activeRows * prices.accessories.combiToolPerRow;
+  const weedCuttingDiscPrice = config.activeRows * prices.accessories.weedCuttingDiscPerRow;
 
   // Check if combi tool is available - requires minimum row spacing of 30cm (300mm)
   const minRowSpacing = config.rowSpacings && config.rowSpacings.length > 0
@@ -490,7 +491,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   )}
                   {config.weedingTool === "combiTool" && showPrices && (
                     <p className="text-xs text-stone-400 mt-2">
-                      {t("combiTool.pricePerRow", { price: formatPrice(PRICES.accessories.combiToolPerRow, config.currency), count: config.activeRows })}
+                      {t("combiTool.pricePerRow", { price: formatPrice(prices.accessories.combiToolPerRow, config.currency), count: config.activeRows })}
                     </p>
                   )}
                 </div>
@@ -541,7 +542,7 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                   </p>
                   {config.weedingTool === "weedCuttingDisc" && isWeedCuttingDiscAvailable && showPrices && (
                     <p className="text-xs text-stone-400 mt-2">
-                      {t("weedCuttingDisc.pricePerRow", { price: formatPrice(PRICES.accessories.weedCuttingDiscPerRow, config.currency), count: config.activeRows })}
+                      {t("weedCuttingDisc.pricePerRow", { price: formatPrice(prices.accessories.weedCuttingDiscPerRow, config.currency), count: config.activeRows })}
                     </p>
                   )}
                 </div>
@@ -621,11 +622,11 @@ export function StepSpraySystem({ config, updateConfig }: StepSpraySystemProps) 
                     <div className="mt-3 pt-3 border-t border-emerald-200 space-y-1 text-xs text-stone-400">
                       <div className="flex justify-between">
                         <span>{t("spray.baseSystem")}</span>
-                        <span>{formatPrice(PRICES.spraySystem.base, config.currency)}</span>
+                        <span>{formatPrice(prices.spraySystem.base, config.currency)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>{t("spray.rowNozzles", { count: config.activeRows })}</span>
-                        <span>{formatPrice(config.activeRows * PRICES.spraySystem.perRow, config.currency)}</span>
+                        <span>{formatPrice(config.activeRows * prices.spraySystem.perRow, config.currency)}</span>
                       </div>
                     </div>
                   )}

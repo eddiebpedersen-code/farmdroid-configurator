@@ -26,7 +26,7 @@ import {
   formatPrice,
   calculatePassiveRows,
   calculateRowWorkingWidth,
-  PRICES,
+  getPrices,
   getWeedCuttingDiscVariant,
 } from "@/lib/configurator-data";
 import { useToastActions } from "@/components/ui/toast";
@@ -41,6 +41,7 @@ interface PartnerActionsProps {
 export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote }: PartnerActionsProps) {
   const toast = useToastActions();
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const prices = getPrices(config.currency);
 
   const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const workingWidth = calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
@@ -48,9 +49,9 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
   // Calculate weeding tool price
   const weedingToolPrice =
     config.weedingTool === "combiTool"
-      ? config.activeRows * PRICES.accessories.combiToolPerRow
+      ? config.activeRows * prices.accessories.combiToolPerRow
       : config.weedingTool === "weedCuttingDisc"
-      ? config.activeRows * PRICES.accessories.weedCuttingDiscPerRow
+      ? config.activeRows * prices.accessories.weedCuttingDiscPerRow
       : 0;
 
   const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
@@ -75,8 +76,8 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
     config.activeRows > 0 && {
       icon: Rows3,
       label: `${config.activeRows} Active Rows (${config.seedSize})`,
-      value: config.activeRows * PRICES.activeRow[config.seedSize],
-      breakdown: { count: config.activeRows, unitPrice: PRICES.activeRow[config.seedSize] },
+      value: config.activeRows * prices.activeRow[config.seedSize],
+      breakdown: { count: config.activeRows, unitPrice: prices.activeRow[config.seedSize] },
     },
     passiveRows > 0 && {
       icon: Rows3,
@@ -93,65 +94,65 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
       icon: Scissors,
       label: `Combi Tool (${config.activeRows}x)`,
       value: weedingToolPrice,
-      breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.combiToolPerRow },
+      breakdown: { count: config.activeRows, unitPrice: prices.accessories.combiToolPerRow },
     },
     config.weedingTool === "weedCuttingDisc" && {
       icon: Scissors,
       label: `Weed Cutting Disc ${weedCuttingDiscVariant || ""} (${config.activeRows}x)`,
       value: weedingToolPrice,
-      breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.weedCuttingDiscPerRow },
+      breakdown: { count: config.activeRows, unitPrice: prices.accessories.weedCuttingDiscPerRow },
     },
     // Individual accessories
     config.starterKit && {
       icon: Package,
       label: "Starter Kit",
       sublabel: "Incl. FST Tool, Base Station, Care Pkg, Field Bracket",
-      value: PRICES.accessories.starterKit,
+      value: prices.accessories.starterKit,
     },
     !config.starterKit && config.fstFieldSetupTool && {
       icon: Package,
       label: "FST Field Setup Tool",
-      value: PRICES.accessories.fstFieldSetupTool,
+      value: prices.accessories.fstFieldSetupTool,
     },
     !config.starterKit && config.baseStationV3 && {
       icon: Package,
       label: "Base Station V3",
-      value: PRICES.accessories.baseStationV3,
+      value: prices.accessories.baseStationV3,
     },
     !config.starterKit && config.essentialCarePackage && {
       icon: Package,
       label: "Essential Care Package",
-      value: PRICES.accessories.essentialCarePackage,
+      value: prices.accessories.essentialCarePackage,
     },
     !config.starterKit && config.fieldBracket && {
       icon: Package,
       label: "Field Bracket",
-      value: PRICES.accessories.fieldBracket,
+      value: prices.accessories.fieldBracket,
     },
     config.roadTransport && {
       icon: Package,
       label: "Road Transport Platform",
-      value: PRICES.accessories.roadTransport,
+      value: prices.accessories.roadTransport,
     },
     config.powerBank && {
       icon: Package,
       label: "Power Bank",
-      value: PRICES.accessories.powerBank,
+      value: prices.accessories.powerBank,
     },
     config.spraySystem && (config.starterKit || config.essentialCarePackage) && {
       icon: Package,
       label: "Essential Care for +SPRAY",
-      value: PRICES.accessories.essentialCareSpray,
+      value: prices.accessories.essentialCareSpray,
     },
     config.additionalWeightKit && {
       icon: Package,
       label: "Additional Weight Kit",
-      value: PRICES.accessories.additionalWeightKit,
+      value: prices.accessories.additionalWeightKit,
     },
     config.toolbox && {
       icon: Package,
       label: "Toolbox",
-      value: PRICES.accessories.toolbox,
+      value: prices.accessories.toolbox,
     },
     config.warrantyExtension && {
       icon: Shield,
@@ -296,13 +297,13 @@ export function PartnerActions({ config, priceBreakdown, onRestart, onShareQuote
               {config.servicePlan === "premium" ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-stone-400 line-through">
-                    {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                    {formatPrice(prices.servicePlan.premium, config.currency)}/yr
                   </span>
                   <span className="text-sm font-semibold text-emerald-600">FREE first year</span>
                 </div>
               ) : (
                 <span className="text-sm font-semibold text-stone-900">
-                  {formatPrice(PRICES.servicePlan.standard, config.currency)}/year
+                  {formatPrice(prices.servicePlan.standard, config.currency)}/year
                 </span>
               )}
             </div>

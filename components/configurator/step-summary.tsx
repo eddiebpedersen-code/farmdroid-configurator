@@ -31,7 +31,7 @@ import {
   formatPrice,
   calculatePassiveRows,
   calculateRowWorkingWidth,
-  PRICES,
+  getPrices,
   getWeedCuttingDiscVariant,
 } from "@/lib/configurator-data";
 import { QuoteCustomizationModal } from "@/components/quote/QuoteCustomizationModal";
@@ -358,15 +358,17 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
   const [showThankYou, setShowThankYou] = useState(false);
   const [leadData, setLeadData] = useState<LeadData | null>(null);
 
+  const prices = getPrices(config.currency);
+
   const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   // Use saved workingWidth from config (set in step-row-config), with fallback for backward compatibility
   const workingWidth = config.workingWidth ?? calculateRowWorkingWidth(config.activeRows, config.rowDistance, config.frontWheel, config.rowSpacings);
 
   // Calculate weeding tool price
   const weedingToolPrice = config.weedingTool === "combiTool"
-    ? config.activeRows * PRICES.accessories.combiToolPerRow
+    ? config.activeRows * prices.accessories.combiToolPerRow
     : config.weedingTool === "weedCuttingDisc"
-    ? config.activeRows * PRICES.accessories.weedCuttingDiscPerRow
+    ? config.activeRows * prices.accessories.weedCuttingDiscPerRow
     : 0;
 
   const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
@@ -391,8 +393,8 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
     config.activeRows > 0 && {
       icon: Rows3,
       label: t("lineItems.activeRows", { count: config.activeRows, size: config.seedSize }),
-      value: config.activeRows * PRICES.activeRow[config.seedSize],
-      breakdown: { count: config.activeRows, unitPrice: PRICES.activeRow[config.seedSize] },
+      value: config.activeRows * prices.activeRow[config.seedSize],
+      breakdown: { count: config.activeRows, unitPrice: prices.activeRow[config.seedSize] },
     },
     passiveRows > 0 && {
       icon: Rows3,
@@ -409,67 +411,67 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
       icon: Scissors,
       label: t("lineItems.combiTool", { count: config.activeRows }),
       value: weedingToolPrice,
-      breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.combiToolPerRow },
+      breakdown: { count: config.activeRows, unitPrice: prices.accessories.combiToolPerRow },
     },
     config.weedingTool === "weedCuttingDisc" && {
       icon: Scissors,
       label: t("lineItems.weedCuttingDisc", { count: config.activeRows, variant: weedCuttingDiscVariant || "" }),
       value: weedingToolPrice,
-      breakdown: { count: config.activeRows, unitPrice: PRICES.accessories.weedCuttingDiscPerRow },
+      breakdown: { count: config.activeRows, unitPrice: prices.accessories.weedCuttingDiscPerRow },
     },
     // Individual accessories (instead of single "Accessories" line)
     config.starterKit && {
       icon: Package,
       label: t("lineItems.starterKit"),
       sublabel: t("lineItems.starterKitIncludes"),
-      value: PRICES.accessories.starterKit,
+      value: prices.accessories.starterKit,
     },
     // Items included in Starter Kit - only show individually if Starter Kit NOT selected
     !config.starterKit && config.fstFieldSetupTool && {
       icon: Package,
       label: t("lineItems.fstTool"),
-      value: PRICES.accessories.fstFieldSetupTool,
+      value: prices.accessories.fstFieldSetupTool,
     },
     !config.starterKit && config.baseStationV3 && {
       icon: Package,
       label: t("lineItems.baseStation"),
-      value: PRICES.accessories.baseStationV3,
+      value: prices.accessories.baseStationV3,
     },
     !config.starterKit && config.essentialCarePackage && {
       icon: Package,
       label: t("lineItems.essentialCare"),
-      value: PRICES.accessories.essentialCarePackage,
+      value: prices.accessories.essentialCarePackage,
     },
     !config.starterKit && config.fieldBracket && {
       icon: Package,
       label: t("lineItems.fieldBracket"),
-      value: PRICES.accessories.fieldBracket,
+      value: prices.accessories.fieldBracket,
     },
     // Items NOT in Starter Kit - always show if selected
     config.roadTransport && {
       icon: Package,
       label: t("lineItems.roadTransport"),
-      value: PRICES.accessories.roadTransport,
+      value: prices.accessories.roadTransport,
     },
     config.powerBank && {
       icon: Package,
       label: t("lineItems.powerBank"),
-      value: PRICES.accessories.powerBank,
+      value: prices.accessories.powerBank,
     },
     config.spraySystem && (config.starterKit || config.essentialCarePackage) && {
       icon: Package,
       label: t("lineItems.essentialCareSpray"),
-      value: PRICES.accessories.essentialCareSpray,
+      value: prices.accessories.essentialCareSpray,
     },
     config.additionalWeightKit && {
       icon: Package,
       label: t("lineItems.weightKit"),
-      value: PRICES.accessories.additionalWeightKit,
+      value: prices.accessories.additionalWeightKit,
     },
     config.toolbox && {
       icon: Package,
       label: t("lineItems.toolbox"),
-      value: PRICES.accessories.toolbox,
+      value: prices.accessories.toolbox,
     },
     config.warrantyExtension && {
       icon: Shield,
@@ -482,13 +484,6 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
   const toast = useToastActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Editable lead fields for edit mode (all except email and company)
-  const [editFirstName, setEditFirstName] = useState(initialLead?.firstName || "");
-  const [editLastName, setEditLastName] = useState(initialLead?.lastName || "");
-  const [editPhone, setEditPhone] = useState(initialLead?.phone || "");
-  const [editFarmSize, setEditFarmSize] = useState(initialLead?.farmSize || "");
-  const [editHectares, setEditHectares] = useState(initialLead?.hectaresForFarmDroid || "");
-  const [editCrops, setEditCrops] = useState(initialLead?.crops || "");
 
   const handleLeadSubmit = async (lead: LeadData) => {
     setIsSubmitting(true);
@@ -520,8 +515,9 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
   };
 
   // Handle updating an existing configuration
-  const handleUpdateConfig = async () => {
-    if (!existingReference || !initialLead) return;
+  // Handle updating an existing configuration (called from LeadCaptureForm)
+  const handleUpdateConfigWithLead = async (lead: LeadData) => {
+    if (!existingReference) return;
 
     setIsSubmitting(true);
 
@@ -533,14 +529,13 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
           config,
           totalPrice: priceBreakdown.total,
           currency: config.currency,
-          // Include updated lead fields (except email and company which are locked)
           leadUpdates: {
-            firstName: editFirstName,
-            lastName: editLastName,
-            phone: editPhone,
-            farmSize: editFarmSize,
-            hectaresForFarmDroid: editHectares,
-            crops: editCrops,
+            firstName: lead.firstName,
+            lastName: lead.lastName,
+            phone: lead.phone,
+            farmSize: lead.farmSize,
+            hectaresForFarmDroid: lead.hectaresForFarmDroid,
+            crops: lead.crops,
           },
         }),
       });
@@ -561,49 +556,6 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
   const isEditMode = Boolean(existingReference && initialLead);
   // Check if we're in "known contact" mode (have lead data but no reference - start fresh scenario)
   const isKnownContactMode = Boolean(!existingReference && initialLead);
-
-  // Handle creating a new configuration with known contact details
-  const handleKnownContactSubmit = async () => {
-    if (!initialLead) return;
-
-    setIsSubmitting(true);
-
-    try {
-      // Build the updated lead data
-      const updatedLead: LeadData = {
-        ...initialLead,
-        firstName: editFirstName,
-        lastName: editLastName,
-        phone: editPhone,
-        farmSize: editFarmSize,
-        hectaresForFarmDroid: editHectares,
-        crops: editCrops,
-      };
-
-      const response = await fetch("/api/configurations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lead: updatedLead,
-          config,
-          locale,
-          totalPrice: priceBreakdown.total,
-          currency: config.currency,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save configuration");
-      }
-
-      const { reference } = await response.json();
-      router.push(`/${locale}/config/${reference}`);
-    } catch (error) {
-      console.error("Error creating configuration:", error);
-      toast.error("Error", "Failed to save your configuration. Please try again.");
-      setIsSubmitting(false);
-    }
-  };
 
   // Handle restart (for both modes)
   const handleRestart = () => {
@@ -694,142 +646,15 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
           </div>
         </div>
 
-        {/* Right: Lead Capture Form or Update Panel - Takes 2 columns */}
+        {/* Right: Lead Capture Form - Takes 2 columns */}
         <div className="lg:col-span-2">
-          {(isEditMode || isKnownContactMode) ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl border border-stone-200 p-6"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <Check className="h-5 w-5 text-emerald-600" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-stone-900">
-                    {isKnownContactMode ? t("knownContactMode.title") : t("editMode.title")}
-                  </h2>
-                  <p className="text-sm text-stone-500">
-                    {isKnownContactMode ? t("knownContactMode.subtitle") : t("editMode.subtitle")}
-                  </p>
-                </div>
-              </div>
-
-              {/* Reference - only show in edit mode */}
-              {isEditMode && (
-                <div className="flex items-center justify-between text-sm mb-4 pb-4 border-b border-stone-100">
-                  <span className="text-stone-500">{t("editMode.reference")}</span>
-                  <span className="font-mono text-stone-700">{existingReference}</span>
-                </div>
-              )}
-
-              {/* Locked fields - Email and Company */}
-              <div className="space-y-3 mb-4">
-                <div>
-                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.email")}</label>
-                  <div className="mt-1 h-10 px-3 rounded-lg bg-stone-100 text-stone-500 flex items-center text-sm">
-                    {initialLead?.email}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.company")}</label>
-                  <div className="mt-1 h-10 px-3 rounded-lg bg-stone-100 text-stone-500 flex items-center text-sm">
-                    {initialLead?.company}
-                  </div>
-                </div>
-              </div>
-
-              {/* Editable fields */}
-              <div className="space-y-3 mb-6">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.firstName")}</label>
-                    <input
-                      type="text"
-                      value={editFirstName}
-                      onChange={(e) => setEditFirstName(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.lastName")}</label>
-                    <input
-                      type="text"
-                      value={editLastName}
-                      onChange={(e) => setEditLastName(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.phone")}</label>
-                  <input
-                    type="tel"
-                    value={editPhone}
-                    onChange={(e) => setEditPhone(e.target.value)}
-                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.farmSize")}</label>
-                    <input
-                      type="text"
-                      value={editFarmSize}
-                      onChange={(e) => setEditFarmSize(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.hectares")}</label>
-                    <input
-                      type="text"
-                      value={editHectares}
-                      onChange={(e) => setEditHectares(e.target.value)}
-                      className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-stone-500 uppercase tracking-wide">{t("editMode.crops")}</label>
-                  <input
-                    type="text"
-                    value={editCrops}
-                    onChange={(e) => setEditCrops(e.target.value)}
-                    className="mt-1 w-full h-10 px-3 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Save button */}
-              <button
-                onClick={isEditMode ? handleUpdateConfig : handleKnownContactSubmit}
-                disabled={isSubmitting || !editFirstName || !editLastName}
-                className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    {isKnownContactMode ? t("knownContactMode.creating") : t("editMode.saving")}
-                  </>
-                ) : (
-                  <>
-                    <Check className="h-5 w-5" />
-                    {isKnownContactMode ? t("knownContactMode.createConfig") : t("editMode.saveChanges")}
-                  </>
-                )}
-              </button>
-            </motion.div>
-          ) : (
-            <LeadCaptureForm
-              config={config}
-              priceBreakdown={priceBreakdown}
-              onSubmit={handleLeadSubmit}
-              initialLead={initialLead}
-            />
-          )}
+          <LeadCaptureForm
+            config={config}
+            priceBreakdown={priceBreakdown}
+            onSubmit={isEditMode ? handleUpdateConfigWithLead : handleLeadSubmit}
+            initialLead={initialLead}
+            startAsRecognized={isEditMode || isKnownContactMode}
+          />
         </div>
       </div>
       </>

@@ -8,7 +8,7 @@ import {
   PriceBreakdown,
   ServicePlan,
   formatPrice,
-  PRICES,
+  getPrices,
 } from "@/lib/configurator-data";
 import { useMode } from "@/contexts/ModeContext";
 
@@ -41,8 +41,14 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
   const t = useTranslations("servicePlan");
   const tCommon = useTranslations("common");
   const { showPrices } = useMode();
+  const prices = getPrices(config.currency);
   const selectPlan = (plan: ServicePlan) => {
-    updateConfig({ servicePlan: plan });
+    // Toggle: clicking the already-selected plan deselects it
+    if (config.servicePlan === plan) {
+      updateConfig({ servicePlan: "none" });
+    } else {
+      updateConfig({ servicePlan: plan });
+    }
   };
 
   return (
@@ -69,7 +75,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             >
               <div className="text-xs sm:text-sm font-semibold text-stone-900">{t("plans.standard.name")}</div>
               <div className="text-[10px] sm:text-xs mt-0.5 text-stone-500">
-                {formatPrice(PRICES.servicePlan.standard, config.currency)}{t("perYear")}
+                {formatPrice(prices.servicePlan.standard, config.currency)}{t("perYear")}
               </div>
             </div>
             <div
@@ -81,7 +87,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
             >
               <div className="text-xs sm:text-sm font-semibold text-stone-900">{t("plans.premium.name")}</div>
               <div className="text-[10px] sm:text-xs mt-0.5 text-stone-500">
-                {formatPrice(PRICES.servicePlan.premium, config.currency)}{t("perYear")}
+                {formatPrice(prices.servicePlan.premium, config.currency)}{t("perYear")}
               </div>
             </div>
           </div>
@@ -185,7 +191,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
               </div>
               <div className="text-right ml-4">
                 <span className="text-sm text-stone-400 line-through">
-                  {formatPrice(PRICES.servicePlan.premium, config.currency)}/yr
+                  {formatPrice(prices.servicePlan.premium, config.currency)}/yr
                 </span>
                 <p className="text-sm font-semibold text-emerald-600">
                   {tCommon("freeFirstYear", { price: formatPrice(0, config.currency) })}
@@ -218,29 +224,15 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                 </p>
               </div>
               <span className="text-sm font-semibold text-stone-900 ml-4">
-                {formatPrice(PRICES.servicePlan.standard, config.currency)}/yr
+                {formatPrice(prices.servicePlan.standard, config.currency)}/yr
               </span>
             </div>
           </button>
 
-          {/* No Plan Option */}
-          <button
-            onClick={() => selectPlan("none")}
-            className={`w-full p-3 rounded-xl border-2 transition-all text-left card-hover ${
-              config.servicePlan === "none"
-                ? "border-stone-400 bg-stone-50"
-                : "border-stone-200 hover:border-stone-300 bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-stone-600">{t("plans.none")}</span>
-              {config.servicePlan === "none" && (
-                <div className="h-5 w-5 rounded-full bg-stone-400 flex items-center justify-center">
-                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                </div>
-              )}
-            </div>
-          </button>
+          {/* Hint that clicking a selected plan deselects it */}
+          {config.servicePlan !== "none" && (
+            <p className="text-xs text-stone-400 text-center mt-1">{t("clickToDeselect")}</p>
+          )}
         </div>
 
         {/* Warranty Extension */}
@@ -275,7 +267,7 @@ export function StepServicePlan({ config, updateConfig }: StepServicePlanProps) 
                 </p>
               </div>
               <span className="text-sm font-semibold text-stone-900 ml-4">
-                {formatPrice(PRICES.warrantyExtension, config.currency)}
+                {formatPrice(prices.warrantyExtension, config.currency)}
               </span>
             </div>
           </button>

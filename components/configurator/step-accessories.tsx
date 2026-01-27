@@ -9,7 +9,7 @@ import {
   ConfiguratorState,
   PriceBreakdown,
   formatPrice,
-  PRICES,
+  getPrices,
   isIncludedInStarterKit,
 } from "@/lib/configurator-data";
 import { useMode } from "@/contexts/ModeContext";
@@ -37,7 +37,6 @@ type AccessoryId =
 interface AccessoryConfig {
   id: AccessoryId;
   translationKey: string;
-  price: number;
   icon: typeof Package;
   recommended?: boolean;
   includedInStarterKit?: boolean;
@@ -49,7 +48,6 @@ const bundleConfigs: AccessoryConfig[] = [
   {
     id: "starterKit",
     translationKey: "starterKit",
-    price: PRICES.accessories.starterKit,
     icon: Package,
     recommended: true,
   },
@@ -60,14 +58,12 @@ const connectivityConfigs: AccessoryConfig[] = [
   {
     id: "baseStationV3",
     translationKey: "baseStationV3",
-    price: PRICES.accessories.baseStationV3,
     icon: Wifi,
     includedInStarterKit: true,
   },
   {
     id: "fstFieldSetupTool",
     translationKey: "fstFieldSetupTool",
-    price: PRICES.accessories.fstFieldSetupTool,
     icon: Radio,
     includedInStarterKit: true,
   },
@@ -78,14 +74,12 @@ const transportConfigs: AccessoryConfig[] = [
   {
     id: "fieldBracket",
     translationKey: "fieldBracket",
-    price: PRICES.accessories.fieldBracket,
     icon: Link2,
     includedInStarterKit: true,
   },
   {
     id: "roadTransport",
     translationKey: "roadTransport",
-    price: PRICES.accessories.roadTransport,
     icon: Truck,
   },
 ];
@@ -95,27 +89,23 @@ const maintenanceConfigs: AccessoryConfig[] = [
   {
     id: "essentialCarePackage",
     translationKey: "essentialCarePackage",
-    price: PRICES.accessories.essentialCarePackage,
     icon: Wrench,
     includedInStarterKit: true,
   },
   {
     id: "essentialCareSpray",
     translationKey: "essentialCareSpray",
-    price: PRICES.accessories.essentialCareSpray,
     icon: Wrench,
     requiresSpraySystem: true,
   },
   {
     id: "additionalWeightKit",
     translationKey: "additionalWeightKit",
-    price: PRICES.accessories.additionalWeightKit,
     icon: Weight,
   },
   {
     id: "toolbox",
     translationKey: "toolbox",
-    price: PRICES.accessories.toolbox,
     icon: Box,
   },
 ];
@@ -458,6 +448,12 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const { showPrices } = useMode();
+  const prices = getPrices(config.currency);
+
+  // Helper to get the price of an accessory from the dynamic prices object
+  const getAccessoryPrice = (id: AccessoryId): number => {
+    return prices.accessories[id] ?? 0;
+  };
 
   const toggleAccessory = (id: AccessoryId) => {
     if (id === "starterKit") {
@@ -577,7 +573,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
   const totalAccessoriesPrice = allAccessories.reduce((sum, a) => {
     if (isDisabledByStarterKit(a)) return sum; // Don't add price for items included in starter kit
     if (config[a.id as keyof ConfiguratorState]) {
-      return sum + a.price;
+      return sum + getAccessoryPrice(a.id);
     }
     return sum;
   }, 0);
@@ -849,7 +845,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                   </div>
                   {showPrices && (
                     <span className="text-sm md:text-base font-semibold text-stone-900 flex-shrink-0">
-                      +{formatPrice(accessory.price, config.currency)}
+                      +{formatPrice(getAccessoryPrice(accessory.id), config.currency)}
                     </span>
                   )}
                 </div>
@@ -907,7 +903,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       </p>
                     </div>
                     <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
-                      {isDisabled ? t("included") : showPrices ? `+${formatPrice(accessory.price, config.currency)}` : ""}
+                      {isDisabled ? t("included") : showPrices ? `+${formatPrice(getAccessoryPrice(accessory.id), config.currency)}` : ""}
                     </span>
                   </div>
                 </button>
@@ -965,7 +961,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       </p>
                     </div>
                     <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
-                      {isDisabled ? t("included") : showPrices ? `+${formatPrice(accessory.price, config.currency)}` : ""}
+                      {isDisabled ? t("included") : showPrices ? `+${formatPrice(getAccessoryPrice(accessory.id), config.currency)}` : ""}
                     </span>
                   </div>
                 </button>
@@ -1028,7 +1024,7 @@ export function StepAccessories({ config, updateConfig }: StepAccessoriesProps) 
                       </p>
                     </div>
                     <span className={`text-sm md:text-base font-semibold flex-shrink-0 ${isIncludedOrDisabled ? "text-stone-400" : "text-stone-900"}`}>
-                      {isIncludedOrDisabled ? t("included") : showPrices ? `+${formatPrice(accessory.price, config.currency)}` : ""}
+                      {isIncludedOrDisabled ? t("included") : showPrices ? `+${formatPrice(getAccessoryPrice(accessory.id), config.currency)}` : ""}
                     </span>
                   </div>
                 </button>

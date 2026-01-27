@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ChevronDown, Search, Pencil, Mail, UserCheck, ExternalLink } from "lucide-react";
+import { Loader2, ChevronDown, Search, Pencil, ArrowRight, Mail, UserCheck } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { ConfiguratorState, PriceBreakdown, calculatePrice } from "@/lib/configurator-data";
 
@@ -162,16 +162,21 @@ interface LeadCaptureFormProps {
   priceBreakdown: PriceBreakdown;
   onSubmit: (lead: LeadData) => void;
   initialLead?: LeadData | null;
+  /** When true, form starts in "recognized" state: data shown in disabled fields with Edit/Go buttons */
+  startAsRecognized?: boolean;
 }
 
-export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead }: LeadCaptureFormProps) {
+export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead, startAsRecognized }: LeadCaptureFormProps) {
   const tPublic = useTranslations("publicMode");
   const t = useTranslations("publicMode.form");
   const tEmail = useTranslations("publicMode.emailFirst");
   const locale = useLocale();
 
-  // Determine if we're in pre-filled mode (edit/known-contact) where email lookup should be skipped
-  const isPreFilledMode = Boolean(initialLead && initialLead.firstName);
+  // Determine if we're in pre-filled mode (edit mode with existing reference)
+  // In this case, email is locked and fields are immediately enabled
+  const isEditMode = Boolean(initialLead && initialLead.firstName && !startAsRecognized);
+  // Legacy alias
+  const isPreFilledMode = isEditMode;
 
   const [formData, setFormData] = useState<LeadData>(initialLead || {
     firstName: "",
@@ -202,7 +207,9 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
   const countrySearchRef = useRef<HTMLInputElement>(null);
 
   // Email-first lookup state
-  const [emailPhase, setEmailPhase] = useState<EmailPhase>(isPreFilledMode ? "new" : "entering");
+  const [emailPhase, setEmailPhase] = useState<EmailPhase>(
+    startAsRecognized ? "recognized" : isPreFilledMode ? "new" : "entering"
+  );
   const [maskedHints, setMaskedHints] = useState<MaskedHints | null>(null);
   const [lastLookedUpEmail, setLastLookedUpEmail] = useState<string | null>(null);
   const [latestReference, setLatestReference] = useState<string | null>(null);
@@ -341,9 +348,25 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
           maskedPhone: data.leadData.maskedPhone,
           maskedCompany: data.leadData.maskedCompany,
         });
-        // Store the actual lead data for pre-filling when user accepts
-        setRecognizedLeadData(data.leadData);
         setLatestReference(data.latestReference || null);
+        // Auto-pre-fill the form immediately
+        setFormData(prev => ({
+          ...prev,
+          firstName: (data.leadData.firstName as string) || "",
+          lastName: (data.leadData.lastName as string) || "",
+          phone: (data.leadData.phone as string) || "",
+          country: (data.leadData.country as string) || "",
+          region: (data.leadData.region as string) || "",
+          company: (data.leadData.company as string) || "",
+          isFarmer: (data.leadData.isFarmer as string) || "",
+          farmingType: (data.leadData.farmingType as string) || "",
+          farmSize: (data.leadData.farmSize as string) || "",
+          hectaresForFarmDroid: (data.leadData.hectaresForFarmDroid as string) || "",
+          crops: (data.leadData.crops as string) || "",
+          otherCrops: (data.leadData.otherCrops as string) || "",
+          contactByPartner: (data.leadData.contactByPartner as boolean) ?? false,
+          marketingConsent: (data.leadData.marketingConsent as boolean) ?? false,
+        }));
         setEmailPhase("recognized");
       } else {
         setEmailPhase("new");
@@ -353,13 +376,10 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
     }
   }, [lastLookedUpEmail]);
 
-  // Store recognized lead data separately until user accepts
-  const [recognizedLeadData, setRecognizedLeadData] = useState<Record<string, unknown> | null>(null);
-
   // Handle email blur — trigger lookup
   const handleEmailBlur = () => {
     handleBlur("email");
-    if (!isPreFilledMode && isValidEmail(formData.email)) {
+    if (!isPreFilledMode && !startAsRecognized && isValidEmail(formData.email)) {
       lookupEmail(formData.email);
     }
   };
@@ -371,7 +391,6 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
       if (value !== lastLookedUpEmail) {
         setEmailPhase("entering");
         setMaskedHints(null);
-        setRecognizedLeadData(null);
         setLatestReference(null);
         setLastLookedUpEmail(null);
         // Reset form fields to blank when email changes
@@ -397,29 +416,17 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
     }
   };
 
-  // Accept recognized lead data — pre-fill the form
-  const handleUseRecognizedData = () => {
-    if (!recognizedLeadData) return;
-
-    setFormData(prev => ({
-      ...prev,
-      firstName: (recognizedLeadData.firstName as string) || "",
-      lastName: (recognizedLeadData.lastName as string) || "",
-      phone: (recognizedLeadData.phone as string) || "",
-      country: (recognizedLeadData.country as string) || "",
-      region: (recognizedLeadData.region as string) || "",
-      company: (recognizedLeadData.company as string) || "",
-      isFarmer: (recognizedLeadData.isFarmer as string) || "",
-      farmingType: (recognizedLeadData.farmingType as string) || "",
-      farmSize: (recognizedLeadData.farmSize as string) || "",
-      hectaresForFarmDroid: (recognizedLeadData.hectaresForFarmDroid as string) || "",
-      crops: (recognizedLeadData.crops as string) || "",
-      otherCrops: (recognizedLeadData.otherCrops as string) || "",
-      contactByPartner: (recognizedLeadData.contactByPartner as boolean) ?? false,
-      marketingConsent: (recognizedLeadData.marketingConsent as boolean) ?? false,
-    }));
-    // Transition to "new" phase so fields become enabled
+  // "Edit your information" — pre-fill form and enable fields for editing
+  const handleEditInfo = () => {
+    // Form data is already pre-filled from the lookup callback
+    // Just transition to "new" phase so fields become enabled
     setEmailPhase("new");
+  };
+
+  // "Go to configuration" — immediately submit with pre-filled data to create the new config
+  const handleGoToConfig = () => {
+    setSubmitting(true);
+    onSubmit(formData);
   };
 
   const validateForm = () => {
@@ -461,7 +468,11 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
         : "border-stone-200 focus:ring-stone-900"
     }`;
 
-  const disabledFieldClasses = "opacity-50 bg-stone-50 cursor-not-allowed pointer-events-none";
+  // When in "entering"/"checking" phase, fields are fully grayed out (no data yet)
+  // When in "recognized" phase, fields have pre-filled data so they should be readable but non-interactive
+  const disabledFieldClasses = emailPhase === "recognized"
+    ? "opacity-75 pointer-events-none"
+    : "opacity-50 bg-stone-50 cursor-not-allowed pointer-events-none";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -486,8 +497,8 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
             onBlur={handleEmailBlur}
             className={`${inputClasses("email")} pl-10`}
             placeholder={tEmail("enterEmail")}
-            readOnly={isPreFilledMode}
-            autoFocus={!isPreFilledMode}
+            readOnly={isPreFilledMode || startAsRecognized}
+            autoFocus={!isPreFilledMode && !startAsRecognized}
           />
           {emailPhase === "checking" && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -503,7 +514,7 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
 
       {/* Recognized user banner */}
       <AnimatePresence>
-        {emailPhase === "recognized" && maskedHints && (
+        {emailPhase === "recognized" && (maskedHints || startAsRecognized) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -520,28 +531,41 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
                     {tEmail("welcomeBack")}
                   </p>
                   <p className="text-sm text-emerald-700 mt-0.5">
-                    {maskedHints.maskedName}
-                    {maskedHints.maskedCompany && ` · ${maskedHints.maskedCompany}`}
-                    {maskedHints.maskedPhone && ` · ${maskedHints.maskedPhone}`}
+                    {maskedHints ? (
+                      <>
+                        {maskedHints.maskedName}
+                        {maskedHints.maskedCompany && ` · ${maskedHints.maskedCompany}`}
+                        {maskedHints.maskedPhone && ` · ${maskedHints.maskedPhone}`}
+                      </>
+                    ) : (
+                      <>
+                        {formData.firstName} {formData.lastName}
+                        {formData.company && ` · ${formData.company}`}
+                      </>
+                    )}
                   </p>
                   <div className="flex gap-3 mt-2.5">
                     <button
                       type="button"
-                      onClick={handleUseRecognizedData}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors"
+                      onClick={handleGoToConfig}
+                      disabled={submitting}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 rounded-md transition-colors"
+                    >
+                      {submitting ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      )}
+                      {tEmail("goToConfig")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleEditInfo}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-400 rounded-md transition-colors"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                       {tEmail("editInfo")}
                     </button>
-                    {latestReference && (
-                      <a
-                        href={`/${locale}/config/${latestReference}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-400 rounded-md transition-colors"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        {tEmail("goToConfig")}
-                      </a>
-                    )}
                   </div>
                 </div>
               </div>

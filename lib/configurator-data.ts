@@ -107,7 +107,7 @@ export const STEPS: StepInfo[] = [
   { id: 8, title: "Summary", subtitle: "Review your configuration" },
 ];
 
-// Pricing constants
+// Pricing constants (EUR)
 export const PRICES = {
   baseRobot: 45990,
 
@@ -157,6 +157,64 @@ export const PRICES = {
 
   warrantyExtension: 2000, // 2-year extension
 };
+
+// Pricing constants (DKK) — actual list prices from partner price list
+export const PRICES_DKK: typeof PRICES = {
+  baseRobot: 344925,
+
+  powerSource: {
+    solar: 0,
+    hybrid: 59600,
+  },
+
+  frontWheel: {
+    PFW: 0,
+    AFW: 37500,
+    DFW: 37500,
+  },
+
+  activeRow: {
+    "6mm": 18750,
+    "14mm": 29800,
+  },
+
+  passiveRow: 5175,
+
+  spraySystem: {
+    base: 52500,
+    perRow: 3750,
+  },
+
+  accessories: {
+    starterKit: 74100,
+    roadTransport: 59175,
+    fieldBracket: 5250,
+    powerBank: 37500,
+    combiToolPerRow: 3000,
+    weedCuttingDiscPerRow: 2700,
+    fstFieldSetupTool: 14925,
+    baseStationV3: 43425,
+    essentialCarePackage: 24675,
+    essentialCareSpray: 5600,
+    additionalWeightKit: 3850,
+    toolbox: 1150,
+  },
+
+  servicePlan: {
+    none: 0,
+    standard: 4450, // per year
+    premium: 7450, // per year (included 1st year for new robots)
+  },
+
+  warrantyExtension: 14900, // 2-year extension
+};
+
+/**
+ * Get prices in the specified currency
+ */
+export function getPrices(currency: Currency = "EUR"): typeof PRICES {
+  return currency === "DKK" ? PRICES_DKK : PRICES;
+}
 
 // Wheel configuration constraints
 export const WHEEL_CONSTRAINTS = {
@@ -635,44 +693,45 @@ export function isIncludedInStarterKit(accessoryId: string): boolean {
  * @param config - The configurator state
  * @param currentStep - Optional current step (1-8). When provided, only includes pricing for steps the user has reached.
  */
-export function calculatePrice(config: ConfiguratorState, currentStep?: number): PriceBreakdown {
-  const baseRobot = PRICES.baseRobot;
+export function calculatePrice(config: ConfiguratorState, currentStep?: number, currency?: Currency): PriceBreakdown {
+  const prices = getPrices(currency || config.currency);
+  const baseRobot = prices.baseRobot;
 
   // Step 2: Front wheel configuration
   const frontWheel = currentStep === undefined || currentStep >= 2
-    ? PRICES.frontWheel[config.frontWheel]
+    ? prices.frontWheel[config.frontWheel]
     : 0;
 
   // Step 3: Row/Seed configuration
-  const activeRowPrice = PRICES.activeRow[config.seedSize];
+  const activeRowPrice = prices.activeRow[config.seedSize];
   const activeRows = currentStep === undefined || currentStep >= 3
     ? config.activeRows * activeRowPrice
     : 0;
 
   const passiveRowCount = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   const passiveRows = currentStep === undefined || currentStep >= 3
-    ? passiveRowCount * PRICES.passiveRow
+    ? passiveRowCount * prices.passiveRow
     : 0;
 
   // Step 4: Spray/Weed system
   let spraySystem = 0;
   if (config.spraySystem && (currentStep === undefined || currentStep >= 4)) {
-    spraySystem = PRICES.spraySystem.base + (config.activeRows * PRICES.spraySystem.perRow);
+    spraySystem = prices.spraySystem.base + (config.activeRows * prices.spraySystem.perRow);
   }
 
   // Step 4: Weeding tools (part of weed config step)
   let weedingTools = 0;
   if (currentStep === undefined || currentStep >= 4) {
     if (config.weedingTool === "combiTool") {
-      weedingTools = config.activeRows * PRICES.accessories.combiToolPerRow;
+      weedingTools = config.activeRows * prices.accessories.combiToolPerRow;
     } else if (config.weedingTool === "weedCuttingDisc") {
-      weedingTools = config.activeRows * PRICES.accessories.weedCuttingDiscPerRow;
+      weedingTools = config.activeRows * prices.accessories.weedCuttingDiscPerRow;
     }
   }
 
   // Step 5: Power source
   const powerSource = currentStep === undefined || currentStep >= 5
-    ? PRICES.powerSource[config.powerSource]
+    ? prices.powerSource[config.powerSource]
     : 0;
 
   // Step 6: Accessories
@@ -680,33 +739,33 @@ export function calculatePrice(config: ConfiguratorState, currentStep?: number):
   if (currentStep === undefined || currentStep >= 6) {
     if (config.starterKit) {
       // Starter Kit includes: FST Field Setup Tool, Base Station V3, Essential Care Package, Field Bracket
-      accessories += PRICES.accessories.starterKit;
+      accessories += prices.accessories.starterKit;
     } else {
       // Individual items (only charge if Starter Kit is NOT selected)
-      if (config.fstFieldSetupTool) accessories += PRICES.accessories.fstFieldSetupTool;
-      if (config.baseStationV3) accessories += PRICES.accessories.baseStationV3;
-      if (config.essentialCarePackage) accessories += PRICES.accessories.essentialCarePackage;
-      if (config.fieldBracket) accessories += PRICES.accessories.fieldBracket;
+      if (config.fstFieldSetupTool) accessories += prices.accessories.fstFieldSetupTool;
+      if (config.baseStationV3) accessories += prices.accessories.baseStationV3;
+      if (config.essentialCarePackage) accessories += prices.accessories.essentialCarePackage;
+      if (config.fieldBracket) accessories += prices.accessories.fieldBracket;
     }
     // Items NOT included in Starter Kit (always add if selected)
-    if (config.roadTransport) accessories += PRICES.accessories.roadTransport;
-    if (config.powerBank) accessories += PRICES.accessories.powerBank;
+    if (config.roadTransport) accessories += prices.accessories.roadTransport;
+    if (config.powerBank) accessories += prices.accessories.powerBank;
     // Essential Care Spray is automatically included when spray system is on AND (Starter Kit OR Essential Care Package is selected)
     const hasEssentialCare = config.starterKit || config.essentialCarePackage;
     if (config.spraySystem && hasEssentialCare) {
-      accessories += PRICES.accessories.essentialCareSpray;
+      accessories += prices.accessories.essentialCareSpray;
     }
-    if (config.additionalWeightKit) accessories += PRICES.accessories.additionalWeightKit;
-    if (config.toolbox) accessories += PRICES.accessories.toolbox;
+    if (config.additionalWeightKit) accessories += prices.accessories.additionalWeightKit;
+    if (config.toolbox) accessories += prices.accessories.toolbox;
   }
 
   // Step 7: Service & Warranty
   let servicePlan = 0;
   let warrantyExtension = 0;
   if (currentStep === undefined || currentStep >= 7) {
-    servicePlan = PRICES.servicePlan[config.servicePlan];
+    servicePlan = prices.servicePlan[config.servicePlan];
     if (config.warrantyExtension) {
-      warrantyExtension = PRICES.warrantyExtension;
+      warrantyExtension = prices.warrantyExtension;
     }
   }
 
@@ -728,14 +787,14 @@ export function calculatePrice(config: ConfiguratorState, currentStep?: number):
   };
 }
 
-// Currency conversion rate (approximate EUR to DKK)
+// Currency conversion rate (approximate EUR to DKK, used as fallback)
 export const EUR_TO_DKK_RATE = 7.45;
 
 /**
- * Format currency in EUR or DKK
+ * Format currency in EUR or DKK.
+ * Values should already be in the target currency (use getPrices() to get correct prices).
  */
 export function formatPrice(value: number, currency: Currency = "EUR"): string {
-  const displayValue = currency === "DKK" ? value * EUR_TO_DKK_RATE : value;
   const locale = currency === "DKK" ? "da-DK" : "de-DE";
 
   return new Intl.NumberFormat(locale, {
@@ -743,7 +802,7 @@ export function formatPrice(value: number, currency: Currency = "EUR"): string {
     currency: currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(displayValue);
+  }).format(value);
 }
 
 /**

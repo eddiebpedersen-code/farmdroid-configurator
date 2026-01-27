@@ -11,7 +11,7 @@ import {
   PriceBreakdown,
   FrontWheel,
   formatPrice,
-  PRICES,
+  getPrices,
 } from "@/lib/configurator-data";
 import { useMode } from "@/contexts/ModeContext";
 
@@ -245,6 +245,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
   const tCommon = useTranslations("common");
   const tBaseRobot = useTranslations("baseRobot");
   const { showPrices } = useMode();
+  const prices = getPrices(config.currency);
 
   // Track when wheel selection changes to show loading state
   const handleWheelChange = (wheelId: FrontWheel) => {
@@ -268,7 +269,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
       nameKey: "options.afw.name",
       subtitleKey: "options.afw.subtitle",
       wheelCount: "3-wheel",
-      price: PRICES.frontWheel.AFW,
+      price: prices.frontWheel.AFW,
       descriptionKey: "options.afw.description",
     },
     {
@@ -276,7 +277,7 @@ export function StepFrontWheel({ config, updateConfig }: StepFrontWheelProps) {
       nameKey: "options.dfw.name",
       subtitleKey: "options.dfw.subtitle",
       wheelCount: "4-wheel",
-      price: PRICES.frontWheel.DFW,
+      price: prices.frontWheel.DFW,
       descriptionKey: "options.dfw.description",
     },
   ];
