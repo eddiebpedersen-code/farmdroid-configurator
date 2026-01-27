@@ -182,6 +182,22 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     }
   }, [hasSeenTutorial]);
 
+  // Prevent page scrolling when a touch drag is active
+  useEffect(() => {
+    const isDragging = draggingRowIdx !== null || draggingWheelSide !== null || draggingWorkingWidth;
+    if (!isDragging) return;
+
+    const preventScroll = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    // Use passive: false so preventDefault() works on touchmove
+    document.addEventListener("touchmove", preventScroll, { passive: false });
+    return () => {
+      document.removeEventListener("touchmove", preventScroll);
+    };
+  }, [draggingRowIdx, draggingWheelSide, draggingWorkingWidth]);
+
   // Sync seeding parameters to config when they change
   useEffect(() => {
     updateConfig({
@@ -689,6 +705,21 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     }
   }, [draggingWheelSide, draggingRowIdx, draggingWorkingWidth, handleWheelDragMove, handleRowDragMove, handleWorkingWidthDragMove]);
 
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!e.touches.length) return;
+    const clientX = e.touches[0].clientX;
+    if (draggingWheelSide) {
+      e.preventDefault();
+      handleWheelDragMove(clientX);
+    } else if (draggingRowIdx !== null) {
+      e.preventDefault();
+      handleRowDragMove(clientX);
+    } else if (draggingWorkingWidth) {
+      e.preventDefault();
+      handleWorkingWidthDragMove(clientX);
+    }
+  }, [draggingWheelSide, draggingRowIdx, draggingWorkingWidth, handleWheelDragMove, handleRowDragMove, handleWorkingWidthDragMove]);
+
   // Handler to set individual spacing value directly (with mirroring for symmetry)
   const handleSetSpacing = useCallback((spacingIdx: number, valueCm: number) => {
     const valueMm = valueCm * 10;
@@ -1004,11 +1035,15 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
               setIsVisualizationHovered(false);
             }}
             onMouseEnter={() => setIsVisualizationHovered(true)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleDragEnd}
+            onTouchCancel={handleDragEnd}
           >
             <svg
               ref={svgRef}
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
               className="w-full h-full overflow-hidden"
+              style={{ touchAction: "none" }}
               role="img"
               aria-label={t("visualizationAria", { rows: config.activeRows, spacing: config.rowDistance / 10 })}
             >
@@ -1601,6 +1636,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                         onMouseEnter={() => { setHoveredSeedUnit(idx); setHoveredRow(idx); }}
                         onMouseLeave={() => { if (!isDragging) { setHoveredSeedUnit(null); setHoveredRow(null); } }}
                         onMouseDown={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); setShowDragHint(false); } : undefined}
+                        onTouchStart={canDrag ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.touches[0].clientX); setShowDragHint(false); } : undefined}
                         style={{ opacity: isHovered || isDragging ? 1 : 0.95 }}
                       >
                         <SeedingUnit seedSize={config.seedSize} />
@@ -1929,6 +1965,10 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                           onMouseDown={(e) => {
                             e.preventDefault();
                             handleWorkingWidthDragStart(e.clientX);
+                          }}
+                          onTouchStart={(e) => {
+                            e.preventDefault();
+                            handleWorkingWidthDragStart(e.touches[0].clientX);
                           }}
                         >
                           {/* Invisible wider hit area for easier grabbing */}
@@ -2361,6 +2401,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     <g
                       className="cursor-ew-resize"
                       onMouseDown={(e) => { e.preventDefault(); handleWheelDragStart("left", e.clientX); }}
+                      onTouchStart={(e) => { e.preventDefault(); handleWheelDragStart("left", e.touches[0].clientX); }}
                       onMouseEnter={() => !draggingWheelSide && setHoveredWheel("backLeft")}
                       onMouseLeave={() => { setHoveredWheel(null); setHoveredWheelEdge(null); }}
                     >
@@ -2399,6 +2440,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     <g
                       className="cursor-ew-resize"
                       onMouseDown={(e) => { e.preventDefault(); handleWheelDragStart("right", e.clientX); }}
+                      onTouchStart={(e) => { e.preventDefault(); handleWheelDragStart("right", e.touches[0].clientX); }}
                       onMouseEnter={() => !draggingWheelSide && setHoveredWheel("backRight")}
                       onMouseLeave={() => { setHoveredWheel(null); setHoveredWheelEdge(null); }}
                     >
@@ -2482,6 +2524,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                     }}
                     onClick={canRemove && !isDragging ? (e) => { e.stopPropagation(); handleRemoveRow(idx); } : undefined}
                     onMouseDown={canDrag && !canRemove ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.clientX); } : undefined}
+                    onTouchStart={canDrag && !canRemove ? (e) => { e.preventDefault(); handleRowDragStart(idx, e.touches[0].clientX); } : undefined}
                   />
                 );
               })}
