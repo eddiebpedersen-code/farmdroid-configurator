@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Loader2, ChevronDown, Search } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, ChevronDown, Search, Pencil, Mail, UserCheck, ExternalLink } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 import { ConfiguratorState, PriceBreakdown, calculatePrice } from "@/lib/configurator-data";
 
 // Primary FarmDroid markets (shown first in dropdown)
@@ -149,6 +149,14 @@ export interface LeadData {
   marketingConsent: boolean;
 }
 
+type EmailPhase = "entering" | "checking" | "recognized" | "new";
+
+interface MaskedHints {
+  maskedName: string;
+  maskedPhone: string;
+  maskedCompany: string;
+}
+
 interface LeadCaptureFormProps {
   config: ConfiguratorState;
   priceBreakdown: PriceBreakdown;
@@ -159,6 +167,12 @@ interface LeadCaptureFormProps {
 export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead }: LeadCaptureFormProps) {
   const tPublic = useTranslations("publicMode");
   const t = useTranslations("publicMode.form");
+  const tEmail = useTranslations("publicMode.emailFirst");
+  const locale = useLocale();
+
+  // Determine if we're in pre-filled mode (edit/known-contact) where email lookup should be skipped
+  const isPreFilledMode = Boolean(initialLead && initialLead.firstName);
+
   const [formData, setFormData] = useState<LeadData>(initialLead || {
     firstName: "",
     lastName: "",
@@ -186,6 +200,16 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
   const cropsDropdownRef = useRef<HTMLDivElement>(null);
   const countryDropdownRef = useRef<HTMLDivElement>(null);
   const countrySearchRef = useRef<HTMLInputElement>(null);
+
+  // Email-first lookup state
+  const [emailPhase, setEmailPhase] = useState<EmailPhase>(isPreFilledMode ? "new" : "entering");
+  const [maskedHints, setMaskedHints] = useState<MaskedHints | null>(null);
+  const [lastLookedUpEmail, setLastLookedUpEmail] = useState<string | null>(null);
+  const [latestReference, setLatestReference] = useState<string | null>(null);
+
+  // Whether the rest of the form fields should be enabled
+  // Fields stay disabled in "recognized" phase until user clicks "Edit your information"
+  const fieldsEnabled = isPreFilledMode || emailPhase === "new";
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -289,6 +313,115 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
     setErrors((prev) => ({ ...prev, [field]: validateField(field, formData[field]) }));
   };
 
+  // Email lookup logic
+  const lookupEmail = useCallback(async (email: string) => {
+    if (!isValidEmail(email)) return;
+    if (email === lastLookedUpEmail) return;
+
+    setEmailPhase("checking");
+    setLastLookedUpEmail(email);
+
+    try {
+      const response = await fetch("/api/email-lookup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        setEmailPhase("new");
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.hasConfigurations && data.leadData) {
+        setMaskedHints({
+          maskedName: data.leadData.maskedName,
+          maskedPhone: data.leadData.maskedPhone,
+          maskedCompany: data.leadData.maskedCompany,
+        });
+        // Store the actual lead data for pre-filling when user accepts
+        setRecognizedLeadData(data.leadData);
+        setLatestReference(data.latestReference || null);
+        setEmailPhase("recognized");
+      } else {
+        setEmailPhase("new");
+      }
+    } catch {
+      setEmailPhase("new");
+    }
+  }, [lastLookedUpEmail]);
+
+  // Store recognized lead data separately until user accepts
+  const [recognizedLeadData, setRecognizedLeadData] = useState<Record<string, unknown> | null>(null);
+
+  // Handle email blur — trigger lookup
+  const handleEmailBlur = () => {
+    handleBlur("email");
+    if (!isPreFilledMode && isValidEmail(formData.email)) {
+      lookupEmail(formData.email);
+    }
+  };
+
+  // Handle email change — reset if email changes after lookup
+  const handleEmailChange = (value: string) => {
+    handleChange("email", value);
+    if (emailPhase === "recognized" || emailPhase === "new") {
+      if (value !== lastLookedUpEmail) {
+        setEmailPhase("entering");
+        setMaskedHints(null);
+        setRecognizedLeadData(null);
+        setLatestReference(null);
+        setLastLookedUpEmail(null);
+        // Reset form fields to blank when email changes
+        setFormData(prev => ({
+          ...prev,
+          email: value,
+          firstName: "",
+          lastName: "",
+          phone: "",
+          country: "",
+          region: "",
+          company: "",
+          isFarmer: "",
+          farmingType: "",
+          farmSize: "",
+          hectaresForFarmDroid: "",
+          crops: "",
+          otherCrops: "",
+          contactByPartner: false,
+          marketingConsent: false,
+        }));
+      }
+    }
+  };
+
+  // Accept recognized lead data — pre-fill the form
+  const handleUseRecognizedData = () => {
+    if (!recognizedLeadData) return;
+
+    setFormData(prev => ({
+      ...prev,
+      firstName: (recognizedLeadData.firstName as string) || "",
+      lastName: (recognizedLeadData.lastName as string) || "",
+      phone: (recognizedLeadData.phone as string) || "",
+      country: (recognizedLeadData.country as string) || "",
+      region: (recognizedLeadData.region as string) || "",
+      company: (recognizedLeadData.company as string) || "",
+      isFarmer: (recognizedLeadData.isFarmer as string) || "",
+      farmingType: (recognizedLeadData.farmingType as string) || "",
+      farmSize: (recognizedLeadData.farmSize as string) || "",
+      hectaresForFarmDroid: (recognizedLeadData.hectaresForFarmDroid as string) || "",
+      crops: (recognizedLeadData.crops as string) || "",
+      otherCrops: (recognizedLeadData.otherCrops as string) || "",
+      contactByPartner: (recognizedLeadData.contactByPartner as boolean) ?? false,
+      marketingConsent: (recognizedLeadData.marketingConsent as boolean) ?? false,
+    }));
+    // Transition to "new" phase so fields become enabled
+    setEmailPhase("new");
+  };
+
   const validateForm = () => {
     const newErrors: Partial<Record<keyof LeadData, string>> = {};
     const requiredFields: (keyof LeadData)[] = ["isFarmer", "firstName", "lastName", "email", "company", "country"];
@@ -328,6 +461,8 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
         : "border-stone-200 focus:ring-stone-900"
     }`;
 
+  const disabledFieldClasses = "opacity-50 bg-stone-50 cursor-not-allowed pointer-events-none";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="mb-6">
@@ -335,363 +470,441 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead 
         <p className="text-sm text-stone-500 mt-1">{tPublic("formSubheading")}</p>
       </div>
 
-      {/* Are you a farmer? */}
-      <div>
-        <label className="text-sm font-medium text-stone-700">
-          {t("isFarmer")} <span className="text-red-500">*</span>
-        </label>
-        <div className="flex gap-6 mt-2">
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <input
-              type="radio"
-              name="isFarmer"
-              value="yes"
-              checked={formData.isFarmer === "yes"}
-              onChange={(e) => handleChange("isFarmer", e.target.value)}
-              className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer"
-            />
-            <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-              {t("yes")}
-            </span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <input
-              type="radio"
-              name="isFarmer"
-              value="no"
-              checked={formData.isFarmer === "no"}
-              onChange={(e) => handleChange("isFarmer", e.target.value)}
-              className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer"
-            />
-            <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-              {t("no")}
-            </span>
-          </label>
-        </div>
-        {errors.isFarmer && touched.isFarmer && (
-          <p className="mt-1 text-xs text-red-500">{errors.isFarmer}</p>
-        )}
-      </div>
-
-      {/* Name Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium text-stone-700">
-            {t("firstName")} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={formData.firstName}
-            onChange={(e) => handleChange("firstName", e.target.value)}
-            onBlur={() => handleBlur("firstName")}
-            className={inputClasses("firstName")}
-          />
-          {errors.firstName && touched.firstName && (
-            <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>
-          )}
-        </div>
-        <div>
-          <label className="text-sm font-medium text-stone-700">
-            {t("lastName")} <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={formData.lastName}
-            onChange={(e) => handleChange("lastName", e.target.value)}
-            onBlur={() => handleBlur("lastName")}
-            className={inputClasses("lastName")}
-          />
-          {errors.lastName && touched.lastName && (
-            <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Email */}
+      {/* Email — First field, always enabled */}
       <div>
         <label className="text-sm font-medium text-stone-700">
           {t("email")} <span className="text-red-500">*</span>
         </label>
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => handleChange("email", e.target.value)}
-          onBlur={() => handleBlur("email")}
-          className={inputClasses("email")}
-        />
-        {errors.email && touched.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
-      </div>
-
-      {/* Phone */}
-      <div>
-        <label className="text-sm font-medium text-stone-700">{t("phone")}</label>
-        <div className="flex">
-          <div className="flex items-center px-3 bg-stone-100 border border-r-0 border-stone-200 rounded-l-lg text-sm text-stone-600 min-w-[70px] justify-center">
-            {formData.country ? getDialCode(formData.country) || "—" : "—"}
+        <div className="relative">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">
+            <Mail className="h-4 w-4" />
           </div>
           <input
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => handleChange("phone", e.target.value)}
-            className="flex-1 h-11 px-4 rounded-r-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-            placeholder={t("phonePlaceholder")}
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleEmailChange(e.target.value)}
+            onBlur={handleEmailBlur}
+            className={`${inputClasses("email")} pl-10`}
+            placeholder={tEmail("enterEmail")}
+            readOnly={isPreFilledMode}
+            autoFocus={!isPreFilledMode}
           />
+          {emailPhase === "checking" && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <Loader2 className="h-4 w-4 animate-spin text-stone-400" />
+            </div>
+          )}
         </div>
+        {errors.email && touched.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+        {!isPreFilledMode && emailPhase === "entering" && !errors.email && (
+          <p className="mt-1.5 text-xs text-stone-400">{tEmail("enterEmailHint")}</p>
+        )}
       </div>
 
-      {/* Country */}
-      <div ref={countryDropdownRef}>
-        <label className="text-sm font-medium text-stone-700">
-          {t("country")} <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
-            onBlur={() => !countryDropdownOpen && handleBlur("country")}
-            className={`${inputClasses("country")} appearance-none cursor-pointer text-left flex items-center justify-between`}
+      {/* Recognized user banner */}
+      <AnimatePresence>
+        {emailPhase === "recognized" && maskedHints && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
           >
-            <span className={formData.country ? "text-stone-900" : "text-stone-400"}>
-              {formData.country || t("selectCountry")}
-            </span>
-            <ChevronDown className={`h-5 w-5 text-stone-400 transition-transform ${countryDropdownOpen ? "rotate-180" : ""}`} />
-          </button>
-          {countryDropdownOpen && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg">
-              <div className="p-2 border-b border-stone-100">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
-                  <input
-                    ref={countrySearchRef}
-                    type="text"
-                    value={countrySearch}
-                    onChange={(e) => setCountrySearch(e.target.value)}
-                    placeholder={t("searchCountry")}
-                    className="w-full h-9 pl-9 pr-3 rounded-md border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                  />
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 mt-0.5">
+                  <UserCheck className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-emerald-800">
+                    {tEmail("welcomeBack")}
+                  </p>
+                  <p className="text-sm text-emerald-700 mt-0.5">
+                    {maskedHints.maskedName}
+                    {maskedHints.maskedCompany && ` · ${maskedHints.maskedCompany}`}
+                    {maskedHints.maskedPhone && ` · ${maskedHints.maskedPhone}`}
+                  </p>
+                  <div className="flex gap-3 mt-2.5">
+                    <button
+                      type="button"
+                      onClick={handleUseRecognizedData}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      {tEmail("editInfo")}
+                    </button>
+                    {latestReference && (
+                      <a
+                        href={`/${locale}/config/${latestReference}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-900 border border-emerald-300 hover:border-emerald-400 rounded-md transition-colors"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        {tEmail("goToConfig")}
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="max-h-60 overflow-y-auto">
-                {filteredCountries.length === 0 ? (
-                  <div className="px-4 py-3 text-sm text-stone-400">{t("noCountriesFound")}</div>
-                ) : (
-                  filteredCountries.map((country) => (
-                    <button
-                      key={country}
-                      type="button"
-                      onClick={() => {
-                        handleChange("country", country);
-                        setCountryDropdownOpen(false);
-                        setCountrySearch("");
-                        handleBlur("country");
-                      }}
-                      className={`w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center justify-between ${
-                        formData.country === country ? "bg-stone-100 font-medium" : ""
-                      }`}
-                    >
-                      <span>{country}</span>
-                      <span className="text-stone-400 text-xs">{getDialCode(country)}</span>
-                    </button>
-                  ))
-                )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Rest of the form — disabled until email is resolved */}
+      <div className={!fieldsEnabled ? disabledFieldClasses : "transition-opacity duration-300"}>
+        {/* Are you a farmer? */}
+        <div className="mb-5">
+          <label className="text-sm font-medium text-stone-700">
+            {t("isFarmer")} <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-6 mt-2">
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <input
+                type="radio"
+                name="isFarmer"
+                value="yes"
+                checked={formData.isFarmer === "yes"}
+                onChange={(e) => handleChange("isFarmer", e.target.value)}
+                disabled={!fieldsEnabled}
+                className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
+              />
+              <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+                {t("yes")}
+              </span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <input
+                type="radio"
+                name="isFarmer"
+                value="no"
+                checked={formData.isFarmer === "no"}
+                onChange={(e) => handleChange("isFarmer", e.target.value)}
+                disabled={!fieldsEnabled}
+                className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
+              />
+              <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+                {t("no")}
+              </span>
+            </label>
+          </div>
+          {errors.isFarmer && touched.isFarmer && (
+            <p className="mt-1 text-xs text-red-500">{errors.isFarmer}</p>
+          )}
+        </div>
+
+        {/* Name Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+          <div>
+            <label className="text-sm font-medium text-stone-700">
+              {t("firstName")} <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => handleChange("firstName", e.target.value)}
+              onBlur={() => handleBlur("firstName")}
+              disabled={!fieldsEnabled}
+              className={`${inputClasses("firstName")} disabled:bg-stone-50 disabled:cursor-not-allowed`}
+            />
+            {errors.firstName && touched.firstName && (
+              <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>
+            )}
+          </div>
+          <div>
+            <label className="text-sm font-medium text-stone-700">
+              {t("lastName")} <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => handleChange("lastName", e.target.value)}
+              onBlur={() => handleBlur("lastName")}
+              disabled={!fieldsEnabled}
+              className={`${inputClasses("lastName")} disabled:bg-stone-50 disabled:cursor-not-allowed`}
+            />
+            {errors.lastName && touched.lastName && (
+              <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Phone */}
+        <div className="mb-5">
+          <label className="text-sm font-medium text-stone-700">{t("phone")}</label>
+          <div className="flex">
+            <div className="flex items-center px-3 bg-stone-100 border border-r-0 border-stone-200 rounded-l-lg text-sm text-stone-600 min-w-[70px] justify-center">
+              {formData.country ? getDialCode(formData.country) || "—" : "—"}
+            </div>
+            <input
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => handleChange("phone", e.target.value)}
+              disabled={!fieldsEnabled}
+              className="flex-1 h-11 px-4 rounded-r-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-50 disabled:cursor-not-allowed"
+              placeholder={t("phonePlaceholder")}
+            />
+          </div>
+        </div>
+
+        {/* Country */}
+        <div ref={countryDropdownRef} className="mb-5">
+          <label className="text-sm font-medium text-stone-700">
+            {t("country")} <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => fieldsEnabled && setCountryDropdownOpen(!countryDropdownOpen)}
+              onBlur={() => !countryDropdownOpen && handleBlur("country")}
+              disabled={!fieldsEnabled}
+              className={`${inputClasses("country")} appearance-none cursor-pointer text-left flex items-center justify-between disabled:bg-stone-50 disabled:cursor-not-allowed`}
+            >
+              <span className={formData.country ? "text-stone-900" : "text-stone-400"}>
+                {formData.country || t("selectCountry")}
+              </span>
+              <ChevronDown className={`h-5 w-5 text-stone-400 transition-transform ${countryDropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+            {countryDropdownOpen && fieldsEnabled && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg">
+                <div className="p-2 border-b border-stone-100">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+                    <input
+                      ref={countrySearchRef}
+                      type="text"
+                      value={countrySearch}
+                      onChange={(e) => setCountrySearch(e.target.value)}
+                      placeholder={t("searchCountry")}
+                      className="w-full h-9 pl-9 pr-3 rounded-md border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="max-h-60 overflow-y-auto">
+                  {filteredCountries.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-stone-400">{t("noCountriesFound")}</div>
+                  ) : (
+                    filteredCountries.map((country) => (
+                      <button
+                        key={country}
+                        type="button"
+                        onClick={() => {
+                          handleChange("country", country);
+                          setCountryDropdownOpen(false);
+                          setCountrySearch("");
+                          handleBlur("country");
+                        }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center justify-between ${
+                          formData.country === country ? "bg-stone-100 font-medium" : ""
+                        }`}
+                      >
+                        <span>{country}</span>
+                        <span className="text-stone-400 text-xs">{getDialCode(country)}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
+            )}
+          </div>
+          {errors.country && touched.country && (
+            <p className="mt-1 text-xs text-red-500">{errors.country}</p>
           )}
         </div>
-        {errors.country && touched.country && (
-          <p className="mt-1 text-xs text-red-500">{errors.country}</p>
-        )}
-      </div>
 
-      {/* Region */}
-      <div>
-        <label className="text-sm font-medium text-stone-700">{t("region")}</label>
-        <input
-          type="text"
-          value={formData.region}
-          onChange={(e) => handleChange("region", e.target.value)}
-          className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-          placeholder={t("regionPlaceholder")}
-        />
-      </div>
-
-      {/* Company / Farm Name */}
-      <div>
-        <label className="text-sm font-medium text-stone-700">
-          {t("company")} <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={formData.company}
-          onChange={(e) => handleChange("company", e.target.value)}
-          onBlur={() => handleBlur("company")}
-          className={inputClasses("company")}
-        />
-        {errors.company && touched.company && (
-          <p className="mt-1 text-xs text-red-500">{errors.company}</p>
-        )}
-      </div>
-
-      {/* Organic or Conventional? */}
-      <div className={formData.isFarmer === "no" ? "opacity-50" : ""}>
-        <label className="text-sm font-medium text-stone-700">{t("farmingType")}</label>
-        <div className="flex gap-6 mt-2">
-          <label className={`flex items-center gap-2 group ${formData.isFarmer === "no" ? "cursor-not-allowed" : "cursor-pointer"}`}>
-            <input
-              type="radio"
-              name="farmingType"
-              value="Conventional"
-              checked={formData.farmingType === "Conventional"}
-              onChange={(e) => handleChange("farmingType", e.target.value)}
-              disabled={formData.isFarmer === "no"}
-              className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
-            />
-            <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-              {t("farmingTypes.conventional")}
-            </span>
-          </label>
-          <label className={`flex items-center gap-2 group ${formData.isFarmer === "no" ? "cursor-not-allowed" : "cursor-pointer"}`}>
-            <input
-              type="radio"
-              name="farmingType"
-              value="Organic"
-              checked={formData.farmingType === "Organic"}
-              onChange={(e) => handleChange("farmingType", e.target.value)}
-              disabled={formData.isFarmer === "no"}
-              className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
-            />
-            <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-              {t("farmingTypes.organic")}
-            </span>
-          </label>
-          <label className={`flex items-center gap-2 group ${formData.isFarmer === "no" ? "cursor-not-allowed" : "cursor-pointer"}`}>
-            <input
-              type="radio"
-              name="farmingType"
-              value="Both"
-              checked={formData.farmingType === "Both"}
-              onChange={(e) => handleChange("farmingType", e.target.value)}
-              disabled={formData.isFarmer === "no"}
-              className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
-            />
-            <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-              {t("farmingTypes.both")}
-            </span>
-          </label>
+        {/* Region */}
+        <div className="mb-5">
+          <label className="text-sm font-medium text-stone-700">{t("region")}</label>
+          <input
+            type="text"
+            value={formData.region}
+            onChange={(e) => handleChange("region", e.target.value)}
+            disabled={!fieldsEnabled}
+            className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-50 disabled:cursor-not-allowed"
+            placeholder={t("regionPlaceholder")}
+          />
         </div>
-      </div>
 
-      {/* Farm Size */}
-      <div className={formData.isFarmer === "no" ? "opacity-50" : ""}>
-        <label className="text-sm font-medium text-stone-700">{t("farmSize")}</label>
-        <input
-          type="number"
-          value={formData.farmSize}
-          onChange={(e) => handleChange("farmSize", e.target.value)}
-          disabled={formData.isFarmer === "no"}
-          className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed"
-          placeholder={t("farmSizePlaceholder")}
-          min="0"
-        />
-      </div>
-
-      {/* Hectares relevant for FarmDroid */}
-      <div className={formData.isFarmer === "no" ? "opacity-50" : ""}>
-        <label className="text-sm font-medium text-stone-700">{t("hectaresForFarmDroid")}</label>
-        <input
-          type="number"
-          value={formData.hectaresForFarmDroid}
-          onChange={(e) => handleChange("hectaresForFarmDroid", e.target.value)}
-          disabled={formData.isFarmer === "no"}
-          className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed"
-          placeholder={t("hectaresPlaceholder")}
-          min="0"
-        />
-        <p className="mt-1 text-xs text-stone-400">{t("hectaresHint")}</p>
-      </div>
-
-      {/* Crops - Multi-select */}
-      <div className={formData.isFarmer === "no" ? "opacity-50" : ""} ref={cropsDropdownRef}>
-        <label className="text-sm font-medium text-stone-700">{t("crops")}</label>
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => !formData.isFarmer || formData.isFarmer !== "no" ? setCropsDropdownOpen(!cropsDropdownOpen) : null}
-            disabled={formData.isFarmer === "no"}
-            className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed text-left flex items-center justify-between"
-          >
-            <span className={selectedCropsHubspot.length === 0 ? "text-stone-400" : "text-stone-900 truncate"}>
-              {selectedCropsHubspot.length === 0
-                ? t("selectCrops")
-                : getSelectedCropsDisplay()}
-            </span>
-            <ChevronDown className={`h-5 w-5 text-stone-400 transition-transform ${cropsDropdownOpen ? "rotate-180" : ""}`} />
-          </button>
-          {cropsDropdownOpen && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-              {Object.keys(CROP_TYPES).map((cropKey) => (
-                <label
-                  key={cropKey}
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-stone-50 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={isCropSelected(cropKey)}
-                    onChange={() => toggleCrop(cropKey)}
-                    className="h-4 w-4 rounded border-stone-300 text-stone-900 focus:ring-stone-900"
-                  />
-                  <span className="text-sm text-stone-700">{t(`cropTypes.${cropKey}`)}</span>
-                </label>
-              ))}
-            </div>
+        {/* Company / Farm Name */}
+        <div className="mb-5">
+          <label className="text-sm font-medium text-stone-700">
+            {t("company")} <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={formData.company}
+            onChange={(e) => handleChange("company", e.target.value)}
+            onBlur={() => handleBlur("company")}
+            disabled={!fieldsEnabled}
+            className={`${inputClasses("company")} disabled:bg-stone-50 disabled:cursor-not-allowed`}
+          />
+          {errors.company && touched.company && (
+            <p className="mt-1 text-xs text-red-500">{errors.company}</p>
           )}
         </div>
-      </div>
 
-      {/* Other Crops - Free text */}
-      <div className={formData.isFarmer === "no" ? "opacity-50" : ""}>
-        <label className="text-sm font-medium text-stone-700">{t("otherCrops")}</label>
-        <input
-          type="text"
-          value={formData.otherCrops}
-          onChange={(e) => handleChange("otherCrops", e.target.value)}
-          disabled={formData.isFarmer === "no"}
-          className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed"
-          placeholder={t("otherCropsPlaceholder")}
-        />
-      </div>
+        {/* Organic or Conventional? */}
+        <div className={`mb-5 ${formData.isFarmer === "no" ? "opacity-50" : ""}`}>
+          <label className="text-sm font-medium text-stone-700">{t("farmingType")}</label>
+          <div className="flex gap-6 mt-2">
+            <label className={`flex items-center gap-2 group ${!fieldsEnabled || formData.isFarmer === "no" ? "cursor-not-allowed" : "cursor-pointer"}`}>
+              <input
+                type="radio"
+                name="farmingType"
+                value="Conventional"
+                checked={formData.farmingType === "Conventional"}
+                onChange={(e) => handleChange("farmingType", e.target.value)}
+                disabled={!fieldsEnabled || formData.isFarmer === "no"}
+                className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
+              />
+              <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+                {t("farmingTypes.conventional")}
+              </span>
+            </label>
+            <label className={`flex items-center gap-2 group ${!fieldsEnabled || formData.isFarmer === "no" ? "cursor-not-allowed" : "cursor-pointer"}`}>
+              <input
+                type="radio"
+                name="farmingType"
+                value="Organic"
+                checked={formData.farmingType === "Organic"}
+                onChange={(e) => handleChange("farmingType", e.target.value)}
+                disabled={!fieldsEnabled || formData.isFarmer === "no"}
+                className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
+              />
+              <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+                {t("farmingTypes.organic")}
+              </span>
+            </label>
+            <label className={`flex items-center gap-2 group ${!fieldsEnabled || formData.isFarmer === "no" ? "cursor-not-allowed" : "cursor-pointer"}`}>
+              <input
+                type="radio"
+                name="farmingType"
+                value="Both"
+                checked={formData.farmingType === "Both"}
+                onChange={(e) => handleChange("farmingType", e.target.value)}
+                disabled={!fieldsEnabled || formData.isFarmer === "no"}
+                className="h-4 w-4 text-stone-900 border-stone-300 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
+              />
+              <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+                {t("farmingTypes.both")}
+              </span>
+            </label>
+          </div>
+        </div>
 
-      {/* Checkboxes */}
-      <div className="space-y-3 pt-2">
-        <label className="flex items-start gap-3 cursor-pointer group">
+        {/* Farm Size */}
+        <div className={`mb-5 ${formData.isFarmer === "no" ? "opacity-50" : ""}`}>
+          <label className="text-sm font-medium text-stone-700">{t("farmSize")}</label>
           <input
-            type="checkbox"
-            checked={formData.contactByPartner}
-            onChange={(e) => handleChange("contactByPartner", e.target.checked)}
-            className="mt-0.5 h-5 w-5 rounded border-stone-300 text-stone-900 focus:ring-stone-900 cursor-pointer"
+            type="number"
+            value={formData.farmSize}
+            onChange={(e) => handleChange("farmSize", e.target.value)}
+            disabled={!fieldsEnabled || formData.isFarmer === "no"}
+            className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed"
+            placeholder={t("farmSizePlaceholder")}
+            min="0"
           />
-          <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-            {t("contactByPartner")}
-          </span>
-        </label>
+        </div>
 
-        <label className="flex items-start gap-3 cursor-pointer group">
+        {/* Hectares relevant for FarmDroid */}
+        <div className={`mb-5 ${formData.isFarmer === "no" ? "opacity-50" : ""}`}>
+          <label className="text-sm font-medium text-stone-700">{t("hectaresForFarmDroid")}</label>
           <input
-            type="checkbox"
-            checked={formData.marketingConsent}
-            onChange={(e) => handleChange("marketingConsent", e.target.checked)}
-            className="mt-0.5 h-5 w-5 rounded border-stone-300 text-stone-900 focus:ring-stone-900 cursor-pointer"
+            type="number"
+            value={formData.hectaresForFarmDroid}
+            onChange={(e) => handleChange("hectaresForFarmDroid", e.target.value)}
+            disabled={!fieldsEnabled || formData.isFarmer === "no"}
+            className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed"
+            placeholder={t("hectaresPlaceholder")}
+            min="0"
           />
-          <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
-            {t("marketingConsent")}
-          </span>
-        </label>
+          <p className="mt-1 text-xs text-stone-400">{t("hectaresHint")}</p>
+        </div>
+
+        {/* Crops - Multi-select */}
+        <div className={`mb-5 ${formData.isFarmer === "no" ? "opacity-50" : ""}`} ref={cropsDropdownRef}>
+          <label className="text-sm font-medium text-stone-700">{t("crops")}</label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => fieldsEnabled && (!formData.isFarmer || formData.isFarmer !== "no") ? setCropsDropdownOpen(!cropsDropdownOpen) : null}
+              disabled={!fieldsEnabled || formData.isFarmer === "no"}
+              className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed text-left flex items-center justify-between"
+            >
+              <span className={selectedCropsHubspot.length === 0 ? "text-stone-400" : "text-stone-900 truncate"}>
+                {selectedCropsHubspot.length === 0
+                  ? t("selectCrops")
+                  : getSelectedCropsDisplay()}
+              </span>
+              <ChevronDown className={`h-5 w-5 text-stone-400 transition-transform ${cropsDropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+            {cropsDropdownOpen && fieldsEnabled && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                {Object.keys(CROP_TYPES).map((cropKey) => (
+                  <label
+                    key={cropKey}
+                    className="flex items-center gap-3 px-4 py-2 hover:bg-stone-50 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isCropSelected(cropKey)}
+                      onChange={() => toggleCrop(cropKey)}
+                      className="h-4 w-4 rounded border-stone-300 text-stone-900 focus:ring-stone-900"
+                    />
+                    <span className="text-sm text-stone-700">{t(`cropTypes.${cropKey}`)}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Other Crops - Free text */}
+        <div className={`mb-5 ${formData.isFarmer === "no" ? "opacity-50" : ""}`}>
+          <label className="text-sm font-medium text-stone-700">{t("otherCrops")}</label>
+          <input
+            type="text"
+            value={formData.otherCrops}
+            onChange={(e) => handleChange("otherCrops", e.target.value)}
+            disabled={!fieldsEnabled || formData.isFarmer === "no"}
+            className="w-full h-11 px-4 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent disabled:bg-stone-100 disabled:cursor-not-allowed"
+            placeholder={t("otherCropsPlaceholder")}
+          />
+        </div>
+
+        {/* Checkboxes */}
+        <div className="space-y-3 pt-2">
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={formData.contactByPartner}
+              onChange={(e) => handleChange("contactByPartner", e.target.checked)}
+              disabled={!fieldsEnabled}
+              className="mt-0.5 h-5 w-5 rounded border-stone-300 text-stone-900 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
+            />
+            <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+              {t("contactByPartner")}
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={formData.marketingConsent}
+              onChange={(e) => handleChange("marketingConsent", e.target.checked)}
+              disabled={!fieldsEnabled}
+              className="mt-0.5 h-5 w-5 rounded border-stone-300 text-stone-900 focus:ring-stone-900 cursor-pointer disabled:cursor-not-allowed"
+            />
+            <span className="text-sm text-stone-600 group-hover:text-stone-900 transition-colors">
+              {t("marketingConsent")}
+            </span>
+          </label>
+        </div>
       </div>
 
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || !fieldsEnabled}
         className="w-full h-12 mt-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white font-medium flex items-center justify-center gap-2 transition-colors"
       >
         {submitting ? (

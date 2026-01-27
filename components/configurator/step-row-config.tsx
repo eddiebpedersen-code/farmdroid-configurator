@@ -768,8 +768,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     const parsed = parseFloat(normalizedValue);
     if (!isNaN(parsed) && parsed > 0) {
       const newWidth = Math.round(parsed * 10); // Convert cm to mm
-      // Minimum is rowSpan to prevent pass overlap, maximum is 500cm
-      const validWidth = Math.max(rowSpan, Math.min(5000, newWidth));
+      // Minimum is rowSpan to prevent pass overlap, maximum is 340cm (toolbeam length)
+      const validWidth = Math.max(rowSpan, Math.min(maxWorkingWidth, newWidth));
       setFollowWheelSpacing(false); // Manual edit exits Beds mode
       setWorkingWidthOverride(validWidth === calculatedWorkingWidth ? null : validWidth);
     }

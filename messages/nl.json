@@ -8,6 +8,14 @@
     "formHeading": "Uw FarmDroid is geconfigureerd!",
     "formSubheading": "Vul uw gegevens in om de prijs te zien en uw configuratieoverzicht te ontvangen.",
     "submitButton": "Bekijk de prijs",
+    "emailFirst": {
+      "enterEmail": "Voer uw e-mailadres in om te beginnen",
+      "enterEmailHint": "We controleren of u eerder hebt geconfigureerd",
+      "checking": "We zoeken u op...",
+      "welcomeBack": "Welkom terug! We hebben uw gegevens gevonden.",
+      "editInfo": "Uw gegevens bewerken",
+      "goToConfig": "Naar configuratie"
+    },
     "form": {
       "firstName": "Voornaam",
       "lastName": "Achternaam",
@@ -171,7 +179,7 @@
     "features": {
       "solarPower": "1,6 kW zonne-energiesysteem",
       "batteries": "Lithiumbatterijen 6,0 kWh capaciteit",
-      "gps": "Dubbel GPS-navigatiesysteem",
+      "gps": "Dubbel RTK-GPS-systeem",
       "autonomous": "Autonome werking",
       "remoteMonitoring": "Bewaking op afstand via app",
       "premiumSubscription": "Premium abonnement (1 jaar inbegrepen)",
@@ -196,17 +204,17 @@
     "moreInfo": "Meer informatie",
     "options": {
       "pfw": {
-        "name": "Passief Voorwiel",
+        "name": "Passive Front Wheel",
         "subtitle": "Beste voor vlakke velden met bredere rijafstand (45-50 cm)",
         "description": "De standaard wielconfiguratie biedt stabiliteit en soepele besturing op vlak terrein. Ideaal voor gewassen met even rijaantallen en bredere rijafstand, zoals suikerbieten (45-50 cm)."
       },
       "afw": {
-        "name": "Actief Voorwiel",
+        "name": "Active Front Wheel",
         "subtitle": "Automatisch kantelende stabiliteit voor hellingen boven 8%",
         "description": "Voor heuvelachtig terrein voegt het actieve voorwiel een actuator toe die het voorwiel automatisch kantelt om stabiliteit te behouden. Aanbevolen voor hellingen boven 8% en zijhellingen boven 5%, en voor gewassen met even rijaantallen en bredere afstand (ongeveer 45-50 cm)."
       },
       "dfw": {
-        "name": "Dubbel Voorwiel",
+        "name": "Dual Front Wheel",
         "subtitle": "Smalle rijafstand tot 22,5 cm en bedsystemen",
         "description": "Uitgerust met twee voorwielen in plaats van één, verbetert deze opstelling de balans en precisie, vooral voor gewassen met smalle rijafstand tot 22,5 cm. Perfect voor vlakke velden en bedsystemen, werkt goed met zowel even als oneven rijaantallen."
       }
@@ -221,9 +229,9 @@
       "title": "Wielconfiguraties",
       "intro": "Elk veld is anders, en zo ook elke FarmDroid. De FD20 kan worden aangepast aan uw specifieke omstandigheden met verstelbare wielafstanden, rijaantallen en een keuze uit drie voorwielconfiguraties.",
       "adjustmentRange": "Uw ideale opstelling hangt af van verschillende parameters, waaronder gewastype, rijafstand, bodemomstandigheden en de helling van uw veld. De dubbele achterwielen van de FD20 kunnen worden ingesteld tussen 160-230 cm in stappen van 10 cm.",
-      "passiveFrontWheel": "1. Passief Voorwiel",
-      "dualFrontWheel": "2. Dubbel Voorwiel",
-      "activeFrontWheel": "3. Actief Voorwiel",
+      "passiveFrontWheel": "1. Passive Front Wheel",
+      "dualFrontWheel": "2. Dual Front Wheel",
+      "activeFrontWheel": "3. Active Front Wheel",
       "footer": "Met deze configuratieopties kunt u uw FarmDroid nauwkeurig afstemmen op uw terrein, gewassen en werkstijl. Onze robotspecialisten staan altijd klaar om u te helpen de opstelling te ontwerpen die het beste bij uw boerderij past."
     },
     "selectionInfo": {
@@ -247,7 +255,7 @@
       }
     },
     "powerBank": {
-      "name": "+ Powerbank",
+      "name": "+ Power Bank",
       "description": "Uitgebreid: Voegt ~10 uur dagelijkse werking toe",
       "features": {
         "extraCapacity": "6,0 kWh extra capaciteit",
@@ -326,7 +334,7 @@
     "title": "+Weed Configuration",
     "subtitle": "Configureer uw wiedinstellingen",
     "mechanicalWeeding": "Mechanisch Wieden",
-    "spraySystemSection": "+Spuitsysteem",
+    "spraySystemSection": "+Spray System",
     "optionalWeedingTool": "Optioneel Wiedgereedschap",
     "weedingToolNone": "Geen",
     "standardWeedConfig": {
@@ -338,7 +346,7 @@
       }
     },
     "combiTool": {
-      "name": "Combi Gereedschap",
+      "name": "Combi Tool",
       "description": "Multifunctioneel gereedschap voor verbeterd wieden",
       "features": {
         "notchedDiscs": "Gekartelde schijven voor voorsnijden",
@@ -348,14 +356,14 @@
       "pricePerRow": "{price} × {count} rijen"
     },
     "weedCuttingDisc": {
-      "name": "Onkruidsnijschijf",
+      "name": "Weed Cutting Disc",
       "description": "Precisiesnijschijf voor effectieve onkruidbestrijding",
       "variant": "{size} variant",
       "pricePerRow": "{price} × {count} rijen",
       "notAvailable": "Niet beschikbaar voor deze configuratie"
     },
     "spray": {
-      "name": "+SPRAY Systeem",
+      "name": "+SPRAY System",
       "description": "Precisiespuiten met GPS-geleiding",
       "features": {
         "chemicalReduction": "Tot 94% chemicaliënreductie",
@@ -368,7 +376,7 @@
     },
     "info": {
       "both": "Volledige wiedinstelling met mechanisch gereedschap en precisiespuiten voor maximale onkruidbestrijding.",
-      "sprayOnly": "Het +SPRAY systeem maakt gerichte herbicidetoepassing mogelijk met GPS-precisie, waardoor chemicaliëngebruik tot 90% vermindert.",
+      "sprayOnly": "Het +SPRAY systeem maakt gerichte herbicidetoepassing mogelijk met GPS-precisie, waardoor chemicaliëngebruik tot 94% vermindert.",
       "combiOnly": "Verbeterd mechanisch wieden met Combi Gereedschap hulpstukken voor verbeterd bodembeheer en onkruidbestrijding.",
       "weedCuttingDiscOnly": "Precisiesnijschijven bieden effectieve mechanische onkruidbestrijding tussen de rijen.",
       "standard": "Standaard mechanische wiedconfiguratie, perfect voor biologische certificeringseisen."
@@ -394,12 +402,11 @@
           "tipText": "Biologische boerderijen en operaties gericht op chemievrij onkruidbeheer. De standaard setup handelt de meeste gangbare onkruiddruk effectief af."
         },
         "combiTool": {
-          "name": "Combi Gereedschap",
+          "name": "Combi Tool",
           "description": "Het Combi Gereedschap is een geavanceerd mechanisch wiedhulpstuk dat getande schijven en L-scharen toevoegt aan uw FarmDroid. De getande schijven snijden de grond voor de wiedbewerking, terwijl de L-scharen zorgen voor extra grondbeweging voor betere onkruidbegraving.",
           "specs": [
             "Getande schijven voor voorsnijden van grond",
             "L-scharen voor verbeterde grondbeweging",
-            "Verbeterde onkruidbegravingscapaciteit",
             "Werkt met standaard wiedgereedschap",
             "Instelbaar per actieve rij",
             "Robuuste constructie"
@@ -408,7 +415,7 @@
           "tipText": "Velden met hoge onkruiddruk of verdichte grond. Het Combi Gereedschap biedt agressievere mechanische actie bij uitdagende omstandigheden."
         },
         "weedCuttingDisc": {
-          "name": "Onkruidsnijschijf",
+          "name": "Weed Cutting Disc",
           "description": "De Onkruidsnijschijf is een precisie snijgereedschap dat effectieve onkruidbestrijding tussen rijen biedt. Beschikbaar in 225mm en 250mm varianten afhankelijk van uw rijafstand, snijden deze schijven onkruid aan het bodemoppervlak voor schone, efficiënte onkruidbeheersing.",
           "specs": [
             "Precisie geslepen snijrand",
@@ -422,7 +429,7 @@
           "tipText": "Operaties die schone snijactie vereisen met minimale bodemverstoring. Ideaal voor gewassen die gevoelig zijn voor grondbeweging of waar precisie kritisch is."
         },
         "spraySystem": {
-          "name": "+Spray Systeem",
+          "name": "+Spray System",
           "description": "Het +SPRAY systeem voegt precisie spuitcapaciteit toe aan uw FarmDroid. Bereik tot 94% besparing op chemicaliën (88% vlootgemiddelde in 2024) met hybride onkruidbestrijding voor optimale efficiëntie. Ook compatibel met vloeibare meststoffen en bio-stimulanten.",
           "specs": [
             "Tot 94% chemicaliënbesparing (88% vlootgemiddelde 2024)",
@@ -431,7 +438,6 @@
             "Automatische reiniging voor probleemloze onderhoud",
             "24-uurs capaciteit voor pleksgewijs spuiten, 12 uur voor bandspuiten",
             "Laag stroomverbruik: slechts 30-50W",
-            "Spuithoogte instelbaar van 15-22 cm (5-10 cm band)",
             "Driftreductieklasse 90% (TCT) gecertificeerd",
             "Compatibel met robotmodellen vanaf 2023"
           ],
@@ -452,43 +458,43 @@
     },
     "items": {
       "starterKit": {
-        "name": "Startpakket",
+        "name": "Starter Kit",
         "description": "Essentieel verzorgingspakket met basisstation V3 en veldinstallatietools"
       },
       "fstFieldSetupTool": {
-        "name": "FST - Veldinstallatietool",
+        "name": "FST - Field Setup Tool",
         "description": "Precisie veldinstallatietool voor optimale robotkalibratie"
       },
       "baseStationV3": {
-        "name": "Basisstation V3 Set",
+        "name": "Base Station V3 Set",
         "description": "GPS-basisstation voor hoge-precisie navigatie"
       },
       "essentialCarePackage": {
-        "name": "Essentieel Verzorgingspakket",
+        "name": "Essential Care Package",
         "description": "Complete onderhoudsset voor robotverzorging"
       },
       "essentialCareSpray": {
-        "name": "Essentieel Verzorgingspakket voor +Spray",
+        "name": "Essential Care Package for +Spray",
         "description": "Onderhoudsset specifiek voor het spuitsysteem"
       },
       "additionalWeightKit": {
-        "name": "Extra Gewichtenset",
+        "name": "Additional Weight Kit",
         "description": "4× 17,5kg gewichten voor verbeterde tractie"
       },
       "toolbox": {
-        "name": "Gereedschapskist met Gereedschap",
+        "name": "Toolbox with Tools",
         "description": "Complete gereedschapsset voor veldonderhoud"
       },
       "roadTransport": {
-        "name": "Wegtransportplatform",
+        "name": "Road Transport Platform",
         "description": "Transportplatform voor het verplaatsen van FD20 tussen velden over openbare wegen"
       },
       "fieldBracket": {
-        "name": "Veldbeugel met Ketting",
+        "name": "Field Bracket with Chain",
         "description": "Veilige montagebeugel voor veldpositionering"
       },
       "powerBank": {
-        "name": "Powerbank",
+        "name": "Power Bank",
         "description": "Extra batterijcapaciteit voor langere werking"
       }
     },
@@ -496,10 +502,10 @@
     "selected": "Geselecteerd",
     "total": "Totaal",
     "itemsLabel": "items",
-    "includedInStarterKit": "Inbegrepen in Startpakket",
+    "includedInStarterKit": "Inbegrepen in Starter Kit",
     "includedWithCare": "Inbegrepen met Verzorgingspakket",
     "included": "Inbegrepen",
-    "starterKitIncludes": "Bevat: FST Veldinstallatietool, Basisstation V3, Essentieel Verzorgingspakket, Veldbeugel",
+    "starterKitIncludes": "Bevat: FST - Field Setup Tool, Base Station V3, Essential Care Package, Field Bracket",
     "emptyMessage": "Accessoires zijn optioneel. U kunt ze later toevoegen via onze serviceafdeling.",
     "selectedMessage": "{count} accessoire-item geselecteerd voor {price}.",
     "selectedMessagePlural": "{count} accessoire-items geselecteerd voor {price}.",
@@ -512,9 +518,9 @@
       "includedItems": "Wat is inbegrepen",
       "close": "Sluiten",
       "features": "Belangrijkste kenmerken",
-      "starterKitBadge": "In Startpakket",
+      "starterKitBadge": "In Starter Kit",
       "bundles": {
-        "title": "Startpakket",
+        "title": "Starter Kit",
         "description": "Het Startpakket bundelt alles wat je nodig hebt om je FarmDroid snel aan de slag te krijgen. Het bevat essentiële connectiviteitsapparatuur, veldinstallatietools en onderhoudsbenodigdheden voor een gebundelde prijs.",
         "tip": {
           "label": "Pro tip:",
@@ -535,7 +541,7 @@
       },
       "items": {
         "fstFieldSetupTool": {
-          "name": "FST - Veldinstallatietool",
+          "name": "FST - Field Setup Tool",
           "description": "De FST (Field Setup Tool) is een precisie GPS-apparaat ontworpen om je te helpen nauwkeurig je veldgrenzen in kaart te brengen en werkzones te configureren. Het verbindt direct met je FarmDroid-systeem en zorgt ervoor dat je robot precies weet waar hij moet werken.",
           "features": [
             "Hoogprecisie GPS-ontvanger",
@@ -546,7 +552,7 @@
           ]
         },
         "baseStationV3": {
-          "name": "Basisstation V3 Set",
+          "name": "Base Station V3 Set",
           "description": "Het Basisstation V3 is een RTK GPS-basisstation dat centimeternauwkeurige positionering biedt voor je FarmDroid. Het zendt correctiesignalen uit die nauwkeurige autonome navigatie over je veld mogelijk maken.",
           "features": [
             "RTK GPS-technologie",
@@ -557,7 +563,7 @@
           ]
         },
         "essentialCarePackage": {
-          "name": "Essentieel Verzorgingspakket",
+          "name": "Essential Care Package",
           "description": "Het Essentieel Verzorgingspakket is een uitgebreide onderhoudskit met alle reserveonderdelen en verbruiksartikelen die je nodig hebt voor regelmatig robotonderhoud. Houd je FarmDroid soepel draaiend gedurende het hele seizoen.",
           "features": [
             "Vervangende slijtageonderdelen",
@@ -568,7 +574,7 @@
           ]
         },
         "fieldBracket": {
-          "name": "Veldbeugel met Ketting",
+          "name": "Field Bracket with Chain",
           "description": "De Veldbeugel biedt een veilig bevestigingspunt voor het verplaatsen van je FarmDroid over korte afstanden met een tractor of ATV. Essentieel voor het herpositioneren van je robot op je terrein zonder het transportplatform te gebruiken.",
           "features": [
             "Robuuste stalen constructie",
@@ -579,7 +585,7 @@
           ]
         },
         "roadTransport": {
-          "name": "Wegtransportplatform",
+          "name": "Road Transport Platform",
           "description": "Het Wegtransportplatform is een gecertificeerde aanhangwagenoplossing voor het legaal vervoeren van je FarmDroid over openbare wegen. Vereist bij het verplaatsen van je robot tussen verre velden of naar servicelocaties.",
           "features": [
             "Weglegaal gecertificeerd",
@@ -590,7 +596,7 @@
           ]
         },
         "additionalWeightKit": {
-          "name": "Extra Gewichtenkit",
+          "name": "Additional Weight Kit",
           "description": "De Extra Gewichtenkit bevat 4 × 17,5kg gewichten die aan je FarmDroid kunnen worden bevestigd om de tractie te verbeteren in uitdagende bodemomstandigheden. Ideaal voor nat, los of hellend terrein.",
           "features": [
             "4 × 17,5kg gewichten (70kg totaal)",
@@ -601,7 +607,7 @@
           ]
         },
         "toolbox": {
-          "name": "Gereedschapskist met Gereedschap",
+          "name": "Toolbox with Tools",
           "description": "Een complete set gereedschappen speciaal geselecteerd voor FarmDroid veldonderhoud en kleine aanpassingen. Alles wat je nodig hebt om je robot draaiende te houden tijdens het seizoen.",
           "features": [
             "FarmDroid-specifiek gereedschap",
@@ -646,8 +652,8 @@
       "softwareUpgrades": "Software-upgrades"
     },
     "warranty": {
-      "title": "Garantieverlenging",
-      "extension": "+2 Jaar Garantieverlenging",
+      "title": "Warranty Extension",
+      "extension": "+2 Year Warranty Extension",
       "description": "Dekt onderdelen en vervanging. Vereist jaarlijks onderhoud van FD20."
     }
   },
@@ -659,26 +665,26 @@
     "lineItems": {
       "baseRobot": "FD20 Robot V2.6",
       "hybridPower": "Hybride Stroomsysteem",
-      "activeFrontWheel": "Actief Voorwiel",
-      "dualFrontWheel": "Dubbel Voorwiel",
+      "activeFrontWheel": "Active Front Wheel",
+      "dualFrontWheel": "Dual Front Wheel",
       "activeRows": "{count}× Actieve Rijen ({size})",
       "passiveRows": "{count}× Passieve Rijen",
-      "combiTool": "Combi Gereedschap ({count} rijen)",
-      "weedCuttingDisc": "Onkruidsnijschijf {variant} ({count} rijen)",
-      "spraySystem": "+SPRAY Systeem",
+      "combiTool": "Combi Tool ({count} rijen)",
+      "weedCuttingDisc": "Weed Cutting Disc {variant} ({count} rijen)",
+      "spraySystem": "+SPRAY System",
       "accessories": "Accessoires",
-      "starterKit": "Starterspakket",
+      "starterKit": "Starter Kit",
       "starterKitIncludes": "Incl. FST-tool, Basisstation, Verzorgingspakket, Veldbeugel",
-      "roadTransport": "Wegtransportplatform",
-      "powerBank": "Powerbank",
-      "fstTool": "FST Veldinstallatietool",
-      "baseStation": "Basisstation V3",
-      "essentialCare": "Essential Care Pakket",
-      "essentialCareSpray": "Essential Care voor +SPRAY",
-      "fieldBracket": "Veldbeugel",
-      "weightKit": "Extra Gewichtenset",
-      "toolbox": "Gereedschapskist",
-      "warrantyExtension": "+2 Jaar Garantieverlenging"
+      "roadTransport": "Road Transport Platform",
+      "powerBank": "Power Bank",
+      "fstTool": "FST - Field Setup Tool",
+      "baseStation": "Base Station V3",
+      "essentialCare": "Essential Care Package",
+      "essentialCareSpray": "Essential Care for +SPRAY",
+      "fieldBracket": "Field Bracket",
+      "weightKit": "Additional Weight Kit",
+      "toolbox": "Toolbox",
+      "warrantyExtension": "+2 Year Warranty Extension"
     },
     "configLabels": {
       "rows": "rijen",
@@ -760,7 +766,7 @@
     "autoSaved": "Automatisch opgeslagen"
   },
   "rowConfig": {
-    "title": "+Seed Configuratie",
+    "title": "+Seed Configuration",
     "subtitle": "Configureer uw zaai-instellingen",
     "seedSize": "Zaadgrootte",
     "small": "Klein (6mm)",
@@ -868,11 +874,11 @@
       },
       "systems": {
         "6mm": {
-          "name": "+Seed 6mm Systeem",
+          "name": "+Seed 6mm System",
           "description": "Voor kleinere zaden tot 6mm. Ideaal voor dichte beplanting met precieze afstand."
         },
         "14mm": {
-          "name": "+Seed 14mm Systeem",
+          "name": "+Seed 14mm System",
           "description": "Verwerkt grotere zaden tot 14mm. Perfect voor gewassen die meer ruimte nodig hebben tussen rijen."
         }
       }
@@ -916,7 +922,6 @@
     "shareQuote": "Offerte Delen",
     "customizeQuote": "Offerte Aanpassen",
     "showPricing": "Prijzen tonen",
-    "lineItems": "Regelitems",
     "customItems": "Aangepaste Items",
     "addItem": "Toevoegen",
     "addDiscount": "Korting Toevoegen",
@@ -952,44 +957,55 @@
     "errorInvalid": "De offertelink is ongeldig of verlopen. Vraag een nieuwe offerte aan.",
     "startNewConfig": "Nieuwe Configuratie Starten",
     "print": "Afdrukken",
-    "lineItems.baseRobot": "FD20 Basisrobot",
-    "lineItems.powerSource.solar": "Zonne-energiesysteem",
-    "lineItems.powerSource.hybrid": "Hybride Energiesysteem",
-    "lineItems.frontWheel.PFW": "Passief Voorwiel",
-    "lineItems.frontWheel.AFW": "Actief Voorwiel",
-    "lineItems.frontWheel.DFW": "Dubbel Voorwiel",
-    "lineItems.activeRows": "{count}x Actieve Rijen ({size})",
-    "lineItems.passiveRows": "{count}x Passieve Rijen",
-    "lineItems.spraySystem": "+SPRAY Systeem",
-    "lineItems.accessories": "Accessoires",
-    "lineItems.warrantyExtension": "2-Jarige Garantieverlenging",
-    "config.rows": "Rijen",
-    "config.active": "actief",
-    "config.passive": "passief",
-    "config.seedSize": "Zaadgrootte",
-    "config.rowSpacing": "Rijafstand",
-    "config.workingWidth": "Werkbreedte",
-    "config.powerSource": "Energiebron",
-    "config.hybrid": "Hybride",
-    "config.solar": "Zonne",
-    "config.frontWheel": "Voorwiel",
-    "config.passiveFrontWheel": "Passief",
-    "config.activeFrontWheel": "Actief",
-    "config.dualFrontWheel": "Dubbel",
-    "config.spraySystem": "Spuitsysteem",
-    "config.included": "Inbegrepen",
-    "config.warranty": "Garantie",
-    "config.extended": "3 Jaar",
-    "config.accessories": "Accessoires",
-    "accessories.starterKit": "Startpakket",
-    "accessories.roadTransport": "Wegtransport",
-    "accessories.fieldBracket": "Veldbeugel",
-    "accessories.powerBank": "Powerbank",
-    "accessories.fstTool": "FST Gereedschap",
-    "accessories.baseStation": "Basisstation",
-    "accessories.carePkg": "Verzorgingspakket",
-    "accessories.weightKit": "Gewichtenset",
-    "accessories.toolbox": "Gereedschapskist"
+    "lineItemsLabel": "Regelitems",
+    "lineItems": {
+      "baseRobot": "FD20 Base Robot",
+      "powerSource": {
+        "solar": "Zonne-energiesysteem",
+        "hybrid": "Hybride Energiesysteem"
+      },
+      "frontWheel": {
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
+      },
+      "activeRows": "{count}x Actieve Rijen ({size})",
+      "passiveRows": "{count}x Passieve Rijen",
+      "spraySystem": "+SPRAY System",
+      "accessories": "Accessoires",
+      "warrantyExtension": "+2 Year Warranty Extension"
+    },
+    "config": {
+      "rows": "Rijen",
+      "active": "actief",
+      "passive": "passief",
+      "seedSize": "Zaadgrootte",
+      "rowSpacing": "Rijafstand",
+      "workingWidth": "Werkbreedte",
+      "powerSource": "Energiebron",
+      "hybrid": "Hybride",
+      "solar": "Zonne",
+      "frontWheel": "Voorwiel",
+      "passiveFrontWheel": "Passief",
+      "activeFrontWheel": "Actief",
+      "dualFrontWheel": "Dubbel",
+      "spraySystem": "Spuitsysteem",
+      "included": "Inbegrepen",
+      "warranty": "Garantie",
+      "extended": "3 Jaar",
+      "accessories": "Accessoires"
+    },
+    "accessories": {
+      "starterKit": "Starter Kit",
+      "roadTransport": "Road Transport",
+      "fieldBracket": "Field Bracket",
+      "powerBank": "Power Bank",
+      "fstTool": "FST Tool",
+      "baseStation": "Base Station",
+      "carePkg": "Care Package",
+      "weightKit": "Weight Kit",
+      "toolbox": "Toolbox"
+    }
   },
   "configPage": {
     "loading": "Je configuratie wordt geladen...",
@@ -1008,8 +1024,8 @@
     },
     "sections": {
       "robot": "Robot",
-      "seedConfig": "+Seed Configuratie",
-      "weedConfig": "+Weed Configuratie",
+      "seedConfig": "+Seed Configuration",
+      "weedConfig": "+Weed Configuration",
       "power": "Stroombron",
       "accessories": "Accessoires",
       "service": "Service & Garantie"
@@ -1028,9 +1044,9 @@
       "rowSpacing": "Rijafstand",
       "workingWidthLabel": "Werkbreedte",
       "frontWheel": {
-        "PFW": "Passief Voorwiel",
-        "AFW": "Actief Voorwiel",
-        "DFW": "Dubbel Voorwiel"
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
       },
       "power": {
         "solar": "Zonne-energie",
@@ -1038,46 +1054,46 @@
         "solarDesc": "100% zonne-energie autonome werking",
         "hybridDesc": "Zonne + generator voor 24u werkingscapaciteit"
       },
-      "spraySystem": "+SPRAY Systeem",
+      "spraySystem": "+SPRAY System",
       "spraySystemDesc": "Precisiespuiten voor gerichte onkruidbestrijding",
       "powerBankDesc": "Uitgebreide batterijcapaciteit voor langere werking",
       "weedingToolLabel": "Wiedgereedschap",
       "weedingTool": {
-        "combiTool": "Combi Gereedschap",
-        "weedCuttingDisc": "Onkruidsnijschijf ({variant})"
+        "combiTool": "Combi Tool",
+        "weedCuttingDisc": "Weed Cutting Disc ({variant})"
       },
       "accessoriesLabel": "Accessoires",
       "accessories": {
-        "starterKit": "Startpakket",
-        "fstFieldSetupTool": "FST Veld Setup Gereedschap",
-        "baseStationV3": "Basisstation V3",
-        "essentialCarePackage": "Essential Care Pakket",
-        "fieldBracket": "Veldbeugel",
-        "roadTransport": "Wegtransport",
-        "powerBank": "Powerbank",
-        "additionalWeightKit": "Extra Gewichtenset",
-        "toolbox": "Gereedschapskist"
+        "starterKit": "Starter Kit",
+        "fstFieldSetupTool": "FST - Field Setup Tool",
+        "baseStationV3": "Base Station V3",
+        "essentialCarePackage": "Essential Care Package",
+        "fieldBracket": "Field Bracket",
+        "roadTransport": "Road Transport Platform",
+        "powerBank": "Power Bank",
+        "additionalWeightKit": "Additional Weight Kit",
+        "toolbox": "Toolbox"
       },
       "servicePlan": {
         "standard": "Standaard Serviceplan",
         "premium": "Premium Serviceplan"
       },
-      "warrantyExtension": "+2 Jaar Garantieverlenging"
+      "warrantyExtension": "+2 Year Warranty Extension"
     },
     "investment": {
       "frontWheel": {
-        "PFW": "Passief Voorwiel",
-        "AFW": "Actief Voorwiel",
-        "DFW": "Dubbel Voorwiel"
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
       },
       "activeRows": "{count}× Actieve Rijen ({size})",
       "passiveRows": "{count}× Passieve Rijen",
       "hybrid": "Hybride Stroomsysteem",
-      "spraySystem": "+SPRAY Systeem",
-      "combiTool": "Combi Gereedschap ({count} rijen)",
-      "weedCuttingDisc": "Onkruidsnijschijf ({count} rijen, {variant})",
+      "spraySystem": "+SPRAY System",
+      "combiTool": "Combi Tool ({count} rijen)",
+      "weedCuttingDisc": "Weed Cutting Disc ({count} rijen, {variant})",
       "accessories": "Accessoires",
-      "warrantyExtension": "+2 Jaar Garantieverlenging",
+      "warrantyExtension": "+2 Year Warranty Extension",
       "included": "Inbegrepen",
       "total": "Totale Investering",
       "annualSubscription": "Jaarlijks Abonnement",

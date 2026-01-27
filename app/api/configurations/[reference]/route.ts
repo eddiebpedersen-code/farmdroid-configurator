@@ -174,7 +174,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     // Update HubSpot entities (Contact, Company, Deal will be updated/deduplicated)
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${request.headers.get("host")}`;
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
 
       // Use updated lead values if provided, otherwise use existing values
       const lead = {

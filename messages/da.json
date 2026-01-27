@@ -8,6 +8,14 @@
     "formHeading": "Din FarmDroid er konfigureret!",
     "formSubheading": "Indtast dine oplysninger for at se prisen og modtage din konfigurationsoversigt.",
     "submitButton": "Se hvad den koster",
+    "emailFirst": {
+      "enterEmail": "Indtast din e-mail for at komme i gang",
+      "enterEmailHint": "Vi tjekker om du har konfigureret før",
+      "checking": "Vi leder efter dig...",
+      "welcomeBack": "Velkommen tilbage! Vi fandt dine oplysninger.",
+      "editInfo": "Rediger dine oplysninger",
+      "goToConfig": "Gå til konfiguration"
+    },
     "form": {
       "firstName": "Fornavn",
       "lastName": "Efternavn",
@@ -171,7 +179,7 @@
     "features": {
       "solarPower": "1,6 kW solcelleanlæg",
       "batteries": "Lithium-batterier 6,0 kWh kapacitet",
-      "gps": "Dobbelt GPS-navigationssystem",
+      "gps": "Dobbelt RTK-GPS-system",
       "autonomous": "Autonom drift",
       "remoteMonitoring": "Fjernovervågning via app",
       "premiumSubscription": "Premium-abonnement (1 år inkluderet)",
@@ -196,17 +204,17 @@
     "moreInfo": "Mere information",
     "options": {
       "pfw": {
-        "name": "Passivt Forhjul",
+        "name": "Passive Front Wheel",
         "subtitle": "Bedst til flade marker med bredere rækkeafstand (45-50 cm)",
         "description": "Standard hjulkonfigurationen giver stabilitet og jævn styring på fladt terræn. Ideel til afgrøder med lige antal rækker og bredere rækkeafstand, såsom sukkerroer (45-50 cm)."
       },
       "afw": {
-        "name": "Aktivt Forhjul",
+        "name": "Active Front Wheel",
         "subtitle": "Auto-vippende stabilitet for skråninger over 8%",
         "description": "Til kuperet terræn tilføjer det aktive forhjul en aktuator, der automatisk vipper forhjulet for at opretholde stabiliteten. Anbefales til skråninger over 8% og sidehældninger over 5%, og til afgrøder med lige antal rækker og bredere afstand (omkring 45-50 cm)."
       },
       "dfw": {
-        "name": "Dobbelt Forhjul",
+        "name": "Dual Front Wheel",
         "subtitle": "Smal rækkeafstand ned til 22,5 cm og bedsystemer",
         "description": "Udstyret med to forhjul i stedet for ét, forbedrer denne opsætning balance og præcision, særligt for afgrøder med smal rækkeafstand ned til 22,5 cm. Perfekt til flade marker og bedsystemer, fungerer godt med både lige og ulige antal rækker."
       }
@@ -221,9 +229,9 @@
       "title": "Hjulkonfigurationer",
       "intro": "Hver mark er forskellig, og det samme gælder hver FarmDroid. FD20 kan tilpasses dine specifikke forhold med justerbare hjulafstande, rækkeantal og et valg mellem tre forhjulskonfigurationer.",
       "adjustmentRange": "Din ideelle opsætning afhænger af flere parametre, herunder afgrødetype, rækkeafstand, jordforhold og markens hældning. FD20's dobbelte baghjul kan justeres mellem 160-230 cm i 10 cm trin.",
-      "passiveFrontWheel": "1. Passivt Forhjul",
-      "dualFrontWheel": "2. Dobbelt Forhjul",
-      "activeFrontWheel": "3. Aktivt Forhjul",
+      "passiveFrontWheel": "1. Passive Front Wheel",
+      "dualFrontWheel": "2. Dual Front Wheel",
+      "activeFrontWheel": "3. Active Front Wheel",
       "footer": "Med disse konfigurationsmuligheder kan du finjustere din FarmDroid til at matche dit terræn, dine afgrøder og din arbejdsstil. Vores robotspecialister er altid klar til at hjælpe dig med at designe den opsætning, der passer bedst til din gård."
     },
     "selectionInfo": {
@@ -326,7 +334,7 @@
     "title": "+Weed Configuration",
     "subtitle": "Konfigurer din lugeopsætning",
     "mechanicalWeeding": "Mekanisk Lugning",
-    "spraySystemSection": "+Sprøjtesystem",
+    "spraySystemSection": "+Spray System",
     "optionalWeedingTool": "Valgfrit Lugeværktøj",
     "weedingToolNone": "Ingen",
     "standardWeedConfig": {
@@ -338,7 +346,7 @@
       }
     },
     "combiTool": {
-      "name": "Kombi-værktøj",
+      "name": "Combi Tool",
       "description": "Multifunktionsværktøj til forbedret lugning",
       "features": {
         "notchedDiscs": "Takkede skiver til forsnit",
@@ -348,7 +356,7 @@
       "pricePerRow": "{price} × {count} rækker"
     },
     "weedCuttingDisc": {
-      "name": "Ukrudtsskæreskive",
+      "name": "Weed Cutting Disc",
       "description": "Præcisionsskæreskive til effektiv ukrudtsbekæmpelse",
       "variant": "{size} variant",
       "pricePerRow": "{price} × {count} rækker",
@@ -368,7 +376,7 @@
     },
     "info": {
       "both": "Komplet lugeopsætning med mekaniske værktøjer og præcisionssprøjtning for maksimal ukrudtskontrol.",
-      "sprayOnly": "+SPRAY-systemet muliggør målrettet herbicidpåføring med GPS-præcision, reducerer kemikalieforbrug med op til 90%.",
+      "sprayOnly": "+SPRAY-systemet muliggør målrettet herbicidpåføring med GPS-præcision, reducerer kemikalieforbrug med op til 94%.",
       "combiOnly": "Forbedret mekanisk lugning med Kombi-værktøjstilbehør til forbedret jordbehandling og ukrudtskontrol.",
       "weedCuttingDiscOnly": "Præcisionsskæreskiver giver effektiv mekanisk ukrudtskontrol mellem rækkerne.",
       "standard": "Standard mekanisk lugekonfiguration, perfekt til økologisk certificering."
@@ -394,12 +402,11 @@
           "tipText": "Økologiske landbrug og operationer fokuseret på kemikaliefri ukrudtsbekæmpelse. Standardopsætningen håndterer de fleste almindelige ukrudtstryk effektivt."
         },
         "combiTool": {
-          "name": "Kombi-værktøj",
+          "name": "Combi Tool",
           "description": "Kombi-værktøjet er et avanceret mekanisk lugetilbehør, der tilføjer tandede skiver og L-skær til din FarmDroid. De tandede skiver forskærer jorden før lugeoperationen, mens L-skærene giver ekstra jordbevægelse for bedre ukrudtsnedgravning.",
           "specs": [
             "Tandede skiver til forskæring af jord",
             "L-skær til forbedret jordbevægelse",
-            "Forbedret ukrudtsnedgravning",
             "Fungerer med standard lugeværktøjer",
             "Justerbar per aktiv række",
             "Robust konstruktion"
@@ -408,7 +415,7 @@
           "tipText": "Marker med højt ukrudtstryk eller kompakt jord. Kombi-værktøjet giver mere aggressiv mekanisk handling under udfordrende forhold."
         },
         "weedCuttingDisc": {
-          "name": "Ukrudtsskæreskive",
+          "name": "Weed Cutting Disc",
           "description": "Ukrudtsskæreskiven er et præcisionsskæreværktøj, der giver effektiv ukrudtskontrol mellem rækker. Fås i 225mm og 250mm varianter afhængigt af din rækkeafstand, disse skiver skærer ukrudt ved jordoverfladen for ren, effektiv ukrudtsbekæmpelse.",
           "specs": [
             "Præcisionsslebet skærekant",
@@ -431,7 +438,6 @@
             "Automatisk rengøring for problemfri vedligeholdelse",
             "24-timers kapacitet til punktsprøjtning, 12 timer til båndsprøjtning",
             "Lavt strømforbrug: kun 30-50W",
-            "Sprøjtehøjde justerbar fra 15-22 cm (5-10 cm bånd)",
             "Afdriftsreduktionsklasse 90% (TCT) certificeret",
             "Kompatibel med robotmodeller fra 2023"
           ],
@@ -452,39 +458,39 @@
     },
     "items": {
       "starterKit": {
-        "name": "Startpakke",
+        "name": "Starter Kit",
         "description": "Essentiel plejepakke med basestation V3 og markopsætningsværktøjer"
       },
       "fstFieldSetupTool": {
-        "name": "FST - Markopsætningsværktøj",
+        "name": "FST - Field Setup Tool",
         "description": "Præcisions markopsætningsværktøj til optimal robotkalibrering"
       },
       "baseStationV3": {
-        "name": "Basestation V3 Sæt",
+        "name": "Base Station V3 Set",
         "description": "GPS-basestation til høj-præcisions navigation"
       },
       "essentialCarePackage": {
-        "name": "Essentiel Plejepakke",
+        "name": "Essential Care Package",
         "description": "Komplet vedligeholdelsessæt til robotpleje"
       },
       "essentialCareSpray": {
-        "name": "Essentiel Plejepakke til +Spray",
+        "name": "Essential Care Package for +Spray",
         "description": "Vedligeholdelsessæt specifikt til sprøjtesystemet"
       },
       "additionalWeightKit": {
-        "name": "Ekstra Vægtsæt",
+        "name": "Additional Weight Kit",
         "description": "4× 17,5kg vægte til forbedret trækkraft"
       },
       "toolbox": {
-        "name": "Værktøjskasse med Værktøj",
+        "name": "Toolbox with Tools",
         "description": "Komplet værktøjssæt til markvedligeholdelse"
       },
       "roadTransport": {
-        "name": "Vejtransportplatform",
+        "name": "Road Transport Platform",
         "description": "Transportplatform til flytning af FD20 mellem marker på offentlige veje"
       },
       "fieldBracket": {
-        "name": "Markbeslag med Kæde",
+        "name": "Field Bracket with Chain",
         "description": "Sikker monteringsbeslag til markpositionering"
       },
       "powerBank": {
@@ -535,7 +541,7 @@
       },
       "items": {
         "fstFieldSetupTool": {
-          "name": "FST - Feltopsætningsværktøj",
+          "name": "FST - Field Setup Tool",
           "description": "FST (Field Setup Tool) er en præcisions GPS-enhed designet til at hjælpe dig med nøjagtigt at kortlægge dine feltgrænser og konfigurere arbejdszoner. Den forbinder direkte til dit FarmDroid-system og sikrer, at din robot ved præcis, hvor den skal operere.",
           "features": [
             "Højpræcisions GPS-modtager",
@@ -546,7 +552,7 @@
           ]
         },
         "baseStationV3": {
-          "name": "Base Station V3 Sæt",
+          "name": "Base Station V3 Set",
           "description": "Base Station V3 er en RTK GPS-basestation, der giver centimeter-niveau positioneringsnøjagtighed til din FarmDroid. Den udsender korrektionssignaler, der muliggør præcis autonom navigation på tværs af din mark.",
           "features": [
             "RTK GPS-teknologi",
@@ -568,7 +574,7 @@
           ]
         },
         "fieldBracket": {
-          "name": "Feltbeslag med Kæde",
+          "name": "Field Bracket with Chain",
           "description": "Feltbeslaget giver et sikkert monteringspunkt til at flytte din FarmDroid korte afstande ved hjælp af en traktor eller ATV. Essentiel til omplacering af din robot på din ejendom uden at bruge transportplatformen.",
           "features": [
             "Robust stålkonstruktion",
@@ -579,7 +585,7 @@
           ]
         },
         "roadTransport": {
-          "name": "Vejtransportplatform",
+          "name": "Road Transport Platform",
           "description": "Vejtransportplatformen er en certificeret trailerløsning til lovlig transport af din FarmDroid på offentlige veje. Påkrævet ved flytning af din robot mellem fjerne marker eller til servicelokaliteter.",
           "features": [
             "Vejlegalt certificeret",
@@ -590,7 +596,7 @@
           ]
         },
         "additionalWeightKit": {
-          "name": "Ekstra Vægtkit",
+          "name": "Additional Weight Kit",
           "description": "Ekstra Vægtkit inkluderer 4 × 17,5kg vægte, der kan monteres på din FarmDroid for at øge trækkraften under udfordrende jordforhold. Ideel til våd, løs eller skrånende terræn.",
           "features": [
             "4 × 17,5kg vægte (70kg total)",
@@ -601,7 +607,7 @@
           ]
         },
         "toolbox": {
-          "name": "Værktøjskasse med Værktøj",
+          "name": "Toolbox with Tools",
           "description": "Et komplet sæt værktøjer specifikt udvalgt til FarmDroid feltvedligeholdelse og mindre justeringer. Alt hvad du behøver for at holde din robot kørende i sæsonen.",
           "features": [
             "FarmDroid-specifikke værktøjer",
@@ -647,7 +653,7 @@
     },
     "warranty": {
       "title": "Garantiforlængelse",
-      "extension": "+2 Års Garantiforlængelse",
+      "extension": "+2 Year Warranty Extension",
       "description": "Dækker dele og udskiftning. Kræver at FD20 serviceres årligt."
     }
   },
@@ -659,26 +665,26 @@
     "lineItems": {
       "baseRobot": "FD20 Robot V2.6",
       "hybridPower": "Hybrid Strømsystem",
-      "activeFrontWheel": "Aktivt Forhjul",
-      "dualFrontWheel": "Dobbelt Forhjul",
+      "activeFrontWheel": "Active Front Wheel",
+      "dualFrontWheel": "Dual Front Wheel",
       "activeRows": "{count}× Aktive Rækker ({size})",
       "passiveRows": "{count}× Passive Rækker",
-      "combiTool": "Kombi-værktøj ({count} rækker)",
-      "weedCuttingDisc": "Ukrudtsskæreskive {variant} ({count} rækker)",
+      "combiTool": "Combi Tool ({count} rækker)",
+      "weedCuttingDisc": "Weed Cutting Disc {variant} ({count} rækker)",
       "spraySystem": "+SPRAY System",
       "accessories": "Tilbehør",
-      "starterKit": "Startpakke",
+      "starterKit": "Starter Kit",
       "starterKitIncludes": "Inkl. FST-værktøj, Basestation, Plejepakke, Markbeslag",
-      "roadTransport": "Vejtransportplatform",
-      "powerBank": "Powerbank",
-      "fstTool": "FST Feltopsætningsværktøj",
-      "baseStation": "Basestation V3",
-      "essentialCare": "Essential Care-pakke",
-      "essentialCareSpray": "Essential Care til +SPRAY",
-      "fieldBracket": "Markbeslag",
-      "weightKit": "Ekstra Vægtkit",
-      "toolbox": "Værktøjskasse",
-      "warrantyExtension": "+2 Års Garantiforlængelse"
+      "roadTransport": "Road Transport Platform",
+      "powerBank": "Power Bank",
+      "fstTool": "FST Field Setup Tool",
+      "baseStation": "Base Station V3",
+      "essentialCare": "Essential Care Package",
+      "essentialCareSpray": "Essential Care for +SPRAY",
+      "fieldBracket": "Field Bracket",
+      "weightKit": "Additional Weight Kit",
+      "toolbox": "Toolbox",
+      "warrantyExtension": "+2 Year Warranty Extension"
     },
     "configLabels": {
       "rows": "rækker",
@@ -760,7 +766,7 @@
     "autoSaved": "Auto-gemt"
   },
   "rowConfig": {
-    "title": "+Såningskonfiguration",
+    "title": "+Seed Configuration",
     "subtitle": "Konfigurer din såningsopsætning",
     "seedSize": "Frøstørrelse",
     "small": "Lille (6mm)",
@@ -784,7 +790,7 @@
     "applyCropConfig": "Anvend {crop} konfiguration",
     "plantSpacing": "Planteafstand",
     "seedSizeLabel": "Frøstørrelse",
-    "seed": "+Frø",
+    "seed": "+Seed",
     "perRow": "/række",
     "activeRow": "Aktiv række",
     "passiveRow": "Passiv række",
@@ -916,7 +922,6 @@
     "shareQuote": "Del Tilbud",
     "customizeQuote": "Tilpas Tilbud",
     "showPricing": "Vis priser",
-    "lineItems": "Varelinjer",
     "customItems": "Tilpassede Varer",
     "addItem": "Tilføj",
     "addDiscount": "Tilføj Rabat",
@@ -952,44 +957,55 @@
     "errorInvalid": "Tilbudslinket er ugyldigt eller udløbet. Anmod venligst om et nyt tilbud.",
     "startNewConfig": "Start Ny Konfiguration",
     "print": "Print",
-    "lineItems.baseRobot": "FD20 Basisrobot",
-    "lineItems.powerSource.solar": "Solcellesystem",
-    "lineItems.powerSource.hybrid": "Hybridsystem",
-    "lineItems.frontWheel.PFW": "Passivt Forhjul",
-    "lineItems.frontWheel.AFW": "Aktivt Forhjul",
-    "lineItems.frontWheel.DFW": "Dobbelt Forhjul",
-    "lineItems.activeRows": "{count}x Aktive Rækker ({size})",
-    "lineItems.passiveRows": "{count}x Passive Rækker",
-    "lineItems.spraySystem": "+SPRAY System",
-    "lineItems.accessories": "Tilbehør",
-    "lineItems.warrantyExtension": "2-Års Garantiforlængelse",
-    "config.rows": "Rækker",
-    "config.active": "aktive",
-    "config.passive": "passive",
-    "config.seedSize": "Frøstørrelse",
-    "config.rowSpacing": "Rækkeafstand",
-    "config.workingWidth": "Arbejdsbredde",
-    "config.powerSource": "Strømkilde",
-    "config.hybrid": "Hybrid",
-    "config.solar": "Sol",
-    "config.frontWheel": "Forhjul",
-    "config.passiveFrontWheel": "Passiv",
-    "config.activeFrontWheel": "Aktiv",
-    "config.dualFrontWheel": "Dobbelt",
-    "config.spraySystem": "Sprøjtesystem",
-    "config.included": "Inkluderet",
-    "config.warranty": "Garanti",
-    "config.extended": "3 År",
-    "config.accessories": "Tilbehør",
-    "accessories.starterKit": "Startsæt",
-    "accessories.roadTransport": "Vejtransport",
-    "accessories.fieldBracket": "Feltbeslag",
-    "accessories.powerBank": "Powerbank",
-    "accessories.fstTool": "FST Værktøj",
-    "accessories.baseStation": "Basestation",
-    "accessories.carePkg": "Plejepakke",
-    "accessories.weightKit": "Vægtsæt",
-    "accessories.toolbox": "Værktøjskasse"
+    "lineItemsLabel": "Varelinjer",
+    "lineItems": {
+      "baseRobot": "FD20 Base Robot",
+      "powerSource": {
+        "solar": "Solcellesystem",
+        "hybrid": "Hybridsystem"
+      },
+      "frontWheel": {
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
+      },
+      "activeRows": "{count}x Aktive Rækker ({size})",
+      "passiveRows": "{count}x Passive Rækker",
+      "spraySystem": "+SPRAY System",
+      "accessories": "Tilbehør",
+      "warrantyExtension": "2-Year Warranty Extension"
+    },
+    "config": {
+      "rows": "Rækker",
+      "active": "aktive",
+      "passive": "passive",
+      "seedSize": "Frøstørrelse",
+      "rowSpacing": "Rækkeafstand",
+      "workingWidth": "Arbejdsbredde",
+      "powerSource": "Strømkilde",
+      "hybrid": "Hybrid",
+      "solar": "Sol",
+      "frontWheel": "Forhjul",
+      "passiveFrontWheel": "Passiv",
+      "activeFrontWheel": "Aktiv",
+      "dualFrontWheel": "Dobbelt",
+      "spraySystem": "Sprøjtesystem",
+      "included": "Inkluderet",
+      "warranty": "Garanti",
+      "extended": "3 År",
+      "accessories": "Tilbehør"
+    },
+    "accessories": {
+      "starterKit": "Starter Kit",
+      "roadTransport": "Road Transport Platform",
+      "fieldBracket": "Field Bracket",
+      "powerBank": "Power Bank",
+      "fstTool": "FST Tool",
+      "baseStation": "Base Station",
+      "carePkg": "Care Package",
+      "weightKit": "Weight Kit",
+      "toolbox": "Toolbox"
+    }
   },
   "configPage": {
     "loading": "Indlæser din konfiguration...",
@@ -1008,8 +1024,8 @@
     },
     "sections": {
       "robot": "Robot",
-      "seedConfig": "+Seed Konfiguration",
-      "weedConfig": "+Weed Konfiguration",
+      "seedConfig": "+Seed Configuration",
+      "weedConfig": "+Weed Configuration",
       "power": "Strømkilde",
       "accessories": "Tilbehør",
       "service": "Service & Garanti"
@@ -1028,9 +1044,9 @@
       "rowSpacing": "Rækkeafstand",
       "workingWidthLabel": "Arbejdsbredde",
       "frontWheel": {
-        "PFW": "Passivt Forhjul",
-        "AFW": "Aktivt Forhjul",
-        "DFW": "Dobbelt Forhjul"
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
       },
       "power": {
         "solar": "Soldrevet",
@@ -1043,41 +1059,41 @@
       "powerBankDesc": "Udvidet batterikapacitet for længere drift",
       "weedingToolLabel": "Lugningsværktøj",
       "weedingTool": {
-        "combiTool": "Kombiværktøj",
-        "weedCuttingDisc": "Ukrudtsskæreskive ({variant})"
+        "combiTool": "Combi Tool",
+        "weedCuttingDisc": "Weed Cutting Disc ({variant})"
       },
       "accessoriesLabel": "Tilbehør",
       "accessories": {
-        "starterKit": "Startsæt",
-        "fstFieldSetupTool": "FST Mark Opsætningsværktøj",
-        "baseStationV3": "Basestation V3",
-        "essentialCarePackage": "Essential Care Pakke",
-        "fieldBracket": "Feltbeslag",
-        "roadTransport": "Vejtransport",
-        "powerBank": "Powerbank",
-        "additionalWeightKit": "Ekstra Vægtsæt",
-        "toolbox": "Værktøjskasse"
+        "starterKit": "Starter Kit",
+        "fstFieldSetupTool": "FST Field Setup Tool",
+        "baseStationV3": "Base Station V3",
+        "essentialCarePackage": "Essential Care Package",
+        "fieldBracket": "Field Bracket",
+        "roadTransport": "Road Transport",
+        "powerBank": "Power Bank",
+        "additionalWeightKit": "Additional Weight Kit",
+        "toolbox": "Toolbox"
       },
       "servicePlan": {
         "standard": "Standard Serviceplan",
         "premium": "Premium Serviceplan"
       },
-      "warrantyExtension": "+2 Års Garantiforlængelse"
+      "warrantyExtension": "+2 Year Warranty Extension"
     },
     "investment": {
       "frontWheel": {
-        "PFW": "Passivt Forhjul",
-        "AFW": "Aktivt Forhjul",
-        "DFW": "Dobbelt Forhjul"
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
       },
       "activeRows": "{count}× Aktive Rækker ({size})",
       "passiveRows": "{count}× Passive Rækker",
       "hybrid": "Hybrid Strømsystem",
       "spraySystem": "+SPRAY System",
-      "combiTool": "Kombiværktøj ({count} rækker)",
-      "weedCuttingDisc": "Ukrudtsskæreskive ({count} rækker, {variant})",
+      "combiTool": "Combi Tool ({count} rækker)",
+      "weedCuttingDisc": "Weed Cutting Disc ({count} rækker, {variant})",
       "accessories": "Tilbehør",
-      "warrantyExtension": "+2 Års Garantiforlængelse",
+      "warrantyExtension": "+2 Year Warranty Extension",
       "included": "Inkluderet",
       "total": "Samlet Investering",
       "annualSubscription": "Årligt Abonnement",

@@ -25,7 +25,7 @@ export async function createHubSpotEntities(
   currency: string,
   country: string,
   locale: string = "en",
-  baseUrl: string = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.dk"
+  baseUrl: string = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com"
 ): Promise<HubSpotResult> {
   // 1. Create or update contact (pass config for dynamic mappings)
   const contactId = await createOrUpdateContact(lead, reference, country, config);

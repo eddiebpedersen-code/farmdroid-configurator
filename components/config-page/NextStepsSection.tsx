@@ -123,11 +123,11 @@ export function NextStepsSection({ data, className = "" }: NextStepsSectionProps
         <h3 className="text-sm font-medium text-stone-900 mb-2">{t("nextSteps.contactTitle")}</h3>
         <p className="text-sm text-stone-500">{t("nextSteps.contactDescription")}</p>
         <a
-          href="mailto:info@farmdroid.dk"
+          href="mailto:info@farmdroid.com"
           className="inline-flex items-center gap-2 mt-3 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
         >
           <Mail className="w-4 h-4" />
-          info@farmdroid.dk
+          info@farmdroid.com
         </a>
       </div>
     </motion.div>

@@ -652,7 +652,7 @@ export function QuoteCustomizationModal({
                 {/* Footer contact */}
                 <div className="mt-6 pt-4 border-t border-stone-100 text-sm text-stone-500 text-center">
                   For any enquiries, email us on{" "}
-                  <span className="text-emerald-600 font-medium">sales@farmdroid.dk</span>
+                  <span className="text-emerald-600 font-medium">sales@farmdroid.com</span>
                   {" "}or call us on{" "}
                   <span className="text-stone-700 font-medium">+45 70 70 71 72</span>
                 </div>

@@ -8,6 +8,14 @@
     "formHeading": "Votre FarmDroid est configuré !",
     "formSubheading": "Entrez vos coordonnées pour voir le prix et recevoir votre aperçu de configuration.",
     "submitButton": "Voir le prix",
+    "emailFirst": {
+      "enterEmail": "Entrez votre e-mail pour commencer",
+      "enterEmailHint": "Nous vérifierons si vous avez déjà configuré",
+      "checking": "Recherche en cours...",
+      "welcomeBack": "Bon retour ! Nous avons trouvé vos informations.",
+      "editInfo": "Modifier vos informations",
+      "goToConfig": "Aller à la configuration"
+    },
     "form": {
       "firstName": "Prénom",
       "lastName": "Nom",
@@ -171,7 +179,7 @@
     "features": {
       "solarPower": "Système solaire 1,6 kW",
       "batteries": "Batteries lithium 6,0 kWh de capacité",
-      "gps": "Système de navigation GPS double",
+      "gps": "Système RTK-GPS double",
       "autonomous": "Fonctionnement autonome",
       "remoteMonitoring": "Surveillance à distance via application",
       "premiumSubscription": "Abonnement premium (1 an inclus)",
@@ -196,17 +204,17 @@
     "moreInfo": "Plus d'informations",
     "options": {
       "pfw": {
-        "name": "Roue Avant Passive",
+        "name": "Passive Front Wheel",
         "subtitle": "Idéale pour terrains plats avec écartement large (45-50 cm)",
         "description": "La configuration de roue standard offre stabilité et guidage régulier sur terrain plat. Idéale pour les cultures avec un nombre pair de rangs et un écartement plus large, comme les betteraves sucrières (45-50 cm)."
       },
       "afw": {
-        "name": "Roue Avant Active",
+        "name": "Active Front Wheel",
         "subtitle": "Stabilité auto-inclinable pour pentes supérieures à 8%",
         "description": "Pour les terrains vallonnés, la roue avant active ajoute un actionneur qui incline automatiquement la roue avant pour maintenir la stabilité. Recommandé pour les pentes supérieures à 8% et les inclinaisons latérales supérieures à 5%, et pour les cultures avec un nombre pair de rangs et un écartement plus large (environ 45-50 cm)."
       },
       "dfw": {
-        "name": "Double Roue Avant",
+        "name": "Dual Front Wheel",
         "subtitle": "Écartement étroit jusqu'à 22,5 cm et systèmes de planches",
         "description": "Équipée de deux roues avant au lieu d'une, cette configuration améliore l'équilibre et la précision, particulièrement pour les cultures avec écartement étroit jusqu'à 22,5 cm. Parfait pour les terrains plats et les systèmes de planches, fonctionne bien avec un nombre pair ou impair de rangs."
       }
@@ -221,9 +229,9 @@
       "title": "Configurations des Roues",
       "intro": "Chaque champ est différent, tout comme chaque FarmDroid. Le FD20 peut être adapté à vos conditions spécifiques avec des distances de roues réglables, des nombres de rangs et un choix de trois configurations de roue avant.",
       "adjustmentRange": "Votre configuration idéale dépend de plusieurs paramètres, notamment le type de culture, l'écartement des rangs, les conditions du sol et la pente de votre champ. Les doubles roues arrière du FD20 peuvent être ajustées entre 160-230 cm par incréments de 10 cm.",
-      "passiveFrontWheel": "1. Roue Avant Passive",
-      "dualFrontWheel": "2. Double Roue Avant",
-      "activeFrontWheel": "3. Roue Avant Active",
+      "passiveFrontWheel": "1. Passive Front Wheel",
+      "dualFrontWheel": "2. Dual Front Wheel",
+      "activeFrontWheel": "3. Active Front Wheel",
       "footer": "Avec ces options de configuration, vous pouvez ajuster finement votre FarmDroid pour correspondre à votre terrain, vos cultures et votre style de travail. Nos spécialistes robots sont toujours prêts à vous aider à concevoir la configuration qui convient le mieux à votre exploitation."
     },
     "selectionInfo": {
@@ -247,7 +255,7 @@
       }
     },
     "powerBank": {
-      "name": "+ Batterie Externe",
+      "name": "+ Power Bank",
       "description": "Étendu : Ajoute ~10h de fonctionnement quotidien",
       "features": {
         "extraCapacity": "6,0 kWh de capacité supplémentaire",
@@ -326,7 +334,7 @@
     "title": "+Weed Configuration",
     "subtitle": "Configurez votre système de désherbage",
     "mechanicalWeeding": "Désherbage Mécanique",
-    "spraySystemSection": "+Système de Pulvérisation",
+    "spraySystemSection": "+Spray System",
     "optionalWeedingTool": "Outil de Désherbage Optionnel",
     "weedingToolNone": "Aucun",
     "standardWeedConfig": {
@@ -338,7 +346,7 @@
       }
     },
     "combiTool": {
-      "name": "Outil Combi",
+      "name": "Combi Tool",
       "description": "Outil multifonction pour désherbage amélioré",
       "features": {
         "notchedDiscs": "Disques crantés pour pré-coupe",
@@ -348,14 +356,14 @@
       "pricePerRow": "{price} × {count} rangs"
     },
     "weedCuttingDisc": {
-      "name": "Disque de Coupe des Mauvaises Herbes",
+      "name": "Weed Cutting Disc",
       "description": "Disque de coupe de précision pour un contrôle efficace des mauvaises herbes",
       "variant": "Variante {size}",
       "pricePerRow": "{price} × {count} rangs",
       "notAvailable": "Non disponible pour cette configuration"
     },
     "spray": {
-      "name": "Système +SPRAY",
+      "name": "+SPRAY System",
       "description": "Pulvérisation de précision avec guidage GPS",
       "features": {
         "chemicalReduction": "Jusqu'à 94% de réduction des produits chimiques",
@@ -368,7 +376,7 @@
     },
     "info": {
       "both": "Configuration complète de désherbage avec outils mécaniques et pulvérisation de précision pour un contrôle maximal des mauvaises herbes.",
-      "sprayOnly": "Le système +SPRAY permet une application ciblée d'herbicides avec précision GPS, réduisant l'utilisation de produits chimiques jusqu'à 90%.",
+      "sprayOnly": "Le système +SPRAY permet une application ciblée d'herbicides avec précision GPS, réduisant l'utilisation de produits chimiques jusqu'à 94%.",
       "combiOnly": "Désherbage mécanique amélioré avec accessoires Outil Combi pour une meilleure gestion du sol et contrôle des mauvaises herbes.",
       "weedCuttingDiscOnly": "Les disques de coupe de précision offrent un contrôle mécanique efficace des mauvaises herbes entre les rangs.",
       "standard": "Configuration de désherbage mécanique standard, parfaite pour les exigences de certification biologique."
@@ -394,12 +402,11 @@
           "tipText": "Fermes biologiques et opérations axées sur la gestion des mauvaises herbes sans produits chimiques. La configuration standard gère efficacement la plupart des pressions d'adventices courantes."
         },
         "combiTool": {
-          "name": "Outil Combi",
+          "name": "Combi Tool",
           "description": "L'Outil Combi est un accessoire de désherbage mécanique avancé qui ajoute des disques crantés et des socs en L à votre FarmDroid. Les disques crantés pré-coupent le sol avant l'opération de désherbage, tandis que les socs en L fournissent un mouvement de sol supplémentaire pour un meilleur enfouissement des mauvaises herbes.",
           "specs": [
             "Disques crantés pour pré-coupe du sol",
             "Socs en L pour mouvement de sol amélioré",
-            "Capacité d'enfouissement des mauvaises herbes améliorée",
             "Fonctionne avec les outils de désherbage standard",
             "Réglable par rang actif",
             "Construction robuste"
@@ -408,7 +415,7 @@
           "tipText": "Champs avec forte pression d'adventices ou sol compacté. L'Outil Combi offre une action mécanique plus agressive pour des conditions difficiles."
         },
         "weedCuttingDisc": {
-          "name": "Disque de coupe",
+          "name": "Weed Cutting Disc",
           "description": "Le Disque de coupe est un outil de coupe de précision qui offre un contrôle efficace des mauvaises herbes inter-rangs. Disponible en variantes 225mm et 250mm selon votre espacement de rangs, ces disques coupent les mauvaises herbes à la surface du sol pour une gestion propre et efficace.",
           "specs": [
             "Bord de coupe de précision",
@@ -422,7 +429,7 @@
           "tipText": "Opérations nécessitant une action de coupe propre avec perturbation minimale du sol. Idéal pour les cultures sensibles au mouvement du sol ou lorsque la précision est critique."
         },
         "spraySystem": {
-          "name": "Système +Spray",
+          "name": "+Spray System",
           "description": "Le système +SPRAY ajoute une capacité de pulvérisation de précision à votre FarmDroid. Atteignez jusqu'à 94% d'économies sur les produits chimiques (88% moyenne de la flotte en 2024) avec un contrôle hybride des mauvaises herbes pour une efficacité optimale. Également compatible avec les engrais liquides et bio-stimulants.",
           "specs": [
             "Jusqu'à 94% d'économies de produits chimiques (88% moyenne flotte 2024)",
@@ -431,7 +438,6 @@
             "Nettoyage automatique pour un entretien sans souci",
             "Capacité de 24 heures pour pulvérisation ponctuelle, 12 heures pour bande",
             "Faible consommation électrique : seulement 30-50W",
-            "Hauteur de pulvérisation réglable de 15-22 cm (bande de 5-10 cm)",
             "Classe de réduction de dérive 90% (TCT) certifiée",
             "Compatible avec les modèles de robots à partir de 2023"
           ],
@@ -452,43 +458,43 @@
     },
     "items": {
       "starterKit": {
-        "name": "Kit de Démarrage",
+        "name": "Starter Kit",
         "description": "Pack d'entretien essentiel avec station de base V3 et outils de configuration de terrain"
       },
       "fstFieldSetupTool": {
-        "name": "FST - Outil de Configuration Terrain",
+        "name": "FST - Field Setup Tool",
         "description": "Outil de configuration terrain de précision pour calibrage optimal du robot"
       },
       "baseStationV3": {
-        "name": "Station de Base V3",
+        "name": "Base Station V3 Set",
         "description": "Station de base GPS pour navigation haute précision"
       },
       "essentialCarePackage": {
-        "name": "Pack d'Entretien Essentiel",
+        "name": "Essential Care Package",
         "description": "Kit de maintenance complet pour l'entretien du robot"
       },
       "essentialCareSpray": {
-        "name": "Pack d'Entretien Essentiel pour +Spray",
+        "name": "Essential Care Package for +Spray",
         "description": "Kit de maintenance spécifique au système de pulvérisation"
       },
       "additionalWeightKit": {
-        "name": "Kit de Poids Supplémentaire",
+        "name": "Additional Weight Kit",
         "description": "4× 17,5kg de poids pour une meilleure traction"
       },
       "toolbox": {
-        "name": "Boîte à Outils avec Outils",
+        "name": "Toolbox with Tools",
         "description": "Ensemble d'outils complet pour la maintenance terrain"
       },
       "roadTransport": {
-        "name": "Plateforme de Transport Routier",
+        "name": "Road Transport Platform",
         "description": "Plateforme de transport pour déplacer le FD20 entre les champs sur routes publiques"
       },
       "fieldBracket": {
-        "name": "Support de Terrain avec Chaîne",
+        "name": "Field Bracket with Chain",
         "description": "Support de montage sécurisé pour le positionnement au champ"
       },
       "powerBank": {
-        "name": "Batterie Externe",
+        "name": "Power Bank",
         "description": "Capacité de batterie supplémentaire pour fonctionnement prolongé"
       }
     },
@@ -496,10 +502,10 @@
     "selected": "Sélectionné",
     "total": "Total",
     "itemsLabel": "articles",
-    "includedInStarterKit": "Inclus dans le Kit de Démarrage",
+    "includedInStarterKit": "Inclus dans le Starter Kit",
     "includedWithCare": "Inclus avec le Pack d'Entretien",
     "included": "Inclus",
-    "starterKitIncludes": "Comprend : FST Outil de Configuration, Station de Base V3, Pack d'Entretien Essentiel, Support de Terrain",
+    "starterKitIncludes": "Comprend : FST - Field Setup Tool, Base Station V3, Essential Care Package, Field Bracket",
     "emptyMessage": "Les accessoires sont optionnels. Vous pouvez les ajouter plus tard via notre service après-vente.",
     "selectedMessage": "{count} article accessoire sélectionné pour {price}.",
     "selectedMessagePlural": "{count} articles accessoires sélectionnés pour {price}.",
@@ -512,9 +518,9 @@
       "includedItems": "Ce qui est inclus",
       "close": "Fermer",
       "features": "Caractéristiques clés",
-      "starterKitBadge": "Dans le Kit",
+      "starterKitBadge": "Dans le Starter Kit",
       "bundles": {
-        "title": "Kit de Démarrage",
+        "title": "Starter Kit",
         "description": "Le Kit de Démarrage regroupe tout ce dont vous avez besoin pour démarrer rapidement votre FarmDroid. Il comprend les équipements de connectivité essentiels, les outils de configuration de terrain et les fournitures de maintenance à un prix groupé.",
         "tip": {
           "label": "Conseil pro :",
@@ -535,7 +541,7 @@
       },
       "items": {
         "fstFieldSetupTool": {
-          "name": "FST - Outil de Configuration",
+          "name": "FST - Field Setup Tool",
           "description": "Le FST (Field Setup Tool) est un appareil GPS de précision conçu pour vous aider à cartographier avec précision les limites de votre champ et à configurer les zones de travail. Il se connecte directement à votre système FarmDroid et garantit que votre robot sait exactement où opérer.",
           "features": [
             "Récepteur GPS haute précision",
@@ -546,7 +552,7 @@
           ]
         },
         "baseStationV3": {
-          "name": "Station de Base V3",
+          "name": "Base Station V3 Set",
           "description": "La Station de Base V3 est une station de base GPS RTK qui offre une précision de positionnement au centimètre pour votre FarmDroid. Elle émet des signaux de correction permettant une navigation autonome précise sur votre champ.",
           "features": [
             "Technologie GPS RTK",
@@ -557,7 +563,7 @@
           ]
         },
         "essentialCarePackage": {
-          "name": "Pack d'Entretien Essentiel",
+          "name": "Essential Care Package",
           "description": "Le Pack d'Entretien Essentiel est un kit de maintenance complet contenant toutes les pièces de rechange et consommables nécessaires à l'entretien régulier du robot. Gardez votre FarmDroid en parfait état de fonctionnement tout au long de la saison.",
           "features": [
             "Pièces d'usure de rechange",
@@ -568,7 +574,7 @@
           ]
         },
         "fieldBracket": {
-          "name": "Support de Terrain avec Chaîne",
+          "name": "Field Bracket with Chain",
           "description": "Le Support de Terrain offre un point d'ancrage sécurisé pour déplacer votre FarmDroid sur de courtes distances à l'aide d'un tracteur ou d'un VTT. Essentiel pour repositionner votre robot sur votre propriété sans utiliser la plateforme de transport.",
           "features": [
             "Construction en acier robuste",
@@ -579,7 +585,7 @@
           ]
         },
         "roadTransport": {
-          "name": "Plateforme de Transport Routier",
+          "name": "Road Transport Platform",
           "description": "La Plateforme de Transport Routier est une solution de remorque certifiée pour transporter légalement votre FarmDroid sur les voies publiques. Requise pour déplacer votre robot entre des champs éloignés ou vers des sites de service.",
           "features": [
             "Certifié pour la route",
@@ -590,7 +596,7 @@
           ]
         },
         "additionalWeightKit": {
-          "name": "Kit de Poids Supplémentaires",
+          "name": "Additional Weight Kit",
           "description": "Le Kit de Poids Supplémentaires comprend 4 × 17,5kg de poids qui peuvent être fixés à votre FarmDroid pour augmenter la traction dans des conditions de sol difficiles. Idéal pour les terrains humides, meubles ou en pente.",
           "features": [
             "4 × 17,5kg de poids (70kg au total)",
@@ -601,7 +607,7 @@
           ]
         },
         "toolbox": {
-          "name": "Boîte à Outils Complète",
+          "name": "Toolbox with Tools",
           "description": "Un ensemble complet d'outils spécialement sélectionnés pour la maintenance sur le terrain et les ajustements mineurs du FarmDroid. Tout ce dont vous avez besoin pour maintenir votre robot opérationnel pendant la saison.",
           "features": [
             "Outils spécifiques FarmDroid",
@@ -646,8 +652,8 @@
       "softwareUpgrades": "Mises à jour logicielles"
     },
     "warranty": {
-      "title": "Extension de Garantie",
-      "extension": "+2 Ans d'Extension de Garantie",
+      "title": "Warranty Extension",
+      "extension": "+2 Year Warranty Extension",
       "description": "Couvre les pièces et le remplacement. Nécessite un entretien annuel du FD20."
     }
   },
@@ -659,26 +665,26 @@
     "lineItems": {
       "baseRobot": "Robot FD20 V2.6",
       "hybridPower": "Système d'Alimentation Hybride",
-      "activeFrontWheel": "Roue Avant Active",
-      "dualFrontWheel": "Double Roue Avant",
+      "activeFrontWheel": "Active Front Wheel",
+      "dualFrontWheel": "Dual Front Wheel",
       "activeRows": "{count}× Rangs Actifs ({size})",
       "passiveRows": "{count}× Rangs Passifs",
-      "combiTool": "Outil Combi ({count} rangs)",
-      "weedCuttingDisc": "Disque de Coupe {variant} ({count} rangs)",
-      "spraySystem": "Système +SPRAY",
+      "combiTool": "Combi Tool ({count} rangs)",
+      "weedCuttingDisc": "Weed Cutting Disc {variant} ({count} rangs)",
+      "spraySystem": "+SPRAY System",
       "accessories": "Accessoires",
-      "starterKit": "Kit de Démarrage",
+      "starterKit": "Starter Kit",
       "starterKitIncludes": "Incl. Outil FST, Station de Base, Pack Entretien, Support Terrain",
-      "roadTransport": "Plateforme de Transport Routier",
-      "powerBank": "Batterie Externe",
-      "fstTool": "Outil de Configuration FST",
-      "baseStation": "Station de Base V3",
-      "essentialCare": "Pack Essential Care",
-      "essentialCareSpray": "Essential Care pour +SPRAY",
-      "fieldBracket": "Support de Terrain",
-      "weightKit": "Kit de Poids Supplémentaire",
-      "toolbox": "Boîte à Outils",
-      "warrantyExtension": "+2 Ans d'Extension de Garantie"
+      "roadTransport": "Road Transport Platform",
+      "powerBank": "Power Bank",
+      "fstTool": "FST Field Setup Tool",
+      "baseStation": "Base Station V3",
+      "essentialCare": "Essential Care Package",
+      "essentialCareSpray": "Essential Care for +SPRAY",
+      "fieldBracket": "Field Bracket",
+      "weightKit": "Additional Weight Kit",
+      "toolbox": "Toolbox",
+      "warrantyExtension": "+2 Year Warranty Extension"
     },
     "configLabels": {
       "rows": "rangs",
@@ -760,7 +766,7 @@
     "autoSaved": "Sauvegardé automatiquement"
   },
   "rowConfig": {
-    "title": "Configuration +Seed",
+    "title": "+Seed Configuration",
     "subtitle": "Configurez votre système de semis",
     "seedSize": "Taille des Graines",
     "small": "Petite (6mm)",
@@ -868,11 +874,11 @@
       },
       "systems": {
         "6mm": {
-          "name": "Système +Seed 6mm",
+          "name": "+Seed 6mm System",
           "description": "Pour les petites graines jusqu'à 6mm. Idéal pour les plantations denses avec espacement précis."
         },
         "14mm": {
-          "name": "Système +Seed 14mm",
+          "name": "+Seed 14mm System",
           "description": "Gère les graines jusqu'à 14mm. Parfait pour les cultures nécessitant plus d'espace entre les rangs."
         }
       }
@@ -916,7 +922,6 @@
     "shareQuote": "Partager le Devis",
     "customizeQuote": "Personnaliser le Devis",
     "showPricing": "Afficher les prix",
-    "lineItems": "Lignes de Devis",
     "customItems": "Articles Personnalisés",
     "addItem": "Ajouter",
     "addDiscount": "Ajouter Remise",
@@ -952,44 +957,55 @@
     "errorInvalid": "Le lien du devis est invalide ou a expiré. Veuillez demander un nouveau devis.",
     "startNewConfig": "Démarrer une Nouvelle Configuration",
     "print": "Imprimer",
-    "lineItems.baseRobot": "Robot de Base FD20",
-    "lineItems.powerSource.solar": "Système d'Alimentation Solaire",
-    "lineItems.powerSource.hybrid": "Système d'Alimentation Hybride",
-    "lineItems.frontWheel.PFW": "Roue Avant Passive",
-    "lineItems.frontWheel.AFW": "Roue Avant Active",
-    "lineItems.frontWheel.DFW": "Double Roue Avant",
-    "lineItems.activeRows": "{count}x Rangs Actifs ({size})",
-    "lineItems.passiveRows": "{count}x Rangs Passifs",
-    "lineItems.spraySystem": "Système +SPRAY",
-    "lineItems.accessories": "Accessoires",
-    "lineItems.warrantyExtension": "Extension de Garantie 2 Ans",
-    "config.rows": "Rangs",
-    "config.active": "actifs",
-    "config.passive": "passifs",
-    "config.seedSize": "Taille de Graine",
-    "config.rowSpacing": "Espacement des Rangs",
-    "config.workingWidth": "Largeur de Travail",
-    "config.powerSource": "Source d'Énergie",
-    "config.hybrid": "Hybride",
-    "config.solar": "Solaire",
-    "config.frontWheel": "Roue Avant",
-    "config.passiveFrontWheel": "Passive",
-    "config.activeFrontWheel": "Active",
-    "config.dualFrontWheel": "Double",
-    "config.spraySystem": "Système de Pulvérisation",
-    "config.included": "Inclus",
-    "config.warranty": "Garantie",
-    "config.extended": "3 Ans",
-    "config.accessories": "Accessoires",
-    "accessories.starterKit": "Kit de Démarrage",
-    "accessories.roadTransport": "Transport Routier",
-    "accessories.fieldBracket": "Support de Terrain",
-    "accessories.powerBank": "Batterie Externe",
-    "accessories.fstTool": "Outil FST",
-    "accessories.baseStation": "Station de Base",
-    "accessories.carePkg": "Pack Entretien",
-    "accessories.weightKit": "Kit de Poids",
-    "accessories.toolbox": "Boîte à Outils"
+    "lineItemsLabel": "Lignes de Devis",
+    "lineItems": {
+      "baseRobot": "FD20 Base Robot",
+      "powerSource": {
+        "solar": "Système d'Alimentation Solaire",
+        "hybrid": "Système d'Alimentation Hybride"
+      },
+      "frontWheel": {
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
+      },
+      "activeRows": "{count}x Rangs Actifs ({size})",
+      "passiveRows": "{count}x Rangs Passifs",
+      "spraySystem": "+SPRAY System",
+      "accessories": "Accessoires",
+      "warrantyExtension": "+2 Year Warranty Extension"
+    },
+    "config": {
+      "rows": "Rangs",
+      "active": "actifs",
+      "passive": "passifs",
+      "seedSize": "Taille de Graine",
+      "rowSpacing": "Espacement des Rangs",
+      "workingWidth": "Largeur de Travail",
+      "powerSource": "Source d'Énergie",
+      "hybrid": "Hybride",
+      "solar": "Solaire",
+      "frontWheel": "Roue Avant",
+      "passiveFrontWheel": "Passive",
+      "activeFrontWheel": "Active",
+      "dualFrontWheel": "Double",
+      "spraySystem": "Système de Pulvérisation",
+      "included": "Inclus",
+      "warranty": "Garantie",
+      "extended": "3 Ans",
+      "accessories": "Accessoires"
+    },
+    "accessories": {
+      "starterKit": "Starter Kit",
+      "roadTransport": "Road Transport Platform",
+      "fieldBracket": "Field Bracket",
+      "powerBank": "Power Bank",
+      "fstTool": "FST Field Setup Tool",
+      "baseStation": "Base Station V3",
+      "carePkg": "Essential Care Package",
+      "weightKit": "Additional Weight Kit",
+      "toolbox": "Toolbox"
+    }
   },
   "configPage": {
     "loading": "Chargement de votre configuration...",
@@ -1008,8 +1024,8 @@
     },
     "sections": {
       "robot": "Robot",
-      "seedConfig": "Configuration +Seed",
-      "weedConfig": "Configuration +Weed",
+      "seedConfig": "+Seed Configuration",
+      "weedConfig": "+Weed Configuration",
       "power": "Source d'Énergie",
       "accessories": "Accessoires",
       "service": "Service & Garantie"
@@ -1028,9 +1044,9 @@
       "rowSpacing": "Espacement des Rangs",
       "workingWidthLabel": "Largeur de Travail",
       "frontWheel": {
-        "PFW": "Roue Avant Passive",
-        "AFW": "Roue Avant Active",
-        "DFW": "Double Roue Avant"
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
       },
       "power": {
         "solar": "Énergie Solaire",
@@ -1038,46 +1054,46 @@
         "solarDesc": "Fonctionnement autonome 100% solaire",
         "hybridDesc": "Solaire + générateur pour capacité 24h"
       },
-      "spraySystem": "Système +SPRAY",
+      "spraySystem": "+SPRAY System",
       "spraySystemDesc": "Pulvérisation de précision pour contrôle ciblé des mauvaises herbes",
       "powerBankDesc": "Capacité de batterie étendue pour un fonctionnement prolongé",
       "weedingToolLabel": "Outil de Désherbage",
       "weedingTool": {
-        "combiTool": "Outil Combi",
-        "weedCuttingDisc": "Disque de Coupe ({variant})"
+        "combiTool": "Combi Tool",
+        "weedCuttingDisc": "Weed Cutting Disc ({variant})"
       },
       "accessoriesLabel": "Accessoires",
       "accessories": {
-        "starterKit": "Kit de Démarrage",
-        "fstFieldSetupTool": "Outil de Configuration FST",
-        "baseStationV3": "Station de Base V3",
-        "essentialCarePackage": "Pack Entretien Essentiel",
-        "fieldBracket": "Support de Terrain",
-        "roadTransport": "Transport Routier",
-        "powerBank": "Batterie Externe",
-        "additionalWeightKit": "Kit de Poids Supplémentaire",
-        "toolbox": "Boîte à Outils"
+        "starterKit": "Starter Kit",
+        "fstFieldSetupTool": "FST Field Setup Tool",
+        "baseStationV3": "Base Station V3",
+        "essentialCarePackage": "Essential Care Package",
+        "fieldBracket": "Field Bracket",
+        "roadTransport": "Road Transport Platform",
+        "powerBank": "Power Bank",
+        "additionalWeightKit": "Additional Weight Kit",
+        "toolbox": "Toolbox"
       },
       "servicePlan": {
         "standard": "Plan de Service Standard",
         "premium": "Plan de Service Premium"
       },
-      "warrantyExtension": "Extension de Garantie +2 Ans"
+      "warrantyExtension": "+2 Year Warranty Extension"
     },
     "investment": {
       "frontWheel": {
-        "PFW": "Roue Avant Passive",
-        "AFW": "Roue Avant Active",
-        "DFW": "Double Roue Avant"
+        "PFW": "Passive Front Wheel",
+        "AFW": "Active Front Wheel",
+        "DFW": "Dual Front Wheel"
       },
       "activeRows": "{count}× Rangs Actifs ({size})",
       "passiveRows": "{count}× Rangs Passifs",
       "hybrid": "Système Hybride",
-      "spraySystem": "Système +SPRAY",
-      "combiTool": "Outil Combi ({count} rangs)",
-      "weedCuttingDisc": "Disque de Coupe ({count} rangs, {variant})",
+      "spraySystem": "+SPRAY System",
+      "combiTool": "Combi Tool ({count} rangs)",
+      "weedCuttingDisc": "Weed Cutting Disc ({count} rangs, {variant})",
       "accessories": "Accessoires",
-      "warrantyExtension": "Extension de Garantie +2 Ans",
+      "warrantyExtension": "+2 Year Warranty Extension",
       "included": "Inclus",
       "total": "Investissement Total",
       "annualSubscription": "Abonnement Annuel",

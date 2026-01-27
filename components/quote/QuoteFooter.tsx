@@ -17,8 +17,8 @@ export function QuoteFooter() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-stone-600">
               <Mail className="w-4 h-4 text-stone-400" />
-              <a href="mailto:sales@farmdroid.dk" className="hover:text-emerald-600">
-                sales@farmdroid.dk
+              <a href="mailto:sales@farmdroid.com" className="hover:text-emerald-600">
+                sales@farmdroid.com
               </a>
             </div>
             <div className="flex items-center gap-2 text-sm text-stone-600">
@@ -30,12 +30,12 @@ export function QuoteFooter() {
             <div className="flex items-center gap-2 text-sm text-stone-600">
               <Globe className="w-4 h-4 text-stone-400" />
               <a
-                href="https://farmdroid.dk"
+                href="https://farmdroid.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-emerald-600"
               >
-                farmdroid.dk
+                farmdroid.com
               </a>
             </div>
           </div>

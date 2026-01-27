@@ -62,7 +62,7 @@ export function ConfigPageContent({ data }: ConfigPageContentProps) {
       {/* Print Footer */}
       <div className="hidden print:block mt-8 text-center text-sm text-stone-500">
         <p>Generated on {new Date().toLocaleDateString()}</p>
-        <p>FarmDroid ApS | www.farmdroid.dk</p>
+        <p>FarmDroid ApS | www.farmdroid.com</p>
       </div>
     </div>
   );

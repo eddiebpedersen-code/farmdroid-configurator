@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     try {
       console.log("[API] Starting HubSpot integration for reference:", reference);
       // Get base URL for config link
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${request.headers.get("host")}`;
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
 
       hubspotResult = await createHubSpotEntities(
         lead,
