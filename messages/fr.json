@@ -830,7 +830,7 @@
       "gpsSeeding": "FarmDroid planifie la position GPS exacte de chaque graine. Cela signifie qu'il n'a pas besoin de caméras pour la gestion des mauvaises herbes — il sait précisément où se trouvent vos cultures."
     },
     "optimalWheelSpacing": "Écartement de roues optimal pour cette config de rangs",
-    "suggestedSpacing": "Suggéré : {spacing}cm — roues centrées entre les rangs",
+    "suggestedSpacing": "Suggéré : {spacing}{unit} — roues centrées entre les rangs",
     "emptyState": {
       "title": "Configurez votre semis",
       "description": "Ajoutez des rangs pour définir comment votre FarmDroid sèmera vos cultures. Vous pouvez ajuster l'espacement, la taille des graines et plus.",
@@ -884,7 +884,12 @@
         }
       }
     },
-    "visualizationAria": "Configuration interactive des rangs montrant {rows} rangs avec {spacing}cm d'espacement"
+    "visualizationAria": "Configuration interactive des rangs montrant {rows} rangs avec {spacing}cm d'espacement",
+    "verifiedSetups": "Configurations vérifiées",
+    "verifiedSetup": "Configuration vérifiée",
+    "notVerified": "Non vérifiée",
+    "verifiedTooltip": "Cette configuration est vérifiée et activement utilisée par les clients FarmDroid.",
+    "notVerifiedTooltip": "Cette configuration n'a pas encore été vérifiée. Contactez-nous pour faire vérifier votre configuration."
   },
   "crops": {
     "otherCrop": "Autre culture",
@@ -1014,7 +1019,7 @@
     "referenceLabel": "Votre code de configuration unique",
     "referenceHint": "Conservez ce code - vous pouvez revenir à tout moment pour consulter ou modifier votre configuration. Nous l'avons également envoyé à votre email.",
     "configurationTitle": "Votre Configuration",
-    "investmentTitle": "Votre Investissement",
+    "investmentTitle": "Prix machine FarmDroid (estimation)",
     "stats": {
       "rows": "rangs",
       "active": "actifs",
@@ -1098,7 +1103,17 @@
       "deliverySetup": "Livraison & Installation",
       "contactPartner": "Contactez le partenaire local",
       "included": "Inclus",
+      "selected": "Sélectionné",
       "total": "Investissement Total",
+      "machinePriceTitle": "Prix machine FarmDroid (estimation)",
+      "machinePriceSubtitle": "Hors livraison locale, installation & service (devis par votre partenaire local)",
+      "currencyNote": "Tous les prix sont HT. La conversion et les taux de change sont définis par votre partenaire local.",
+      "partnerServicesTitle": "Services partenaire local (devis séparé)",
+      "partnerDelivery": "Livraison",
+      "partnerSetup": "Installation & formation",
+      "partnerSeasonal": "Optionnel : Support/service saisonnier",
+      "partnerQuoted": "Devis par le partenaire local",
+      "subscriptionTitle": "Abonnement",
       "annualSubscription": "Abonnement Annuel",
       "firstYearIncluded": "Première année incluse",
       "vatNote": "Tous les prix sont hors TVA",

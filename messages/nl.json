@@ -830,7 +830,7 @@
       "gpsSeeding": "FarmDroid plant de exacte GPS-positie van elk zaad. Dit betekent dat er geen camera's nodig zijn voor onkruidbestrijding — hij weet precies waar uw gewassen zijn."
     },
     "optimalWheelSpacing": "Optimale wielafstand voor deze rijconfiguratie",
-    "suggestedSpacing": "Voorgesteld: {spacing}cm — wielen gecentreerd tussen rijen",
+    "suggestedSpacing": "Voorgesteld: {spacing}{unit} — wielen gecentreerd tussen rijen",
     "emptyState": {
       "title": "Configureer uw zaai-opstelling",
       "description": "Voeg rijen toe om te bepalen hoe uw FarmDroid zal zaaien. U kunt afstand, zaadgrootte en meer aanpassen.",
@@ -884,7 +884,12 @@
         }
       }
     },
-    "visualizationAria": "Interactieve rijconfiguratie toont {rows} rijen met {spacing}cm tussenafstand"
+    "visualizationAria": "Interactieve rijconfiguratie toont {rows} rijen met {spacing}cm tussenafstand",
+    "verifiedSetups": "Geverifieerde configuraties",
+    "verifiedSetup": "Geverifieerde configuratie",
+    "notVerified": "Niet geverifieerd",
+    "verifiedTooltip": "Deze configuratie is geverifieerd en wordt actief gebruikt door FarmDroid-klanten.",
+    "notVerifiedTooltip": "Deze configuratie is nog niet geverifieerd. Neem contact met ons op om uw configuratie te laten controleren."
   },
   "crops": {
     "otherCrop": "Ander gewas",
@@ -1014,7 +1019,7 @@
     "referenceLabel": "Je unieke configuratiecode",
     "referenceHint": "Bewaar deze code - je kunt altijd terugkeren om je configuratie te bekijken of aan te passen. We hebben deze ook naar je e-mail gestuurd.",
     "configurationTitle": "Jouw Configuratie",
-    "investmentTitle": "Jouw Investering",
+    "investmentTitle": "FarmDroid machineprijs (schatting)",
     "stats": {
       "rows": "rijen",
       "active": "actief",
@@ -1098,7 +1103,17 @@
       "deliverySetup": "Levering & Installatie",
       "contactPartner": "Neem contact op met lokale partner",
       "included": "Inbegrepen",
+      "selected": "Geselecteerd",
       "total": "Totale Investering",
+      "machinePriceTitle": "FarmDroid machineprijs (schatting)",
+      "machinePriceSubtitle": "Excl. lokale levering, installatie & service (offerte van uw lokale partner)",
+      "currencyNote": "Alle prijzen excl. btw. Valutaomrekening en wisselkoersen worden bepaald door uw lokale partner.",
+      "partnerServicesTitle": "Lokale partnerservices (apart geoffreerd)",
+      "partnerDelivery": "Levering",
+      "partnerSetup": "Installatie & training",
+      "partnerSeasonal": "Optioneel: Seizoensondersteuning/service",
+      "partnerQuoted": "Offerte van lokale partner",
+      "subscriptionTitle": "Abonnement",
       "annualSubscription": "Jaarlijks Abonnement",
       "firstYearIncluded": "Eerste jaar inbegrepen",
       "vatNote": "Alle prijzen zijn exclusief BTW",

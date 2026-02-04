@@ -830,7 +830,7 @@
       "gpsSeeding": "FarmDroid planlægger den præcise GPS-position for hvert frø. Det betyder, at den ikke har brug for kameraer til ukrudtshåndtering — den ved præcis, hvor dine afgrøder er."
     },
     "optimalWheelSpacing": "Optimal hjulafstand for denne rækkekonfiguration",
-    "suggestedSpacing": "Foreslået: {spacing}cm — hjul centreret mellem rækker",
+    "suggestedSpacing": "Foreslået: {spacing}{unit} — hjul centreret mellem rækker",
     "emptyState": {
       "title": "Konfigurer din såopsætning",
       "description": "Tilføj rækker for at definere hvordan din FarmDroid vil så dine afgrøder. Du kan justere afstand, frøstørrelse og mere.",
@@ -884,7 +884,12 @@
         }
       }
     },
-    "visualizationAria": "Interaktiv rækkekonfiguration viser {rows} rækker med {spacing}cm afstand"
+    "visualizationAria": "Interaktiv rækkekonfiguration viser {rows} rækker med {spacing}cm afstand",
+    "verifiedSetups": "Verificerede opsætninger",
+    "verifiedSetup": "Verificeret opsætning",
+    "notVerified": "Ikke verificeret",
+    "verifiedTooltip": "Denne konfiguration er verificeret og bruges aktivt af FarmDroid-kunder.",
+    "notVerifiedTooltip": "Denne konfiguration er endnu ikke verificeret. Kontakt os for at få din opsætning tjekket."
   },
   "crops": {
     "otherCrop": "Anden afgrøde",
@@ -1014,7 +1019,7 @@
     "referenceLabel": "Din unikke konfigurationskode",
     "referenceHint": "Gem denne kode - du kan altid vende tilbage for at se eller ændre din konfiguration. Vi har også sendt den til din email.",
     "configurationTitle": "Din Konfiguration",
-    "investmentTitle": "Din Investering",
+    "investmentTitle": "FarmDroid maskinpris (estimat)",
     "stats": {
       "rows": "rækker",
       "active": "aktive",
@@ -1098,7 +1103,17 @@
       "deliverySetup": "Levering & Opsætning",
       "contactPartner": "Kontakt lokal partner",
       "included": "Inkluderet",
+      "selected": "Valgt",
       "total": "Samlet Investering",
+      "machinePriceTitle": "FarmDroid maskinpris (estimat)",
+      "machinePriceSubtitle": "Ekskl. lokal levering, opsætning & service (tilbydes af din lokale partner)",
+      "currencyNote": "Alle priser er ekskl. moms. Valutaomregning og vekselkurser fastsættes af din lokale partner.",
+      "partnerServicesTitle": "Lokale partnerservices (tilbydes separat)",
+      "partnerDelivery": "Levering",
+      "partnerSetup": "Opsætning & træning",
+      "partnerSeasonal": "Valgfrit: Sæsonservice/-support",
+      "partnerQuoted": "Tilbydes af lokal partner",
+      "subscriptionTitle": "Abonnement",
       "annualSubscription": "Årligt Abonnement",
       "firstYearIncluded": "Første år inkluderet",
       "vatNote": "Alle priser er ekskl. moms",

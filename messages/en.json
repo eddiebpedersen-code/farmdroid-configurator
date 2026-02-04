@@ -837,7 +837,7 @@
       "gpsSeeding": "FarmDroid plans the exact GPS position of every seed. This means it doesn't need cameras for weed management - it knows precisely where your crops are."
     },
     "optimalWheelSpacing": "Optimal wheel spacing for this row config",
-    "suggestedSpacing": "Suggested: {spacing}cm — wheels centered between rows",
+    "suggestedSpacing": "Suggested: {spacing}{unit} — wheels centered between rows",
     "emptyState": {
       "title": "Configure Your Seeding Setup",
       "description": "Add rows to define how your FarmDroid will seed your crops. You can adjust spacing, seed size, and more.",
@@ -892,7 +892,12 @@
         }
       }
     },
-    "visualizationAria": "Interactive row configuration showing {rows} rows at {spacing}cm spacing"
+    "visualizationAria": "Interactive row configuration showing {rows} rows at {spacing}cm spacing",
+    "verifiedSetups": "Verified Setups",
+    "verifiedSetup": "Verified Setup",
+    "notVerified": "Not Verified",
+    "verifiedTooltip": "This configuration is verified and actively used by FarmDroid customers.",
+    "notVerifiedTooltip": "This configuration has not been verified yet. Contact us to get your setup checked."
   },
   "crops": {
     "otherCrop": "Other crop",
@@ -1022,7 +1027,7 @@
     "referenceLabel": "Your unique configuration code",
     "referenceHint": "Save this code - you can return anytime to view or modify your configuration. We've also sent it to your email.",
     "configurationTitle": "Your Configuration",
-    "investmentTitle": "Your Investment",
+    "investmentTitle": "FarmDroid machine price (estimate)",
     "stats": {
       "rows": "rows",
       "active": "active",
@@ -1116,7 +1121,17 @@
       "deliverySetup": "Delivery & Setup",
       "contactPartner": "Contact local partner",
       "included": "Included",
+      "selected": "Selected",
       "total": "Total Investment",
+      "machinePriceTitle": "FarmDroid machine price (estimate)",
+      "machinePriceSubtitle": "Excl. local delivery, setup & service (quoted by your local partner)",
+      "currencyNote": "All prices excl. VAT. Currency conversion and exchange rates are defined by your local partner.",
+      "partnerServicesTitle": "Local partner services (quoted separately)",
+      "partnerDelivery": "Delivery",
+      "partnerSetup": "Setup & training",
+      "partnerSeasonal": "Optional: Seasonal support/service",
+      "partnerQuoted": "Quoted by local partner",
+      "subscriptionTitle": "Subscription",
       "annualSubscription": "Annual Subscription",
       "firstYearIncluded": "First year included",
       "vatNote": "All prices exclude VAT",

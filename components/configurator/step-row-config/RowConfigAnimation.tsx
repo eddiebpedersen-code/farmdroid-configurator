@@ -16,6 +16,7 @@ interface RowConfigAnimationProps {
   cropEmoji?: string;
   isReadOnly?: boolean;
   isStatic?: boolean; // When true, renders as a static screenshot (no animation, no controls)
+  useInches?: boolean;
   className?: string;
 }
 
@@ -32,9 +33,18 @@ export function RowConfigAnimation({
   cropEmoji = "🌱",
   isReadOnly = true,
   isStatic = false,
+  useInches = false,
   className = "",
 }: RowConfigAnimationProps) {
   const [isPlaying, setIsPlaying] = useState(true);
+
+  // Unit conversion helpers
+  const MM_PER_INCH = 25.4;
+  const unitLabel = useInches ? "in" : "cm";
+  const mmToDisplay = (mm: number, decimals = 1): string => {
+    if (useInches) return (mm / MM_PER_INCH).toFixed(decimals);
+    return (mm / 10).toFixed(decimals);
+  };
   // When isStatic is true, never animate regardless of play state
   const isAnimating = !isStatic && isPlaying;
 
@@ -416,7 +426,7 @@ export function RowConfigAnimation({
               <line x1={leftX} y1={spacingY} x2={rightX} y2={spacingY} stroke="#78716c" strokeWidth="1.5" />
               <line x1={rightX} y1={spacingY - 7} x2={rightX} y2={spacingY + 7} stroke="#78716c" strokeWidth="1.5" />
               <text x={midX} y={spacingY - 12} textAnchor="middle" className="text-[12px] font-medium fill-stone-600">
-                {spacing / 10} cm
+                {mmToDisplay(spacing)} {unitLabel}
               </text>
             </g>
           );

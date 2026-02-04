@@ -8,6 +8,7 @@ import {
   GitBranch,
   LogOut,
   Settings,
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/auth-client";
@@ -30,6 +31,12 @@ const navItems = [
     href: "/admin/mappings",
     label: "Field Mappings",
     icon: GitBranch,
+    roles: ["super_admin", "admin"] as AdminRole[],
+  },
+  {
+    href: "/admin/verified-configs",
+    label: "Verified Configs",
+    icon: CheckCircle2,
     roles: ["super_admin", "admin"] as AdminRole[],
   },
   {

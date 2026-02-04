@@ -105,6 +105,62 @@ export interface ConfiguratorField {
   values?: string[];
 }
 
+// Verified configuration types
+import type { FrontWheel, SeedingMode, RowPlacementMode } from "@/lib/configurator-data";
+
+export type VerifiedSeedSize = "6mm" | "14mm" | "both";
+
+export interface VerifiedRowConfig {
+  seedSize: "6mm" | "14mm";
+  activeRows: number;
+  rowDistance: number;
+  rowSpacings: number[];
+  wheelSpacing: number;
+  frontWheel: FrontWheel;
+  cropEmoji: string;
+  seedingMode: SeedingMode;
+  plantSpacing: number;
+  seedsPerGroup: number;
+  workingWidth: number;
+  rowPlacementMode: RowPlacementMode;
+}
+
+export interface VerifiedConfigurationRow {
+  id: string;
+  name: string;
+  description: string | null;
+  config: VerifiedRowConfig;
+  seed_size: VerifiedSeedSize;
+  active_rows: number;
+  is_active: boolean;
+  display_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface VerifiedConfigurationInsert {
+  name: string;
+  description?: string | null;
+  config: VerifiedRowConfig;
+  seed_size: VerifiedSeedSize;
+  active_rows: number;
+  is_active?: boolean;
+  display_order?: number;
+  created_by?: string | null;
+}
+
+export interface VerifiedConfigurationUpdate {
+  name?: string;
+  description?: string | null;
+  config?: VerifiedRowConfig;
+  seed_size?: VerifiedSeedSize;
+  active_rows?: number;
+  is_active?: boolean;
+  display_order?: number;
+  updated_at?: string;
+}
+
 export const CONFIGURATOR_FIELDS: Record<Exclude<SourceCategory, "static">, ConfiguratorField[]> = {
   lead: [
     { key: "email", label: "Email", type: "string" },

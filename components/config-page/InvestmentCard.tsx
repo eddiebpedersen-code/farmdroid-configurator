@@ -27,94 +27,55 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
   const priceBreakdown = calculatePrice(config, undefined, currency);
   const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
 
-  // Calculate weeding tool price separately for display
-  let weedingToolPrice = 0;
-  if (config.weedingTool === "combiTool") {
-    weedingToolPrice = config.activeRows * prices.accessories.combiToolPerRow;
-  } else if (config.weedingTool === "weedCuttingDisc") {
-    weedingToolPrice = config.activeRows * prices.accessories.weedCuttingDiscPerRow;
-  }
-
   const weedCuttingDiscVariant = getWeedCuttingDiscVariant(config.rowDistance);
 
-  // Build accessory line items
-  const accessoryItems: { label: string; price: number }[] = [];
-
-  if (config.starterKit) {
-    accessoryItems.push({ label: t("investment.starterKit"), price: prices.accessories.starterKit });
-  } else {
-    if (config.fstFieldSetupTool) {
-      accessoryItems.push({ label: t("investment.fstFieldSetupTool"), price: prices.accessories.fstFieldSetupTool });
-    }
-    if (config.baseStationV3) {
-      accessoryItems.push({ label: t("investment.baseStationV3"), price: prices.accessories.baseStationV3 });
-    }
-    if (config.essentialCarePackage) {
-      accessoryItems.push({ label: t("investment.essentialCarePackage"), price: prices.accessories.essentialCarePackage });
-    }
-    if (config.fieldBracket) {
-      accessoryItems.push({ label: t("investment.fieldBracket"), price: prices.accessories.fieldBracket });
-    }
-  }
-  if (config.roadTransport) {
-    accessoryItems.push({ label: t("investment.roadTransport"), price: prices.accessories.roadTransport });
-  }
-  if (config.powerBank) {
-    accessoryItems.push({ label: t("investment.powerBank"), price: prices.accessories.powerBank });
-  }
-  const hasEssentialCare = config.starterKit || config.essentialCarePackage;
-  if (config.spraySystem && hasEssentialCare) {
-    accessoryItems.push({ label: t("investment.essentialCareSpray"), price: prices.accessories.essentialCareSpray });
-  }
-  if (config.additionalWeightKit) {
-    accessoryItems.push({ label: t("investment.additionalWeightKit"), price: prices.accessories.additionalWeightKit });
-  }
-  if (config.toolbox) {
-    accessoryItems.push({ label: t("investment.toolbox"), price: prices.accessories.toolbox });
-  }
-
-  // Build line items
-  const lineItems = [
-    {
-      label: "FD20 Robot V2.6",
-      price: priceBreakdown.baseRobot,
-    },
+  // Build selected configuration items (labels only, no prices)
+  const selectedItems = [
+    { label: "FD20 Robot V2.6" },
     priceBreakdown.frontWheel > 0 && {
       label: t(`investment.frontWheel.${config.frontWheel}`),
-      price: priceBreakdown.frontWheel,
     },
     {
       label: t("investment.activeRows", { count: config.activeRows, size: config.seedSize }),
-      price: priceBreakdown.activeRows,
     },
     passiveRows > 0 && {
       label: t("investment.passiveRows", { count: passiveRows }),
-      price: 0,
       included: true,
     },
     priceBreakdown.powerSource > 0 && {
       label: t("investment.hybrid"),
-      price: priceBreakdown.powerSource,
     },
     priceBreakdown.spraySystem > 0 && {
       label: t("investment.spraySystem"),
-      price: priceBreakdown.spraySystem,
     },
     config.weedingTool === "combiTool" && {
       label: t("investment.combiTool", { count: config.activeRows }),
-      price: weedingToolPrice,
     },
     config.weedingTool === "weedCuttingDisc" && {
       label: t("investment.weedCuttingDisc", { count: config.activeRows, variant: weedCuttingDiscVariant || "" }),
-      price: weedingToolPrice,
     },
-    // Add individual accessory items
-    ...accessoryItems,
+    // Accessory items
+    config.starterKit && { label: t("investment.starterKit") },
+    !config.starterKit && config.fstFieldSetupTool && { label: t("investment.fstFieldSetupTool") },
+    !config.starterKit && config.baseStationV3 && { label: t("investment.baseStationV3") },
+    !config.starterKit && config.essentialCarePackage && { label: t("investment.essentialCarePackage") },
+    !config.starterKit && config.fieldBracket && { label: t("investment.fieldBracket") },
+    config.roadTransport && { label: t("investment.roadTransport") },
+    config.powerBank && { label: t("investment.powerBank") },
+    config.spraySystem && (config.starterKit || config.essentialCarePackage) && { label: t("investment.essentialCareSpray") },
+    config.additionalWeightKit && { label: t("investment.additionalWeightKit") },
+    config.toolbox && { label: t("investment.toolbox") },
     priceBreakdown.warrantyExtension > 0 && {
       label: t("investment.warrantyExtension"),
-      price: priceBreakdown.warrantyExtension,
     },
-  ].filter(Boolean) as { label: string; price: number; included?: boolean }[];
+  ].filter(Boolean) as { label: string; included?: boolean }[];
+
+  // Partner services (labels only, no prices)
+  const partnerServices = [
+    { label: t("investment.partnerDelivery") },
+    { label: t("investment.partnerSetup") },
+    { label: t("investment.partnerSeasonal") },
+  ];
 
   return (
     <motion.div
@@ -123,6 +84,7 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
       transition={{ duration: 0.4, delay: 0.4 }}
       className="bg-white rounded-xl border border-stone-200 overflow-hidden"
     >
+      {/* Header */}
       <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-stone-900">{t("investmentTitle")}</h2>
         <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Currency">
@@ -144,43 +106,56 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
         </div>
       </div>
 
-      {/* Line Items */}
+      {/* Selected Configuration Items (no prices) */}
       <div className="divide-y divide-stone-100">
-        {lineItems.map((item, index) => (
+        {selectedItems.map((item, index) => (
           <div key={index} className="px-6 py-3 flex justify-between items-center">
             <span className="text-sm text-stone-700">{item.label}</span>
             {item.included ? (
               <span className="text-sm text-emerald-600 font-medium">{t("investment.included")}</span>
             ) : (
-              <span className="text-sm font-medium text-stone-900">
-                {formatPrice(item.price, currency)}
+              <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
+                {t("investment.selected")}
               </span>
             )}
           </div>
         ))}
       </div>
 
-      {/* Delivery & Setup */}
-      <div className="px-6 py-3 border-t border-stone-200">
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-stone-700">{t("investment.deliverySetup")}</span>
-          <span className="text-sm text-stone-500 italic">{t("investment.contactPartner")}</span>
-        </div>
-      </div>
-
-      {/* Total */}
+      {/* Machine Price */}
       <div className="px-6 py-4 bg-stone-900">
         <div className="flex justify-between items-center">
-          <span className="text-white font-medium">{t("investment.total")}</span>
+          <span className="text-white font-medium">{t("investment.machinePriceTitle")}</span>
           <span className="text-xl font-bold text-white">
             {formatPrice(priceBreakdown.total, currency)}
           </span>
         </div>
+        <p className="text-xs text-stone-400 mt-1">
+          {t("investment.machinePriceSubtitle")}
+        </p>
       </div>
 
-      {/* Annual Service */}
+      {/* Local Partner Services */}
+      <div className="px-6 py-4 border-t border-stone-200 bg-stone-50">
+        <h3 className="text-sm font-semibold text-stone-700 mb-3">
+          {t("investment.partnerServicesTitle")}
+        </h3>
+        <div className="space-y-2">
+          {partnerServices.map((service, index) => (
+            <div key={index} className="flex justify-between items-center">
+              <span className="text-sm text-stone-600">{service.label}</span>
+              <span className="text-sm text-stone-400 italic">{t("investment.partnerQuoted")}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Subscription */}
       {config.servicePlan !== "none" && (
-        <div className="px-6 py-3 bg-stone-50 border-t border-stone-200">
+        <div className="px-6 py-4 border-t border-stone-200">
+          <h3 className="text-sm font-semibold text-stone-700 mb-2">
+            {t("investment.subscriptionTitle")}
+          </h3>
           <div className="flex justify-between items-center">
             <div>
               <span className="text-sm text-stone-700">{t("investment.annualSubscription")}</span>
@@ -199,8 +174,7 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
 
       {/* Notes */}
       <div className="px-6 py-3 border-t border-stone-100">
-        <p className="text-xs text-stone-500">{t("investment.vatNote")}</p>
-        <p className="text-xs text-stone-400 mt-1">{t("investment.disclaimer")}</p>
+        <p className="text-xs text-stone-500">{t("investment.currencyNote")}</p>
       </div>
     </motion.div>
   );
