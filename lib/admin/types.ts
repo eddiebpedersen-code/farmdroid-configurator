@@ -12,6 +12,7 @@ export interface AdminUserRow {
   name: string | null;
   role: AdminRole;
   avatar_url: string | null;
+  notify_on_new_config: boolean;
   last_login_at: string | null;
   created_at: string;
   updated_at: string;
@@ -23,6 +24,7 @@ export interface AdminUserInsert {
   name?: string | null;
   role: AdminRole;
   avatar_url?: string | null;
+  notify_on_new_config?: boolean;
   last_login_at?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -34,6 +36,7 @@ export interface AdminUserUpdate {
   name?: string | null;
   role?: AdminRole;
   avatar_url?: string | null;
+  notify_on_new_config?: boolean;
   last_login_at?: string | null;
   updated_at?: string;
 }

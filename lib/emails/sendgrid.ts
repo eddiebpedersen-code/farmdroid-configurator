@@ -312,6 +312,101 @@ export async function sendVerificationCodeEmail(
   }
 }
 
+/**
+ * Data for admin notification emails
+ */
+interface AdminNotificationData {
+  reference: string;
+  configUrl: string;
+  hubspotContactUrl: string | null;
+  contactName: string;
+  company: string;
+  country: string;
+  totalPrice: number;
+  currency: string;
+}
+
+/**
+ * Send a notification email to an admin when a new configuration is submitted.
+ * English only (admins are internal users).
+ */
+export async function sendAdminNotificationEmail(
+  adminEmail: string,
+  data: AdminNotificationData
+): Promise<boolean> {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.warn("SENDGRID_API_KEY not configured, skipping admin notification");
+    return false;
+  }
+
+  try {
+    const formattedPrice = new Intl.NumberFormat(
+      data.currency === "DKK" ? "da-DK" : "de-DE",
+      {
+        style: "currency",
+        currency: data.currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }
+    ).format(data.totalPrice);
+
+    const hubspotSection = data.hubspotContactUrl
+      ? `<p style="text-align: center; margin: 12px 0;">
+           <a href="${data.hubspotContactUrl}" style="display: inline-block; background: #f97316; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">View in HubSpot</a>
+         </p>`
+      : "";
+
+    await sgMail.send({
+      to: adminEmail,
+      from: {
+        email: process.env.SENDGRID_FROM_EMAIL || "noreply@farmdroid.com",
+        name: "FarmDroid Configurator",
+      },
+      subject: `New Configuration: ${data.reference} - ${data.contactName}`,
+      text: `New FarmDroid configuration submitted.\n\nReference: ${data.reference}\nContact: ${data.contactName}\nCompany: ${data.company}\nCountry: ${data.country}\nTotal: ${formattedPrice}\n\nView configuration: ${data.configUrl}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f4;">
+  <div style="background: white; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <h2 style="color: #1f2937; margin-top: 0;">New Configuration Submitted</h2>
+    <p style="font-size: 24px; font-family: monospace; background: #ecfdf5; padding: 12px; border-radius: 8px; text-align: center; color: #059669; font-weight: bold;">${data.reference}</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+      <tr><td style="padding: 8px 0; color: #6b7280;">Contact</td><td style="padding: 8px 0; color: #1f2937; font-weight: 500;">${data.contactName}</td></tr>
+      <tr><td style="padding: 8px 0; color: #6b7280;">Company</td><td style="padding: 8px 0; color: #1f2937; font-weight: 500;">${data.company}</td></tr>
+      <tr><td style="padding: 8px 0; color: #6b7280;">Country</td><td style="padding: 8px 0; color: #1f2937; font-weight: 500;">${data.country}</td></tr>
+      <tr><td style="padding: 8px 0; color: #6b7280;">Total Price</td><td style="padding: 8px 0; color: #1f2937; font-weight: bold;">${formattedPrice}</td></tr>
+    </table>
+    <p style="text-align: center; margin: 16px 0;">
+      <a href="${data.configUrl}" style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">View Configuration</a>
+    </p>
+    ${hubspotSection}
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+    <p style="color: #6b7280; font-size: 12px;">You're receiving this because you have admin notifications enabled. Manage in the admin dashboard.</p>
+  </div>
+</body>
+</html>`,
+    });
+
+    console.log(`[SendGrid] Admin notification sent to ${adminEmail} for ${data.reference}`);
+    return true;
+  } catch (error: unknown) {
+    console.error("[SendGrid] Failed to send admin notification email:");
+    if (error && typeof error === "object" && "response" in error) {
+      const sgError = error as { response: { statusCode: number; body: unknown } };
+      console.error("[SendGrid] Status:", sgError.response.statusCode);
+      console.error("[SendGrid] Body:", JSON.stringify(sgError.response.body));
+    } else {
+      console.error("[SendGrid] Error:", error);
+    }
+    return false;
+  }
+}
+
 function getVerificationEmailContent(
   code: string,
   locale: string

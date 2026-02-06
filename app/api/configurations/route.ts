@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { generateConfigReference } from "@/lib/config-page-utils";
 import { createHubSpotEntities } from "@/lib/hubspot";
+import { sendAdminNotificationEmail } from "@/lib/emails/sendgrid";
 import type { ConfiguratorState } from "@/lib/configurator-data";
 import type { LeadData } from "@/components/configurator/lead-capture-form";
 
@@ -104,12 +105,13 @@ export async function POST(request: NextRequest) {
         baseUrl
       );
 
-      // Update database with HubSpot IDs
+      // Update database with HubSpot IDs (including noteId for view tracking)
       await supabase
         .from("configurations")
         .update({
           hubspot_contact_id: hubspotResult.contactId,
           hubspot_company_id: hubspotResult.companyId,
+          hubspot_note_id: hubspotResult.noteId || null,
         })
         .eq("reference", reference);
       console.log("[API] HubSpot integration completed successfully:", hubspotResult);
@@ -118,6 +120,46 @@ export async function POST(request: NextRequest) {
       console.error("[API] HubSpot integration error:", hubspotError);
       console.error("[API] Error details:", hubspotError instanceof Error ? hubspotError.stack : hubspotError);
     }
+
+    // Send admin notification emails (fire-and-forget)
+    void (async () => {
+      try {
+        const { data: adminsToNotify } = await supabase
+          .from("admin_users")
+          .select("email")
+          .eq("notify_on_new_config", true);
+
+        if (adminsToNotify && adminsToNotify.length > 0) {
+          const portalId = process.env.HUBSPOT_PORTAL_ID;
+          const hubspotContactUrl =
+            portalId && hubspotResult?.contactId
+              ? `https://app.hubspot.com/contacts/${portalId}/contact/${hubspotResult.contactId}`
+              : null;
+
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
+          const configUrl = `${baseUrl}/en/config/${reference}`;
+
+          const notificationData = {
+            reference,
+            configUrl,
+            hubspotContactUrl,
+            contactName: `${lead.firstName} ${lead.lastName}`,
+            company: lead.company,
+            country: resolvedCountry || "Unknown",
+            totalPrice,
+            currency,
+          };
+
+          await Promise.allSettled(
+            adminsToNotify.map((admin) =>
+              sendAdminNotificationEmail(admin.email, notificationData)
+            )
+          );
+        }
+      } catch (notifyError) {
+        console.error("[API] Admin notification error:", notifyError);
+      }
+    })();
 
     return NextResponse.json({
       success: true,

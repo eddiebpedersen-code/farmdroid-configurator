@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createHubSpotEntities } from "@/lib/hubspot";
+import { updateNoteWithViewTracking } from "@/lib/hubspot/notes";
 import type { ConfiguratorState } from "@/lib/configurator-data";
 
 interface RouteParams {
@@ -56,14 +57,45 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Increment view count (fire and forget)
+    const newViewCount = (data.view_count ?? 0) + 1;
+    const newLastViewedAt = new Date().toISOString();
+
     void supabase
       .from("configurations")
       .update({
-        view_count: (data.view_count ?? 0) + 1,
-        last_viewed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        view_count: newViewCount,
+        last_viewed_at: newLastViewedAt,
+        updated_at: newLastViewedAt,
       })
       .eq("id", data.id);
+
+    // Update HubSpot note with view tracking (throttled: at most once per hour)
+    if (data.hubspot_note_id) {
+      const shouldSync =
+        !data.hubspot_note_synced_at ||
+        Date.now() - new Date(data.hubspot_note_synced_at).getTime() > 60 * 60 * 1000;
+
+      if (shouldSync) {
+        void (async () => {
+          try {
+            await updateNoteWithViewTracking(
+              data.hubspot_note_id!,
+              newViewCount,
+              newLastViewedAt
+            );
+
+            await supabase
+              .from("configurations")
+              .update({ hubspot_note_synced_at: newLastViewedAt })
+              .eq("id", data.id);
+
+            console.log(`[HubSpot] Updated note ${data.hubspot_note_id} with view tracking for ${reference}`);
+          } catch (error) {
+            console.error("[HubSpot] Failed to update note with view tracking:", error);
+          }
+        })();
+      }
+    }
 
     // Return configuration data in the format expected by the config page
     return NextResponse.json({

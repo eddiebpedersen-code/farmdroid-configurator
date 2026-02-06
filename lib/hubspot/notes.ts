@@ -239,3 +239,46 @@ export async function createContactNote(
 
   return response.id;
 }
+
+/**
+ * Update an existing HubSpot note's body with view tracking information.
+ * Preserves the original note content and appends/replaces a view tracking section.
+ */
+export async function updateNoteWithViewTracking(
+  noteId: string,
+  viewCount: number,
+  lastViewedAt: string
+): Promise<void> {
+  const formattedDate = new Date(lastViewedAt).toLocaleString("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  // Get the existing note body to preserve it
+  const existing = await hubspotRequest<NoteResponse>(
+    `/crm/v3/objects/notes/${noteId}`,
+    { method: "GET" }
+  );
+
+  const existingBody = existing.properties.hs_note_body || "";
+
+  // Remove any previous view tracking section, then append fresh data
+  const viewTrackingMarker = "\n\n=== View Tracking ===";
+  const baseBody = existingBody.includes(viewTrackingMarker)
+    ? existingBody.substring(0, existingBody.indexOf(viewTrackingMarker))
+    : existingBody;
+
+  const updatedBody = `${baseBody}${viewTrackingMarker}\n\nTotal Views: ${viewCount}\nLast Viewed: ${formattedDate}`;
+
+  await hubspotRequest<NoteResponse>(
+    `/crm/v3/objects/notes/${noteId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        properties: {
+          hs_note_body: updatedBody,
+        },
+      }),
+    }
+  );
+}

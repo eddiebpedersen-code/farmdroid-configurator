@@ -116,5 +116,5 @@ export async function createHubSpotEntities(
 
 export { createOrUpdateContact } from "./contacts";
 export { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
-export { createContactNote } from "./notes";
+export { createContactNote, updateNoteWithViewTracking } from "./notes";
 export { sendConfigurationEmail } from "@/lib/emails/sendgrid";

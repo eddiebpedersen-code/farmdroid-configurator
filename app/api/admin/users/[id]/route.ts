@@ -31,21 +31,27 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Only super_admins can update users
+    const body = await request.json();
+    const { name, role, notify_on_new_config } = body as AdminUserUpdate;
+
+    // Non-super_admins can only update their own notification preference
     if (currentAdmin.role !== "super_admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      if (currentAdmin.id !== id) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      // Non-super_admins can only change notify_on_new_config on their own account
+      if (role !== undefined || name !== undefined) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
     }
 
-    // Prevent self-demotion
-    if (currentAdmin.id === id) {
+    // Prevent super_admins from changing their own role
+    if (currentAdmin.id === id && role !== undefined) {
       return NextResponse.json(
-        { error: "Cannot modify your own account" },
+        { error: "Cannot modify your own role" },
         { status: 400 }
       );
     }
-
-    const body = await request.json();
-    const { name, role } = body as AdminUserUpdate;
 
     if (role && !["super_admin", "admin"].includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
@@ -56,6 +62,7 @@ export async function PUT(
     };
     if (name !== undefined) updateData.name = name;
     if (role !== undefined) updateData.role = role;
+    if (notify_on_new_config !== undefined) updateData.notify_on_new_config = notify_on_new_config;
 
     const { data: updatedUser, error } = await supabase
       .from("admin_users")

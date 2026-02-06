@@ -67,6 +67,8 @@ export interface ConfigurationRow {
   hubspot_contact_id: string | null;
   hubspot_company_id: string | null;
   hubspot_deal_id: string | null;
+  hubspot_note_id: string | null;
+  hubspot_note_synced_at: string | null;
   status: "submitted" | "contacted" | "quoted" | "converted";
   view_count: number;
   last_viewed_at: string | null;
@@ -98,6 +100,8 @@ export interface ConfigurationInsert {
   hubspot_contact_id?: string | null;
   hubspot_company_id?: string | null;
   hubspot_deal_id?: string | null;
+  hubspot_note_id?: string | null;
+  hubspot_note_synced_at?: string | null;
   status?: "submitted" | "contacted" | "quoted" | "converted";
   view_count?: number;
   last_viewed_at?: string | null;
@@ -129,6 +133,8 @@ export interface ConfigurationUpdate {
   hubspot_contact_id?: string | null;
   hubspot_company_id?: string | null;
   hubspot_deal_id?: string | null;
+  hubspot_note_id?: string | null;
+  hubspot_note_synced_at?: string | null;
   status?: "submitted" | "contacted" | "quoted" | "converted";
   view_count?: number;
   last_viewed_at?: string | null;

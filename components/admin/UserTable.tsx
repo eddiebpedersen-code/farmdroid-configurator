@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { MoreHorizontal, Trash2, Shield, ShieldCheck } from "lucide-react";
 import type { AdminUserRow } from "@/lib/admin/types";
 
@@ -33,6 +34,7 @@ interface UserTableProps {
   currentUserId: string;
   onRoleChange: (userId: string, newRole: "super_admin" | "admin") => Promise<void>;
   onDelete: (userId: string) => Promise<void>;
+  onNotifyChange: (userId: string, enabled: boolean) => Promise<void>;
 }
 
 export function UserTable({
@@ -40,6 +42,7 @@ export function UserTable({
   currentUserId,
   onRoleChange,
   onDelete,
+  onNotifyChange,
 }: UserTableProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<AdminUserRow | null>(null);
@@ -84,6 +87,7 @@ export function UserTable({
             <TableHead>Role</TableHead>
             <TableHead>Last Login</TableHead>
             <TableHead>Created</TableHead>
+            <TableHead>Notifications</TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -111,6 +115,13 @@ export function UserTable({
               </TableCell>
               <TableCell>
                 {new Date(user.created_at).toLocaleDateString()}
+              </TableCell>
+              <TableCell>
+                <Switch
+                  checked={user.notify_on_new_config}
+                  onCheckedChange={(checked) => onNotifyChange(user.id, checked)}
+                  disabled={isLoading}
+                />
               </TableCell>
               <TableCell>
                 {user.id !== currentUserId && (

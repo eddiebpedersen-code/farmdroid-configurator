@@ -101,6 +101,24 @@ export default function UsersPage() {
     setUsers((prev) => prev.filter((u) => u.id !== userId));
   };
 
+  const handleNotifyChange = async (userId: string, enabled: boolean) => {
+    const response = await fetch(`/api/admin/users/${userId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notify_on_new_config: enabled }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to update notification preference");
+    }
+
+    const updatedUser = await response.json();
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? updatedUser : u))
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -143,6 +161,7 @@ export default function UsersPage() {
               currentUserId={currentUserId}
               onRoleChange={handleRoleChange}
               onDelete={handleDeleteUser}
+              onNotifyChange={handleNotifyChange}
             />
           ) : (
             <p className="text-stone-500 text-center py-8">
