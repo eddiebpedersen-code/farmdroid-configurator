@@ -56,24 +56,22 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Increment view count (fire and forget)
+    // Increment view count
     const newViewCount = (data.view_count ?? 0) + 1;
     const newLastViewedAt = new Date().toISOString();
 
-    void (async () => {
-      try {
-        await supabase
-          .from("configurations")
-          .update({
-            view_count: newViewCount,
-            last_viewed_at: newLastViewedAt,
-            updated_at: newLastViewedAt,
-          })
-          .eq("id", data.id);
-      } catch (err) {
-        console.error("[Views] Failed to update view count:", err);
-      }
-    })();
+    const { error: viewUpdateError } = await supabase
+      .from("configurations")
+      .update({
+        view_count: newViewCount,
+        last_viewed_at: newLastViewedAt,
+        updated_at: newLastViewedAt,
+      })
+      .eq("id", data.id);
+
+    if (viewUpdateError) {
+      console.error("[Views] Failed to update view count:", viewUpdateError.message);
+    }
 
     // Update HubSpot note with view tracking (throttled: at most once per hour)
     if (data.hubspot_note_id) {
