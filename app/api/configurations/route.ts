@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       );
 
       // Update database with HubSpot IDs (including noteId for view tracking)
-      await supabase
+      const { error: hubspotUpdateError } = await supabase
         .from("configurations")
         .update({
           hubspot_contact_id: hubspotResult.contactId,
@@ -114,6 +114,10 @@ export async function POST(request: NextRequest) {
           hubspot_note_id: hubspotResult.noteId || null,
         })
         .eq("reference", reference);
+
+      if (hubspotUpdateError) {
+        console.error("[API] Failed to store HubSpot IDs:", hubspotUpdateError.message);
+      }
       console.log("[API] HubSpot integration completed successfully:", hubspotResult);
     } catch (hubspotError) {
       // Log but don't fail the request - config is already saved
@@ -124,10 +128,14 @@ export async function POST(request: NextRequest) {
     // Send admin notification emails (fire-and-forget)
     void (async () => {
       try {
-        const { data: adminsToNotify } = await supabase
+        const { data: adminsToNotify, error: adminQueryError } = await supabase
           .from("admin_users")
           .select("email")
           .eq("notify_on_new_config", true);
+
+        if (adminQueryError) {
+          console.error("[API] Admin notification query failed:", adminQueryError.message);
+        }
 
         if (adminsToNotify && adminsToNotify.length > 0) {
           const portalId = process.env.HUBSPOT_PORTAL_ID;
