@@ -242,10 +242,13 @@ export async function createContactNote(
 
 /**
  * Update an existing HubSpot note's body with view tracking information.
- * Preserves the original note content and appends/replaces a view tracking section.
+ * Reconstructs the full note body from scratch to ensure the config link is always present,
+ * avoiding issues with HubSpot's HTML rendering of note bodies.
  */
 export async function updateNoteWithViewTracking(
   noteId: string,
+  reference: string,
+  configUrl: string,
   viewCount: number,
   lastViewedAt: string
 ): Promise<void> {
@@ -254,21 +257,7 @@ export async function updateNoteWithViewTracking(
     timeStyle: "short",
   });
 
-  // Get the existing note body to preserve it
-  const existing = await hubspotRequest<NoteResponse>(
-    `/crm/v3/objects/notes/${noteId}`,
-    { method: "GET" }
-  );
-
-  const existingBody = existing.properties.hs_note_body || "";
-
-  // Remove any previous view tracking section, then append fresh data
-  const viewTrackingMarker = "\n\n=== View Tracking ===";
-  const baseBody = existingBody.includes(viewTrackingMarker)
-    ? existingBody.substring(0, existingBody.indexOf(viewTrackingMarker))
-    : existingBody;
-
-  const updatedBody = `${baseBody}${viewTrackingMarker}\n\nTotal Views: ${viewCount}\nLast Viewed: ${formattedDate}`;
+  const updatedBody = `FarmDroid Configuration: ${reference}\n\nView configuration: ${configUrl}\n\n=== View Tracking ===\n\nTotal Views: ${viewCount}\nLast Viewed: ${formattedDate}`;
 
   await hubspotRequest<NoteResponse>(
     `/crm/v3/objects/notes/${noteId}`,

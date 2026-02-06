@@ -60,14 +60,20 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const newViewCount = (data.view_count ?? 0) + 1;
     const newLastViewedAt = new Date().toISOString();
 
-    void supabase
-      .from("configurations")
-      .update({
-        view_count: newViewCount,
-        last_viewed_at: newLastViewedAt,
-        updated_at: newLastViewedAt,
-      })
-      .eq("id", data.id);
+    void (async () => {
+      try {
+        await supabase
+          .from("configurations")
+          .update({
+            view_count: newViewCount,
+            last_viewed_at: newLastViewedAt,
+            updated_at: newLastViewedAt,
+          })
+          .eq("id", data.id);
+      } catch (err) {
+        console.error("[Views] Failed to update view count:", err);
+      }
+    })();
 
     // Update HubSpot note with view tracking (throttled: at most once per hour)
     if (data.hubspot_note_id) {
@@ -78,8 +84,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       if (shouldSync) {
         void (async () => {
           try {
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
+            const configUrl = `${baseUrl}/${data.locale || "en"}/config/${reference}`;
+
             await updateNoteWithViewTracking(
               data.hubspot_note_id!,
+              reference,
+              configUrl,
               newViewCount,
               newLastViewedAt
             );
