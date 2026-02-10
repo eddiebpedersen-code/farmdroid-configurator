@@ -27,7 +27,9 @@ export async function createHubSpotEntities(
   locale: string = "en",
   baseUrl: string = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com"
 ): Promise<HubSpotResult> {
-  const configUrl = `${baseUrl}/${locale}/config/${reference}`;
+  // Ensure baseUrl has no trailing whitespace/slashes that could break the URL
+  const cleanBaseUrl = baseUrl.trim().replace(/\/+$/, "");
+  const configUrl = `${cleanBaseUrl}/${locale}/config/${reference}`;
   let contactId: string | undefined;
   let companyId: string | undefined;
   let noteId: string | undefined;
@@ -81,10 +83,14 @@ export async function createHubSpotEntities(
     console.log(`Lead is not a farmer, skipping company creation for contact ${contactId}`);
   }
 
-  // 3. Create a note on the contact with the configuration link
+  // 3. Create a note on the contact with the configuration link and preferences
   if (contactId) {
     try {
-      noteId = await createContactNote(contactId, reference, configUrl);
+      const preferences = {
+        contactByPartner: lead.contactByPartner ?? false,
+        marketingConsent: lead.marketingConsent ?? false,
+      };
+      noteId = await createContactNote(contactId, reference, configUrl, preferences);
     } catch (error) {
       console.error("[HubSpot] Failed to create note:", error);
     }
@@ -116,5 +122,5 @@ export async function createHubSpotEntities(
 
 export { createOrUpdateContact } from "./contacts";
 export { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
-export { createContactNote, updateNoteWithViewTracking } from "./notes";
+export { createContactNote, updateNoteWithViewTracking, type ContactPreferences } from "./notes";
 export { sendConfigurationEmail } from "@/lib/emails/sendgrid";

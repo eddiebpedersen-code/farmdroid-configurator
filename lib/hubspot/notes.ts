@@ -202,14 +202,30 @@ export async function createConfigurationNote(
 }
 
 /**
- * Creates a simple note on a contact with the configuration link
+ * Contact preferences for notes
+ */
+export interface ContactPreferences {
+  contactByPartner: boolean;
+  marketingConsent: boolean;
+}
+
+/**
+ * Creates a simple note on a contact with the configuration link and contact preferences
  */
 export async function createContactNote(
   contactId: string,
   reference: string,
-  configUrl: string
+  configUrl: string,
+  preferences?: ContactPreferences
 ): Promise<string> {
-  const noteBody = `FarmDroid Configuration: ${reference}\n\nView configuration: ${configUrl}`;
+  let noteBody = `FarmDroid Configuration: ${reference}\n\nView configuration: ${configUrl}`;
+
+  // Add contact preferences section if provided
+  if (preferences) {
+    noteBody += `\n\n=== Contact Preferences ===\n`;
+    noteBody += `\nWants to be contacted by local partner: ${preferences.contactByPartner ? "YES" : "No"}`;
+    noteBody += `\nMarketing consent: ${preferences.marketingConsent ? "YES" : "No"}`;
+  }
 
   const response = await hubspotRequest<NoteResponse>(
     "/crm/v3/objects/notes",
@@ -250,14 +266,24 @@ export async function updateNoteWithViewTracking(
   reference: string,
   configUrl: string,
   viewCount: number,
-  lastViewedAt: string
+  lastViewedAt: string,
+  preferences?: ContactPreferences
 ): Promise<void> {
   const formattedDate = new Date(lastViewedAt).toLocaleString("en-GB", {
     dateStyle: "medium",
     timeStyle: "short",
   });
 
-  const updatedBody = `FarmDroid Configuration: ${reference}\n\nView configuration: ${configUrl}\n\n=== View Tracking ===\n\nTotal Views: ${viewCount}\nLast Viewed: ${formattedDate}`;
+  let updatedBody = `FarmDroid Configuration: ${reference}\n\nView configuration: ${configUrl}`;
+
+  // Add contact preferences section if provided
+  if (preferences) {
+    updatedBody += `\n\n=== Contact Preferences ===\n`;
+    updatedBody += `\nWants to be contacted by local partner: ${preferences.contactByPartner ? "YES" : "No"}`;
+    updatedBody += `\nMarketing consent: ${preferences.marketingConsent ? "YES" : "No"}`;
+  }
+
+  updatedBody += `\n\n=== View Tracking ===\n\nTotal Views: ${viewCount}\nLast Viewed: ${formattedDate}`;
 
   await hubspotRequest<NoteResponse>(
     `/crm/v3/objects/notes/${noteId}`,

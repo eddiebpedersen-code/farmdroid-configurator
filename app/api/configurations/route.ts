@@ -91,8 +91,8 @@ export async function POST(request: NextRequest) {
     let hubspotResult = null;
     try {
       console.log("[API] Starting HubSpot integration for reference:", reference);
-      // Get base URL for config link
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
+      // Get base URL for config link (ensure no trailing whitespace/slashes)
+      const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com").trim().replace(/\/+$/, "");
 
       hubspotResult = await createHubSpotEntities(
         lead,
@@ -144,7 +144,8 @@ export async function POST(request: NextRequest) {
               ? `https://app.hubspot.com/contacts/${portalId}/contact/${hubspotResult.contactId}`
               : null;
 
-          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
+          // Ensure baseUrl has no trailing whitespace/slashes that could break URLs
+          const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com").trim().replace(/\/+$/, "");
           const configUrl = `${baseUrl}/en/config/${reference}`;
 
           const notificationData = {
@@ -156,6 +157,8 @@ export async function POST(request: NextRequest) {
             country: resolvedCountry || "Unknown",
             totalPrice,
             currency,
+            contactByPartner: lead.contactByPartner,
+            marketingConsent: lead.marketingConsent,
           };
 
           await Promise.allSettled(

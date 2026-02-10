@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createHubSpotEntities } from "@/lib/hubspot";
-import { updateNoteWithViewTracking } from "@/lib/hubspot/notes";
+import { updateNoteWithViewTracking, type ContactPreferences } from "@/lib/hubspot/notes";
 import type { ConfiguratorState } from "@/lib/configurator-data";
 
 interface RouteParams {
@@ -82,15 +82,23 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       if (shouldSync) {
         void (async () => {
           try {
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
+            // Ensure baseUrl has no trailing whitespace/slashes that could break URLs
+            const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com").trim().replace(/\/+$/, "");
             const configUrl = `${baseUrl}/${data.locale || "en"}/config/${reference}`;
+
+            // Include contact preferences in the note
+            const preferences: ContactPreferences = {
+              contactByPartner: data.contact_by_partner ?? false,
+              marketingConsent: data.marketing_consent ?? false,
+            };
 
             await updateNoteWithViewTracking(
               data.hubspot_note_id!,
               reference,
               configUrl,
               newViewCount,
-              newLastViewedAt
+              newLastViewedAt,
+              preferences
             );
 
             await supabase
@@ -215,7 +223,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     // Update HubSpot entities (Contact, Company, Deal will be updated/deduplicated)
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com";
+      // Ensure baseUrl has no trailing whitespace/slashes that could break URLs
+      const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "https://configurator.farmdroid.com").trim().replace(/\/+$/, "");
 
       // Use updated lead values if provided, otherwise use existing values
       const lead = {

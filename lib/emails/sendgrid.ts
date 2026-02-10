@@ -324,6 +324,8 @@ interface AdminNotificationData {
   country: string;
   totalPrice: number;
   currency: string;
+  contactByPartner?: boolean;
+  marketingConsent?: boolean;
 }
 
 /**
@@ -356,14 +358,26 @@ export async function sendAdminNotificationEmail(
          </p>`
       : "";
 
+    // Build contact preferences section - highlight if they want to be contacted
+    let preferencesSection = "";
+    if (data.contactByPartner || data.marketingConsent) {
+      const contactByPartnerRow = data.contactByPartner
+        ? `<tr><td colspan="2" style="padding: 12px; background: #fef3c7; border-radius: 8px; color: #92400e; font-weight: bold;">⚠️ Customer wants to be contacted by a local partner</td></tr>`
+        : "";
+      const marketingConsentRow = data.marketingConsent
+        ? `<tr><td style="padding: 8px 0; color: #6b7280;">Marketing Consent</td><td style="padding: 8px 0; color: #059669; font-weight: 500;">Yes - opted in to communications</td></tr>`
+        : "";
+      preferencesSection = contactByPartnerRow + marketingConsentRow;
+    }
+
     await sgMail.send({
       to: adminEmail,
       from: {
         email: process.env.SENDGRID_FROM_EMAIL || "noreply@farmdroid.com",
         name: "FarmDroid Configurator",
       },
-      subject: `New Configuration: ${data.reference} - ${data.contactName}`,
-      text: `New FarmDroid configuration submitted.\n\nReference: ${data.reference}\nContact: ${data.contactName}\nCompany: ${data.company}\nCountry: ${data.country}\nTotal: ${formattedPrice}\n\nView configuration: ${data.configUrl}`,
+      subject: `New Configuration: ${data.reference} - ${data.contactName}${data.contactByPartner ? " [CONTACT REQUESTED]" : ""}`,
+      text: `New FarmDroid configuration submitted.\n\nReference: ${data.reference}\nContact: ${data.contactName}\nCompany: ${data.company}\nCountry: ${data.country}\nTotal: ${formattedPrice}${data.contactByPartner ? "\n\n⚠️ CUSTOMER WANTS TO BE CONTACTED BY LOCAL PARTNER" : ""}${data.marketingConsent ? "\nMarketing Consent: Yes" : ""}\n\nView configuration: ${data.configUrl}`,
       html: `
 <!DOCTYPE html>
 <html>
@@ -380,6 +394,7 @@ export async function sendAdminNotificationEmail(
       <tr><td style="padding: 8px 0; color: #6b7280;">Company</td><td style="padding: 8px 0; color: #1f2937; font-weight: 500;">${data.company}</td></tr>
       <tr><td style="padding: 8px 0; color: #6b7280;">Country</td><td style="padding: 8px 0; color: #1f2937; font-weight: 500;">${data.country}</td></tr>
       <tr><td style="padding: 8px 0; color: #6b7280;">Total Price</td><td style="padding: 8px 0; color: #1f2937; font-weight: bold;">${formattedPrice}</td></tr>
+      ${preferencesSection}
     </table>
     <p style="text-align: center; margin: 16px 0;">
       <a href="${data.configUrl}" style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">View Configuration</a>

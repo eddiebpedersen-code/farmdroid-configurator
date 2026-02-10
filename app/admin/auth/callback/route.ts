@@ -7,9 +7,14 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type");
-  const redirect = searchParams.get("redirect") || "/admin";
 
   const cookieStore = await cookies();
+
+  // Get redirect destination from cookie (set during login) or fallback to query param or /admin
+  const redirectCookie = cookieStore.get("admin_redirect")?.value;
+  const redirect = redirectCookie
+    ? decodeURIComponent(redirectCookie)
+    : searchParams.get("redirect") || "/admin";
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -67,8 +72,10 @@ export async function GET(request: Request) {
       .update({ last_login_at: new Date().toISOString() })
       .eq("id", adminUser.id);
 
-    // Redirect to the requested page
-    return NextResponse.redirect(`${origin}${redirect}`);
+    // Clear the redirect cookie and redirect to the requested page
+    const response = NextResponse.redirect(`${origin}${redirect}`);
+    response.cookies.set("admin_redirect", "", { path: "/", maxAge: 0 });
+    return response;
   }
 
   // Handle OAuth code exchange (fallback if OAuth is added later)
@@ -103,8 +110,10 @@ export async function GET(request: Request) {
       .update({ last_login_at: new Date().toISOString() })
       .eq("id", adminUser.id);
 
-    // Redirect to the requested page
-    return NextResponse.redirect(`${origin}${redirect}`);
+    // Clear the redirect cookie and redirect to the requested page
+    const response = NextResponse.redirect(`${origin}${redirect}`);
+    response.cookies.set("admin_redirect", "", { path: "/", maxAge: 0 });
+    return response;
   }
 
   // No code or token provided - redirect to login

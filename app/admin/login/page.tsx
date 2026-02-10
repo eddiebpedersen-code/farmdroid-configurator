@@ -42,10 +42,13 @@ export default function AdminLoginPage() {
 
     const redirectTo = searchParams.get("redirect") || "/admin";
 
+    // Store redirect destination in a cookie (more reliable than query params through Supabase)
+    document.cookie = `admin_redirect=${encodeURIComponent(redirectTo)}; path=/; max-age=3600; samesite=lax`;
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/admin/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
+        emailRedirectTo: `${window.location.origin}/admin/auth/callback`,
       },
     });
 
