@@ -358,14 +358,14 @@ export async function sendAdminNotificationEmail(
          </p>`
       : "";
 
-    // Build contact preferences section - highlight if they want to be contacted
+    // Build contact preferences section
     let preferencesSection = "";
     if (data.contactByPartner || data.marketingConsent) {
       const contactByPartnerRow = data.contactByPartner
-        ? `<tr><td colspan="2" style="padding: 12px; background: #fef3c7; border-radius: 8px; color: #92400e; font-weight: bold;">⚠️ Customer wants to be contacted by a local partner</td></tr>`
+        ? `<tr><td style="padding: 8px 0; color: #6b7280;">Partner Contact</td><td style="padding: 8px 0; color: #059669; font-weight: 500;">Yes - wants to be contacted</td></tr>`
         : "";
       const marketingConsentRow = data.marketingConsent
-        ? `<tr><td style="padding: 8px 0; color: #6b7280;">Marketing Consent</td><td style="padding: 8px 0; color: #059669; font-weight: 500;">Yes - opted in to communications</td></tr>`
+        ? `<tr><td style="padding: 8px 0; color: #6b7280;">Marketing Consent</td><td style="padding: 8px 0; color: #059669; font-weight: 500;">Yes - opted in</td></tr>`
         : "";
       preferencesSection = contactByPartnerRow + marketingConsentRow;
     }
@@ -376,8 +376,8 @@ export async function sendAdminNotificationEmail(
         email: process.env.SENDGRID_FROM_EMAIL || "noreply@farmdroid.com",
         name: "FarmDroid Configurator",
       },
-      subject: `New Configuration: ${data.reference} - ${data.contactName}${data.contactByPartner ? " [CONTACT REQUESTED]" : ""}`,
-      text: `New FarmDroid configuration submitted.\n\nReference: ${data.reference}\nContact: ${data.contactName}\nCompany: ${data.company}\nCountry: ${data.country}\nTotal: ${formattedPrice}${data.contactByPartner ? "\n\n⚠️ CUSTOMER WANTS TO BE CONTACTED BY LOCAL PARTNER" : ""}${data.marketingConsent ? "\nMarketing Consent: Yes" : ""}\n\nView configuration: ${data.configUrl}`,
+      subject: `New Configuration: ${data.reference} - ${data.contactName}`,
+      text: `New FarmDroid configuration submitted.\n\nReference: ${data.reference}\nContact: ${data.contactName}\nCompany: ${data.company}\nCountry: ${data.country}\nTotal: ${formattedPrice}${data.contactByPartner ? "\nPartner Contact: Yes - wants to be contacted" : ""}${data.marketingConsent ? "\nMarketing Consent: Yes - opted in" : ""}\n\nView configuration: ${data.configUrl}`,
       html: `
 <!DOCTYPE html>
 <html>

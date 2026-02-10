@@ -13,6 +13,28 @@ interface HubSpotContact {
 }
 
 /**
+ * Set a contact as a marketing contact in HubSpot
+ * This enables the contact to receive marketing emails
+ */
+export async function setMarketingContactStatus(contactId: string): Promise<void> {
+  try {
+    await hubspotRequest(
+      "/marketing/v3/marketing-events-beta/marketing-contacts/add",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          contactIds: [contactId],
+        }),
+      }
+    );
+    console.log("[HubSpot] Set contact as marketing contact:", contactId);
+  } catch (error) {
+    // Log but don't fail - marketing contact status is not critical
+    console.error("[HubSpot] Failed to set marketing contact status:", error);
+  }
+}
+
+/**
  * Create or update a contact in HubSpot
  * Uses dynamic mappings if available, falls back to hardcoded defaults
  * Returns the contact ID

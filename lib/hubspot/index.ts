@@ -1,4 +1,4 @@
-import { createOrUpdateContact } from "./contacts";
+import { createOrUpdateContact, setMarketingContactStatus } from "./contacts";
 import { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
 import { createContactNote } from "./notes";
 import { sendConfigurationEmail } from "@/lib/emails/sendgrid";
@@ -37,6 +37,11 @@ export async function createHubSpotEntities(
   // 1. Create or update contact (pass config for dynamic mappings)
   try {
     contactId = await createOrUpdateContact(lead, reference, country, config);
+
+    // Set as marketing contact if they gave consent
+    if (contactId && lead.marketingConsent) {
+      await setMarketingContactStatus(contactId);
+    }
   } catch (error) {
     console.error("[HubSpot] Failed to create/update contact:", error);
   }
@@ -120,7 +125,7 @@ export async function createHubSpotEntities(
   };
 }
 
-export { createOrUpdateContact } from "./contacts";
+export { createOrUpdateContact, setMarketingContactStatus } from "./contacts";
 export { createOrUpdateCompany, associateContactToCompany, getContactCompany } from "./companies";
 export { createContactNote, updateNoteWithViewTracking, type ContactPreferences } from "./notes";
 export { sendConfigurationEmail } from "@/lib/emails/sendgrid";
