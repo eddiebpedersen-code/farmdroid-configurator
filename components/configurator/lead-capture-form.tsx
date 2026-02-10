@@ -576,6 +576,71 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead,
 
       {/* Rest of the form — disabled until email is resolved */}
       <div className={!fieldsEnabled ? disabledFieldClasses : "transition-opacity duration-300"}>
+        {/* Country */}
+        <div ref={countryDropdownRef} className="mb-5">
+          <label className="text-sm font-medium text-stone-700">
+            {t("country")} <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => fieldsEnabled && setCountryDropdownOpen(!countryDropdownOpen)}
+              onBlur={() => !countryDropdownOpen && handleBlur("country")}
+              disabled={!fieldsEnabled}
+              className={`${inputClasses("country")} appearance-none cursor-pointer text-left flex items-center justify-between disabled:bg-stone-50 disabled:cursor-not-allowed`}
+            >
+              <span className={formData.country ? "text-stone-900" : "text-stone-400"}>
+                {formData.country || t("selectCountry")}
+              </span>
+              <ChevronDown className={`h-5 w-5 text-stone-400 transition-transform ${countryDropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+            {countryDropdownOpen && fieldsEnabled && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg">
+                <div className="p-2 border-b border-stone-100">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+                    <input
+                      ref={countrySearchRef}
+                      type="text"
+                      value={countrySearch}
+                      onChange={(e) => setCountrySearch(e.target.value)}
+                      placeholder={t("searchCountry")}
+                      className="w-full h-9 pl-9 pr-3 rounded-md border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="max-h-60 overflow-y-auto">
+                  {filteredCountries.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-stone-400">{t("noCountriesFound")}</div>
+                  ) : (
+                    filteredCountries.map((country) => (
+                      <button
+                        key={country}
+                        type="button"
+                        onClick={() => {
+                          handleChange("country", country);
+                          setCountryDropdownOpen(false);
+                          setCountrySearch("");
+                          handleBlur("country");
+                        }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center justify-between ${
+                          formData.country === country ? "bg-stone-100 font-medium" : ""
+                        }`}
+                      >
+                        <span>{country}</span>
+                        <span className="text-stone-400 text-xs">{getDialCode(country)}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          {errors.country && touched.country && (
+            <p className="mt-1 text-xs text-red-500">{errors.country}</p>
+          )}
+        </div>
+
         {/* Are you a farmer? */}
         <div className="mb-5">
           <label className="text-sm font-medium text-stone-700">
@@ -668,71 +733,6 @@ export function LeadCaptureForm({ config, priceBreakdown, onSubmit, initialLead,
               placeholder={t("phonePlaceholder")}
             />
           </div>
-        </div>
-
-        {/* Country */}
-        <div ref={countryDropdownRef} className="mb-5">
-          <label className="text-sm font-medium text-stone-700">
-            {t("country")} <span className="text-red-500">*</span>
-          </label>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => fieldsEnabled && setCountryDropdownOpen(!countryDropdownOpen)}
-              onBlur={() => !countryDropdownOpen && handleBlur("country")}
-              disabled={!fieldsEnabled}
-              className={`${inputClasses("country")} appearance-none cursor-pointer text-left flex items-center justify-between disabled:bg-stone-50 disabled:cursor-not-allowed`}
-            >
-              <span className={formData.country ? "text-stone-900" : "text-stone-400"}>
-                {formData.country || t("selectCountry")}
-              </span>
-              <ChevronDown className={`h-5 w-5 text-stone-400 transition-transform ${countryDropdownOpen ? "rotate-180" : ""}`} />
-            </button>
-            {countryDropdownOpen && fieldsEnabled && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg">
-                <div className="p-2 border-b border-stone-100">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
-                    <input
-                      ref={countrySearchRef}
-                      type="text"
-                      value={countrySearch}
-                      onChange={(e) => setCountrySearch(e.target.value)}
-                      placeholder={t("searchCountry")}
-                      className="w-full h-9 pl-9 pr-3 rounded-md border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-                <div className="max-h-60 overflow-y-auto">
-                  {filteredCountries.length === 0 ? (
-                    <div className="px-4 py-3 text-sm text-stone-400">{t("noCountriesFound")}</div>
-                  ) : (
-                    filteredCountries.map((country) => (
-                      <button
-                        key={country}
-                        type="button"
-                        onClick={() => {
-                          handleChange("country", country);
-                          setCountryDropdownOpen(false);
-                          setCountrySearch("");
-                          handleBlur("country");
-                        }}
-                        className={`w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center justify-between ${
-                          formData.country === country ? "bg-stone-100 font-medium" : ""
-                        }`}
-                      >
-                        <span>{country}</span>
-                        <span className="text-stone-400 text-xs">{getDialCode(country)}</span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          {errors.country && touched.country && (
-            <p className="mt-1 text-xs text-red-500">{errors.country}</p>
-          )}
         </div>
 
         {/* Region */}
