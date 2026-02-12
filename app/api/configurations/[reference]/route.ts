@@ -12,10 +12,16 @@ interface LeadUpdates {
   firstName?: string;
   lastName?: string;
   phone?: string;
+  country?: string;
+  region?: string;
+  isFarmer?: string;
+  farmingType?: string;
   farmSize?: string;
   hectaresForFarmDroid?: string;
   crops?: string;
   otherCrops?: string;
+  contactByPartner?: boolean;
+  marketingConsent?: boolean;
 }
 
 interface UpdateConfigurationRequest {
@@ -204,9 +210,16 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       if (leadUpdates.firstName) updateData.first_name = leadUpdates.firstName;
       if (leadUpdates.lastName) updateData.last_name = leadUpdates.lastName;
       if (leadUpdates.phone !== undefined) updateData.phone = leadUpdates.phone || null;
+      if (leadUpdates.country !== undefined) updateData.country = leadUpdates.country || null;
+      if (leadUpdates.region !== undefined) updateData.region = leadUpdates.region || null;
+      if (leadUpdates.isFarmer !== undefined) updateData.is_farmer = leadUpdates.isFarmer || null;
+      if (leadUpdates.farmingType !== undefined) updateData.farming_type = leadUpdates.farmingType || null;
       if (leadUpdates.farmSize !== undefined) updateData.farm_size = leadUpdates.farmSize || null;
       if (leadUpdates.hectaresForFarmDroid !== undefined) updateData.hectares_for_farmdroid = leadUpdates.hectaresForFarmDroid || null;
       if (leadUpdates.crops !== undefined) updateData.crops = leadUpdates.crops || null;
+      if (leadUpdates.otherCrops !== undefined) updateData.other_crops = leadUpdates.otherCrops || null;
+      if (leadUpdates.contactByPartner !== undefined) updateData.contact_by_partner = leadUpdates.contactByPartner;
+      if (leadUpdates.marketingConsent !== undefined) updateData.marketing_consent = leadUpdates.marketingConsent;
     }
 
     // Update the configuration
@@ -235,16 +248,16 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         email: existing.email, // Never changes
         phone: leadUpdates?.phone !== undefined ? leadUpdates.phone : (existing.phone || ""),
         company: existing.company, // Never changes
-        isFarmer: existing.is_farmer || "",
-        country: existing.country,
-        region: existing.region || "",
-        farmingType: existing.farming_type || "",
+        isFarmer: leadUpdates?.isFarmer !== undefined ? leadUpdates.isFarmer : (existing.is_farmer || ""),
+        country: leadUpdates?.country !== undefined ? leadUpdates.country : existing.country,
+        region: leadUpdates?.region !== undefined ? leadUpdates.region : (existing.region || ""),
+        farmingType: leadUpdates?.farmingType !== undefined ? leadUpdates.farmingType : (existing.farming_type || ""),
         farmSize: leadUpdates?.farmSize !== undefined ? leadUpdates.farmSize : (existing.farm_size || ""),
         hectaresForFarmDroid: leadUpdates?.hectaresForFarmDroid !== undefined ? leadUpdates.hectaresForFarmDroid : (existing.hectares_for_farmdroid || ""),
         crops: leadUpdates?.crops !== undefined ? leadUpdates.crops : (existing.crops || ""),
         otherCrops: leadUpdates?.otherCrops !== undefined ? leadUpdates.otherCrops : (existing.other_crops || ""),
-        contactByPartner: existing.contact_by_partner,
-        marketingConsent: existing.marketing_consent,
+        contactByPartner: leadUpdates?.contactByPartner !== undefined ? leadUpdates.contactByPartner : existing.contact_by_partner,
+        marketingConsent: leadUpdates?.marketingConsent !== undefined ? leadUpdates.marketingConsent : existing.marketing_consent,
       };
 
       await createHubSpotEntities(
@@ -253,7 +266,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         reference.toUpperCase(),
         totalPrice,
         currency,
-        existing.country || "",
+        lead.country || "",
         existing.locale,
         baseUrl
       );
