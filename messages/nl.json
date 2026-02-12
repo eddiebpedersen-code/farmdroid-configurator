@@ -1224,8 +1224,16 @@
   "returningUser": {
     "indicator": {
       "found": "We vonden {count} eerdere configuratie(s)",
+      "havePrevious": "Heeft u eerdere configuraties?",
+      "verifyToView": "Verifieer uw e-mail om ze te bekijken",
+      "enterCode": "Voer de code in die naar uw e-mail is gestuurd",
+      "clickToView": "Klik op een rij om te bekijken",
+      "unlock": "Ontgrendelen",
       "checking": "Controleren...",
       "viewPrevious": "Bekijk eerdere"
+    },
+    "table": {
+      "views": "Weergaven"
     },
     "modal": {
       "title": "Welkom terug!",

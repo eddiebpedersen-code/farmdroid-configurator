@@ -12,6 +12,7 @@ export interface ConfigurationSummary {
   totalPrice: number;
   currency: Currency;
   status: string;
+  viewCount?: number;
   config: {
     activeRows: number;
     seedSize: string;

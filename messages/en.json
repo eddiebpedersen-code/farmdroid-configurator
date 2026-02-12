@@ -1232,8 +1232,16 @@
   "returningUser": {
     "indicator": {
       "found": "We found {count} previous configuration(s)",
+      "havePrevious": "Have previous configurations?",
+      "verifyToView": "Verify your email to access them",
+      "enterCode": "Enter the code sent to your email",
+      "clickToView": "Click a row to view",
+      "unlock": "Unlock",
       "checking": "Checking...",
       "viewPrevious": "View previous"
+    },
+    "table": {
+      "views": "Views"
     },
     "modal": {
       "title": "Welcome back!",

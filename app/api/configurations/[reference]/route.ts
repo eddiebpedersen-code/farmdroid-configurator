@@ -139,6 +139,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       totalPrice: data.total_price,
       currency: data.currency,
       createdAt: data.created_at,
+      viewCount: newViewCount,
+      lastViewedAt: newLastViewedAt,
     });
   } catch (error) {
     console.error("Error fetching configuration:", error);

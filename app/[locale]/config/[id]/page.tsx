@@ -39,6 +39,8 @@ function ConfigContent() {
               reference: data.reference,
               createdAt: data.createdAt,
               locale: data.locale,
+              viewCount: data.viewCount,
+              lastViewedAt: data.lastViewedAt,
             };
 
             setConfigData(configPageData);

@@ -12,6 +12,7 @@ import {
   Zap,
   Sun,
   Droplets,
+  Eye,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ConfigPageData } from "@/lib/config-page-types";
@@ -25,6 +26,7 @@ interface ConfigurationSummary {
   totalPrice: number;
   currency: Currency;
   status: string;
+  viewCount?: number;
   config: {
     activeRows: number;
     seedSize: string;
@@ -234,17 +236,19 @@ export function OtherConfigurationsWidget({ data }: OtherConfigurationsWidgetPro
       <div className="px-5 py-4 border-b border-stone-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${state === "unlocked" ? "bg-emerald-100 text-emerald-600" : "bg-amber-100 text-amber-600"}`}>
+            <div className={`p-2 rounded-lg ${state === "unlocked" ? "bg-emerald-100 text-emerald-600" : "bg-stone-100 text-stone-500"}`}>
               <History className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-semibold text-stone-900">
-                {t("indicator.found", { count: state === "unlocked" ? configurations.length : configCount })}
+                {state === "unlocked"
+                  ? t("indicator.found", { count: configurations.length })
+                  : t("indicator.havePrevious")}
               </h3>
               <p className="text-sm text-stone-500">
-                {state === "locked" && "Verify your email to view them"}
-                {state === "verifying" && "Enter the code sent to your email"}
-                {state === "unlocked" && "Click a row to view"}
+                {state === "locked" && t("indicator.verifyToView")}
+                {state === "verifying" && t("indicator.enterCode")}
+                {state === "unlocked" && t("indicator.clickToView")}
               </p>
             </div>
           </div>
@@ -254,7 +258,7 @@ export function OtherConfigurationsWidget({ data }: OtherConfigurationsWidgetPro
               className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors"
             >
               <Unlock className="w-4 h-4" />
-              Unlock
+              {t("indicator.unlock")}
             </button>
           )}
         </div>
@@ -313,6 +317,7 @@ export function OtherConfigurationsWidget({ data }: OtherConfigurationsWidgetPro
                     <th className="text-left text-xs font-medium text-stone-500 uppercase tracking-wider px-5 py-3">Reference</th>
                     <th className="text-left text-xs font-medium text-stone-500 uppercase tracking-wider px-5 py-3">Date</th>
                     <th className="text-left text-xs font-medium text-stone-500 uppercase tracking-wider px-5 py-3">Configuration</th>
+                    <th className="text-center text-xs font-medium text-stone-500 uppercase tracking-wider px-5 py-3">{t("table.views")}</th>
                     <th className="text-right text-xs font-medium text-stone-500 uppercase tracking-wider px-5 py-3">Price</th>
                     <th className="text-right text-xs font-medium text-stone-500 uppercase tracking-wider px-5 py-3 w-10"></th>
                   </tr>
@@ -356,6 +361,12 @@ export function OtherConfigurationsWidget({ data }: OtherConfigurationsWidgetPro
                               <Droplets className="h-3 w-3" />
                             </div>
                           )}
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-center">
+                        <div className="flex items-center justify-center gap-1 text-sm text-stone-500">
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>{config.viewCount ?? 0}</span>
                         </div>
                       </td>
                       <td className="px-5 py-4 text-right">

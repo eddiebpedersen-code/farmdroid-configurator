@@ -1224,8 +1224,16 @@
   "returningUser": {
     "indicator": {
       "found": "Wir haben {count} frühere Konfiguration(en) gefunden",
+      "havePrevious": "Haben Sie frühere Konfigurationen?",
+      "verifyToView": "Bestätigen Sie Ihre E-Mail, um sie anzuzeigen",
+      "enterCode": "Geben Sie den Code ein, der an Ihre E-Mail gesendet wurde",
+      "clickToView": "Klicken Sie auf eine Zeile zum Anzeigen",
+      "unlock": "Entsperren",
       "checking": "Wird überprüft...",
       "viewPrevious": "Frühere anzeigen"
+    },
+    "table": {
+      "views": "Aufrufe"
     },
     "modal": {
       "title": "Willkommen zurück!",

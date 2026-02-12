@@ -1224,8 +1224,16 @@
   "returningUser": {
     "indicator": {
       "found": "Vi fandt {count} tidligere konfiguration(er)",
+      "havePrevious": "Har du tidligere konfigurationer?",
+      "verifyToView": "Bekræft din email for at se dem",
+      "enterCode": "Indtast koden sendt til din email",
+      "clickToView": "Klik på en række for at se",
+      "unlock": "Lås op",
       "checking": "Tjekker...",
       "viewPrevious": "Se tidligere"
+    },
+    "table": {
+      "views": "Visninger"
     },
     "modal": {
       "title": "Velkommen tilbage!",

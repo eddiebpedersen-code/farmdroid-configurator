@@ -11,6 +11,8 @@ export interface ConfigPageData {
   reference: string;      // Short reference like "FD-K7X9M2"
   createdAt: string;      // ISO date string
   locale: string;
+  viewCount?: number;     // Number of times this config has been viewed
+  lastViewedAt?: string;  // ISO date string of last view
 }
 
 /**

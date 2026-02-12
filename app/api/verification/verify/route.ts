@@ -17,6 +17,7 @@ interface ConfigurationSummary {
   totalPrice: number;
   currency: string;
   status: string;
+  viewCount: number;
   config: {
     activeRows: number;
     seedSize: string;
@@ -117,7 +118,7 @@ export async function POST(request: NextRequest) {
     // Fetch user's configurations
     const { data: configurations, error: configError } = await supabase
       .from("configurations")
-      .select("reference, config, total_price, currency, status, created_at, updated_at")
+      .select("reference, config, total_price, currency, status, created_at, updated_at, view_count")
       .ilike("email", normalizedEmail)
       .order("created_at", { ascending: false });
 
@@ -140,6 +141,7 @@ export async function POST(request: NextRequest) {
           totalPrice: config.total_price,
           currency: config.currency,
           status: config.status,
+          viewCount: config.view_count ?? 0,
           config: {
             activeRows: configData.activeRows,
             seedSize: configData.seedSize,

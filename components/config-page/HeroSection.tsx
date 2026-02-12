@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { Link2, Mail, Printer, Check } from "lucide-react";
+import { Link2, Mail, Printer, Check, Eye } from "lucide-react";
 import { ConfigPageData } from "@/lib/config-page-types";
 import { calculateWorkingWidth } from "@/lib/configurator-data";
 import { copyToClipboard } from "@/lib/quote-utils";
@@ -32,7 +32,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ data }: HeroSectionProps) {
   const t = useTranslations("configPage");
-  const { config, lead, reference } = data;
+  const { config, lead, reference, viewCount } = data;
   const [copied, setCopied] = useState(false);
 
   const workingWidth = calculateWorkingWidth(config);
@@ -76,8 +76,14 @@ export function HeroSection({ data }: HeroSectionProps) {
           {/* Reference Code - Prominent Display */}
           <div className="mb-4">
             <p className="text-sm text-stone-500 mb-1">{t("referenceLabel")}</p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-lg border border-emerald-200">
+            <div className="inline-flex items-center gap-3 px-4 py-2 bg-emerald-100 rounded-lg border border-emerald-200">
               <span className="text-lg font-mono font-semibold text-emerald-800">{reference}</span>
+              {viewCount !== undefined && viewCount > 0 && (
+                <span className="flex items-center gap-1 text-sm text-emerald-600/70 border-l border-emerald-200 pl-3">
+                  <Eye className="w-3.5 h-3.5" />
+                  {viewCount}
+                </span>
+              )}
             </div>
             <p className="text-xs text-stone-400 mt-2 max-w-md mx-auto">
               {t("referenceHint")}
