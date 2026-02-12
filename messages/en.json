@@ -1135,7 +1135,9 @@
       "annualSubscription": "Annual Subscription",
       "firstYearIncluded": "First year included",
       "vatNote": "All prices exclude VAT",
-      "disclaimer": "Prices are estimates and may vary based on delivery costs and local partner conditions"
+      "disclaimer": "Prices are estimates and may vary based on delivery costs and local partner conditions",
+      "contactLocalPartner": "Contact your local partner",
+      "partnerPricingNote": "Pricing for your region is provided by your local FarmDroid partner"
     },
     "farmFit": {
       "title": "Your Farm Fit",

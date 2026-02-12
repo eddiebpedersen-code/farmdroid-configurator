@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Cpu, Rows3, Circle, Zap, Droplets, Package, Shield, Scissors, Sun, Battery } from "lucide-react";
@@ -12,6 +13,19 @@ import {
 interface ConfigurationCardProps {
   data: ConfigPageData;
   className?: string;
+}
+
+type MeasurementUnit = "cm" | "in";
+
+// Convert mm to the selected unit
+function formatMeasurement(mm: number, unit: MeasurementUnit): string {
+  if (unit === "in") {
+    const inches = mm / 25.4;
+    return `${inches.toFixed(1)}"`;
+  }
+  // cm
+  const cm = mm / 10;
+  return `${cm.toFixed(cm % 1 === 0 ? 0 : 1)} cm`;
 }
 
 // Section header component
@@ -52,7 +66,7 @@ function ConfigItem({
 }
 
 // Format row spacings for display - shows unique values separated by " / "
-function formatRowSpacings(rowSpacings: number[]): string {
+function formatRowSpacings(rowSpacings: number[], unit: MeasurementUnit): string {
   if (!rowSpacings || rowSpacings.length === 0) return "";
 
   // Get unique spacing values in order of appearance
@@ -63,15 +77,20 @@ function formatRowSpacings(rowSpacings: number[]): string {
     }
   }
 
-  // Format each unique value to cm and join with " / "
+  // Format each unique value and join with " / "
   return uniqueSpacings
-    .map(s => `${(s / 10).toFixed(s % 10 === 0 ? 0 : 1)} cm`)
+    .map(s => formatMeasurement(s, unit))
     .join(" / ");
 }
 
 export function ConfigurationCard({ data, className = "" }: ConfigurationCardProps) {
   const t = useTranslations("configPage");
   const { config } = data;
+
+  // Default to the unit chosen in step 3, fallback to "cm" for backward compatibility
+  const [unit, setUnit] = useState<MeasurementUnit>(
+    (config.measurementUnit as MeasurementUnit) || "cm"
+  );
 
   const passiveRows = calculatePassiveRows(config.activeRows, config.rowDistance, config.rowSpacings);
   // Use saved working width from config (with fallback for backward compatibility)
@@ -80,8 +99,8 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
 
   // Format row spacings for display
   const rowSpacingDisplay = config.rowSpacings && config.rowSpacings.length > 0
-    ? formatRowSpacings(config.rowSpacings)
-    : `${(config.rowDistance / 10).toFixed(config.rowDistance % 10 === 0 ? 0 : 1)} cm`;
+    ? formatRowSpacings(config.rowSpacings, unit)
+    : formatMeasurement(config.rowDistance, unit);
 
   const frontWheelLabel = {
     PFW: t("config.frontWheel.PFW"),
@@ -114,8 +133,25 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
       transition={{ duration: 0.4, delay: 0.3 }}
       className={`bg-white rounded-xl border border-stone-200 overflow-hidden ${className}`}
     >
-      <div className="px-6 py-4 border-b border-stone-100">
+      <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-stone-900">{t("configurationTitle")}</h2>
+        <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Measurement unit">
+          {(["cm", "in"] as MeasurementUnit[]).map((u) => (
+            <button
+              key={u}
+              onClick={() => setUnit(u)}
+              role="radio"
+              aria-checked={unit === u}
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                unit === u
+                  ? "bg-white text-stone-900 shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+              }`}
+            >
+              {u}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="px-6 py-4 space-y-1">
@@ -156,7 +192,7 @@ export function ConfigurationCard({ data, className = "" }: ConfigurationCardPro
         <ConfigItem
           icon={<div className="h-5 w-5 flex items-center justify-center text-emerald-600 text-xs font-bold">⟷</div>}
           label={t("config.workingWidthLabel")}
-          value={`${(workingWidth / 10).toFixed(0)} cm`}
+          value={formatMeasurement(workingWidth, unit)}
         />
 
         {/* +Weed Configuration Section */}

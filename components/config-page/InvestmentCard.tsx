@@ -17,11 +17,17 @@ interface InvestmentCardProps {
   data: ConfigPageData;
 }
 
+// Countries where pricing should be hidden (handled by local partners)
+const PARTNER_PRICING_COUNTRIES = ["Canada", "United Kingdom"];
+
 export function InvestmentCard({ data }: InvestmentCardProps) {
   const t = useTranslations("configPage");
-  const { config } = data;
+  const { config, lead } = data;
 
   const [currency, setCurrency] = useState<Currency>(config.currency);
+
+  // Check if pricing should be hidden for this country
+  const hidePricing = lead?.country && PARTNER_PRICING_COUNTRIES.includes(lead.country);
 
   const prices = getPrices(currency);
   const priceBreakdown = calculatePrice(config, undefined, currency);
@@ -87,23 +93,25 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
       {/* Header */}
       <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-stone-900">{t("investmentTitle")}</h2>
-        <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Currency">
-          {(["EUR", "DKK"] as Currency[]).map((curr) => (
-            <button
-              key={curr}
-              onClick={() => setCurrency(curr)}
-              role="radio"
-              aria-checked={currency === curr}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                currency === curr
-                  ? "bg-white text-stone-900 shadow-sm"
-                  : "text-stone-500 hover:text-stone-700"
-              }`}
-            >
-              {curr}
-            </button>
-          ))}
-        </div>
+        {!hidePricing && (
+          <div className="flex items-center bg-stone-100 rounded-lg p-0.5" role="radiogroup" aria-label="Currency">
+            {(["EUR", "DKK"] as Currency[]).map((curr) => (
+              <button
+                key={curr}
+                onClick={() => setCurrency(curr)}
+                role="radio"
+                aria-checked={currency === curr}
+                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                  currency === curr
+                    ? "bg-white text-stone-900 shadow-sm"
+                    : "text-stone-500 hover:text-stone-700"
+                }`}
+              >
+                {curr}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Selected Configuration Items (no prices) */}
@@ -124,15 +132,28 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
 
       {/* Machine Price */}
       <div className="px-6 py-4 bg-stone-900">
-        <div className="flex justify-between items-center">
-          <span className="text-white font-medium">{t("investment.machinePriceTitle")}</span>
-          <span className="text-xl font-bold text-white">
-            {formatPrice(priceBreakdown.total, currency)}
-          </span>
-        </div>
-        <p className="text-xs text-stone-400 mt-1">
-          {t("investment.machinePriceSubtitle")}
-        </p>
+        {hidePricing ? (
+          <div className="text-center py-2">
+            <span className="text-lg font-medium text-white">
+              {t("investment.contactLocalPartner")}
+            </span>
+            <p className="text-xs text-stone-400 mt-1">
+              {t("investment.partnerPricingNote")}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-between items-center">
+              <span className="text-white font-medium">{t("investment.machinePriceTitle")}</span>
+              <span className="text-xl font-bold text-white">
+                {formatPrice(priceBreakdown.total, currency)}
+              </span>
+            </div>
+            <p className="text-xs text-stone-400 mt-1">
+              {t("investment.machinePriceSubtitle")}
+            </p>
+          </>
+        )}
       </div>
 
       {/* Local Partner Services */}
@@ -151,7 +172,7 @@ export function InvestmentCard({ data }: InvestmentCardProps) {
       </div>
 
       {/* Subscription */}
-      {config.servicePlan !== "none" && (
+      {config.servicePlan !== "none" && !hidePricing && (
         <div className="px-6 py-4 border-t border-stone-200">
           <h3 className="text-sm font-semibold text-stone-700 mb-2">
             {t("investment.subscriptionTitle")}

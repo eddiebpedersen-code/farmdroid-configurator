@@ -1127,7 +1127,9 @@
       "annualSubscription": "Jaarlijks Abonnement",
       "firstYearIncluded": "Eerste jaar inbegrepen",
       "vatNote": "Alle prijzen zijn exclusief BTW",
-      "disclaimer": "Prijzen zijn schattingen en kunnen variëren op basis van leveringskosten en lokale partnervoorwaarden"
+      "disclaimer": "Prijzen zijn schattingen en kunnen variëren op basis van leveringskosten en lokale partnervoorwaarden",
+      "contactLocalPartner": "Neem contact op met uw lokale partner",
+      "partnerPricingNote": "Prijzen voor uw regio worden verstrekt door uw lokale FarmDroid-partner"
     },
     "farmFit": {
       "title": "Jouw Boerderij Profiel",

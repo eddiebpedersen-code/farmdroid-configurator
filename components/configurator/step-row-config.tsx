@@ -3,12 +3,13 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, AlertCircle, Plus, Minus, Play, Pause, Grid3X3, Diamond, Info, Layers, Lightbulb, TrendingUp, ChevronDown, HelpCircle, RotateCcw } from "lucide-react";
+import { Check, AlertCircle, Plus, Minus, Grid3X3, Diamond, Info, Layers, Lightbulb, TrendingUp, ChevronDown, HelpCircle, RotateCcw } from "lucide-react";
 import {
   ConfiguratorState,
   PriceBreakdown,
   SeedSize,
   SeedingMode,
+  MeasurementUnit,
   formatPrice,
   getPrices,
   ROW_CONSTRAINTS,
@@ -154,8 +155,8 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     active_rows: number;
   }>>([]);
 
-  // Unit toggle state (cm / inches)
-  const [useInches, setUseInches] = useState(false);
+  // Unit toggle state (cm / inches) - synced with config.measurementUnit
+  const useInches = config.measurementUnit === "in";
 
   // Tutorial overlay state
   const [showDragHint, setShowDragHint] = useState(false);
@@ -188,12 +189,6 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     };
   }, []);
 
-  // Load unit preference from localStorage
-  useEffect(() => {
-    const pref = localStorage.getItem("farmdroid_unit_inches");
-    if (pref === "true") setUseInches(true);
-  }, []);
-
   // Unit conversion helpers
   const MM_PER_INCH = 25.4;
   const unitLabel = useInches ? "in" : "cm";
@@ -212,7 +207,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     return displayVal * 10;
   }, [useInches]);
 
-  const toggleUnit = useCallback(() => {
+  const setUnit = useCallback((unit: MeasurementUnit) => {
     // Cancel any active edits
     setEditingSpacing(null);
     setEditingRowDistance(false);
@@ -220,12 +215,9 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
     setEditingPlantSpacing(false);
     setEditingBetweenPassSpacing(false);
     setEditingValue("");
-    // Toggle and persist
-    setUseInches(prev => {
-      localStorage.setItem("farmdroid_unit_inches", String(!prev));
-      return !prev;
-    });
-  }, []);
+    // Update config
+    updateConfig({ measurementUnit: unit });
+  }, [updateConfig]);
 
   // Dismiss tutorial and remember in localStorage
   const dismissTutorial = useCallback(() => {
@@ -1551,34 +1543,6 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                 )}
               </g>
 
-              {/* Pause button - rendered early so tooltips appear on top */}
-              <g
-                transform={`translate(${svgWidth - margin.right - 45}, ${rowAreaTop + 25})`}
-                className="cursor-pointer"
-                onClick={() => setIsAnimating(!isAnimating)}
-              >
-                <rect x="-18" y="-18" width="36" height="36" rx="18" fill="white" fillOpacity="0.95" stroke="#d6d3d1" strokeWidth="1.5" />
-                {isAnimating ? (
-                  <>
-                    <rect x="-6" y="-8" width="4" height="16" rx="1" fill="#78716c" />
-                    <rect x="2" y="-8" width="4" height="16" rx="1" fill="#78716c" />
-                  </>
-                ) : (
-                  <polygon points="-4,-8 -4,8 8,0" fill="#78716c" />
-                )}
-              </g>
-
-              {/* Unit toggle - cm / in */}
-              <g
-                transform={`translate(${svgWidth - margin.right - 45}, ${rowAreaTop + 65})`}
-                className="cursor-pointer"
-                onClick={toggleUnit}
-              >
-                <rect x="-24" y="-12" width="48" height="24" rx="12" fill={useInches ? "#0d9488" : "#e7e5e4"} stroke={useInches ? "#0f766e" : "#d6d3d1"} strokeWidth="1" />
-                <circle cx={useInches ? 8 : -8} cy="0" r="9" fill="white" stroke={useInches ? "#0d9488" : "#a8a29e"} strokeWidth="0.5" />
-                <text x={useInches ? -9 : -8} y="4" textAnchor="middle" className={`text-[8px] font-semibold select-none ${useInches ? "fill-white/80" : "fill-stone-500"}`}>cm</text>
-                <text x={useInches ? 8 : 9} y="4" textAnchor="middle" className={`text-[8px] font-semibold select-none ${useInches ? "fill-stone-500" : "fill-stone-400"}`}>in</text>
-              </g>
 
               {/* Wheel tracks in soil - rendered before seeding units so hoppers appear solid */}
               {(() => {
@@ -2874,22 +2838,52 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
           })()}
         </div>
 
-        {/* Plants per hectare - centered below animation/graph */}
-        <div className="flex justify-center mt-3 text-sm text-stone-500 h-6">
-          {seedingMode !== "line" ? (() => {
-            // Calculate based on working width and active rows
-            const workingWidthM = workingWidth / 1000;
-            const plantSpacingM = plantSpacing / 100;
-            const pointsPerHa = Math.round((10000 * config.activeRows) / (workingWidthM * plantSpacingM));
-            const seedsPerHa = seedingMode === "group" ? pointsPerHa * seedsPerGroup : pointsPerHa;
-            return (
-              <>
-                {selectedCrop.emoji} <span className="font-medium text-stone-700 mx-1">{seedsPerHa.toLocaleString()}</span> {t("seedsPerHectare")}
-              </>
-            );
-          })() : (
-            <span className="text-stone-400">{t("lineSeeding")}</span>
-          )}
+        {/* Plants per hectare + Unit toggle - same line below animation */}
+        <div className="flex items-center justify-between mt-3 px-1">
+          {/* Spacer for balance */}
+          <div className="w-16" />
+
+          {/* Seeds per hectare - centered */}
+          <div className="text-sm text-stone-500 h-6">
+            {seedingMode !== "line" ? (() => {
+              // Calculate based on working width and active rows
+              const workingWidthM = workingWidth / 1000;
+              const plantSpacingM = plantSpacing / 100;
+              const pointsPerHa = Math.round((10000 * config.activeRows) / (workingWidthM * plantSpacingM));
+              const seedsPerHa = seedingMode === "group" ? pointsPerHa * seedsPerGroup : pointsPerHa;
+              return (
+                <>
+                  {selectedCrop.emoji} <span className="font-medium text-stone-700 mx-1">{seedsPerHa.toLocaleString()}</span> {t("seedsPerHectare")}
+                </>
+              );
+            })() : (
+              <span className="text-stone-400">{t("lineSeeding")}</span>
+            )}
+          </div>
+
+          {/* Unit toggle - cm / in */}
+          <div className="flex items-center bg-stone-100 rounded-lg p-0.5">
+            <button
+              onClick={() => setUnit("cm")}
+              className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                !useInches
+                  ? "bg-white text-stone-900 shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+              }`}
+            >
+              cm
+            </button>
+            <button
+              onClick={() => setUnit("in")}
+              className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                useInches
+                  ? "bg-white text-stone-900 shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+              }`}
+            >
+              in
+            </button>
+          </div>
         </div>
 
           {/* Seeding Controls - Clean aligned layout */}

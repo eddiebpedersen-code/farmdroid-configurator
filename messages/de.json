@@ -1127,7 +1127,9 @@
       "annualSubscription": "Jährliches Abonnement",
       "firstYearIncluded": "Erstes Jahr inklusive",
       "vatNote": "Alle Preise verstehen sich ohne MwSt.",
-      "disclaimer": "Preise sind Schätzungen und können je nach Lieferkosten und lokalen Partnerbedingungen variieren"
+      "disclaimer": "Preise sind Schätzungen und können je nach Lieferkosten und lokalen Partnerbedingungen variieren",
+      "contactLocalPartner": "Kontaktieren Sie Ihren lokalen Partner",
+      "partnerPricingNote": "Die Preise für Ihre Region werden von Ihrem lokalen FarmDroid-Partner bereitgestellt"
     },
     "farmFit": {
       "title": "Dein Hofprofil",

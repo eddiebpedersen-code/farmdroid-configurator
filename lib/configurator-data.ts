@@ -13,10 +13,14 @@ export type RowPlacementMode = "bed" | "field" | "custom"; // bed = inside wheel
 export type ServicePlan = "none" | "standard" | "premium";
 export type WeedingTool = "none" | "combiTool" | "weedCuttingDisc";
 export type SeedingMode = "single" | "group" | "line";
+export type MeasurementUnit = "cm" | "in";
 
 export interface ConfiguratorState {
   // Currency selection
   currency: Currency;
+
+  // Measurement unit preference
+  measurementUnit: MeasurementUnit;
 
   // Step 1: Base robot is always included
   baseRobot: boolean;
@@ -251,6 +255,7 @@ export const CROP_PRESETS: CropPreset[] = [
 
 export const DEFAULT_CONFIG: ConfiguratorState = {
   currency: "EUR",
+  measurementUnit: "cm",
   baseRobot: true,
   powerSource: "solar",
   frontWheel: "PFW",

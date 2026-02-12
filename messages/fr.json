@@ -1127,7 +1127,9 @@
       "annualSubscription": "Abonnement Annuel",
       "firstYearIncluded": "Première année incluse",
       "vatNote": "Tous les prix sont hors TVA",
-      "disclaimer": "Les prix sont des estimations et peuvent varier selon les frais de livraison et les conditions du partenaire local"
+      "disclaimer": "Les prix sont des estimations et peuvent varier selon les frais de livraison et les conditions du partenaire local",
+      "contactLocalPartner": "Contactez votre partenaire local",
+      "partnerPricingNote": "Les tarifs pour votre région sont fournis par votre partenaire FarmDroid local"
     },
     "farmFit": {
       "title": "Votre Profil Agricole",

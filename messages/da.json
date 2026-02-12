@@ -1127,7 +1127,9 @@
       "annualSubscription": "Årligt Abonnement",
       "firstYearIncluded": "Første år inkluderet",
       "vatNote": "Alle priser er ekskl. moms",
-      "disclaimer": "Priser er estimater og kan variere baseret på leveringsomkostninger og lokale partnervilkår"
+      "disclaimer": "Priser er estimater og kan variere baseret på leveringsomkostninger og lokale partnervilkår",
+      "contactLocalPartner": "Kontakt din lokale partner",
+      "partnerPricingNote": "Priser for dit område leveres af din lokale FarmDroid-partner"
     },
     "farmFit": {
       "title": "Din Gård Profil",
