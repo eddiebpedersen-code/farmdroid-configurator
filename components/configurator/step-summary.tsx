@@ -608,10 +608,10 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
         </AnimatePresence>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12 py-6 md:py-8 pb-24">
-        {/* Left: Logo - Takes 3 columns */}
-        <div className="lg:col-span-3 flex flex-col">
-          {/* Logo */}
-          <div className="flex-1 flex items-center justify-center py-4 md:py-8">
+        {/* Left: Logo - Takes 3 columns, sticky on desktop */}
+        <div className="lg:col-span-3 hidden lg:block">
+          {/* Sticky logo container - centered vertically in viewport */}
+          <div className="sticky top-0 h-screen flex items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -627,34 +627,53 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
               />
             </motion.div>
           </div>
-
-          {/* Config summary row */}
-          <div className="flex justify-center gap-6 md:gap-8 pt-4 md:pt-6 border-t border-stone-100">
-            <div className="text-center">
-              <p className="text-xl md:text-2xl font-semibold text-stone-900">
-                {config.activeRows}
-                <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">{t("configLabels.rows")}</span>
-              </p>
-              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.active")}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xl md:text-2xl font-semibold text-stone-900">
-                {(workingWidth / 10).toFixed(0)}
-                <span className="text-sm md:text-base font-normal text-stone-400 ml-0.5">cm</span>
-              </p>
-              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.workingWidth")}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xl md:text-2xl font-semibold text-stone-900">
-                {config.powerSource === "hybrid" ? t("configLabels.hybrid") : t("configLabels.solar")}
-              </p>
-              <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.power")}</p>
-            </div>
-          </div>
         </div>
 
-        {/* Right: Lead Capture Form - Takes 2 columns */}
+        {/* Right: Lead Capture Form - Takes 2 columns on desktop, full width on mobile */}
         <div className="lg:col-span-2">
+          {/* Mobile logo and config summary */}
+          <div className="lg:hidden mb-6">
+            <div className="flex justify-center py-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-[200px]"
+              >
+                <Image
+                  src="/images/farmdroid-logo.png"
+                  alt="FarmDroid"
+                  width={200}
+                  height={200}
+                  className="w-full h-auto"
+                />
+              </motion.div>
+            </div>
+            {/* Config summary row - mobile only */}
+            <div className="flex justify-center gap-6 pt-4 border-t border-stone-100">
+              <div className="text-center">
+                <p className="text-xl font-semibold text-stone-900">
+                  {config.activeRows}
+                  <span className="text-sm font-normal text-stone-400 ml-0.5">{t("configLabels.rows")}</span>
+                </p>
+                <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.active")}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-semibold text-stone-900">
+                  {(workingWidth / 10).toFixed(0)}
+                  <span className="text-sm font-normal text-stone-400 ml-0.5">cm</span>
+                </p>
+                <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.workingWidth")}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-semibold text-stone-900">
+                  {config.powerSource === "hybrid" ? t("configLabels.hybrid") : t("configLabels.solar")}
+                </p>
+                <p className="text-xs text-stone-500 mt-0.5">{t("configLabels.power")}</p>
+              </div>
+            </div>
+          </div>
+
           <LeadCaptureForm
             config={config}
             priceBreakdown={priceBreakdown}
