@@ -611,7 +611,7 @@ export function StepSummary({ config, priceBreakdown, onReset, initialLead, exis
         {/* Left: Logo - Takes 3 columns, sticky on desktop */}
         <div className="lg:col-span-3 hidden lg:block">
           {/* Sticky logo container - centered vertically in viewport */}
-          <div className="sticky top-0 h-screen flex items-center justify-center">
+          <div className="sticky top-[50vh] -translate-y-1/2">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
