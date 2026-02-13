@@ -1929,7 +1929,7 @@ export function StepRowConfig({ config, updateConfig }: StepRowConfigProps) {
                       <rect
                         x={leftX}
                         y={rowAreaTop}
-                        width={gapWidth - 20}
+                        width={gapWidth}
                         height={rowAreaBottom - rowAreaTop}
                         fill={isHovered && !isDragging ? "rgba(100, 116, 139, 0.08)" : "transparent"}
                         pointerEvents="all"
